@@ -32,7 +32,7 @@ css_error css__parse_quotes(css_language *c,
 		css_style *result)
 {
 	int orig_ctx = *ctx;
-	css_error error;
+	css_error error = CSS_INVALID;
 	const css_token *token;
 	bool match;
 
