@@ -351,80 +351,88 @@ void output_length_unit(FILE *outputf, struct keyval *parseid, struct keyval_lis
 		ckv->val);
 }
 
-void output_ident_list(FILE *outputf, struct keyval *parseid, struct keyval_list *kvlist)
+void 
+output_ident_list(FILE *outputf, 
+		  struct keyval *parseid, 
+		  struct keyval_list *kvlist)
 {
 	struct keyval *ckv = kvlist->item[0]; /* list type : opv value */
-	if (strcmp(ckv->key, "STRING_OPTNUM") == 0) {
-		/* list of IDENT and optional numbers */
-		struct keyval *ikv = kvlist->item[1]; /* numeric default : end condition */
+	struct keyval *ikv;
 
-		fprintf(outputf,
-			"{\n"
-			"\t\terror = css__stylesheet_style_appendOPV(result, %s, 0, %s);\n"
-			"\t\tif (error != CSS_OK) {\n"
-			"\t\t\t*ctx = orig_ctx;\n"
-			"\t\t\treturn error;\n"
-			"\t\t}\n\n"
-			"\t\twhile ((token != NULL) && (token->type == CSS_TOKEN_IDENT)) {\n"
-			"\t\t\tuint32_t snumber;\n"
-			"\t\t\tcss_fixed num;\n"
-			"\t\t\tint pctx;\n\n"
-			"\t\t\terror = css__stylesheet_string_add(c->sheet, lwc_string_ref(token->idata), &snumber);\n"
-			"\t\t\tif (error != CSS_OK) {\n"
-			"\t\t\t\t*ctx = orig_ctx;\n"
-			"\t\t\t\treturn error;\n"
-			"\t\t\t}\n\n"
-			"\t\t\terror = css__stylesheet_style_append(result, snumber);\n"	
-			"\t\t\tif (error != CSS_OK) {\n"
-			"\t\t\t\t*ctx = orig_ctx;\n"
-			"\t\t\t\treturn error;\n"
-			"\t\t\t}\n\n"
-			"\t\t\tconsumeWhitespace(vector, ctx);\n\n"
-			"\t\t\tpctx = *ctx;\n"
-			"\t\t\ttoken = parserutils_vector_iterate(vector, ctx);\n"
-			"\t\t\tif ((token != NULL) && (token->type == CSS_TOKEN_NUMBER)) {\n"
-			"\t\t\t\tsize_t consumed = 0;\n\n"
-			"\t\t\t\tnum = css__number_from_lwc_string(token->idata, true, &consumed);\n"
-			"\t\t\t\tif (consumed != lwc_string_length(token->idata)) {\n"
-			"\t\t\t\t\t*ctx = orig_ctx;\n"
-			"\t\t\t\t\treturn CSS_INVALID;\n"
-			"\t\t\t\t}\n"
-			"\t\t\t\tconsumeWhitespace(vector, ctx);\n\n"
-			"\t\t\t\tpctx = *ctx;\n"
-			"\t\t\t\ttoken = parserutils_vector_iterate(vector, ctx);\n"
-			"\t\t\t} else {\n"
-			"\t\t\t\tnum = INTTOFIX(%s);\n"
-			"\t\t\t}\n\n"
-			"\t\t\terror = css__stylesheet_style_append(result, num);\n"
-			"\t\t\tif (error != CSS_OK) {\n"
-			"\t\t\t\t*ctx = orig_ctx;\n"
-			"\t\t\t\treturn error;\n"
-			"\t\t\t}\n\n"
-			"\t\t\tif (token == NULL)\n"
-			"\t\t\t\tbreak;\n\n"
-			"\t\t\tif (token->type == CSS_TOKEN_IDENT) {\n"
-			"\t\t\t\terror = css__stylesheet_style_append(result, %s);\n"
-			"\t\t\t\tif (error != CSS_OK) {\n"
-			"\t\t\t\t\t*ctx = orig_ctx;\n"
-			"\t\t\t\t\treturn error;\n"
-			"\t\t\t\t}\n"
-			"\t\t\t} else {\n"
-			"\t\t\t\t*ctx = pctx; /* rewind one token back */\n"
-			"\t\t\t}\n"
-			"\t\t}\n\n"
-			"\t\terror = css__stylesheet_style_append(result, %s);\n"
-			"\t}\n\n",
-			parseid->val,
-			ckv->val,
-			ikv->key,
-			ckv->val,
-			ikv->val);
-
-	} else {
-		fprintf(stderr, "unknown IDENT list type %s\n",ckv->key);
+	if (strcmp(ckv->key, "STRING_OPTNUM") != 0) {
+		fprintf(stderr, "unknown IDENT list type %s\n", ckv->key);
 		exit(4);
 	}
 
+	if (kvlist->count < 2) {
+		fprintf(stderr, "Not enough parameters to IDENT list type %s\n", ckv->key);
+		exit(4);
+	}
+
+	/* list of IDENT and optional numbers */
+	ikv = kvlist->item[1]; /* numeric default : end condition */
+
+	fprintf(outputf,
+		"{\n"
+		"\t\terror = css__stylesheet_style_appendOPV(result, %s, 0, %s);\n"
+		"\t\tif (error != CSS_OK) {\n"
+		"\t\t\t*ctx = orig_ctx;\n"
+		"\t\t\treturn error;\n"
+		"\t\t}\n\n"
+		"\t\twhile ((token != NULL) && (token->type == CSS_TOKEN_IDENT)) {\n"
+		"\t\t\tuint32_t snumber;\n"
+		"\t\t\tcss_fixed num;\n"
+		"\t\t\tint pctx;\n\n"
+		"\t\t\terror = css__stylesheet_string_add(c->sheet, lwc_string_ref(token->idata), &snumber);\n"
+		"\t\t\tif (error != CSS_OK) {\n"
+		"\t\t\t\t*ctx = orig_ctx;\n"
+		"\t\t\t\treturn error;\n"
+		"\t\t\t}\n\n"
+		"\t\t\terror = css__stylesheet_style_append(result, snumber);\n"	
+		"\t\t\tif (error != CSS_OK) {\n"
+		"\t\t\t\t*ctx = orig_ctx;\n"
+		"\t\t\t\treturn error;\n"
+		"\t\t\t}\n\n"
+		"\t\t\tconsumeWhitespace(vector, ctx);\n\n"
+		"\t\t\tpctx = *ctx;\n"
+		"\t\t\ttoken = parserutils_vector_iterate(vector, ctx);\n"
+		"\t\t\tif ((token != NULL) && (token->type == CSS_TOKEN_NUMBER)) {\n"
+		"\t\t\t\tsize_t consumed = 0;\n\n"
+		"\t\t\t\tnum = css__number_from_lwc_string(token->idata, true, &consumed);\n"
+		"\t\t\t\tif (consumed != lwc_string_length(token->idata)) {\n"
+		"\t\t\t\t\t*ctx = orig_ctx;\n"
+		"\t\t\t\t\treturn CSS_INVALID;\n"
+		"\t\t\t\t}\n"
+		"\t\t\t\tconsumeWhitespace(vector, ctx);\n\n"
+		"\t\t\t\tpctx = *ctx;\n"
+		"\t\t\t\ttoken = parserutils_vector_iterate(vector, ctx);\n"
+		"\t\t\t} else {\n"
+		"\t\t\t\tnum = INTTOFIX(%s);\n"
+		"\t\t\t}\n\n"
+		"\t\t\terror = css__stylesheet_style_append(result, num);\n"
+		"\t\t\tif (error != CSS_OK) {\n"
+		"\t\t\t\t*ctx = orig_ctx;\n"
+		"\t\t\t\treturn error;\n"
+		"\t\t\t}\n\n"
+		"\t\t\tif (token == NULL)\n"
+		"\t\t\t\tbreak;\n\n"
+		"\t\t\tif (token->type == CSS_TOKEN_IDENT) {\n"
+		"\t\t\t\terror = css__stylesheet_style_append(result, %s);\n"
+		"\t\t\t\tif (error != CSS_OK) {\n"
+		"\t\t\t\t\t*ctx = orig_ctx;\n"
+		"\t\t\t\t\treturn error;\n"
+		"\t\t\t\t}\n"
+		"\t\t\t} else {\n"
+		"\t\t\t\t*ctx = pctx; /* rewind one token back */\n"
+		"\t\t\t}\n"
+		"\t\t}\n\n"
+		"\t\terror = css__stylesheet_style_append(result, %s);\n"
+		"\t}\n\n",
+		parseid->val,
+		ckv->val,
+		ikv->key,
+		ckv->val,
+		ikv->val);
 }
 
 void output_invalidcss(FILE *outputf)
