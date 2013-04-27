@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 
 			if (error == CSS_OK) {
 				css_stylesheet *import;
-				char *buf = alloca(lwc_string_length(url) + 1);
+				char *buf = malloc(lwc_string_length(url) + 1);
 
 				memcpy(buf, lwc_string_data(url), 
 						lwc_string_length(url));
@@ -135,6 +135,8 @@ int main(int argc, char **argv)
 				css_stylesheet_destroy(import);
 
 				error = CSS_IMPORTS_PENDING;
+
+				free(buf);
 			}
 		}
 

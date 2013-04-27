@@ -409,7 +409,7 @@ void run_test(const uint8_t *data, size_t len, exp_entry *exp, size_t explen)
 
 		if (error == CSS_OK) {
 			css_stylesheet *import;
-			char *buf = alloca(lwc_string_length(url) + 1);
+			char *buf = malloc(lwc_string_length(url) + 1);
 
 			memcpy(buf, lwc_string_data(url), 
 					lwc_string_length(url));
@@ -425,6 +425,8 @@ void run_test(const uint8_t *data, size_t len, exp_entry *exp, size_t explen)
 
 			error = CSS_IMPORTS_PENDING;
 			lwc_string_unref(url);
+
+			free(buf);
 		}
 	}
 
