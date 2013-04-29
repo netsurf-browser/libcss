@@ -525,6 +525,9 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 				return error;
 
 			c->state = NAMESPACE_PERMITTED;
+
+			/* Namespaces are special, and do not generate rules */
+			return CSS_OK;
 		} else {
 			return CSS_INVALID;
 		}
