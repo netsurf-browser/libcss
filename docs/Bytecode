@@ -12,7 +12,7 @@ Format
 	bits 0-9  : opcode
 
 The 8 bits of flag data are defined as follows:
-	bits 2-7: MBZ
+	bits 2-7: Must Be Zero (MBZ)
 	bit 1   : value is inherit
 	bit 0   : value is important
 
