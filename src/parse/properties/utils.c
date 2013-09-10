@@ -212,7 +212,7 @@ css_error css__parse_border_side(css_language *c,
 	} while (*ctx != prev_ctx && token != NULL);
 
 	if (style) {
-		error = css__stylesheet_style_appendOPV(style_style, 
+		error = css__stylesheet_style_appendOPV(style_style,
 				CSS_PROP_BORDER_TOP_STYLE + side, 0, 
 				BORDER_STYLE_NONE);
 		if (error != CSS_OK)
@@ -220,9 +220,17 @@ css_error css__parse_border_side(css_language *c,
 	}
 
 	if (width) {
-		error = css__stylesheet_style_appendOPV(width_style, 
-				CSS_PROP_BORDER_TOP_WIDTH + side,
-				0, BORDER_WIDTH_MEDIUM);
+		error = css__stylesheet_style_appendOPV(width_style,
+				CSS_PROP_BORDER_TOP_WIDTH + side, 0,
+				BORDER_WIDTH_MEDIUM);
+		if (error != CSS_OK)
+			goto css__parse_border_side_cleanup;
+	}
+
+	if (color) {
+		error = css__stylesheet_style_appendOPV(color_style,
+				CSS_PROP_BORDER_TOP_COLOR + side, 0,
+				BORDER_COLOR_CURRENT_COLOR);
 		if (error != CSS_OK)
 			goto css__parse_border_side_cleanup;
 	}
