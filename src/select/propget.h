@@ -174,6 +174,25 @@ static inline uint8_t get_word_spacing(
 #undef WORD_SPACING_SHIFT
 #undef WORD_SPACING_INDEX
 
+#define WRITING_MODE_INDEX 4
+#define WRITING_MODE_MASK  0x6
+#define WRITING_MODE_SHIFT 1
+static inline uint8_t get_writing_mode(
+		const css_computed_style *style)
+{
+	if (style->uncommon != NULL) {
+		uint8_t bits = style->uncommon->bits[WRITING_MODE_INDEX];
+		bits &= WRITING_MODE_MASK;
+		bits >>= WRITING_MODE_SHIFT;
+		return bits;
+	}
+
+	return CSS_WRITING_MODE_HORIZONTAL_TB;
+}
+#undef WRITING_MODE_INDEX
+#undef WRITING_MODE_MASK
+#undef WRITING_MODE_SHIFT
+
 #define COUNTER_INCREMENT_INDEX 3
 #define COUNTER_INCREMENT_SHIFT 1
 #define COUNTER_INCREMENT_MASK  0x2

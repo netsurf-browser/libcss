@@ -406,6 +406,9 @@ css_error css__parse_width(css_language *c,
 css_error css__parse_word_spacing(css_language *c,
 		const parserutils_vector *vector, int *ctx, 
 		css_style *result);
+css_error css__parse_writing_mode(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
 css_error css__parse_z_index(css_language *c,
 		const parserutils_vector *vector, int *ctx, 
 		css_style *result);

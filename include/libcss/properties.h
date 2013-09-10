@@ -125,6 +125,7 @@ enum css_properties_e {
 	CSS_PROP_COLUMN_RULE_WIDTH		= 0x06c,
 	CSS_PROP_COLUMN_SPAN			= 0x06d,
 	CSS_PROP_COLUMN_WIDTH			= 0x06e,
+	CSS_PROP_WRITING_MODE			= 0x06f,
 
 	CSS_N_PROPERTIES
 };
@@ -738,6 +739,13 @@ enum css_word_spacing_e {
 	CSS_WORD_SPACING_INHERIT		= 0x0,
 	CSS_WORD_SPACING_SET			= 0x1,
 	CSS_WORD_SPACING_NORMAL			= 0x2
+};
+
+enum css_writing_mode_e {
+	CSS_WRITING_MODE_INHERIT		= 0x0,
+	CSS_WRITING_MODE_HORIZONTAL_TB		= 0x1,
+	CSS_WRITING_MODE_VERTICAL_RL		= 0x2,
+	CSS_WRITING_MODE_VERTICAL_LR		= 0x3
 };
 
 enum css_z_index_e {

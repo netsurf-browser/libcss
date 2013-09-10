@@ -110,6 +110,7 @@ white_space.c \
 width.c \
 windows.c \
 word_spacing.c \
+writing_mode.c \
 z_index.c
 
 include $(NSBUILD)/Makefile.subdir

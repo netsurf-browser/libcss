@@ -1232,6 +1232,15 @@ Opcodes
 				bits 0-6: 0000000 => auto,
 					  other   => rffe.
 
+6f - writing-mode
+	<value> (14bits) :
+		bits 8-13: MBZ
+		bits 0-7 :
+			00000000 => horizontal-tb,
+			00000001 => vertical-rl,
+			00000010 => vertical-lr,
+			other    => Reserved for future expansion.
 
-6f-3ff - Reserved for future expansion.
+
+70-3ff - Reserved for future expansion.
 

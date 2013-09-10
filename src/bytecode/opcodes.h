@@ -718,6 +718,12 @@ enum op_word_spacing {
 	WORD_SPACING_NORMAL		= 0x0000
 };
 
+enum op_writing_mode {
+	WRITING_MODE_HORIZONTAL_TB	= 0x0000,
+	WRITING_MODE_VERTICAL_RL	= 0x0001,
+	WRITING_MODE_VERTICAL_LR	= 0x0002
+};
+
 enum op_z_index {
 	Z_INDEX_SET			= 0x0080,
 

@@ -59,7 +59,7 @@ typedef struct css_computed_uncommon {
  *  2 ooooooob	outline-width  | border-spacing
  *  3 bbbbbbbb	border-spacing
  *  4 wwwwwwir	word-spacing   | counter-increment | counter-reset
- *  5 uuuuu...	cursor         | <unused>
+ *  5 uuuuumm.	cursor         | writing-mode      | <unused>
  *  6 cccccccc	clip
  *  7 cccccccc	clip
  *  8 ccccccoo	clip           | content

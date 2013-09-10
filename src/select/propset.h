@@ -22,7 +22,7 @@ static const css_computed_uncommon default_uncommon = {
 	  0,
 	  (CSS_WORD_SPACING_INHERIT << 2) | 
 		(CSS_COUNTER_INCREMENT_NONE << 1) | CSS_COUNTER_RESET_NONE,
-	  (CSS_CURSOR_INHERIT << 3) | 0,
+	  (CSS_CURSOR_INHERIT << 3) | (CSS_WRITING_MODE_INHERIT << 1) | 0,
 	  0,
 	  0,
 	  (CSS_CLIP_AUTO << 2) | CSS_CONTENT_NORMAL
@@ -213,6 +213,28 @@ static inline css_error set_word_spacing(
 #undef WORD_SPACING_MASK
 #undef WORD_SPACING_SHIFT
 #undef WORD_SPACING_INDEX
+
+#define WRITING_MODE_INDEX 4
+#define WRITING_MODE_SHIFT 1
+#define WRITING_MODE_MASK  0x6
+static inline css_error set_writing_mode(
+		css_computed_style *style, uint8_t type)
+{
+	uint8_t *bits;
+
+	ENSURE_UNCOMMON;
+
+	bits = &style->uncommon->bits[WRITING_MODE_INDEX];
+
+	/* 2bits: type */
+	*bits = (*bits & ~WRITING_MODE_MASK) |
+			((type & 0x3) << WRITING_MODE_SHIFT);
+
+	return CSS_OK;
+}
+#undef WRITING_MODE_MASK
+#undef WRITING_MODE_SHIFT
+#undef WRITING_MODE_INDEX
 
 #define COUNTER_INCREMENT_INDEX 3
 #define COUNTER_INCREMENT_SHIFT 1

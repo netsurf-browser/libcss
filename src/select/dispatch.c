@@ -572,5 +572,10 @@ struct prop_table prop_dispatch[CSS_N_PROPERTIES] = {
 		PROPERTY_FUNCS(column_width),
 		0,
 		GROUP_NORMAL
+	},
+	{
+		PROPERTY_FUNCS(writing_mode),
+		0,
+		GROUP_UNCOMMON
 	}
 };
