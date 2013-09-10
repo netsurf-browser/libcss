@@ -4262,3 +4262,55 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 |   0x0200006e 0x00000066 0x00000002
 #reset
 
+##
+## 6f - writing-mode
+##
+
+#data
+* { writing-mode: horizontal-tb; }
+#errors
+#expected
+| 1 *
+|   0x0000006f
+#reset
+
+#data
+* { writing-mode: vertical-rl; }
+#errors
+#expected
+| 1 *
+|   0x0004006f
+#reset
+
+#data
+* { writing-mode: vertical-lr; }
+#errors
+#expected
+| 1 *
+|   0x0008006f
+#reset
+
+#data
+* { writing-mode: inherit }
+#errors
+#expected
+| 1 *
+|   0x0000086f
+#reset
+
+#data
+* { writing-mode: inherit ! important }
+#errors
+#expected
+| 1 *
+|   0x00000c6f
+#reset
+
+#data
+* { writing-mode: vertical-lr ! important }
+#errors
+#expected
+| 1 *
+|   0x0008046f
+#reset
+

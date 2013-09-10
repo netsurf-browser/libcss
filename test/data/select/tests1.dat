@@ -89,6 +89,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -184,6 +185,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -279,6 +281,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -374,6 +377,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -461,6 +465,7 @@ visibility: visible
 white-space: normal
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -546,6 +551,7 @@ visibility: visible
 white-space: normal
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -632,6 +638,7 @@ visibility: visible
 white-space: normal
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -718,6 +725,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -803,6 +811,7 @@ visibility: visible
 white-space: normal
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -893,6 +902,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -983,6 +993,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -1074,6 +1085,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -1168,6 +1180,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -1261,6 +1274,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -1360,6 +1374,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -1459,6 +1474,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -1558,6 +1574,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -1661,6 +1678,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -1763,6 +1781,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -1863,6 +1882,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -1962,6 +1982,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -2061,6 +2082,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -2160,6 +2182,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -2259,6 +2282,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -2358,6 +2382,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -2457,6 +2482,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -2556,6 +2582,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -2655,6 +2682,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -2754,6 +2782,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -2853,6 +2882,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -2952,6 +2982,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -3051,6 +3082,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -3150,6 +3182,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -3249,6 +3282,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -3348,6 +3382,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -3447,6 +3482,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -3546,6 +3582,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -3645,6 +3682,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -3744,6 +3782,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -3843,6 +3882,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -3935,6 +3975,7 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: normal
+writing-mode: horizontal-tb
 z-index: auto
 #reset
 
@@ -4027,5 +4068,99 @@ visibility: inherit
 white-space: inherit
 width: auto
 word-spacing: inherit
+writing-mode: horizontal-tb
+z-index: auto
+#reset
+
+#tree
+| div
+|  id=foo
+|  p*
+#ua
+div, p { display: none; float: right; position: absolute; }
+#user
+p { display: block; writing-mode: vertical-lr; }
+#author
+div#foo p { letter-spacing: inherit; }
+div p { letter-spacing: horizontal-tb; }
+#errors
+#expected
+background-attachment: scroll
+background-color: #00000000
+background-image: none
+background-position: 0% 0%
+background-repeat: repeat
+border-collapse: inherit
+border-spacing: inherit
+border-top-color: currentColor
+border-right-color: currentColor
+border-bottom-color: currentColor
+border-left-color: currentColor
+border-top-style: none
+border-right-style: none
+border-bottom-style: none
+border-left-style: none
+border-top-width: medium
+border-right-width: medium
+border-bottom-width: medium
+border-left-width: medium
+bottom: auto
+caption-side: inherit
+clear: none
+clip: auto
+color: inherit
+content: normal
+counter-increment: none
+counter-reset: none
+cursor: inherit
+direction: inherit
+display: block
+empty-cells: inherit
+float: none
+font-family: inherit
+font-size: inherit
+font-style: inherit
+font-variant: inherit
+font-weight: inherit
+height: auto
+left: auto
+letter-spacing: inherit
+line-height: inherit
+list-style-image: inherit
+list-style-position: inherit
+list-style-type: inherit
+margin-top: 0px
+margin-right: 0px
+margin-bottom: 0px
+margin-left: 0px
+max-height: none
+max-width: none
+min-height: 0px
+min-width: 0px
+opacity: 1.000
+outline-color: invert
+outline-style: none
+outline-width: medium
+overflow: visible
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+position: absolute
+quotes: inherit
+right: auto
+table-layout: auto
+text-align: inherit
+text-decoration: none
+text-indent: inherit
+text-transform: inherit
+top: auto
+unicode-bidi: normal
+vertical-align: baseline
+visibility: inherit
+white-space: inherit
+width: auto
+word-spacing: inherit
+writing-mode: vertical-lr
 z-index: auto
 #reset

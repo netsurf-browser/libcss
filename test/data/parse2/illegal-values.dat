@@ -4455,6 +4455,27 @@ max-height: 30%; min-height: 2em; }
 #reset
 
 #data
+* { writing-mode: em; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { writing-mode: 2em; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { writing-mode: vertical; }
+#errors
+#expected
+| *
+#reset
+
+#data
 * { z-index: - 40; }
 #errors
 #expected
