@@ -479,6 +479,27 @@ uint8_t css_computed_word_spacing(
 #undef CSS_WORD_SPACING_SHIFT
 #undef CSS_WORD_SPACING_INDEX
 
+#define CSS_WRITING_MODE_INDEX 4
+#define CSS_WRITING_MODE_SHIFT 1
+#define CSS_WRITING_MODE_MASK  0x6
+uint8_t css_computed_writing_mode(
+		const css_computed_style *style)
+{
+	if (style->uncommon != NULL) {
+		uint8_t bits = style->uncommon->bits[CSS_WRITING_MODE_INDEX];
+		bits &= CSS_WRITING_MODE_MASK;
+		bits >>= CSS_WRITING_MODE_SHIFT;
+
+		/* 2bits: type */
+		return bits;
+	}
+
+	return CSS_WRITING_MODE_HORIZONTAL_TB;
+}
+#undef CSS_WRITING_MODE_MASK
+#undef CSS_WRITING_MODE_SHIFT
+#undef CSS_WRITING_MODE_INDEX
+
 #define CSS_COUNTER_INCREMENT_INDEX 3
 #define CSS_COUNTER_INCREMENT_SHIFT 1
 #define CSS_COUNTER_INCREMENT_MASK  0x2

@@ -269,6 +269,9 @@ uint8_t css_computed_empty_cells(
 uint8_t css_computed_float(
 		const css_computed_style *style);
   
+uint8_t css_computed_writing_mode(
+		const css_computed_style *style);
+
 uint8_t css_computed_font_style(
 		const css_computed_style *style);
   

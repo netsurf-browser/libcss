@@ -140,6 +140,7 @@ const css_prop_handler property_handlers[LAST_PROP + 1 - FIRST_PROP] =
 	css__parse_widows,
 	css__parse_width,
 	css__parse_word_spacing,
+	css__parse_writing_mode,
 	css__parse_z_index
 };
 

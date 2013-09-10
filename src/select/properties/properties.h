@@ -131,6 +131,7 @@ PROPERTY_FUNCS(white_space);
 PROPERTY_FUNCS(widows);
 PROPERTY_FUNCS(width);
 PROPERTY_FUNCS(word_spacing);
+PROPERTY_FUNCS(writing_mode);
 PROPERTY_FUNCS(z_index);
 
 #undef PROPERTY_FUNCS
