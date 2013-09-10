@@ -2472,6 +2472,28 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	ptr += wrote;
 	*len -= wrote;
 
+	/* writing-mode */
+	val = css_computed_writing_mode(style);
+	switch (val) {
+	case CSS_WRITING_MODE_INHERIT:
+		wrote = snprintf(ptr, *len, "writing-mode: inherit\n");
+		break;
+	case CSS_WRITING_MODE_HORIZONTAL_TB:
+		wrote = snprintf(ptr, *len, "writing-mode: horizontal-tb\n");
+		break;
+	case CSS_WRITING_MODE_VERTICAL_RL:
+		wrote = snprintf(ptr, *len, "writing-mode: vertical-rl\n");
+		break;
+	case CSS_WRITING_MODE_VERTICAL_LR:
+		wrote = snprintf(ptr, *len, "writing-mode: vertical-lr\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
 	/* z-index */
 	val = css_computed_z_index(style, &zindex);
 	switch (val) {

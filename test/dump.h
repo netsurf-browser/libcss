@@ -476,6 +476,7 @@ static const char *opcode_names[] = {
 	"column-rule-width",
 	"column-span",
 	"column-width",
+	"writing-mode",
 };
 
 static void dump_css_fixed(css_fixed f, char **ptr)
@@ -2526,6 +2527,19 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					break;
 				case WHITE_SPACE_PRE_LINE:
 					*ptr += sprintf(*ptr, "pre-line");
+					break;
+				}
+				break;
+			case CSS_PROP_WRITING_MODE:
+				switch (value) {
+				case WRITING_MODE_HORIZONTAL_TB:
+					*ptr += sprintf(*ptr, "horizontal-tb");
+					break;
+				case WRITING_MODE_VERTICAL_RL:
+					*ptr += sprintf(*ptr, "vertical-rl");
+					break;
+				case WRITING_MODE_VERTICAL_LR:
+					*ptr += sprintf(*ptr, "vertical-lr");
 					break;
 				}
 				break;
