@@ -588,11 +588,9 @@ css_error css_select_results_destroy(css_select_results *results)
 	if (results == NULL)
 		return CSS_BADPARM;
 
-	if (results->styles != NULL) {
-		for (i = 0; i < CSS_PSEUDO_ELEMENT_COUNT; i++) {
-			if (results->styles[i] != NULL)
-				css_computed_style_destroy(results->styles[i]);
-		}
+	for (i = 0; i < CSS_PSEUDO_ELEMENT_COUNT; i++) {
+		if (results->styles[i] != NULL)
+			css_computed_style_destroy(results->styles[i]);
 	}
 
 	results->alloc(results, 0, results->pw);
