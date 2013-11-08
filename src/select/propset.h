@@ -154,7 +154,6 @@ static inline css_error set_outline_width(
 #define BORDER_SPACING_MASK  0x1
 #define BORDER_SPACING_INDEX1 2
 #define BORDER_SPACING_SHIFT1 0
-#define BORDER_SPACING_MASK1 0xff
 static inline css_error set_border_spacing(
 		css_computed_style *style, uint8_t type, 
 		css_fixed hlength, css_unit hunit,
@@ -173,8 +172,7 @@ static inline css_error set_border_spacing(
 	bits = &style->uncommon->bits[BORDER_SPACING_INDEX1];
 
 	/* 8bits: hhhhvvvv : hunit | vunit */
-	*bits = (*bits & ~BORDER_SPACING_MASK1) |
-			(((hunit << 4) | vunit) << BORDER_SPACING_SHIFT1);
+	*bits = (((hunit << 4) | vunit) << BORDER_SPACING_SHIFT1);
 
 
 	style->uncommon->border_spacing[0] = hlength;
@@ -182,7 +180,6 @@ static inline css_error set_border_spacing(
 
 	return CSS_OK;
 }
-#undef BORDER_SPACING_MASK1
 #undef BORDER_SPACING_SHIFT1
 #undef BORDER_SPACING_INDEX1
 #undef BORDER_SPACING_MASK
@@ -361,10 +358,8 @@ static inline css_error set_cursor(
 #define CLIP_MASK  0xfc
 #define CLIP_INDEX1 5
 #define CLIP_SHIFT1 0
-#define CLIP_MASK1 0xff
 #define CLIP_INDEX2 6
 #define CLIP_SHIFT2 0
-#define CLIP_MASK2 0xff
 static inline css_error set_clip(
 		css_computed_style *style, uint8_t type, 
 		css_computed_clip_rect *rect)
@@ -388,14 +383,12 @@ static inline css_error set_clip(
 		bits = &style->uncommon->bits[CLIP_INDEX1];
 
 		/* 8bits: ttttrrrr : top | right */
-		*bits = (*bits & ~CLIP_MASK1) |
-			(((rect->tunit << 4) | rect->runit) << CLIP_SHIFT1);
+		*bits = (((rect->tunit << 4) | rect->runit) << CLIP_SHIFT1);
 
 		bits = &style->uncommon->bits[CLIP_INDEX2];
 
 		/* 8bits: bbbbllll : bottom | left */
-		*bits = (*bits & ~CLIP_MASK2) |
-			(((rect->bunit << 4) | rect->lunit) << CLIP_SHIFT2);
+		*bits = (((rect->bunit << 4) | rect->lunit) << CLIP_SHIFT2);
 
 		style->uncommon->clip[0] = rect->top;
 		style->uncommon->clip[1] = rect->right;
@@ -405,10 +398,8 @@ static inline css_error set_clip(
 
 	return CSS_OK;
 }
-#undef CLIP_MASK2
 #undef CLIP_SHIFT2
 #undef CLIP_INDEX2
-#undef CLIP_MASK1
 #undef CLIP_SHIFT1
 #undef CLIP_INDEX1
 #undef CLIP_MASK
@@ -503,7 +494,6 @@ static inline css_error set_content(
 
 #define VERTICAL_ALIGN_INDEX 0
 #define VERTICAL_ALIGN_SHIFT 0
-#define VERTICAL_ALIGN_MASK  0xff
 static inline css_error set_vertical_align(
 		css_computed_style *style, uint8_t type, 
 		css_fixed length, css_unit unit)
@@ -511,20 +501,17 @@ static inline css_error set_vertical_align(
 	uint8_t *bits = &style->bits[VERTICAL_ALIGN_INDEX];
 
 	/* 8bits: uuuutttt : units | type */
-	*bits = (*bits & ~VERTICAL_ALIGN_MASK) |
-			(((type & 0xf) | (unit << 4)) << VERTICAL_ALIGN_SHIFT);
+	*bits = (((type & 0xf) | (unit << 4)) << VERTICAL_ALIGN_SHIFT);
 
 	style->vertical_align = length;
 
 	return CSS_OK;
 }
-#undef VERTICAL_ALIGN_MASK
 #undef VERTICAL_ALIGN_SHIFT
 #undef VERTICAL_ALIGN_INDEX
 
 #define FONT_SIZE_INDEX 1
 #define FONT_SIZE_SHIFT 0
-#define FONT_SIZE_MASK  0xff
 static inline css_error set_font_size(
 		css_computed_style *style, uint8_t type, 
 		css_fixed length, css_unit unit)
@@ -532,14 +519,12 @@ static inline css_error set_font_size(
 	uint8_t *bits = &style->bits[FONT_SIZE_INDEX];
 
 	/* 8bits: uuuutttt : units | type */
-	*bits = (*bits & ~FONT_SIZE_MASK) |
-			(((type & 0xf) | (unit << 4)) << FONT_SIZE_SHIFT);
+	*bits = (((type & 0xf) | (unit << 4)) << FONT_SIZE_SHIFT);
 
 	style->font_size = length;
 
 	return CSS_OK;
 }
-#undef FONT_SIZE_MASK
 #undef FONT_SIZE_SHIFT
 #undef FONT_SIZE_INDEX
 
@@ -1547,7 +1532,6 @@ static inline css_error set_white_space(
 #define BACKGROUND_POSITION_MASK  0x80
 #define BACKGROUND_POSITION_INDEX1 26
 #define BACKGROUND_POSITION_SHIFT1 0
-#define BACKGROUND_POSITION_MASK1 0xff
 static inline css_error set_background_position(
 		css_computed_style *style, uint8_t type, 
 		css_fixed hlength, css_unit hunit,
@@ -1564,15 +1548,13 @@ static inline css_error set_background_position(
 	bits = &style->bits[BACKGROUND_POSITION_INDEX1];
 
 	/* 8bits: hhhhvvvv : hunit | vunit */
-	*bits = (*bits & ~BACKGROUND_POSITION_MASK1) |
-			(((hunit << 4) | vunit) << BACKGROUND_POSITION_SHIFT1);
+	*bits = (((hunit << 4) | vunit) << BACKGROUND_POSITION_SHIFT1);
 
 	style->background_position[0] = hlength;
 	style->background_position[1] = vlength;
 
 	return CSS_OK;
 }
-#undef BACKGROUND_POSITION_MASK1
 #undef BACKGROUND_POSITION_SHIFT1
 #undef BACKGROUND_POSITION_INDEX1
 #undef BACKGROUND_POSITION_MASK
