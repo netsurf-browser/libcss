@@ -708,6 +708,7 @@ void run_test(line_ctx *ctx, const char *exp, size_t explen)
 	char *buf;
 	size_t buflen;
 	static int testnum;
+	css_bloom node_bloom[CSS_BLOOM_SIZE];
 
 	UNUSED(exp);
 
@@ -727,7 +728,12 @@ void run_test(line_ctx *ctx, const char *exp, size_t explen)
 
 	testnum++;
 
-	assert(css_select_style(select, ctx->target, ctx->media, NULL, 
+	/* Not testing bloom functionality here, just set all bits */
+	for (i = 0; i < CSS_BLOOM_SIZE; i++) {
+		node_bloom[i] = ~0;
+	}
+
+	assert(css_select_style(select, ctx->target, node_bloom, ctx->media, NULL, 
 			&select_handler, ctx, &results) == CSS_OK);
 
 	assert(results->styles[ctx->pseudo_element] != NULL);
