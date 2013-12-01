@@ -13,6 +13,7 @@ extern "C"
 {
 #endif
 
+#include <libcss/bloom.h>
 #include <libcss/errors.h>
 #include <libcss/functypes.h>
 #include <libcss/hint.h>
@@ -162,6 +163,7 @@ css_error css_select_ctx_get_sheet(css_select_ctx *ctx, uint32_t index,
 		const css_stylesheet **sheet);
 
 css_error css_select_style(css_select_ctx *ctx, void *node,
+		const css_bloom bloom[CSS_BLOOM_SIZE],
 		uint64_t media, const css_stylesheet *inline_style,
 		css_select_handler *handler, void *pw,
 		css_select_results **result);

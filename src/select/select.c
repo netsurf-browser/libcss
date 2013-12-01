@@ -355,6 +355,7 @@ css_error css_select_ctx_get_sheet(css_select_ctx *ctx, uint32_t index,
  *
  * \param ctx             Selection context to use
  * \param node            Node to select style for
+ * \param bloom           Node's bloom filter filled with ancestor tag,id,class
  * \param media           Currently active media types
  * \param inline_style    Corresponding inline style for node, or NULL
  * \param handler         Dispatch table of handler functions
@@ -372,6 +373,7 @@ css_error css_select_ctx_get_sheet(css_select_ctx *ctx, uint32_t index,
  * update the fully computed style for a node when layout changes.
  */
 css_error css_select_style(css_select_ctx *ctx, void *node,
+		const css_bloom bloom[CSS_BLOOM_SIZE],
 		uint64_t media, const css_stylesheet *inline_style,
 		css_select_handler *handler, void *pw,
 		css_select_results **result)
@@ -394,6 +396,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	state.pw = pw;
 	state.next_reject = state.reject_cache +
 			(N_ELEMENTS(state.reject_cache) - 1);
+	state.bloom = bloom;
 
 	/* Allocate the result set */
 	state.results = ctx->alloc(NULL, sizeof(css_select_results), ctx->pw);
@@ -1331,31 +1334,6 @@ static const css_selector *_selector_next(const css_selector **node,
 	return ret;
 }
 
-static bool _rule_good_for_element_name(const css_selector *selector,
-		css_select_rule_source *src, css_select_state *state)
-{
-	/* If source of rule is element or universal hash, we know the
-	 * element name is a match.  If it comes from the class or id hash,
-	 * we have to test for a match */
-	if (src->source == CSS_SELECT_RULE_SRC_ID ||
-			src->source == CSS_SELECT_RULE_SRC_CLASS) {
-		if (lwc_string_length(selector->data.qname.name) != 1 ||
-				lwc_string_data(
-					selector->data.qname.name)[0] != '*') {
-			bool match;
-			if (lwc_string_caseless_isequal(
-					selector->data.qname.name,
-					state->element.name,
-					&match) == lwc_error_ok &&
-					match == false) {
-				return false;
-			}
-		}
-	}
-
-	return true;
-}
-
 css_error match_selectors_in_sheet(css_select_ctx *ctx, 
 		const css_stylesheet *sheet, css_select_state *state)
 {
@@ -1371,11 +1349,17 @@ css_error match_selectors_in_sheet(css_select_ctx *ctx,
 	const css_selector **univ_selectors = &empty_selector;
 	css_selector_hash_iterator univ_iterator;
 	css_select_rule_source src = { CSS_SELECT_RULE_SRC_ELEMENT, 0 };
+	struct css_hash_selection_requirments req;
 	css_error error;
 
+	/* Set up general selector chain requirments */
+	req.media = state->media;
+	req.node_bloom = state->bloom;
+
 	/* Find hash chain that applies to current node */
+	req.qname = state->element;
 	error = css__selector_hash_find(sheet->selectors, 
-			&state->element, &node_iterator, 
+			&req, &node_iterator,
 			&node_selectors);
 	if (error != CSS_OK)
 		goto cleanup;
@@ -1391,8 +1375,9 @@ css_error match_selectors_in_sheet(css_select_ctx *ctx,
 		}
 
 		for (i = 0; i < n_classes; i++) {
+			req.class = state->classes[i];
 			error = css__selector_hash_find_by_class(
-					sheet->selectors, state->classes[i],
+					sheet->selectors, &req,
 					&class_iterator, &class_selectors[i]);
 			if (error != CSS_OK)
 				goto cleanup;
@@ -1401,14 +1386,15 @@ css_error match_selectors_in_sheet(css_select_ctx *ctx,
 
 	if (state->id != NULL) {
 		/* Find hash chain for node ID */
+		req.id = state->id;
 		error = css__selector_hash_find_by_id(sheet->selectors, 
-				state->id, &id_iterator, &id_selectors);
+				&req, &id_iterator, &id_selectors);
 		if (error != CSS_OK)
 			goto cleanup;
 	}
 
 	/* Find hash chain for universal selector */
-	error = css__selector_hash_find_universal(sheet->selectors,
+	error = css__selector_hash_find_universal(sheet->selectors, &req,
 			&univ_iterator, &univ_selectors);
 	if (error != CSS_OK)
 		goto cleanup;
@@ -1431,46 +1417,32 @@ css_error match_selectors_in_sheet(css_select_ctx *ctx,
 		 * selector here */
 		assert(selector != NULL);
 
-		/* No bytecode if rule body is empty or wholly invalid --
-		 * Only interested in rules with bytecode */
-		if (((css_rule_selector *) selector->rule)->style != NULL) {
-			/* Ignore any selectors contained in rules which are a
-			 * child of an @media block that doesn't match the
-			 * current media requirements. */
-			if (_rule_applies_to_media(selector->rule,
-					state->media)) {
-				if (_rule_good_for_element_name(selector, &src,
-						state)) {
-					error = match_selector_chain(
-							ctx, selector,
-							state);
-					if (error != CSS_OK)
-						goto cleanup;
-				}
-			}
-		}
+		/* Match and handle the selector chain */
+		error = match_selector_chain(ctx, selector, state);
+		if (error != CSS_OK)
+			goto cleanup;
 
 		/* Advance to next selector in whichever chain we extracted 
 		 * the processed selector from. */
 		switch (src.source) {
 		case CSS_SELECT_RULE_SRC_ELEMENT:
-			error = node_iterator(
-					node_selectors,	&node_selectors);
+			error = node_iterator(&req, node_selectors,
+					&node_selectors);
 			break;
 
 		case CSS_SELECT_RULE_SRC_ID:
-			error = id_iterator(
-					id_selectors, &id_selectors);
+			error = id_iterator(&req, id_selectors,
+					&id_selectors);
 			break;
 
 		case CSS_SELECT_RULE_SRC_UNIVERSAL:
-			error = univ_iterator(
-					univ_selectors, &univ_selectors);
+			error = univ_iterator(&req, univ_selectors,
+					&univ_selectors);
 			break;
 
 		case CSS_SELECT_RULE_SRC_CLASS:
-			error = class_iterator(
-					class_selectors[src.class],
+			req.class = state->classes[src.class];
+			error = class_iterator(&req, class_selectors[src.class],
 					&class_selectors[src.class]);
 			break;
 		}
