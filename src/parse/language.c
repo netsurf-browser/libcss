@@ -1001,7 +1001,8 @@ css_error parseClass(css_language *c, const parserutils_vector *vector,
 	qname.name = token->idata;
 
 	/* Ensure lwc insensitive string is available for class names */
-	if (lwc__intern_caseless_string(qname.name) != lwc_error_ok)
+	if (qname.name->insensitive == NULL &&
+			lwc__intern_caseless_string(qname.name) != lwc_error_ok)
 		return CSS_NOMEM;
 
 	return css__stylesheet_selector_detail_init(c->sheet, 
@@ -1455,7 +1456,8 @@ css_error parsePseudo(css_language *c, const parserutils_vector *vector,
 
 				/* Ensure lwc insensitive string is available
 				 * for element names */
-				if (lwc__intern_caseless_string(
+				if (qname.name->insensitive == NULL &&
+						lwc__intern_caseless_string(
 						qname.name) != lwc_error_ok)
 					return CSS_NOMEM;
 
@@ -1514,7 +1516,9 @@ css_error parseSpecific(css_language *c,
 		qname.name = token->idata;
 
 		/* Ensure lwc insensitive string is available for id names */
-		if (lwc__intern_caseless_string(qname.name) != lwc_error_ok)
+		if (qname.name->insensitive == NULL &&
+				lwc__intern_caseless_string(
+				qname.name) != lwc_error_ok)
 			return CSS_NOMEM;
 
 		error = css__stylesheet_selector_detail_init(c->sheet,
@@ -1634,7 +1638,9 @@ css_error parseTypeSelector(css_language *c, const parserutils_vector *vector,
 	}
 
 	/* Ensure lwc insensitive string is available for element names */
-	if (lwc__intern_caseless_string(qname->name) != lwc_error_ok)
+	if (qname->name->insensitive == NULL &&
+			lwc__intern_caseless_string(
+			qname->name) != lwc_error_ok)
 		return CSS_NOMEM;
 
 	return CSS_OK;

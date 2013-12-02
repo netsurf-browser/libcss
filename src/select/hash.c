@@ -383,6 +383,12 @@ css_error css__selector_hash_find(css_selector_hash *hash,
 
 	/* Find index */
 	mask = hash->elements.n_slots - 1;
+
+	if (req->qname.name->insensitive == NULL &&
+			lwc__intern_caseless_string(
+			req->qname.name) != lwc_error_ok) {
+		return CSS_NOMEM;
+	}
 	index = _hash_name(req->qname.name) & mask;
 
 	head = &hash->elements.slots[index];
@@ -393,9 +399,9 @@ css_error css__selector_hash_find(css_selector_hash *hash,
 			lwc_error lerror;
 			bool match = false;
 
-			lerror = lwc_string_caseless_isequal(
-					req->qname.name,
-					head->sel->data.qname.name,
+			lerror = lwc_string_isequal(
+					req->qname.name->insensitive,
+					head->sel->data.qname.name->insensitive,
 					&match);
 			if (lerror != lwc_error_ok)
 				return css_error_from_lwc_error(lerror);
@@ -449,6 +455,12 @@ css_error css__selector_hash_find_by_class(css_selector_hash *hash,
 
 	/* Find index */
 	mask = hash->classes.n_slots - 1;
+
+	if (req->class->insensitive == NULL &&
+			lwc__intern_caseless_string(
+			req->class) != lwc_error_ok) {
+		return CSS_NOMEM;
+	}
 	index = _hash_name(req->class) & mask;
 
 	head = &hash->classes.slots[index];
@@ -462,8 +474,9 @@ css_error css__selector_hash_find_by_class(css_selector_hash *hash,
 
 			n = _class_name(head->sel);
 			if (n != NULL) {
-				lerror = lwc_string_caseless_isequal(
-						req->class, n, &match);
+				lerror = lwc_string_isequal(
+						req->class->insensitive,
+						n->insensitive, &match);
 				if (lerror != lwc_error_ok)
 					return css_error_from_lwc_error(lerror);
 
@@ -521,6 +534,12 @@ css_error css__selector_hash_find_by_id(css_selector_hash *hash,
 
 	/* Find index */
 	mask = hash->ids.n_slots - 1;
+
+	if (req->id->insensitive == NULL &&
+			lwc__intern_caseless_string(
+			req->id) != lwc_error_ok) {
+		return CSS_NOMEM;
+	}
 	index = _hash_name(req->id) & mask;
 
 	head = &hash->ids.slots[index];
@@ -534,8 +553,9 @@ css_error css__selector_hash_find_by_id(css_selector_hash *hash,
 
 			n = _id_name(head->sel);
 			if (n != NULL) {
-				lerror = lwc_string_caseless_isequal(
-						req->id, n, &match);
+				lerror = lwc_string_isequal(
+						req->id->insensitive,
+						n->insensitive, &match);
 				if (lerror != lwc_error_ok)
 					return css_error_from_lwc_error(lerror);
 
