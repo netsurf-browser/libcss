@@ -1000,6 +1000,10 @@ css_error parseClass(css_language *c, const parserutils_vector *vector,
 	qname.ns = NULL;
 	qname.name = token->idata;
 
+	/* Ensure lwc insensitive string is available for class names */
+	if (lwc__intern_caseless_string(qname.name) != lwc_error_ok)
+		return CSS_NOMEM;
+
 	return css__stylesheet_selector_detail_init(c->sheet, 
 			CSS_SELECTOR_CLASS, &qname, detail_value,
 			CSS_SELECTOR_DETAIL_VALUE_STRING, false, specific);
@@ -1449,6 +1453,12 @@ css_error parsePseudo(css_language *c, const parserutils_vector *vector,
 
 				type = CSS_SELECTOR_ELEMENT;
 
+				/* Ensure lwc insensitive string is available
+				 * for element names */
+				if (lwc__intern_caseless_string(
+						qname.name) != lwc_error_ok)
+					return CSS_NOMEM;
+
 				detail_value.string = NULL;
 				value_type = CSS_SELECTOR_DETAIL_VALUE_STRING;
 			} else {
@@ -1502,6 +1512,10 @@ css_error parseSpecific(css_language *c,
 
 		qname.ns = NULL;
 		qname.name = token->idata;
+
+		/* Ensure lwc insensitive string is available for id names */
+		if (lwc__intern_caseless_string(qname.name) != lwc_error_ok)
+			return CSS_NOMEM;
 
 		error = css__stylesheet_selector_detail_init(c->sheet,
 				CSS_SELECTOR_ID, &qname, detail_value,
@@ -1618,6 +1632,10 @@ css_error parseTypeSelector(css_language *c, const parserutils_vector *vector,
 
 		qname->name = prefix;
 	}
+
+	/* Ensure lwc insensitive string is available for element names */
+	if (lwc__intern_caseless_string(qname->name) != lwc_error_ok)
+		return CSS_NOMEM;
 
 	return CSS_OK;
 }
