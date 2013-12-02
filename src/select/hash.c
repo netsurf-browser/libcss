@@ -720,7 +720,7 @@ static inline void _chain_bloom_add_detail(
 		const css_selector_detail *d,
 		css_bloom bloom[CSS_BLOOM_SIZE])
 {
-	lwc_string *add = NULL; /* String to add to bloom */
+	lwc_string *add; /* String to add to bloom */
 
 	switch (d->type) {
 	case CSS_SELECTOR_ELEMENT:
@@ -729,33 +729,20 @@ static inline void _chain_bloom_add_detail(
 				lwc_string_data(d->qname.name)[0] == '*') {
 			return;
 		}
-
-		/* TODO: Remain case sensitive for XML */
-		if (d->qname.name->insensitive == NULL) {
-			lwc__intern_caseless_string(d->qname.name);
-		}
-		add = d->qname.name->insensitive;
-		break;
-
+		/* Fall through */
 	case CSS_SELECTOR_CLASS:
 	case CSS_SELECTOR_ID:
-		/* TODO: Remain case sensitive in standards mode */
-		if (d->qname.name->insensitive == NULL) {
-			lwc__intern_caseless_string(d->qname.name);
-		}
+		/* Element, Id and Class names always have the insensitive
+		 * string set at css_selector_detail creation time. */
 		add = d->qname.name->insensitive;
+
+		if (add != NULL) {
+			css_bloom_add_hash(bloom, lwc_string_hash_value(add));
+		}
 		break;
 
 	default:
-		return;
-	}
-
-	/* Don't really care if intern for caseless string failed, if we're
-	 * out of memory, something else will panic.  Everything still works
-	 * if the string isn't added the the rule bloom.  Just less optimally.
-	 */
-	if (add != NULL) {
-		css_bloom_add_hash(bloom, lwc_string_hash_value(add));
+		break;
 	}
 
 	return;
