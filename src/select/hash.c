@@ -44,7 +44,6 @@ struct css_selector_hash {
 
 static hash_entry empty_slot;
 
-static inline uint32_t _hash_name(const lwc_string *name);
 static inline lwc_string *_class_name(const css_selector *selector);
 static inline lwc_string *_id_name(const css_selector *selector);
 static css_error _insert_into_chain(css_selector_hash *ctx, hash_entry *head, 
@@ -68,6 +67,14 @@ static css_error _iterate_universal(
 		const struct css_hash_selection_requirments *req,
 		const css_selector **current,
 		const css_selector ***next);
+
+
+
+
+/* Get case insensitive hash value for a name.
+ * All element/class/id names are known to have their insensitive ptr set. */
+#define _hash_name(name) \
+	lwc_string_hash_value(name->insensitive)
 
 
 /* No bytecode if rule body is empty or wholly invalid --
@@ -632,28 +639,6 @@ css_error css__selector_hash_size(css_selector_hash *hash, size_t *size)
 /******************************************************************************
  * Private functions                                                          *
  ******************************************************************************/
-
-/**
- * Name hash function -- case-insensitive FNV.
- *
- * \param name  Name to hash
- * \return hash value
- */
-uint32_t _hash_name(const lwc_string *name)
-{
-	uint32_t z = 0x811c9dc5;
-	const char *data = lwc_string_data(name);
-	const char *end = data + lwc_string_length(name);
-
-	while (data != end) {
-		const char c = *data++;
-
-		z *= 0x01000193;
-		z ^= c & ~0x20;
-	}
-
-	return z;
-}
 
 /**
  * Retrieve the first class name in a selector, or NULL if none
