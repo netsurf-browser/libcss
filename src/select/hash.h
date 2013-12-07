@@ -20,9 +20,10 @@ struct css_selector;
 typedef struct css_selector_hash css_selector_hash;
 
 struct css_hash_selection_requirments {
-	css_qname qname;		/* Element name, or universal '*' */
+	css_qname qname;		/* Element name, or universal "*" */
 	lwc_string *class;		/* Name of class, or NULL */
 	lwc_string *id;			/* Name of id, or NULL */
+	lwc_string *uni;		/* Universal element string "*" */
 	uint64_t media;			/* Media type(s) we're selecting for */
 	const css_bloom *node_bloom;	/* Node's bloom filter */
 };

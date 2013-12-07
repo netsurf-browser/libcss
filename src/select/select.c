@@ -1355,6 +1355,7 @@ css_error match_selectors_in_sheet(css_select_ctx *ctx,
 	/* Set up general selector chain requirments */
 	req.media = state->media;
 	req.node_bloom = state->bloom;
+	req.uni = ctx->universal;
 
 	/* Find hash chain that applies to current node */
 	req.qname = state->element;

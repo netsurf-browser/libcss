@@ -95,10 +95,9 @@ static css_error _iterate_universal(
  * \return true iff chain head doesn't fail to match element name
  */
 static inline bool _chain_good_for_element_name(const css_selector *selector,
-		const css_qname *qname)
+		const css_qname *qname, const lwc_string *uni)
 {
-	if (lwc_string_length(selector->data.qname.name) != 1 ||
-			lwc_string_data(selector->data.qname.name)[0] != '*') {
+	if (selector->data.qname.name != uni) {
 		bool match;
 		if (lwc_string_caseless_isequal(
 				selector->data.qname.name, qname->name,
@@ -486,7 +485,8 @@ css_error css__selector_hash_find_by_class(css_selector_hash *hash,
 							req->node_bloom) &&
 					    _chain_good_for_element_name(
 							head->sel,
-							&(req->qname)) &&
+							&(req->qname),
+							req->uni) &&
 					    _rule_good_for_media(
 							head->sel->rule,
 							req->media)) {
@@ -565,7 +565,8 @@ css_error css__selector_hash_find_by_id(css_selector_hash *hash,
 							req->node_bloom) &&
 					    _chain_good_for_element_name(
 							head->sel,
-							&req->qname) &&
+							&req->qname,
+							req->uni) &&
 					    _rule_good_for_media(
 							head->sel->rule,
 							req->media)) {
@@ -1018,7 +1019,8 @@ css_error _iterate_classes(
 							req->node_bloom) &&
 					    _chain_good_for_element_name(
 							head->sel,
-							&(req->qname)) &&
+							&(req->qname),
+							req->uni) &&
 					    _rule_good_for_media(
 							head->sel->rule,
 							req->media)) {
@@ -1078,7 +1080,8 @@ css_error _iterate_ids(
 							req->node_bloom) &&
 					    _chain_good_for_element_name(
 							head->sel,
-							&req->qname) &&
+							&req->qname,
+							req->uni) &&
 					    _rule_good_for_media(
 							head->sel->rule,
 							req->media)) {
