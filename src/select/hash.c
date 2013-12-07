@@ -771,12 +771,11 @@ static void _chain_bloom_generate(const css_selector *s,
 		if (s->data.comb == CSS_COMBINATOR_ANCESTOR ||
 				 s->data.comb == CSS_COMBINATOR_PARENT) {
 			const css_selector_detail *d = &s->combinator->data;
-			while (d != NULL) {
+			do {
 				if (d->negate == 0) {
 					_chain_bloom_add_detail(d, bloom);
 				}
-				d = (d->next != 0) ? d + 1 : NULL;
-			}
+			} while ((d++)->next != 0);
 		}
 
 		s = s->combinator;
