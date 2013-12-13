@@ -492,7 +492,11 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		if (error != CSS_OK)
 			goto cleanup;
 		/* TODO:
-		 * If state.bloom == NULL, build and set parent bloom.
+		 * If state.bloom == NULL, build & set parent node's bloom,
+		 * and use it as state.bloom.  This will speed up the case
+		 * where DOM change has caused bloom to get deleted.
+		 * For now we fall back to a fully satruated bloom filter,
+		 * which is slower but perfectly valid.
 		 */
 	}
 
