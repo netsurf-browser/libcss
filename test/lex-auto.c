@@ -277,7 +277,7 @@ void run_test(const uint8_t *data, size_t len, exp_entry *exp, size_t explen)
 			css__charset_extract, myrealloc, NULL, &input) ==
 			PARSERUTILS_OK);
 
-	assert(css__lexer_create(input, myrealloc, NULL, &lexer) == CSS_OK);
+	assert(css__lexer_create(input, &lexer) == CSS_OK);
 
 	assert(parserutils_inputstream_append(input, data, len) == 
 			PARSERUTILS_OK);

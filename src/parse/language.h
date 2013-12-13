@@ -48,13 +48,10 @@ typedef struct css_language {
 	lwc_string *default_namespace;	/**< Default namespace URI */
 	css_namespace *namespaces;	/**< Array of namespace mappings */
 	uint32_t num_namespaces;	/**< Number of namespace mappings */
-
-	css_allocator_fn alloc;		/**< Memory (de)allocation function */
-	void *pw;			/**< Client's private data */
 } css_language;
 
 css_error css__language_create(css_stylesheet *sheet, css_parser *parser,
-		css_allocator_fn alloc, void *pw, void **language);
+		void **language);
 css_error css__language_destroy(css_language *language);
 
 /******************************************************************************

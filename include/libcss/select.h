@@ -13,7 +13,6 @@ extern "C"
 {
 #endif
 
-#include <libcss/bloom.h>
 #include <libcss/errors.h>
 #include <libcss/functypes.h>
 #include <libcss/hint.h>
@@ -34,9 +33,6 @@ typedef enum css_pseudo_element {
  * Style selection result set
  */
 typedef struct css_select_results {
-	css_allocator_fn alloc;
-	void *pw;
-
 	/**
 	 * Array of pointers to computed styles, 
 	 * indexed by css_pseudo_element. If there
@@ -129,15 +125,37 @@ typedef struct css_select_handler {
 
 	css_error (*compute_font_size)(void *pw, const css_hint *parent,
 			css_hint *size);
+
+	/**
+	 * Set libcss_node_data on a DOM node.
+	 *
+	 * Replaces any existing libcss_node_data.  If node is deleted, cloned,
+	 * or its ancestors are modified, call css_libcss_node_data_handler for
+	 * any non-NULL libcss_node_data.
+	 *
+	 * \param pw			Client data
+	 * \param node			DOM node to set data for
+	 * \param libcss_node_data	Data to set on node, or NULL
+	 * \return CSS_OK on success, or appropriate error otherwise
+	 */
+	css_error (*set_libcss_node_data)(void *pw, void *node,
+			void *libcss_node_data);
+	/**
+	 * Get libcss_node_data from a DOM node.
+	 *
+	 * \param pw			Client data
+	 * \param node			DOM node to get data from
+	 * \param libcss_node_data	Updated to node data, else set to NULL.
+	 * \return CSS_OK on success, or appropriate error otherwise
+	 */
+	css_error (*get_libcss_node_data)(void *pw, void *node,
+			void **libcss_node_data);
 } css_select_handler;
 
 /**
  * Font face selection result set
  */
 typedef struct css_select_font_faces_results {
-	css_allocator_fn alloc;
-	void *pw;
-	
 	/**
 	 * Array of pointers to computed font faces. 
 	 */
@@ -145,8 +163,45 @@ typedef struct css_select_font_faces_results {
 	uint32_t n_font_faces;
 } css_select_font_faces_results;
 
-css_error css_select_ctx_create(css_allocator_fn alloc, void *pw,
-		css_select_ctx **result);
+typedef enum {
+	CSS_NODE_DELETED,
+	CSS_NODE_MODIFIED,
+	CSS_NODE_ANCESTORS_MODIFIED,
+	CSS_NODE_CLONED
+} css_node_data_action;
+
+/**
+ * Handle libcss_node_data on DOM changes/deletion.
+ *
+ * When a DOM node is deleted, if it has libcss_node_data, call with
+ * action CSS_NODE_DELETED, to ensure the libcss_node_data is not leaked.
+ * Does not call handler->set_libcss_node_data.
+ *
+ * When a DOM node is modified, if the node has libcss_node_data,
+ * call with CSS_NODE_MODIFIED.  This will result in a call to
+ * handler->set_libcss_node_data for the node.
+ *
+ * When a DOM node's ancestors are modified, if the node has libcss_node_data,
+ * call with CSS_NODE_ANCESTORS_MODIFIED.  This will result in a call to
+ * handler->set_libcss_node_data for the node.
+ *
+ * When a DOM node with libcss_node_data is cloned, and its ancestors are
+ * also clones, call with CSS_NODE_CLONED.  This will result in a call to
+ * handler->set_libcss_node_data for the clone node.
+ *
+ * \param handler		Selection handler vtable
+ * \param action		Type of node action.
+ * \param pw			Client data
+ * \param node			DOM node to get data from
+ * \param clone_node		Clone node, or NULL
+ * \param libcss_node_data	Node data (non-NULL)
+ * \return CSS_OK on success, or appropriate error otherwise
+ */
+css_error css_libcss_node_data_handler(css_select_handler *handler,
+		css_node_data_action action, void *pw, void *node,
+		void *clone_node, void *libcss_node_data);
+
+css_error css_select_ctx_create(css_select_ctx **result);
 css_error css_select_ctx_destroy(css_select_ctx *ctx);
 
 css_error css_select_ctx_append_sheet(css_select_ctx *ctx, 
@@ -163,7 +218,6 @@ css_error css_select_ctx_get_sheet(css_select_ctx *ctx, uint32_t index,
 		const css_stylesheet **sheet);
 
 css_error css_select_style(css_select_ctx *ctx, void *node,
-		const css_bloom bloom[CSS_BLOOM_SIZE],
 		uint64_t media, const css_stylesheet *inline_style,
 		css_select_handler *handler, void *pw,
 		css_select_results **result);

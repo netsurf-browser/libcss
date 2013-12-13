@@ -108,34 +108,30 @@ static css_error parseProperty(css_language *c,
  *
  * \param sheet	    The stylesheet object to parse for
  * \param parser    The core parser object to use
- * \param alloc	    Memory (de)allocation function
- * \param pw	    Pointer to client-specific private data
  * \param language  Pointer to location to receive parser object
  * \return CSS_OK on success,
  *	   CSS_BADPARM on bad parameters,
  *	   CSS_NOMEM on memory exhaustion
  */
 css_error css__language_create(css_stylesheet *sheet, css_parser *parser,
-		css_allocator_fn alloc, void *pw, void **language)
+		void **language)
 {
 	css_language *c;
 	css_parser_optparams params;
 	parserutils_error perror;
 	css_error error;
 
-	if (sheet == NULL || parser == NULL || alloc == NULL || 
-			language == NULL)
+	if (sheet == NULL || parser == NULL || language == NULL)
 		return CSS_BADPARM;
 
-	c = alloc(NULL, sizeof(css_language), pw);
+	c = malloc(sizeof(css_language));
 	if (c == NULL)
 		return CSS_NOMEM;
 
 	perror = parserutils_stack_create(sizeof(context_entry), 
-			STACK_CHUNK, (parserutils_alloc) alloc, pw, 
-			&c->context);
+			STACK_CHUNK, css_alloc, CSS_ALLOC_PW, &c->context);
 	if (perror != PARSERUTILS_OK) {
-		alloc(c, 0, pw);
+		free(c);
 		return css_error_from_parserutils_error(perror);
 	}
 
@@ -144,7 +140,7 @@ css_error css__language_create(css_stylesheet *sheet, css_parser *parser,
 	error = css__parser_setopt(parser, CSS_PARSER_EVENT_HANDLER, &params);
 	if (error != CSS_OK) {
 		parserutils_stack_destroy(c->context);
-		alloc(c, 0, pw);
+		free(c);
 		return error;
 	}
 
@@ -154,8 +150,6 @@ css_error css__language_create(css_stylesheet *sheet, css_parser *parser,
 	c->namespaces = NULL;
 	c->num_namespaces = 0;
 	c->strings = sheet->propstrings;
-	c->alloc = alloc;
-	c->pw = pw;
 
 	*language = c;
 
@@ -184,12 +178,12 @@ css_error css__language_destroy(css_language *language)
 			lwc_string_unref(language->namespaces[i].uri);
 		}
 
-		language->alloc(language->namespaces, 0, language->pw);
+		free(language->namespaces);
 	}
 
 	parserutils_stack_destroy(language->context);
 	
-	language->alloc(language, 0, language->pw);
+	free(language);
 
 	return CSS_OK;
 }
@@ -914,10 +908,9 @@ css_error addNamespace(css_language *c, lwc_string *prefix, lwc_string *uri)
 
 		if (idx == c->num_namespaces) {
 			/* Not found, create a new mapping */
-			css_namespace *ns = c->alloc(c->namespaces, 
+			css_namespace *ns = realloc(c->namespaces, 
 					sizeof(css_namespace) * 
-						(c->num_namespaces + 1), 
-					c->pw);
+						(c->num_namespaces + 1));
 
 			if (ns == NULL)
 				return CSS_NOMEM;

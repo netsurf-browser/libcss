@@ -1118,8 +1118,7 @@ css_error css__ident_list_to_string(css_language *c,
 	lwc_string *interned;
 	lwc_error lerror;
 
-	perror = parserutils_buffer_create((parserutils_alloc) c->alloc, 
-			c->pw, &buffer);
+	perror = parserutils_buffer_create(css_alloc, CSS_ALLOC_PW, &buffer);
 	if (perror != PARSERUTILS_OK)
 		return css_error_from_parserutils_error(perror);
 

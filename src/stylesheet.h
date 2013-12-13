@@ -203,9 +203,6 @@ struct css_stylesheet {
 	/** System font resolution function */
 	css_font_resolution_fn font;		
 	void *font_pw;				/**< Private word */
-
-	css_allocator_fn alloc;			/**< Allocation function */
-	void *pw;				/**< Private word */
   
 	css_style *cached_style;		/**< Cache for style parsing */
   

@@ -77,29 +77,23 @@ static css_error compute_absolute_length_pair(css_computed_style *style,
 /**
  * Create a computed style
  *
- * \param alloc   Memory (de)allocation function
- * \param pw      Pointer to client-specific data
  * \param result  Pointer to location to receive result
  * \return CSS_OK on success,
  *         CSS_NOMEM on memory exhaustion,
  *         CSS_BADPARM on bad parameters.
  */
-css_error css_computed_style_create(css_allocator_fn alloc, void *pw,
-		css_computed_style **result)
+css_error css_computed_style_create(css_computed_style **result)
 {
 	css_computed_style *s;
 
-	if (alloc == NULL || result == NULL)
+	if (result == NULL)
 		return CSS_BADPARM;
 
-	s = alloc(NULL, sizeof(css_computed_style), pw);
+	s = malloc(sizeof(css_computed_style));
 	if (s == NULL)
 		return CSS_NOMEM;
 
 	memset(s, 0, sizeof(css_computed_style));
-
-	s->alloc = alloc;
-	s->pw = pw;
 
 	*result = s;
 
@@ -126,8 +120,7 @@ css_error css_computed_style_destroy(css_computed_style *style)
 				lwc_string_unref(c->name);
 			}
 
-			style->alloc(style->uncommon->counter_increment, 0,
-					style->pw);
+			free(style->uncommon->counter_increment);
 		}
 
 		if (style->uncommon->counter_reset != NULL) {
@@ -138,8 +131,7 @@ css_error css_computed_style_destroy(css_computed_style *style)
 				lwc_string_unref(c->name);
 			}
 
-			style->alloc(style->uncommon->counter_reset, 0,
-					style->pw);
+			free(style->uncommon->counter_reset);
 		}
 	
 		if (style->uncommon->cursor != NULL) {
@@ -149,7 +141,7 @@ css_error css_computed_style_destroy(css_computed_style *style)
 				lwc_string_unref(*s);
 			}
 
-			style->alloc(style->uncommon->cursor, 0, style->pw);
+			free(style->uncommon->cursor);
 		}
 
 		if (style->uncommon->content != NULL) {
@@ -180,18 +172,18 @@ css_error css_computed_style_destroy(css_computed_style *style)
 				}
 			}
 
-			style->alloc(style->uncommon->content, 0, style->pw);
+			free(style->uncommon->content);
 		}
 
-		style->alloc(style->uncommon, 0, style->pw);
+		free(style->uncommon);
 	}
 
 	if (style->page != NULL) {
-		style->alloc(style->page, 0, style->pw);
+		free(style->page);
 	}
 
 	if (style->aural != NULL) {
-		style->alloc(style->aural, 0, style->pw);
+		free(style->aural);
 	}
 
 	if (style->font_family != NULL) {
@@ -201,7 +193,7 @@ css_error css_computed_style_destroy(css_computed_style *style)
 			lwc_string_unref(*s);
 		}
 
-		style->alloc(style->font_family, 0, style->pw);
+		free(style->font_family);
 	}
 
 	if (style->quotes != NULL) {
@@ -211,7 +203,7 @@ css_error css_computed_style_destroy(css_computed_style *style)
 			lwc_string_unref(*s);
 		}
 
-		style->alloc(style->quotes, 0, style->pw);
+		free(style->quotes);
 	}
 
 	if (style->list_style_image != NULL)
@@ -220,7 +212,7 @@ css_error css_computed_style_destroy(css_computed_style *style)
 	if (style->background_image != NULL)
 		lwc_string_unref(style->background_image);
 
-	style->alloc(style, 0, style->pw);
+	free(style);
 
 	return CSS_OK;
 }

@@ -34,13 +34,6 @@ static void css__parse_expected(line_ctx *ctx, const char *data, size_t len);
 static void run_test(const uint8_t *data, size_t len, 
 		const char *exp, size_t explen);
 
-static void *myrealloc(void *data, size_t len, void *pw)
-{
-	UNUSED(pw);
-
-	return realloc(data, len);
-}
-
 static css_error resolve_url(void *pw,
 		const char *base, lwc_string *rel, lwc_string **abs)
 {
@@ -212,8 +205,7 @@ void run_test(const uint8_t *data, size_t len, const char *exp, size_t explen)
 	params.font = NULL;
 	params.font_pw = NULL;
 
-	assert(css_stylesheet_create(&params, myrealloc, NULL, 
-			&sheet) == CSS_OK);
+	assert(css_stylesheet_create(&params, &sheet) == CSS_OK);
 
 	error = css_stylesheet_append_data(sheet, data, len);
 	if (error != CSS_OK && error != CSS_NEEDDATA) {

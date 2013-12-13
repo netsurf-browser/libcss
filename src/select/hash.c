@@ -37,9 +37,6 @@ struct css_selector_hash {
 	hash_entry universal;
 
 	size_t hash_size;
-
-	css_allocator_fn alloc;
-	void *pw;
 };
 
 static hash_entry empty_slot;
@@ -143,48 +140,45 @@ static inline bool _rule_good_for_media(const css_rule *rule, uint64_t media)
 /**
  * Create a hash
  *
- * \param alloc  Memory (de)allocation function
- * \param pw     Pointer to client-specific private data
  * \param hash   Pointer to location to receive result
  * \return CSS_OK on success, appropriate error otherwise
  */
-css_error css__selector_hash_create(css_allocator_fn alloc, void *pw, 
-		css_selector_hash **hash)
+css_error css__selector_hash_create(css_selector_hash **hash)
 {
 	css_selector_hash *h;
 
-	if (alloc == NULL || hash == NULL)
+	if (hash == NULL)
 		return CSS_BADPARM;
 
-	h = alloc(0, sizeof(css_selector_hash), pw);
+	h = malloc(sizeof(css_selector_hash));
 	if (h == NULL)
 		return CSS_NOMEM;
 
 	/* Element hash */
-	h->elements.slots = alloc(0, DEFAULT_SLOTS * sizeof(hash_entry), pw);
+	h->elements.slots = malloc(DEFAULT_SLOTS * sizeof(hash_entry));
 	if (h->elements.slots == NULL) {
-		alloc(h, 0, pw);
+		free(h);
 		return CSS_NOMEM;
 	}
 	memset(h->elements.slots, 0, DEFAULT_SLOTS * sizeof(hash_entry));
 	h->elements.n_slots = DEFAULT_SLOTS;
 
 	/* Class hash */
-	h->classes.slots = alloc(0, DEFAULT_SLOTS * sizeof(hash_entry), pw);
+	h->classes.slots = malloc(DEFAULT_SLOTS * sizeof(hash_entry));
 	if (h->classes.slots == NULL) {
-		alloc(h->elements.slots, 0, pw);
-		alloc(h, 0, pw);
+		free(h->elements.slots);
+		free(h);
 		return CSS_NOMEM;
 	}
 	memset(h->classes.slots, 0, DEFAULT_SLOTS * sizeof(hash_entry));
 	h->classes.n_slots = DEFAULT_SLOTS;
 
 	/* ID hash */
-	h->ids.slots = alloc(0, DEFAULT_SLOTS * sizeof(hash_entry), pw);
+	h->ids.slots = malloc(DEFAULT_SLOTS * sizeof(hash_entry));
 	if (h->ids.slots == NULL) {
-		alloc(h->classes.slots, 0, pw);
-		alloc(h->elements.slots, 0, pw);
-		alloc(h, 0, pw);
+		free(h->classes.slots);
+		free(h->elements.slots);
+		free(h);
 		return CSS_NOMEM;
 	}
 	memset(h->ids.slots, 0, DEFAULT_SLOTS * sizeof(hash_entry));
@@ -197,9 +191,6 @@ css_error css__selector_hash_create(css_allocator_fn alloc, void *pw,
 			DEFAULT_SLOTS * sizeof(hash_entry) +
 			DEFAULT_SLOTS * sizeof(hash_entry) +
 			DEFAULT_SLOTS * sizeof(hash_entry);
-
-	h->alloc = alloc;
-	h->pw = pw;
 
 	*hash = h;
 
@@ -225,39 +216,39 @@ css_error css__selector_hash_destroy(css_selector_hash *hash)
 		for (d = hash->elements.slots[i].next; d != NULL; d = e) {
 			e = d->next;
 
-			hash->alloc(d, 0, hash->pw);
+			free(d);
 		}
 	}
-	hash->alloc(hash->elements.slots, 0, hash->pw);
+	free(hash->elements.slots);
 
 	/* Class hash */
 	for (i = 0; i < hash->classes.n_slots; i++) {
 		for (d = hash->classes.slots[i].next; d != NULL; d = e) {
 			e = d->next;
 
-			hash->alloc(d, 0, hash->pw);
+			free(d);
 		}
 	}
-	hash->alloc(hash->classes.slots, 0, hash->pw);
+	free(hash->classes.slots);
 
 	/* ID hash */
 	for (i = 0; i < hash->ids.n_slots; i++) {
 		for (d = hash->ids.slots[i].next; d != NULL; d = e) {
 			e = d->next;
 
-			hash->alloc(d, 0, hash->pw);
+			free(d);
 		}
 	}
-	hash->alloc(hash->ids.slots, 0, hash->pw);
+	free(hash->ids.slots);
 
 	/* Universal chain */
 	for (d = hash->universal.next; d != NULL; d = e) {
 		e = d->next;
 
-		hash->alloc(d, 0, hash->pw);
+		free(d);
 	}
 
-	hash->alloc(hash, 0, hash->pw);
+	free(hash);
 
 	return CSS_OK;
 }
@@ -837,8 +828,7 @@ css_error _insert_into_chain(css_selector_hash *ctx, hash_entry *head,
 	} else {
 		hash_entry *search = head;
 		hash_entry *prev = NULL;
-		hash_entry *entry = 
-				ctx->alloc(NULL, sizeof(hash_entry), ctx->pw);
+		hash_entry *entry = malloc(sizeof(hash_entry));
 		if (entry == NULL)
 			return CSS_NOMEM;
 
@@ -920,7 +910,7 @@ css_error _remove_from_chain(css_selector_hash *ctx, hash_entry *head,
 	} else {
 		prev->next = search->next;
 
-		ctx->alloc(search, 0, ctx->pw);
+		free(search);
 
 		ctx->hash_size -= sizeof(hash_entry);
 	}

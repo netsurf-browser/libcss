@@ -19,7 +19,6 @@
 
 
 /* Function declarations. */
-static void *myrealloc(void *ptr, size_t len, void *pw);
 static css_error resolve_url(void *pw,
 		const char *base, lwc_string *rel, lwc_string **abs);
 static void die(const char *text, css_error code);
@@ -101,6 +100,10 @@ static css_error ua_default_for_property(void *pw, uint32_t property,
 		css_hint *hint);
 static css_error compute_font_size(void *pw, const css_hint *parent,
 		css_hint *size);
+static css_error set_libcss_node_data(void *pw, void *n,
+		void *libcss_node_data);
+static css_error get_libcss_node_data(void *pw, void *n,
+		void **libcss_node_data);
 
 /* Table of function pointers for the LibCSS Select API. */
 static css_select_handler select_handler = {
@@ -140,7 +143,9 @@ static css_select_handler select_handler = {
 	node_is_lang,
 	node_presentational_hint,
 	ua_default_for_property,
-	compute_font_size
+	compute_font_size,
+	set_libcss_node_data,
+	get_libcss_node_data
 };
 
 
@@ -177,7 +182,7 @@ int main(int argc, char **argv)
 	params.font_pw = NULL;
 
 	/* create a stylesheet */
-	code = css_stylesheet_create(&params, myrealloc, NULL, &sheet);
+	code = css_stylesheet_create(&params, &sheet);
 	if (code != CSS_OK)
 		die("css_stylesheet_create", code);
 	code = css_stylesheet_size(sheet, &size);
@@ -201,7 +206,7 @@ int main(int argc, char **argv)
 
 
 	/* prepare a selection context containing the stylesheet */
-	code = css_select_ctx_create(myrealloc, 0, &select_ctx);
+	code = css_select_ctx_create(&select_ctx);
 	if (code != CSS_OK)
 		die("css_select_ctx_create", code);
 	code = css_select_ctx_append_sheet(select_ctx, sheet, CSS_ORIGIN_AUTHOR,
@@ -260,15 +265,6 @@ int main(int argc, char **argv)
 		die("css_stylesheet_destroy", code);
 
 	return 0;
-}
-
-
-void *myrealloc(void *ptr, size_t len, void *pw)
-{
-	UNUSED(pw);
-	/*printf("myrealloc(%p, %zu)\n", ptr, len);*/
-
-	return realloc(ptr, len);
 }
 
 
@@ -721,6 +717,29 @@ css_error compute_font_size(void *pw, const css_hint *parent, css_hint *size)
 	}
 
 	size->status = CSS_FONT_SIZE_DIMENSION;
+
+	return CSS_OK;
+}
+
+static css_error set_libcss_node_data(void *pw, void *n,
+		void *libcss_node_data)
+{
+	UNUSED(pw);
+	UNUSED(n);
+
+	/* Since we're not storing it, ensure node data gets deleted */
+	css_libcss_node_data_handler(&select_handler, CSS_NODE_DELETED,
+			pw, n, NULL, libcss_node_data);
+
+	return CSS_OK;
+}
+
+static css_error get_libcss_node_data(void *pw, void *n,
+		void **libcss_node_data)
+{
+	UNUSED(pw);
+	UNUSED(n);
+	*libcss_node_data = NULL;
 
 	return CSS_OK;
 }

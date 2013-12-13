@@ -41,8 +41,7 @@ static const css_computed_uncommon default_uncommon = {
 
 #define ENSURE_UNCOMMON do {						\
 	if (style->uncommon == NULL) {					\
-		style->uncommon = style->alloc(NULL, 			\
-			sizeof(css_computed_uncommon), style->pw);	\
+		style->uncommon = malloc(sizeof(css_computed_uncommon));\
 		if (style->uncommon == NULL)				\
 			return CSS_NOMEM;				\
 									\
@@ -65,8 +64,7 @@ static const css_computed_page default_page = {
 
 #define ENSURE_PAGE do {						\
 	if (style->page == NULL) {					\
-		style->page = style->alloc(NULL, 			\
-			sizeof(css_computed_page), style->pw);		\
+		style->page = malloc(sizeof(css_computed_page));	\
 		if (style->page == NULL)				\
 			return CSS_NOMEM;				\
 									\
@@ -264,7 +262,7 @@ static inline css_error set_counter_increment(
 			lwc_string_unref(c->name);
 
 		if (oldcounters != counters)
-			style->alloc(oldcounters, 0, style->pw);
+			free(oldcounters);
 	}
 
 	return CSS_OK;
@@ -304,7 +302,7 @@ static inline css_error set_counter_reset(
 			lwc_string_unref(c->name);
 
 		if (oldcounters != counters)
-			style->alloc(oldcounters, 0, style->pw);
+			free(oldcounters);
 	}
 
 	return CSS_OK;
@@ -344,7 +342,7 @@ static inline css_error set_cursor(
 			lwc_string_unref(*s);
 
 		if (oldurls != urls)
-			style->alloc(oldurls, 0, style->pw);
+			free(oldurls);
 	}
 
 	return CSS_OK;
@@ -482,7 +480,7 @@ static inline css_error set_content(
 		}
 
 		if (oldcontent != content)
-			style->alloc(oldcontent, 0, style->pw);
+			free(oldcontent);
 	}
 
 	return CSS_OK;
@@ -717,7 +715,7 @@ static inline css_error set_quotes(
 			lwc_string_unref(*s);
 
 		if (oldquotes != quotes)
-			style->alloc(oldquotes, 0, style->pw);
+			free(oldquotes);
 	}
 
 	return CSS_OK;
@@ -1641,7 +1639,7 @@ static inline css_error set_font_family(
 			lwc_string_unref(*s);
 
 		if (oldnames != names)
-			style->alloc(oldnames, 0, style->pw);
+			free(oldnames);
 	}
 
 	return CSS_OK;

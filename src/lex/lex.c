@@ -108,9 +108,6 @@ struct css_lexer
 
 	uint32_t currentCol;		/**< Current column in source */
 	uint32_t currentLine;		/**< Current line in source */
-
-	css_allocator_fn alloc;		/**< Memory (de)allocation function */
-	void *pw;			/**< Pointer to client-specific data */
 };
 
 #define APPEND(lexer, data, len)					\
@@ -169,22 +166,19 @@ static inline bool isSpace(uint8_t c);
  * Create a lexer instance
  *
  * \param input  The inputstream to read from
- * \param alloc  Memory (de)allocation function
- * \param pw     Pointer to client-specific private data
  * \param lexer  Pointer to location to receive lexer instance
  * \return CSS_OK on success,
  *         CSS_BADPARM on bad parameters,
  *         CSS_NOMEM on memory exhaustion
  */
-css_error css__lexer_create(parserutils_inputstream *input, 
-		css_allocator_fn alloc, void *pw, css_lexer **lexer)
+css_error css__lexer_create(parserutils_inputstream *input, css_lexer **lexer)
 {
 	css_lexer *lex;
 
-	if (input == NULL || alloc == NULL || lexer == NULL)
+	if (input == NULL || lexer == NULL)
 		return CSS_BADPARM;
 
-	lex = alloc(NULL, sizeof(css_lexer), pw);
+	lex = malloc(sizeof(css_lexer));
 	if (lex == NULL)
 		return CSS_NOMEM;
 
@@ -200,8 +194,6 @@ css_error css__lexer_create(parserutils_inputstream *input,
 	lex->emit_comments = false;
 	lex->currentCol = 1;
 	lex->currentLine = 1;
-	lex->alloc = alloc;
-	lex->pw = pw;
 
 	*lexer = lex;
 
@@ -222,7 +214,7 @@ css_error css__lexer_destroy(css_lexer *lexer)
 	if (lexer->unescapedTokenData != NULL)
 		parserutils_buffer_destroy(lexer->unescapedTokenData);
 
-	lexer->alloc(lexer, 0, lexer->pw);
+	free(lexer);
 
 	return CSS_OK;
 }
@@ -1715,7 +1707,7 @@ css_error consumeEscape(css_lexer *lexer, bool nl)
 
 	/* Create unescaped buffer, if it doesn't already exist */
 	if (lexer->unescapedTokenData == NULL) {
-		perror = parserutils_buffer_create(lexer->alloc, lexer->pw,
+		perror = parserutils_buffer_create(css_alloc, CSS_ALLOC_PW,
 				&lexer->unescapedTokenData);
 		if (perror != PARSERUTILS_OK)
 			return css_error_from_parserutils_error(perror);

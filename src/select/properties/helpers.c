@@ -421,14 +421,12 @@ css_error css__cascade_counter_increment_reset(uint32_t opv, css_style *style,
 				val = *((css_fixed *) style->bytecode);
 				advance_bytecode(style, sizeof(css_code_t));
 
-				temp = state->computed->alloc(counters,
+				temp = realloc(counters,
 						(n_counters + 1) * 
-						sizeof(css_computed_counter),
-						state->computed->pw);
+						sizeof(css_computed_counter));
 				if (temp == NULL) {
 					if (counters != NULL) {
-						state->computed->alloc(counters, 
-							0, state->computed->pw);
+						free(counters);
 					}
 					return CSS_NOMEM;
 				}
@@ -455,11 +453,10 @@ css_error css__cascade_counter_increment_reset(uint32_t opv, css_style *style,
 	if (n_counters > 0) {
 		css_computed_counter *temp;
 
-		temp = state->computed->alloc(counters, 
-				(n_counters + 1) * sizeof(css_computed_counter),
-				state->computed->pw);
+		temp = realloc(counters, (n_counters + 1) *
+				sizeof(css_computed_counter));
 		if (temp == NULL) {
-			state->computed->alloc(counters, 0, state->computed->pw);
+			free(counters);
 			return CSS_NOMEM;
 		}
 
@@ -475,11 +472,11 @@ css_error css__cascade_counter_increment_reset(uint32_t opv, css_style *style,
 
 		error = fun(state->computed, value, counters);
 		if (error != CSS_OK && n_counters > 0)
-			state->computed->alloc(counters, 0, state->computed->pw);
+			free(counters);
 
 		return error;
 	} else if (n_counters > 0) {
-		state->computed->alloc(counters, 0, state->computed->pw);
+		free(counters);
 	}
 
 	return CSS_OK;

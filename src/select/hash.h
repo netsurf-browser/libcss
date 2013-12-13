@@ -10,9 +10,10 @@
 
 #include <libwapcaplet/libwapcaplet.h>
 
-#include <libcss/bloom.h>
 #include <libcss/errors.h>
 #include <libcss/functypes.h>
+
+#include "select/bloom.h"
 
 /* Ugh. We need this to avoid circular includes. Happy! */
 struct css_selector;
@@ -33,8 +34,7 @@ typedef css_error (*css_selector_hash_iterator)(
 		const struct css_selector **current,
 		const struct css_selector ***next);
 
-css_error css__selector_hash_create(css_allocator_fn alloc, void *pw, 
-		css_selector_hash **hash);
+css_error css__selector_hash_create(css_selector_hash **hash);
 css_error css__selector_hash_destroy(css_selector_hash *hash);
 
 css_error css__selector_hash_insert(css_selector_hash *hash,

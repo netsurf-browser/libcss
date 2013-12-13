@@ -69,8 +69,8 @@ static inline void advance_bytecode(css_style *style, uint32_t n_bytes)
 	style->bytecode = style->bytecode + (n_bytes / sizeof(css_code_t));
 }
 
-bool css__outranks_existing(uint16_t op, bool important, css_select_state *state,
-		bool inherit);
+bool css__outranks_existing(uint16_t op, bool important,
+		css_select_state *state, bool inherit);
 
 #endif
 

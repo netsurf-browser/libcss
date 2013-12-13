@@ -63,13 +63,11 @@ css_error css__cascade_font_family(uint32_t opv, css_style *style,
 			 * first generic-family are ignored. */
 			/** \todo Do this at bytecode generation time? */
 			if (value == CSS_FONT_FAMILY_INHERIT && font != NULL) {
-				temp = state->computed->alloc(fonts, 
-					(n_fonts + 1) * sizeof(lwc_string *), 
-					state->computed->pw);
+				temp = realloc(fonts, 
+					(n_fonts + 1) * sizeof(lwc_string *));
 				if (temp == NULL) {
 					if (fonts != NULL) {
-						state->computed->alloc(fonts, 0,
-							state->computed->pw);
+						free(fonts);
 					}
 					return CSS_NOMEM;
 				}
@@ -90,11 +88,9 @@ css_error css__cascade_font_family(uint32_t opv, css_style *style,
 	if (n_fonts > 0) {
 		lwc_string **temp;
 
-		temp = state->computed->alloc(fonts, 
-				(n_fonts + 1) * sizeof(lwc_string *), 
-				state->computed->pw);
+		temp = realloc(fonts, (n_fonts + 1) * sizeof(lwc_string *));
 		if (temp == NULL) {
-			state->computed->alloc(fonts, 0, state->computed->pw);
+			free(fonts);
 			return CSS_NOMEM;
 		}
 
@@ -126,9 +122,7 @@ css_error css__cascade_font_family(uint32_t opv, css_style *style,
 				}
 
 				if (hint.data.strings != NULL) {
-					state->computed->alloc(
-							hint.data.strings, 
-							0, state->computed->pw);
+					free(hint.data.strings);
 				}
 			}
 
@@ -145,12 +139,12 @@ css_error css__cascade_font_family(uint32_t opv, css_style *style,
 
 		error = set_font_family(state->computed, value, fonts);
 		if (error != CSS_OK && n_fonts > 0)
-			state->computed->alloc(fonts, 0, state->computed->pw);
+			free(fonts);
 
 		return error;
 	} else {
 		if (n_fonts > 0)
-			state->computed->alloc(fonts, 0, state->computed->pw);
+			free(fonts);
 	}
 
 	return CSS_OK;
@@ -170,7 +164,7 @@ css_error css__set_font_family_from_hint(const css_hint *hint,
 	}
 
 	if (error != CSS_OK && hint->data.strings != NULL)
-		style->alloc(hint->data.strings, 0, style->pw);
+		free(hint->data.strings);
 
 	return error;
 }
@@ -209,9 +203,7 @@ css_error css__compose_font_family(const css_computed_style *parent,
 			for (i = names; (*i) != NULL; i++)
 				n_names++;
 
-			copy = result->alloc(NULL, (n_names + 1) * 
-					sizeof(lwc_string *),
-					result->pw);
+			copy = malloc((n_names + 1) * sizeof(lwc_string *));
 			if (copy == NULL)
 				return CSS_NOMEM;
 
@@ -221,7 +213,7 @@ css_error css__compose_font_family(const css_computed_style *parent,
 
 		error = set_font_family(result, type, copy);
 		if (error != CSS_OK && copy != NULL)
-			result->alloc(copy, 0, result->pw);
+			free(copy);
 
 		return error;
 	}

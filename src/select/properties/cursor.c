@@ -28,16 +28,16 @@ css_error css__cascade_cursor(uint32_t opv, css_style *style,
 			lwc_string *uri;
 			lwc_string **temp;
 
-			css__stylesheet_string_get(style->sheet, *((css_code_t *) style->bytecode), &uri);
+			css__stylesheet_string_get(style->sheet,
+					*((css_code_t *) style->bytecode),
+					&uri);
 			advance_bytecode(style, sizeof(css_code_t));
 
-			temp = state->computed->alloc(uris, 
-					(n_uris + 1) * sizeof(lwc_string *), 
-					state->computed->pw);
+			temp = realloc(uris, 
+					(n_uris + 1) * sizeof(lwc_string *));
 			if (temp == NULL) {
 				if (uris != NULL) {
-					state->computed->alloc(uris, 0,
-							state->computed->pw);
+					free(uris);
 				}
 				return CSS_NOMEM;
 			}
@@ -111,11 +111,10 @@ css_error css__cascade_cursor(uint32_t opv, css_style *style,
 	if (n_uris > 0) {
 		lwc_string **temp;
 
-		temp = state->computed->alloc(uris, 
-				(n_uris + 1) * sizeof(lwc_string *), 
-				state->computed->pw);
+		temp = realloc(uris, 
+				(n_uris + 1) * sizeof(lwc_string *));
 		if (temp == NULL) {
-			state->computed->alloc(uris, 0, state->computed->pw);
+			free(uris);
 			return CSS_NOMEM;
 		}
 
@@ -130,12 +129,12 @@ css_error css__cascade_cursor(uint32_t opv, css_style *style,
 
 		error = set_cursor(state->computed, value, uris);
 		if (error != CSS_OK && n_uris > 0)
-			state->computed->alloc(uris, 0, state->computed->pw);
+			free(uris);
 
 		return error;
 	} else {
 		if (n_uris > 0)
-			state->computed->alloc(uris, 0, state->computed->pw);
+			free(uris);
 	}
 
 	return CSS_OK;
@@ -155,7 +154,7 @@ css_error css__set_cursor_from_hint(const css_hint *hint,
 	}
 
 	if (error != CSS_OK && hint->data.strings != NULL)
-		style->alloc(hint->data.strings, 0, style->pw);
+		free(hint->data.strings);
 
 	return error;
 }
@@ -190,9 +189,8 @@ css_error css__compose_cursor(const css_computed_style *parent,
 			for (i = urls; (*i) != NULL; i++)
 				n_urls++;
 
-			copy = result->alloc(NULL, (n_urls + 1) * 
-					sizeof(lwc_string *),
-					result->pw);
+			copy = malloc((n_urls + 1) * 
+					sizeof(lwc_string *));
 			if (copy == NULL)
 				return CSS_NOMEM;
 
@@ -202,7 +200,7 @@ css_error css__compose_cursor(const css_computed_style *parent,
 
 		error = set_cursor(result, type, copy);
 		if (error != CSS_OK && copy != NULL)
-			result->alloc(copy, 0, result->pw);
+			free(copy);
 
 		return error;
 	}

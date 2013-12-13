@@ -71,7 +71,8 @@ css_error css__stylesheet_string_add(css_stylesheet *sheet, lwc_string *string, 
 		uint32_t new_vector_len;
 
 		new_vector_len = sheet->string_vector_l + 256;
-		new_vector = sheet->alloc(sheet->string_vector, new_vector_len * sizeof(lwc_string *), sheet->pw);
+		new_vector = realloc(sheet->string_vector,
+				new_vector_len * sizeof(lwc_string *));
 
 		if (new_vector == NULL) {
 			lwc_string_unref(string);			
@@ -97,7 +98,8 @@ css_error css__stylesheet_string_add(css_stylesheet *sheet, lwc_string *string, 
  * \return CSS_OK on success,
  *	   CSS_BADPARM on bad parameters,
  */
-css_error css__stylesheet_string_get(css_stylesheet *sheet, uint32_t string_number, lwc_string **string)
+css_error css__stylesheet_string_get(css_stylesheet *sheet,
+		uint32_t string_number, lwc_string **string)
 {
 	/* External string numbers = index into vector + 1 */
 	string_number--;
@@ -114,37 +116,31 @@ css_error css__stylesheet_string_get(css_stylesheet *sheet, uint32_t string_numb
  * Create a stylesheet
  *
  * \param params      Stylesheet parameters
- * \param alloc	      Memory (de)allocation function
- * \param alloc_pw    Client private data for alloc
  * \param stylesheet  Pointer to location to receive stylesheet
  * \return CSS_OK on success,
  *	   CSS_BADPARM on bad parameters,
  *	   CSS_NOMEM on memory exhaustion
  */
 css_error css_stylesheet_create(const css_stylesheet_params *params,
-		css_allocator_fn alloc, void *alloc_pw, 
 		css_stylesheet **stylesheet)
 {
 	css_parser_optparams optparams;
 	css_error error;
 	css_stylesheet *sheet;
-	size_t len;
 
 	if (params == NULL || params->params_version != 
 				CSS_STYLESHEET_PARAMS_VERSION_1 ||
-			params->url == NULL || alloc == NULL || 
-			params->resolve == NULL || stylesheet == NULL)
+			params->url == NULL || params->resolve == NULL ||
+			stylesheet == NULL)
 		return CSS_BADPARM;
 
-	sheet = alloc(NULL, sizeof(css_stylesheet), alloc_pw);
+	sheet = calloc(1, sizeof(css_stylesheet));
 	if (sheet == NULL)
 		return CSS_NOMEM;
 
-	memset(sheet, 0, sizeof(css_stylesheet));
-
 	error = css__propstrings_get(&sheet->propstrings);
 	if (error != CSS_OK) {
-		alloc(sheet, 0, alloc_pw);
+		free(sheet);
 		return error;
 	}
 	
@@ -152,19 +148,19 @@ css_error css_stylesheet_create(const css_stylesheet_params *params,
 
 	if (params->inline_style) {
 		error = css__parser_create_for_inline_style(params->charset, 
-			params->charset != NULL 
-				? CSS_CHARSET_DICTATED : CSS_CHARSET_DEFAULT,
-			alloc, alloc_pw, &sheet->parser);
+				(params->charset != NULL) ?
+				CSS_CHARSET_DICTATED : CSS_CHARSET_DEFAULT,
+				&sheet->parser);
 	} else {
 		error = css__parser_create(params->charset,
-			params->charset != NULL
-				? CSS_CHARSET_DICTATED : CSS_CHARSET_DEFAULT,
-			alloc, alloc_pw, &sheet->parser);
+				(params->charset != NULL) ?
+				CSS_CHARSET_DICTATED : CSS_CHARSET_DEFAULT,
+				&sheet->parser);
 	}
 
 	if (error != CSS_OK) {
 		css__propstrings_unref();
-		alloc(sheet, 0, alloc_pw);
+		free(sheet);
 		return error;
 	}
 
@@ -178,56 +174,51 @@ css_error css_stylesheet_create(const css_stylesheet_params *params,
 		if (error != CSS_OK) {
 			css__parser_destroy(sheet->parser);
 			css__propstrings_unref();
-			alloc(sheet, 0, alloc_pw);
+			free(sheet);
 			return error;
 		}
 	}
 
 	sheet->level = params->level;
-	error = css__language_create(sheet, sheet->parser, alloc, alloc_pw,
+	error = css__language_create(sheet, sheet->parser,
 			&sheet->parser_frontend);
 	if (error != CSS_OK) {
 		css__parser_destroy(sheet->parser);
 		css__propstrings_unref();
-		alloc(sheet, 0, alloc_pw);
+		free(sheet);
 		return error;
 	}
 
-	error = css__selector_hash_create(alloc, alloc_pw, 
-			&sheet->selectors);
+	error = css__selector_hash_create(&sheet->selectors);
 	if (error != CSS_OK) {
 		css__language_destroy(sheet->parser_frontend);
 		css__parser_destroy(sheet->parser);
 		css__propstrings_unref();
-		alloc(sheet, 0, alloc_pw);
+		free(sheet);
 		return error;
 	}
 
-	len = strlen(params->url) + 1;
-	sheet->url = alloc(NULL, len, alloc_pw);
+	sheet->url = strdup(params->url);
 	if (sheet->url == NULL) {
 		css__selector_hash_destroy(sheet->selectors);
 		css__language_destroy(sheet->parser_frontend);
 		css__parser_destroy(sheet->parser);
 		css__propstrings_unref();
-		alloc(sheet, 0, alloc_pw);
+		free(sheet);
 		return CSS_NOMEM;
 	}
-	memcpy(sheet->url, params->url, len);
 
 	if (params->title != NULL) {
-		len = strlen(params->title) + 1;
-		sheet->title = alloc(NULL, len, alloc_pw);
+		sheet->title = strdup(params->title);
 		if (sheet->title == NULL) {
-			alloc(sheet->url, 0, alloc_pw);
+			free(sheet->url);
 			css__selector_hash_destroy(sheet->selectors);
 			css__language_destroy(sheet->parser_frontend);
 			css__parser_destroy(sheet->parser);
 			css__propstrings_unref();
-			alloc(sheet, 0, alloc_pw);
+			free(sheet);
 			return CSS_NOMEM;
 		}
-		memcpy(sheet->title, params->title, len);
 	}
 
 	sheet->resolve = params->resolve;
@@ -241,9 +232,6 @@ css_error css_stylesheet_create(const css_stylesheet_params *params,
 
 	sheet->font = params->font;
 	sheet->font_pw = params->font_pw;
-
-	sheet->alloc = alloc;
-	sheet->pw = alloc_pw;
 
 	sheet->size = sizeof(css_stylesheet) + strlen(sheet->url);
 	if (sheet->title != NULL)
@@ -269,9 +257,9 @@ css_error css_stylesheet_destroy(css_stylesheet *sheet)
 		return CSS_BADPARM;
 	
 	if (sheet->title != NULL)
-		sheet->alloc(sheet->title, 0, sheet->pw);
+		free(sheet->title);
 
-	sheet->alloc(sheet->url, 0, sheet->pw);
+	free(sheet->url);
         
 	for (r = sheet->rule_list; r != NULL; r = s) {
 		s = r->next;
@@ -297,18 +285,16 @@ css_error css_stylesheet_destroy(css_stylesheet *sheet)
 		css__stylesheet_style_destroy(sheet->cached_style);
 
 	/* destroy string vector */
-	for (index = 0;
-	     index < sheet->string_vector_c;
-	     index++) {
+	for (index = 0; index < sheet->string_vector_c; index++) {
 		lwc_string_unref(sheet->string_vector[index]);		
 	}
 
 	if (sheet->string_vector != NULL)
-		sheet->alloc(sheet->string_vector, 0, sheet->pw);
+		free(sheet->string_vector);
 
 	css__propstrings_unref();
 	
-	sheet->alloc(sheet, 0, sheet->pw);
+	free(sheet);
 
 	return CSS_OK;
 }
@@ -664,14 +650,14 @@ css_error css__stylesheet_style_create(css_stylesheet *sheet, css_style **style)
 		return CSS_OK;
 	}
 	
-	s = sheet->alloc(NULL, sizeof(css_style), sheet->pw);
+	s = malloc(sizeof(css_style));
 	if (s == NULL)
 		return CSS_NOMEM;
 
-	s->bytecode = sheet->alloc(NULL, sizeof(css_code_t) * CSS_STYLE_DEFAULT_SIZE, sheet->pw);
+	s->bytecode = malloc(sizeof(css_code_t) * CSS_STYLE_DEFAULT_SIZE);
 
 	if (s->bytecode == NULL) {
-		sheet->alloc(s, 0, sheet->pw); /* do not leak */
+		free(s); /* do not leak */
 	
 		return CSS_NOMEM;
 	}
@@ -688,18 +674,17 @@ css_error css__stylesheet_merge_style(css_style *target, css_style *style)
 {
 	css_code_t *newcode;
 	uint32_t newcode_len;
-	css_stylesheet *sheet;
 
 	if (target == NULL || style == NULL)
 		return CSS_BADPARM;
 
-	sheet = target->sheet;
 	newcode_len = target->used + style->used ;
 	
 	if (newcode_len > target->allocated) {
 		newcode_len += CSS_STYLE_DEFAULT_SIZE - 1;
 		newcode_len &= ~(CSS_STYLE_DEFAULT_SIZE - 1);
-		newcode = sheet->alloc(target->bytecode, newcode_len * sizeof(css_code_t), sheet->pw);
+		newcode = realloc(target->bytecode,
+				newcode_len * sizeof(css_code_t));
 
 		if (newcode == NULL)
 			return CSS_NOMEM;
@@ -708,7 +693,8 @@ css_error css__stylesheet_merge_style(css_style *target, css_style *style)
 		target->allocated = newcode_len;
 	}
 
-	memcpy(target->bytecode + target->used, style->bytecode, style->used * sizeof(css_code_t));
+	memcpy(target->bytecode + target->used, style->bytecode,
+			style->used * sizeof(css_code_t));
 
 	target->used += style->used;
 
@@ -738,18 +724,15 @@ css_error css__stylesheet_style_vappend(css_style *style, uint32_t style_count, 
 /** append a css code entry to a style */ 
 css_error css__stylesheet_style_append(css_style *style, css_code_t css_code)
 {
-	css_stylesheet *sheet;
-
 	if (style == NULL)
 		return CSS_BADPARM;
-
-	sheet = style->sheet;
 
 	if (style->allocated == style->used) {
 		/* space not available to append, extend allocation */
 		css_code_t *newcode;
 		uint32_t newcode_len = style->allocated * 2;
-		newcode = sheet->alloc(style->bytecode, sizeof(css_code_t) * newcode_len, sheet->pw);
+		newcode = realloc(style->bytecode,
+				sizeof(css_code_t) * newcode_len);
 		if (newcode == NULL)
 			return CSS_NOMEM;
 		style->bytecode = newcode;
@@ -782,13 +765,13 @@ css_error css__stylesheet_style_destroy(css_style *style)
 		sheet->cached_style = style;
 		style->used = 0;
 	} else if (sheet->cached_style->allocated < style->allocated) {
-		sheet->alloc(sheet->cached_style->bytecode, 0, sheet->pw);
-		sheet->alloc(sheet->cached_style, 0, sheet->pw);
+		free(sheet->cached_style->bytecode);
+		free(sheet->cached_style);
 		sheet->cached_style = style;
 		style->used = 0;
 	} else {
-		sheet->alloc(style->bytecode, 0, sheet->pw);
-		sheet->alloc(style, 0, sheet->pw);
+		free(style->bytecode);
+		free(style);
 	}
 	
 	return CSS_OK;
@@ -813,7 +796,7 @@ css_error css__stylesheet_selector_create(css_stylesheet *sheet,
 			selector == NULL)
 		return CSS_BADPARM;
 
-	sel = sheet->alloc(NULL, sizeof(css_selector), sheet->pw);
+	sel = malloc(sizeof(css_selector));
 	if (sel == NULL)
 		return CSS_NOMEM;
 
@@ -886,7 +869,7 @@ css_error css__stylesheet_selector_destroy(css_stylesheet *sheet,
 				detail = NULL;
 		}
 		
-		sheet->alloc(c, 0, sheet->pw);
+		free(c);
 	}
 	
 	for (detail = &selector->data; detail;) {
@@ -907,7 +890,7 @@ css_error css__stylesheet_selector_destroy(css_stylesheet *sheet,
 		     
 	
 	/* Destroy this selector */
-	sheet->alloc(selector, 0, sheet->pw);
+	free(selector);
 
 	return CSS_OK;
 }
@@ -977,9 +960,8 @@ css_error css__stylesheet_selector_append_specific(css_stylesheet *sheet,
 		num_details++;
 
 	/* Grow selector by one detail block */
-	temp = sheet->alloc((*parent), sizeof(css_selector) + 
-			(num_details + 1) * sizeof(css_selector_detail), 
-			sheet->pw);
+	temp = realloc((*parent), sizeof(css_selector) +
+			(num_details + 1) * sizeof(css_selector_detail));
 	if (temp == NULL)
 		return CSS_NOMEM;
 
@@ -1107,7 +1089,7 @@ css_error css__stylesheet_rule_create(css_stylesheet *sheet, css_rule_type type,
 		break;
 	}
 
-	r = sheet->alloc(NULL, required, sheet->pw);
+	r = malloc(required);
 	if (r == NULL)
 		return CSS_NOMEM;
 
@@ -1155,7 +1137,7 @@ css_error css__stylesheet_rule_destroy(css_stylesheet *sheet, css_rule *rule)
 		}
 
 		if (s->selectors != NULL)
-			sheet->alloc(s->selectors, 0, sheet->pw);
+			free(s->selectors);
 
 		if (s->style != NULL)
 			css__stylesheet_style_destroy(s->style);
@@ -1217,7 +1199,7 @@ css_error css__stylesheet_rule_destroy(css_stylesheet *sheet, css_rule *rule)
 	}
 
 	/* Destroy rule */
-	sheet->alloc(rule, 0, sheet->pw);
+	free(rule);
 
 	return CSS_OK;
 }
@@ -1242,9 +1224,8 @@ css_error css__stylesheet_rule_add_selector(css_stylesheet *sheet,
 	/* Ensure rule is a CSS_RULE_SELECTOR */
 	assert(rule->type == CSS_RULE_SELECTOR);
 
-	sels = sheet->alloc(r->selectors, 
-			(r->base.items + 1) * sizeof(css_selector *), 
-			sheet->pw);
+	sels = realloc(r->selectors,
+			(r->base.items + 1) * sizeof(css_selector *));
 	if (sels == NULL)
 		return CSS_NOMEM;
 
@@ -1564,7 +1545,8 @@ css_error _add_selectors(css_stylesheet *sheet, css_rule *rule)
 		for (i = 0; i < rule->items; i++) {
 			css_selector *sel = s->selectors[i];
 
-			error = css__selector_hash_insert(sheet->selectors, sel);
+			error = css__selector_hash_insert(
+					sheet->selectors, sel);
 			if (error != CSS_OK) {
 				/* Failed, revert our changes */
 				for (i--; i >= 0; i--) {

@@ -60,13 +60,6 @@ static void dump_selector(css_selector *selector, char **ptr);
 static void dump_selector_detail(css_selector_detail *detail, char **ptr);
 static void dump_string(lwc_string *string, char **ptr);
 
-static void *myrealloc(void *data, size_t len, void *pw)
-{
-	UNUSED(pw);
-	
-	return realloc(data, len);
-}
-
 static css_error resolve_url(void *pw,
 		const char *base, lwc_string *rel, lwc_string **abs)
 {
@@ -387,8 +380,7 @@ void run_test(const uint8_t *data, size_t len, exp_entry *exp, size_t explen)
 	params.font = NULL;
 	params.font_pw = NULL;
 
-	assert(css_stylesheet_create(&params, myrealloc, NULL, 
-			&sheet) == CSS_OK);
+	assert(css_stylesheet_create(&params, &sheet) == CSS_OK);
 
 	error = css_stylesheet_append_data(sheet, data, len);
 	if (error != CSS_OK && error != CSS_NEEDDATA) {
@@ -418,7 +410,7 @@ void run_test(const uint8_t *data, size_t len, exp_entry *exp, size_t explen)
 			params.url = buf;
 
 			assert(css_stylesheet_create(&params,
-				myrealloc, NULL, &import) == CSS_OK);
+					&import) == CSS_OK);
 
 			assert(css_stylesheet_register_import(sheet,
 				import) == CSS_OK);

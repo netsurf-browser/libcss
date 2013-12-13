@@ -285,9 +285,6 @@ struct css_computed_style {
 	css_computed_uncommon *uncommon;/**< Uncommon properties */
 	void *aural;			/**< Aural properties */
 	css_computed_page *page;	/**< Page properties */
-
-	css_allocator_fn alloc;
-	void *pw;
 };
 
 css_error css__compute_absolute_values(const css_computed_style *parent,

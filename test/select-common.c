@@ -23,8 +23,13 @@ typedef struct attribute {
 typedef struct node {
 	lwc_string *name;
 
+	uint32_t n_classes;
+	lwc_string **classes;
+
 	uint32_t n_attrs;
 	attribute *attrs;
+
+	void *libcss_node_data;
 
 	struct node *parent;
 	struct node *next;
@@ -64,6 +69,9 @@ typedef struct line_ctx {
 	lwc_string *attr_id;
 } line_ctx;
 
+
+
+
 static bool handle_line(const char *data, size_t datalen, void *pw);
 static void css__parse_tree(line_ctx *ctx, const char *data, size_t len);
 static void css__parse_tree_data(line_ctx *ctx, const char *data, size_t len);
@@ -77,7 +85,7 @@ static void destroy_tree(node *root);
 
 static css_error node_name(void *pw, void *node,
 		css_qname *qname);
-static css_error node_classes(void *pw, void *node,
+static css_error node_classes(void *pw, void *n,
 		lwc_string ***classes, uint32_t *n_classes);
 static css_error node_id(void *pw, void *node,
 		lwc_string **id);
@@ -152,6 +160,10 @@ static css_error ua_default_for_property(void *pw, uint32_t property,
 		css_hint *hint);
 static css_error compute_font_size(void *pw, const css_hint *parent,
 		css_hint *size);
+static css_error set_libcss_node_data(void *pw, void *n,
+		void *libcss_node_data);
+static css_error get_libcss_node_data(void *pw, void *n,
+		void **libcss_node_data);
 
 static css_select_handler select_handler = {
 	CSS_SELECT_HANDLER_VERSION_1,
@@ -190,15 +202,10 @@ static css_select_handler select_handler = {
 	node_is_lang,
 	node_presentational_hint,
 	ua_default_for_property,
-	compute_font_size
+	compute_font_size,
+	set_libcss_node_data,
+	get_libcss_node_data
 };
-
-static void *myrealloc(void *data, size_t len, void *pw)
-{
-	UNUSED(pw);
-
-	return realloc(data, len);
-}
 
 static css_error resolve_url(void *pw,
 		const char *base, lwc_string *rel, lwc_string **abs)
@@ -469,20 +476,35 @@ void css__parse_tree_data(line_ctx *ctx, const char *data, size_t len)
 			ctx->target = n;
 	} else {
 		/* New attribute */
+		bool amatch = false;
 		attribute *attr;
+		node *n = ctx->current;
 
-		attribute *temp = realloc(ctx->current->attrs,
-			(ctx->current->n_attrs + 1) * sizeof(attribute));
+		attribute *temp = realloc(n->attrs,
+				(n->n_attrs + 1) * sizeof(attribute));
 		assert(temp != NULL);
 
-		ctx->current->attrs = temp;
+		n->attrs = temp;
 
-		attr = &ctx->current->attrs[ctx->current->n_attrs];
+		attr = &n->attrs[n->n_attrs];
 		
 		lwc_intern_string(name, namelen, &attr->name);
 		lwc_intern_string(value, valuelen, &attr->value);
 
-		ctx->current->n_attrs++;
+		assert(lwc_string_caseless_isequal(
+				n->attrs[n->n_attrs].name,
+				ctx->attr_class, &amatch) == lwc_error_ok);
+		if (amatch == true) {
+			n->classes = realloc(NULL, sizeof(lwc_string **));
+			assert(n->classes != NULL);
+
+			n->classes[0] = lwc_string_ref(
+					n->attrs[n->n_attrs].
+					value);
+			n->n_classes = 1;
+		}
+
+		n->n_attrs++;
 	}
 }
 
@@ -540,8 +562,7 @@ void css__parse_sheet(line_ctx *ctx, const char *data, size_t len)
 	params.font_pw = NULL;
 
 	/** \todo How are we going to handle @import? */
-	assert(css_stylesheet_create(&params, myrealloc, NULL, 
-			&sheet) == CSS_OK);
+	assert(css_stylesheet_create(&params, &sheet) == CSS_OK);
 
 	/* Extend array of sheets and append new sheet to it */
 	temp = realloc(ctx->sheets, 
@@ -700,54 +721,6 @@ void css__parse_expected(line_ctx *ctx, const char *data, size_t len)
 	ctx->expused += len;
 }
 
-static void get_bloom_for_target_node(line_ctx *ctx,
-		css_bloom bloom[CSS_BLOOM_SIZE])
-{
-	node *n = ctx->target;
-	bool match;
-	uint32_t i;
-
-	css_bloom_init(bloom);
-
-	while (n->parent != NULL) {
-		n = n->parent;
-
-		/* Element name */
-		if (n->name->insensitive == NULL)
-			assert(lwc__intern_caseless_string(n->name) ==
-					lwc_error_ok);
-
-		css_bloom_add_hash(bloom,
-				lwc_string_hash_value(n->name->insensitive));
-
-		/* Id */
-		for (i = 0; i < n->n_attrs; i++) {
-			assert(lwc_string_caseless_isequal(
-					n->attrs[i].name, ctx->attr_id,
-					&match) == lwc_error_ok);
-			if (match == true) {
-				css_bloom_add_hash(bloom,
-						lwc_string_hash_value(
-						n->attrs[i].value));
-				break;
-			}
-		}
-
-		/* Classes */
-		for (i = 0; i < n->n_attrs; i++) {
-			assert(lwc_string_caseless_isequal(
-					n->attrs[i].name, ctx->attr_class,
-					&match) == lwc_error_ok);
-       			if (match == true) {
-				css_bloom_add_hash(bloom,
-						lwc_string_hash_value(
-						n->attrs[i].value));
-				break;
-			}
-		}
-	}
-}
-
 void run_test(line_ctx *ctx, const char *exp, size_t explen)
 {
 	css_select_ctx *select;
@@ -756,7 +729,6 @@ void run_test(line_ctx *ctx, const char *exp, size_t explen)
 	char *buf;
 	size_t buflen;
 	static int testnum;
-	css_bloom node_bloom[CSS_BLOOM_SIZE];
 
 	UNUSED(exp);
 
@@ -766,7 +738,7 @@ void run_test(line_ctx *ctx, const char *exp, size_t explen)
 	}
 	buflen = 8192;
 
-	assert(css_select_ctx_create(myrealloc, NULL, &select) == CSS_OK);
+	assert(css_select_ctx_create(&select) == CSS_OK);
 
 	for (i = 0; i < ctx->n_sheets; i++) {
 		assert(css_select_ctx_append_sheet(select, 
@@ -776,9 +748,7 @@ void run_test(line_ctx *ctx, const char *exp, size_t explen)
 
 	testnum++;
 
-	get_bloom_for_target_node(ctx, node_bloom);
-
-	assert(css_select_style(select, ctx->target, node_bloom, ctx->media, NULL, 
+	assert(css_select_style(select, ctx->target, ctx->media, NULL, 
 			&select_handler, ctx, &results) == CSS_OK);
 
 	assert(results->styles[ctx->pseudo_element] != NULL);
@@ -831,9 +801,20 @@ void destroy_tree(node *root)
 		lwc_string_unref(root->attrs[i].name);
 		lwc_string_unref(root->attrs[i].value);
 	}
-	
 	free(root->attrs);
-	
+
+	if (root->classes != NULL) {
+		for (i = 0; i < root->n_classes; ++i) {
+			lwc_string_unref(root->classes[i]);
+		}
+		free(root->classes);
+	}
+
+	if (root->libcss_node_data != NULL) {
+		css_libcss_node_data_handler(&select_handler, CSS_NODE_DELETED,
+				NULL, root, NULL, root->libcss_node_data);
+	}
+
 	lwc_string_unref(root->name);
 	free(root);
 }
@@ -850,34 +831,18 @@ css_error node_name(void *pw, void *n, css_qname *qname)
 	return CSS_OK;
 }
 
-css_error node_classes(void *pw, void *n,
+static css_error node_classes(void *pw, void *n,
 		lwc_string ***classes, uint32_t *n_classes)
 {
+	unsigned int i;
 	node *node = n;
-	uint32_t i;
-	line_ctx *lc = pw;
+	UNUSED(pw);
 
-	for (i = 0; i < node->n_attrs; i++) {
-		bool amatch = false;
-		assert(lwc_string_caseless_isequal(
-				node->attrs[i].name, lc->attr_class, &amatch) ==
-				lwc_error_ok);
-		if (amatch == true)
-			break;
-	}
+	*classes = node->classes;
+	*n_classes = node->n_classes;
 
-	if (i != node->n_attrs) {
-		*classes = realloc(NULL, sizeof(lwc_string **));
-		if (*classes == NULL)
-			return CSS_NOMEM;
-
-		*(classes[0]) = 
-			lwc_string_ref(node->attrs[i].value);
-		*n_classes = 1;
-	} else {
-		*classes = NULL;
-		*n_classes = 0;
-	}
+	for (i = 0; i < *n_classes; i++)
+		(*classes)[i] = lwc_string_ref(node->classes[i]);
 
 	return CSS_OK;
 
@@ -1628,4 +1593,16 @@ css_error compute_font_size(void *pw, const css_hint *parent, css_hint *size)
 
 	return CSS_OK;
 }
+
+static css_error set_libcss_node_data(void *pw, void *n,
+		void *libcss_node_data)
+{
+	node *node = n;
+	UNUSED(pw);
+
+	node->libcss_node_data = libcss_node_data;
+
+	return CSS_OK;
+}
+
 

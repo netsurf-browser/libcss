@@ -35,16 +35,15 @@ css_error css__cascade_content(uint32_t opv, css_style *style,
 				lwc_string *he;
 				css_computed_content_item *temp;
 
-				css__stylesheet_string_get(style->sheet, *((css_code_t *) style->bytecode), &he);
+				css__stylesheet_string_get(style->sheet,
+					*((css_code_t *) style->bytecode), &he);
 				
-				temp = state->computed->alloc(content,
+				temp = realloc(content,
 						(n_contents + 1) *
-						sizeof(css_computed_content_item),
-						state->computed->pw);
+						sizeof(css_computed_content_item));
 				if (temp == NULL) {
 					if (content != NULL) {
-						state->computed->alloc(content,
-							0, state->computed->pw);
+						free(content);
 					}
 					return CSS_NOMEM;
 				}
@@ -127,11 +126,10 @@ css_error css__cascade_content(uint32_t opv, css_style *style,
 	if (n_contents > 0) {
 		css_computed_content_item *temp;
 
-		temp = state->computed->alloc(content,
-				(n_contents + 1) * sizeof(css_computed_content_item),
-				state->computed->pw);
+		temp = realloc(content, (n_contents + 1) *
+				sizeof(css_computed_content_item));
 		if (temp == NULL) {
-			state->computed->alloc(content, 0, state->computed->pw);
+			free(content);
 			return CSS_NOMEM;
 		}
 
@@ -146,11 +144,11 @@ css_error css__cascade_content(uint32_t opv, css_style *style,
 
 		error = set_content(state->computed, value, content);
 		if (error != CSS_OK && content != NULL)
-			state->computed->alloc(content, 0, state->computed->pw);
+			free(content);
 
 		return error;
 	} else if (content != NULL) {
-		state->computed->alloc(content, 0, state->computed->pw);
+		free(content);
 	}
 
 	return CSS_OK;
@@ -190,7 +188,7 @@ css_error css__set_content_from_hint(const css_hint *hint,
 	}
 
 	if (error != CSS_OK && hint->data.content != NULL)
-		style->alloc(hint->data.content, 0, style->pw);
+		free(hint->data.content);
 
 	return error;
 }
@@ -226,9 +224,8 @@ css_error css__compose_content(const css_computed_style *parent,
 					i++)
 				n_items++;
 
-			copy = result->alloc(NULL, (n_items + 1) * 
-					sizeof(css_computed_content_item),
-					result->pw);
+			copy = malloc((n_items + 1) * 
+					sizeof(css_computed_content_item));
 			if (copy == NULL)
 				return CSS_NOMEM;
 
@@ -238,7 +235,7 @@ css_error css__compose_content(const css_computed_style *parent,
 
 		error = set_content(result, type, copy);
 		if (error != CSS_OK && copy != NULL)
-			result->alloc(copy, 0, result->pw);
+			free(copy);
 
 		return error;
 	}

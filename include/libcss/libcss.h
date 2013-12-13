@@ -15,7 +15,6 @@ extern "C"
 
 #include <libwapcaplet/libwapcaplet.h>
 
-#include <libcss/bloom.h>
 #include <libcss/errors.h>
 #include <libcss/types.h>
 #include <libcss/functypes.h>

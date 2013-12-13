@@ -35,13 +35,9 @@ struct css_font_face {
 	 *  1 __wwwwss	font-weight | font-style
 	 */
 	uint8_t bits[1];
-	
-	css_allocator_fn alloc;
-	void *pw;
 };
 
-css_error css__font_face_create(css_allocator_fn alloc, void *pw,
-		css_font_face **result);
+css_error css__font_face_create(css_font_face **result);
 css_error css__font_face_destroy(css_font_face *font_face);
 
 css_error css__font_face_set_font_family(css_font_face *font_face,

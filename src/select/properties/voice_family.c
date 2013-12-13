@@ -31,7 +31,9 @@ css_error css__cascade_voice_family(uint32_t opv, css_style *style,
 			switch (v) {
 			case VOICE_FAMILY_STRING:
 			case VOICE_FAMILY_IDENT_LIST:
-				css__stylesheet_string_get(style->sheet, *((css_code_t *) style->bytecode), &voice);
+				css__stylesheet_string_get(style->sheet,
+					*((css_code_t *) style->bytecode),
+					&voice);
 				advance_bytecode(style, sizeof(css_code_t));
 				break;
 			case VOICE_FAMILY_MALE:
@@ -53,13 +55,11 @@ css_error css__cascade_voice_family(uint32_t opv, css_style *style,
 			 * first generic-family are ignored. */
 			/** \todo Do this at bytecode generation time? */
 			if (value == 0 && voice != NULL) {
-				temp = state->computed->alloc(voices, 
-					(n_voices + 1) * sizeof(lwc_string *), 
-					state->computed->pw);
+				temp = realloc(voices, 
+					(n_voices + 1) * sizeof(lwc_string *));
 				if (temp == NULL) {
 					if (voices != NULL) {
-						state->computed->alloc(voices, 0,
-							state->computed->pw);
+						free(voices);
 					}
 					return CSS_NOMEM;
 				}
@@ -80,11 +80,9 @@ css_error css__cascade_voice_family(uint32_t opv, css_style *style,
 	if (n_voices > 0) {
 		lwc_string **temp;
 
-		temp = state->computed->alloc(voices, 
-				(n_voices + 1) * sizeof(lwc_string *), 
-				state->computed->pw);
+		temp = realloc(voices, (n_voices + 1) * sizeof(lwc_string *));
 		if (temp == NULL) {
-			state->computed->alloc(voices, 0, state->computed->pw);
+			free(voices);
 			return CSS_NOMEM;
 		}
 
@@ -97,10 +95,10 @@ css_error css__cascade_voice_family(uint32_t opv, css_style *style,
 			isInherit(opv))) {
 		/** \todo voice-family */
 		if (n_voices > 0)
-			state->computed->alloc(voices, 0, state->computed->pw);
+			free(voices);
 	} else {
 		if (n_voices > 0)
-			state->computed->alloc(voices, 0, state->computed->pw);
+			free(voices);
 	}
 
 	return CSS_OK;

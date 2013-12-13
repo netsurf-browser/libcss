@@ -130,3 +130,19 @@ css_fixed css__number_from_string(const uint8_t *data, size_t len,
 	return (intpart << 10) | fracpart;
 }
 
+
+/* Allocator to pass to libparserutils */
+void *css_alloc(void *data, size_t len, void *pw)
+{
+	UNUSED(pw);
+
+	if (data == NULL) {
+		return (len > 0) ? malloc(len) : NULL;
+	}
+	if (len == 0) {
+		free(data);
+		return NULL;
+	}
+	return realloc(data, len);
+}
+

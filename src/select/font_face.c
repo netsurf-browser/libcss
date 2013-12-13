@@ -21,7 +21,7 @@ static void font_faces_srcs_destroy(css_font_face *font_face)
 		}
 	}
 	
-	font_face->alloc(srcs, 0, font_face->pw);
+	free(srcs);
 	font_face->srcs = NULL;
 }
 
@@ -29,37 +29,29 @@ static const css_font_face default_font_face = {
 	NULL,
 	NULL,
 	0,
-	{ (CSS_FONT_WEIGHT_NORMAL << 2) | CSS_FONT_STYLE_NORMAL },
-	NULL,
-	NULL
+	{ (CSS_FONT_WEIGHT_NORMAL << 2) | CSS_FONT_STYLE_NORMAL }
 };
 
 /**
  * Create a font-face
  *
- * \param alloc   Memory (de)allocation function
- * \param pw      Pointer to client-specific data
  * \param result  Pointer to location to receive result
  * \return CSS_OK on success,
  *         CSS_NOMEM on memory exhaustion,
  *         CSS_BADPARM on bad parameters.
  */
-css_error css__font_face_create(css_allocator_fn alloc, void *pw,
-		css_font_face **result)
+css_error css__font_face_create(css_font_face **result)
 {
 	css_font_face *f;
 	
-	if (alloc == NULL || result == NULL)
+	if (result == NULL)
 		return CSS_BADPARM;
 	
-	f = alloc(NULL, sizeof(css_font_face), pw);
+	f = malloc(sizeof(css_font_face));
 	if (f == NULL)
 		return CSS_NOMEM;
 	
 	memcpy(f, &default_font_face, sizeof(css_font_face));
-	
-	f->alloc = alloc;
-	f->pw = pw;
 	
 	*result = f;
 	
@@ -83,7 +75,7 @@ css_error css__font_face_destroy(css_font_face *font_face)
 	if (font_face->srcs != NULL)
 		font_faces_srcs_destroy(font_face);
 
-	font_face->alloc(font_face, 0, font_face->pw);
+	free(font_face);
 	
 	return CSS_OK;
 }

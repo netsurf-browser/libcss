@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 			(parserutils_alloc) myrealloc, NULL, &stream) == 
 			PARSERUTILS_OK);
 
-		assert(css__lexer_create(stream, myrealloc, NULL, &lexer) == 
+		assert(css__lexer_create(stream, &lexer) == 
 			CSS_OK);
 
 		fp = fopen(argv[1], "rb");

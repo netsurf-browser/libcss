@@ -19,9 +19,6 @@ extern "C"
 
 #include <libcss/types.h>
 
-/* Type of allocation function for libcss */
-typedef void *(*css_allocator_fn)(void *ptr, size_t size, void *pw);
-
 #ifdef __cplusplus
 }
 #endif

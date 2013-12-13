@@ -46,7 +46,6 @@ include $(NSBUILD)/Makefile.top
 # Extra installation rules
 I := /include/libcss
 
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/bloom.h
 INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/computed.h
 INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/errors.h
 INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/font_face.h

@@ -13,13 +13,6 @@
 
 #include "testutils.h"
 
-static void *myrealloc(void *ptr, size_t len, void *pw)
-{
-	UNUSED(pw);
-
-	return realloc(ptr, len);
-}
-
 static css_error resolve_url(void *pw,
 		const char *base, lwc_string *rel, lwc_string **abs)
 {
@@ -66,8 +59,7 @@ int main(int argc, char **argv)
 
 	for (count = 0; count < ITERATIONS; count++) {
 
-		assert(css_stylesheet_create(&params, myrealloc, NULL, 
-				&sheet) == CSS_OK);
+		assert(css_stylesheet_create(&params, &sheet) == CSS_OK);
 
 		fp = fopen(argv[1], "rb");
 		if (fp == NULL) {
@@ -124,7 +116,7 @@ int main(int argc, char **argv)
 				params.url = buf;
 
 				assert(css_stylesheet_create(&params,
-					myrealloc, NULL, &import) == CSS_OK);
+					&import) == CSS_OK);
 
 				assert(css_stylesheet_data_done(import) == 
 					CSS_OK);

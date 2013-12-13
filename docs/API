@@ -16,51 +16,6 @@ Using the library consists of the following general steps:
 Please see example1.c for a demonstration of these steps.
 
 
-Initialize the library
-----------------------
-
-The library is initialized using css_initialise():
-
-  css_initialise("Aliases", myrealloc, 0);
-
-The first argument is the pathname of an Aliases file, which maps character
-encoding names to their canonical form. For an example, see test/data/Aliases.
-
-The 2nd argument is an allocation function. All allocations required by library
-initialization will be made by calling this function. It takes the same
-arguments as realloc(); a pointer and a size. If pointer is NULL a new block is
-being requested. If size is 0 the block should be freed. Otherwise an existing
-block is being resized. In many cases this function can simply call realloc().
-
-The allocation function also takes a private data pointer, which is the third
-argument to css_initialise(). This is not used by LibCSS but may be used to
-communicate context to the allocation function.
-
-The allocation function pointer and private data pointer are arguments to many
-LibCSS functions and work in the same way.
-
-css_initialise() returns a css_error value. It is CSS_OK if everything worked,
-and an error code otherwise. The error codes are defined in libcss/errors.h.
-
-Many LibCSS functions return a css_error value. Checking the return value of
-every call that does is advised, for example:
-
-  css_error code;
-  code = css_initialise("../test/data/Aliases", myrealloc, 0);
-  if (code != CSS_OK) {
-    fprintf(stderr, "ERROR: css_initialise failed: %s\n",
-                    css_error_to_string(code));
-    exit(EXIT_FAILURE);
-  }
-
-LibCSS depends on LibWapcaplet. This must be initialized before LibCSS. For
-example:
-
-  lwc_code = lwc_initialise(myrealloc, NULL, 0);
-  if (lwc_code != lwc_error_ok)
-    ...
-
-
 Load one or more CSS files
 --------------------------
 
@@ -68,49 +23,69 @@ A stylesheet is represented by the opaque type css_stylesheet. To create one,
 use css_stylesheet_create(), for example:
 
   css_stylesheet *sheet;
-  code = css_stylesheet_create(CSS_LEVEL_DEFAULT, "UTF-8", "", NULL,
-             false, false, myrealloc, 0, resolve_url, 0, &sheet);
+  css_stylesheet_params params;
+  /* Set params */
+  ...
+  code = css_stylesheet_create(&params, &sheet);
   if (code != CSS_OK)
     ...
 
 The arguments are as follows:
 
-  css_language_level level
-    Which version of CSS the stylesheet should be treated as. It currently has
-    no effect and is reserved for future use. The recommended value is
-    CSS_LEVEL_DEFAULT.
-
-  const char *charset
-    The encoding of the stylesheet data, or NULL if LibCSS should attempt to
-    detect it. If the encoding is known, for example from the Content-Type
-    header or a file attribute, then it should be supplied here.
-
-  const char *url
-    The URL that the stylesheet was retrieved from. LibCSS uses this along with
-    the resolve function (see below) to convert relative URLs in the stylesheet
-    (e.g. imports, background images) to absolute URLs. If the stylesheet has
-    no URL, use "".
-
-  const char *title
-    This is intended for the stylesheet title (for example from the <link> tag).
-    The title is not used by LibCSS but may be retrieved using
-    css_stylesheet_get_title(). May be NULL if there is no title.
-
-  bool allow_quirks
-
-
-  bool inline_style
-
-
-  css_allocator_fn alloc
-  void *alloc_pw
-
-
-  css_url_resolution_fn resolve
-  void *resolve_pw
-
-
-  css_stylesheet **stylesheet
++ css_stylesheet_params params
+| + uint32_t params_version
+| |   Version of the params struct.
+| |
+| + css_language_level level
+| |   Which version of CSS the stylesheet should be treated as. It currently has
+| |   no effect and is reserved for future use. The recommended value is
+| |   CSS_LEVEL_DEFAULT.
+| |
+| + const char *charset
+| |   The encoding of the stylesheet data, or NULL if LibCSS should attempt to
+| |   detect it. If the encoding is known, for example from the Content-Type
+| |   header or a file attribute, then it should be supplied here.
+| |
+| + const char *url
+| |   The URL that the stylesheet was retrieved from. LibCSS uses this along
+| |   with the resolve function (see below) to convert relative URLs in the
+| |   stylesheet (e.g. imports, background images) to absolute URLs. If the
+| |   stylesheet has no URL, use "".
+| |
+| + const char *title
+| |   This is intended for the stylesheet title (for example from the <link>
+| |   tag).  The title is not used by LibCSS but may be retrieved using
+| |   css_stylesheet_get_title(). May be NULL if there is no title.
+| |
+| + bool allow_quirks
+| |
+| + bool inline_style
+| |
+| + css_url_resolution_fn resolve
+| |   Function for resolving releative URLs into absolute URLs.
+| |
+| + void *resolve_pw
+| |   Client data passed back to resolve function.
+| |
+| + css_import_notification_fn import
+| |   Import notification function.
+| |
+| + void *import_pw
+| |   Client data passed back to import function.
+| |
+| + css_color_resolution_fn color
+| |   Colour resolution function.
+| |
+| + void *color_pw
+| |   Client data passed back to color function.
+| |
+| + css_font_resolution_fn font
+| |   Font resolution function.
+| |
+| + void *font_pw
+|     Client data passed back to import function.
+|
++ css_stylesheet **stylesheet
     Updated with the newly created stylesheet object.
 
 Once the stylesheet has been created, CSS source data can be added to it. LibCSS
@@ -165,7 +140,7 @@ is a list of the stylesheets to be used. A context is created using
 css_select_ctx_create():
 
   css_select_ctx *select_ctx;
-  code = css_select_ctx_create(myrealloc, 0, &select_ctx);
+  code = css_select_ctx_create(&select_ctx);
   if (code != CSS_OK)
     ...
 
@@ -184,7 +159,7 @@ Alternatively stylesheets may be added using css_select_ctx_insert_sheet().
 After the context has been prepared, an empty computed style is created:
 
   css_computed_style *style;
-  code = css_computed_style_create(myrealloc, 0, &style);
+  code = css_computed_style_create(&style);
   if (code != CSS_OK)
     ...
 
@@ -198,35 +173,34 @@ The style is then determined for a document node using css_select_style():
 
 The arguments are as follows:
 
-  css_select_ctx *ctx
-    The selection context, as described above.
-
-  void *node
-    A pointer to the document node for which the style is required. This is a
-    void pointer and may therefore be of any desired type. LibCSS can not use it
-    directly; instead it gets information about it through the functions given
-    in the handler argument, described below. Usually this will be a node in a
-    document tree.
-
-  uint32_t pseudo_element
-  
-  uint64_t media
-    The media that the style should apply to. The computed style will only
-    consider stylesheets or @media blocks that include this media. See the CSS
-    specification for more details.
-  
-  const css_stylesheet *inline_style
-
-  css_computed_style *result
-    Updated to the computed style for the node.
-
-  css_select_handler *handler
-    This is a table of functions that are used to get information from and to
-    navigate the document tree, in order to determine if a CSS selector matches
-    the document node. Further details are below.
-
-  void *pw
-    A private data pointer that is passed to each of the handler functions.
++ css_select_ctx *ctx
+|   The selection context, as described above.
+|
++ void *node
+|   A pointer to the document node for which the style is required. This is a
+|   void pointer and may therefore be of any desired type. LibCSS can not use it
+|   directly; instead it gets information about it through the functions given
+|   in the handler argument, described below. Usually this will be a node in a
+|   document tree.
+| 
++ uint64_t media
+|   The media that the style should apply to. The computed style will only
+|   consider stylesheets or @media blocks that include this media. See the CSS
+|   specification for more details.
+| 
++ const css_stylesheet *inline_style
+|
++ css_select_handler *handler
+|   This is a table of functions that are used to get information from and to
+|   navigate the document tree, in order to determine if a CSS selector matches
+|   the document node. Further details are below.
+|
++ void *pw
+|   A private data pointer that is passed to each of the handler functions.
+|
++ css_computed_style **result
+    Updated to the computed styles for the node.  Array indexed by
+    css_pseudo_element.
 
 The types of the handler functions that need to be supplied and the definition
 of css_select_handler are given in libcss/select.h. The functions all have the
