@@ -485,8 +485,10 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	/* Get parent node's bloom filter */
 	if (parent != NULL) {
 		/* Get parent bloom filter */
+		/*   Hideous casting to avoid warnings on all platforms
+		 *   we build for. */
 		error = handler->get_libcss_node_data(pw, parent,
-				(void **) &state.bloom);
+				(void **) (void *) &state.bloom);
 		if (error != CSS_OK)
 			goto cleanup;
 		/* TODO:
