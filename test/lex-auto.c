@@ -42,13 +42,6 @@ static css_token_type string_to_type(const char *data, size_t len);
 static void run_test(const uint8_t *data, size_t len, 
 		exp_entry *exp, size_t explen);
 
-static void *myrealloc(void *data, size_t len, void *pw)
-{
-	UNUSED(pw);
-
-	return realloc(data, len);
-}
-
 int main(int argc, char **argv)
 {
 	line_ctx ctx;
@@ -274,8 +267,7 @@ void run_test(const uint8_t *data, size_t len, exp_entry *exp, size_t explen)
 	static int testnum;
 
 	assert(parserutils_inputstream_create("UTF-8", CSS_CHARSET_DICTATED,
-			css__charset_extract, myrealloc, NULL, &input) ==
-			PARSERUTILS_OK);
+			css__charset_extract, &input) == PARSERUTILS_OK);
 
 	assert(css__lexer_create(input, &lexer) == CSS_OK);
 

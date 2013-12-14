@@ -129,7 +129,7 @@ css_error css__language_create(css_stylesheet *sheet, css_parser *parser,
 		return CSS_NOMEM;
 
 	perror = parserutils_stack_create(sizeof(context_entry), 
-			STACK_CHUNK, css_alloc, CSS_ALLOC_PW, &c->context);
+			STACK_CHUNK, &c->context);
 	if (perror != PARSERUTILS_OK) {
 		free(c);
 		return css_error_from_parserutils_error(perror);

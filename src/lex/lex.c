@@ -1707,8 +1707,7 @@ css_error consumeEscape(css_lexer *lexer, bool nl)
 
 	/* Create unescaped buffer, if it doesn't already exist */
 	if (lexer->unescapedTokenData == NULL) {
-		perror = parserutils_buffer_create(css_alloc, CSS_ALLOC_PW,
-				&lexer->unescapedTokenData);
+		perror = parserutils_buffer_create(&lexer->unescapedTokenData);
 		if (perror != PARSERUTILS_OK)
 			return css_error_from_parserutils_error(perror);
 	}

@@ -402,8 +402,7 @@ css_error css__parser_create_internal(const char *charset,
 		return CSS_NOMEM;
 
 	perror = parserutils_inputstream_create(charset, cs_source,
-			css__charset_extract, css_alloc, CSS_ALLOC_PW,
-			&p->stream);
+			css__charset_extract, &p->stream);
 	if (perror != PARSERUTILS_OK) {
 		free(p);
 		return css_error_from_parserutils_error(perror);
@@ -417,8 +416,7 @@ css_error css__parser_create_internal(const char *charset,
 	}
 
 	perror = parserutils_stack_create(sizeof(parser_state), 
-			STACK_CHUNK, css_alloc, CSS_ALLOC_PW,
-			&p->states);
+			STACK_CHUNK, &p->states);
 	if (perror != PARSERUTILS_OK) {
 		css__lexer_destroy(p->lexer);
 		parserutils_inputstream_destroy(p->stream);
@@ -427,7 +425,7 @@ css_error css__parser_create_internal(const char *charset,
 	}
 
 	perror = parserutils_vector_create(sizeof(css_token), 
-			STACK_CHUNK, css_alloc, CSS_ALLOC_PW, &p->tokens);
+			STACK_CHUNK, &p->tokens);
 	if (perror != PARSERUTILS_OK) {
 		parserutils_stack_destroy(p->states);
 		css__lexer_destroy(p->lexer);
@@ -437,7 +435,7 @@ css_error css__parser_create_internal(const char *charset,
 	}
 
 	perror = parserutils_stack_create(sizeof(char), 
-			STACK_CHUNK, css_alloc, CSS_ALLOC_PW, &p->open_items);
+			STACK_CHUNK, &p->open_items);
 	if (perror != PARSERUTILS_OK) {
 		parserutils_vector_destroy(p->tokens);
 		parserutils_stack_destroy(p->states);

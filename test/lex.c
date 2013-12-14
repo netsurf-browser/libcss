@@ -16,14 +16,6 @@
 #define ITERATIONS (1)
 #define DUMP_TOKENS (0)
 
-
-static void *myrealloc(void *data, size_t len, void *pw)
-{
-	UNUSED(pw);
-
-	return realloc(data, len);
-}
-
 static void printToken(const css_token *token)
 {
 #if !DUMP_TOKENS
@@ -138,8 +130,7 @@ int main(int argc, char **argv)
 	for (i = 0; i < ITERATIONS; i++) {
 		assert(parserutils_inputstream_create("UTF-8", 
 			CSS_CHARSET_DICTATED,css__charset_extract, 
-			(parserutils_alloc) myrealloc, NULL, &stream) == 
-			PARSERUTILS_OK);
+			&stream) == PARSERUTILS_OK);
 
 		assert(css__lexer_create(stream, &lexer) == 
 			CSS_OK);

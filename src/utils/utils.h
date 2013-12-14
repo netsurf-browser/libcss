@@ -77,9 +77,4 @@ static inline css_error css_error_from_lwc_error(lwc_error err)
         return CSS_INVALID;
 }
 
-
-/* Allocator to pass to libparserutils */
-#define CSS_ALLOC_PW NULL
-void *css_alloc(void *data, size_t len, void *pw);
-
 #endif
