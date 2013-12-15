@@ -856,9 +856,9 @@ css_error _insert_into_chain(css_selector_hash *ctx, hash_entry *head,
 #endif
 
 		if (prev == NULL) {
+			entry->next = entry;
 			hash_entry temp = *entry;
 			*entry = *head;
-			temp.next = entry;
 			*head = temp;
 		} else {
 			entry->next = prev->next;
