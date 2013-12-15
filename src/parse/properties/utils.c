@@ -168,7 +168,7 @@ css_error css__parse_border_side(css_language *c,
 	error = css__stylesheet_style_create(c->sheet, &width_style);
 	if (error != CSS_OK) {
 		css__stylesheet_style_destroy(color_style);
-		css__stylesheet_style_destroy(width_style);
+		css__stylesheet_style_destroy(style_style);
 		return error;
 	}
 
