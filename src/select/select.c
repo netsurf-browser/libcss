@@ -525,7 +525,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	/* Get node's name */
 	error = handler->node_name(pw, node, &state.element);
 	if (error != CSS_OK)
-		return error;
+		goto cleanup;
 
 	/* Get node's ID, if any */
 	error = handler->node_id(pw, node, &state.id);
