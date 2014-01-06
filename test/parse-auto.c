@@ -340,12 +340,14 @@ static void report_fail(const uint8_t *data, size_t datalen, exp_entry *e)
 
 	printf("    Expected entry:\n");
 	printf("	entry type:%d name:%s\n", e->type, e->name);
-	printf("	bytecode len:%ld used:%ld\n", e->bclen, e->bcused);
+	printf("	bytecode len:%" PRIuMAX " used:%" PRIuMAX "\n",
+		(uintmax_t) e->bclen, (uintmax_t) e->bcused);
 	printf("	bytecode ");
 	for (bcoff = 0; bcoff < e->bcused; bcoff++) {
 		printf("%.2x ", ((uint8_t *) e->bytecode)[bcoff]);
 	}
-	printf("\n	  string table len:%ld used %ld\n", e->stlen, e->stused);
+	printf("\n	  string table len:%" PRIuMAX " used %" PRIuMAX "\n",
+		(uintmax_t) e->stlen, (uintmax_t) e->stused);
 /*
 	struct stentry {
 		size_t off;
@@ -513,9 +515,9 @@ bool validate_rule_selector(css_rule_selector *s, exp_entry *e)
 
 		if ((s->style->used * sizeof(css_code_t)) != e->bcused) {
 			printf("FAIL Bytecode lengths differ\n"
-			       "    Got length %ld, Expected %u\n",
-				(s->style->used * sizeof(css_code_t)), 
-				(int) e->bcused);
+			       "    Got length %" PRIuMAX ", Expected %" PRIuMAX "\n",
+				(uintmax_t) (s->style->used * sizeof(css_code_t)),
+				(uintmax_t) e->bcused);
 			return true;
 		}
 
