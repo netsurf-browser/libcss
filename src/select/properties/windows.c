@@ -23,19 +23,19 @@ css_error css__cascade_widows(uint32_t opv, css_style *style,
 css_error css__set_widows_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
-	return set_widows(style, hint->status, hint->data.fixed);
+	return set_widows(style, hint->status, hint->data.integer);
 }
 
 css_error css__initial_widows(css_select_state *state)
 {
-	return set_widows(state->computed, CSS_WIDOWS_SET, INTTOFIX(2));
+	return set_widows(state->computed, CSS_WIDOWS_SET, 2);
 }
 
 css_error css__compose_widows(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
-	css_fixed count = 0;
+	int32_t count = 0;
 	uint8_t type = get_widows(child, &count);
 	
 	if (type == CSS_WIDOWS_INHERIT) {

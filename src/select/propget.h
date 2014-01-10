@@ -1832,20 +1832,20 @@ static inline uint8_t get_page_break_inside(
 #define ORPHANS_MASK 0x1
 static inline uint8_t get_orphans(
 		const css_computed_style *style,
-		css_fixed *count)
+		int32_t *orphans)
 {
 	if (style->page != NULL) {
 		uint8_t bits = style->page->bits[ORPHANS_INDEX];
 		bits &= ORPHANS_MASK;
 		bits >>= ORPHANS_SHIFT;
 		
-		*count = style->page->orphans;
+		*orphans = style->page->orphans;
 		
 		/* 1bit: type */
 		return bits;
 	}
 	
-	*count = INTTOFIX(2);
+	*orphans = 2;
 	return CSS_ORPHANS_SET;
 }
 #undef ORPHANS_MASK
@@ -1857,20 +1857,20 @@ static inline uint8_t get_orphans(
 #define WIDOWS_MASK 0x2
 static inline uint8_t get_widows(
 		const css_computed_style *style,
-		css_fixed *count)
+		int32_t *widows)
 {
 	if (style->page != NULL) {
 		uint8_t bits = style->page->bits[WIDOWS_INDEX];
 		bits &= WIDOWS_MASK;
 		bits >>= WIDOWS_SHIFT;
 		
-		*count = style->page->orphans;
+		*widows = style->page->widows;
 		
 		/* 1bit: type */
 		return bits;
 	}
 	
-	*count = INTTOFIX(2);
+	*widows = 2;
 	return CSS_WIDOWS_SET;
 }
 #undef WIDOWS_MASK

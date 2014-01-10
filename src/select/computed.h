@@ -95,8 +95,8 @@ typedef struct css_computed_page {
  */
 	uint8_t bits[2];
 	
-	css_fixed widows;
-	css_fixed orphans;
+	int32_t widows;
+	int32_t orphans;
 } css_computed_page;
     
 struct css_computed_style {

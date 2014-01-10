@@ -1952,12 +1952,12 @@ static inline css_error set_page_break_inside(
 #define ORPHANS_SHIFT 0
 #define ORPHANS_MASK 0x1
 static inline css_error set_orphans(
-		css_computed_style *style, uint8_t type, css_fixed count)
+		css_computed_style *style, uint8_t type, int32_t count)
 {
 	uint8_t *bits;
 	
 	if (style->page == NULL) {
-		if (type == CSS_ORPHANS_SET && count == INTTOFIX(2)) {
+		if (type == CSS_ORPHANS_SET && count == 2) {
 			return CSS_OK;
 		}
 	}
@@ -1981,12 +1981,12 @@ static inline css_error set_orphans(
 #define WIDOWS_SHIFT 1
 #define WIDOWS_MASK 0x2
 static inline css_error set_widows(
-		css_computed_style *style, uint8_t type, css_fixed count)
+		css_computed_style *style, uint8_t type, int32_t count)
 {
 	uint8_t *bits;
 	
 	if (style->page == NULL) {
-		if (type == CSS_WIDOWS_SET && count == INTTOFIX(2)) {
+		if (type == CSS_WIDOWS_SET && count == 2) {
 			return CSS_OK;
 		}
 	}
