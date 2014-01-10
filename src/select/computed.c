@@ -311,576 +311,131 @@ css_error css_computed_style_compose(const css_computed_style *parent,
  ******************************************************************************/
 
 
-#define CSS_LETTER_SPACING_INDEX 0
-#define CSS_LETTER_SPACING_SHIFT 2
-#define CSS_LETTER_SPACING_MASK  0xfc
-uint8_t css_computed_letter_spacing(
-		const css_computed_style *style, 
+uint8_t css_computed_letter_spacing(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	if (style->uncommon != NULL) {
-		uint8_t bits = style->uncommon->bits[CSS_LETTER_SPACING_INDEX];
-		bits &= CSS_LETTER_SPACING_MASK;
-		bits >>= CSS_LETTER_SPACING_SHIFT;
-
-		/* 6bits: uuuutt : unit | type */
-
-		if ((bits & 3) == CSS_LETTER_SPACING_SET) {
-			*length = style->uncommon->letter_spacing;
-			*unit = (css_unit) (bits >> 2);
-		}
-
-		return (bits & 3);
-	}
-
-	return CSS_LETTER_SPACING_NORMAL;
+	return get_letter_spacing(style, length, unit);
 }
-#undef CSS_LETTER_SPACING_MASK
-#undef CSS_LETTER_SPACING_SHIFT
-#undef CSS_LETTER_SPACING_INDEX
 
-#define CSS_OUTLINE_COLOR_INDEX 0
-#define CSS_OUTLINE_COLOR_SHIFT 0
-#define CSS_OUTLINE_COLOR_MASK  0x3
-uint8_t css_computed_outline_color(
-		const css_computed_style *style, css_color *color)
+uint8_t css_computed_outline_color(const css_computed_style *style,
+		css_color *color)
 {
-	if (style->uncommon != NULL) {
-		uint8_t bits = style->uncommon->bits[CSS_OUTLINE_COLOR_INDEX];
-		bits &= CSS_OUTLINE_COLOR_MASK;
-		bits >>= CSS_OUTLINE_COLOR_SHIFT;
-
-		/* 2bits: tt : type */
-
-		if ((bits & 3) == CSS_OUTLINE_COLOR_COLOR) {
-			*color = style->uncommon->outline_color;
-		}
-
-		return (bits & 3);
-	}
-
-	return CSS_OUTLINE_COLOR_INVERT;
+	return get_outline_color(style, color);
 }
-#undef CSS_OUTLINE_COLOR_MASK
-#undef CSS_OUTLINE_COLOR_SHIFT
-#undef CSS_OUTLINE_COLOR_INDEX
 
-#define CSS_OUTLINE_WIDTH_INDEX 1
-#define CSS_OUTLINE_WIDTH_SHIFT 1
-#define CSS_OUTLINE_WIDTH_MASK  0xfe
-uint8_t css_computed_outline_width(
-		const css_computed_style *style, 
+uint8_t css_computed_outline_width(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	if (style->uncommon != NULL) {
-		uint8_t bits = style->uncommon->bits[CSS_OUTLINE_WIDTH_INDEX];
-		bits &= CSS_OUTLINE_WIDTH_MASK;
-		bits >>= CSS_OUTLINE_WIDTH_SHIFT;
-
-		/* 7bits: uuuuttt : unit | type */
-
-		if ((bits & 7) == CSS_OUTLINE_WIDTH_WIDTH) {
-			*length = style->uncommon->outline_width;
-			*unit = (css_unit) (bits >> 3);
-		}
-
-		return (bits & 7);
-	}
-
-	*length = INTTOFIX(2);
-	*unit = CSS_UNIT_PX;
-
-	return CSS_OUTLINE_WIDTH_WIDTH;
+	return get_outline_width(style, length, unit);
 }
-#undef CSS_OUTLINE_WIDTH_MASK
-#undef CSS_OUTLINE_WIDTH_SHIFT
-#undef CSS_OUTLINE_WIDTH_INDEX
 
-#define CSS_BORDER_SPACING_INDEX 1
-#define CSS_BORDER_SPACING_SHIFT 0
-#define CSS_BORDER_SPACING_MASK  0x1
-#define CSS_BORDER_SPACING_INDEX1 2
-#define CSS_BORDER_SPACING_SHIFT1 0
-#define CSS_BORDER_SPACING_MASK1 0xff
-uint8_t css_computed_border_spacing(
-		const css_computed_style *style, 
+uint8_t css_computed_border_spacing(const css_computed_style *style,
 		css_fixed *hlength, css_unit *hunit,
 		css_fixed *vlength, css_unit *vunit)
 {
-	if (style->uncommon != NULL) {
-		uint8_t bits = style->uncommon->bits[CSS_BORDER_SPACING_INDEX];
-		bits &= CSS_BORDER_SPACING_MASK;
-		bits >>= CSS_BORDER_SPACING_SHIFT;
-
-		/* 1 bit: type */
-		if (bits == CSS_BORDER_SPACING_SET) {
-			uint8_t bits1 = 
-				style->uncommon->bits[CSS_BORDER_SPACING_INDEX1];
-			bits1 &= CSS_BORDER_SPACING_MASK1;
-			bits1 >>= CSS_BORDER_SPACING_SHIFT1;
-
-			/* 8bits: hhhhvvvv : hunit | vunit */
-
-			*hlength = style->uncommon->border_spacing[0];
-			*hunit = (css_unit) (bits1 >> 4);
-
-			*vlength = style->uncommon->border_spacing[1];
-			*vunit = (css_unit) (bits1 & 0xf);
-		}
-
-		return bits;
-	} else {
-		*hlength = *vlength = 0;
-		*hunit = *vunit = CSS_UNIT_PX;
-	}
-
-	return CSS_BORDER_SPACING_SET;
+	return get_border_spacing(style, hlength, hunit, vlength, vunit);
 }
-#undef CSS_BORDER_SPACING_MASK1
-#undef CSS_BORDER_SPACING_SHIFT1
-#undef CSS_BORDER_SPACING_INDEX1
-#undef CSS_BORDER_SPACING_MASK
-#undef CSS_BORDER_SPACING_SHIFT
-#undef CSS_BORDER_SPACING_INDEX
 
-#define CSS_WORD_SPACING_INDEX 3
-#define CSS_WORD_SPACING_SHIFT 2
-#define CSS_WORD_SPACING_MASK  0xfc
-uint8_t css_computed_word_spacing(
-		const css_computed_style *style, 
+uint8_t css_computed_word_spacing(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	if (style->uncommon != NULL) {
-		uint8_t bits = style->uncommon->bits[CSS_WORD_SPACING_INDEX];
-		bits &= CSS_WORD_SPACING_MASK;
-		bits >>= CSS_WORD_SPACING_SHIFT;
-
-		/* 6bits: uuuutt : unit | type */
-
-		if ((bits & 3) == CSS_WORD_SPACING_SET) {
-			*length = style->uncommon->word_spacing;
-			*unit = (css_unit) (bits >> 2);
-		}
-
-		return (bits & 3);
-	}
-
-	return CSS_WORD_SPACING_NORMAL;
+	return get_word_spacing(style, length, unit);
 }
-#undef CSS_WORD_SPACING_MASK
-#undef CSS_WORD_SPACING_SHIFT
-#undef CSS_WORD_SPACING_INDEX
 
-#define CSS_WRITING_MODE_INDEX 4
-#define CSS_WRITING_MODE_SHIFT 1
-#define CSS_WRITING_MODE_MASK  0x6
-uint8_t css_computed_writing_mode(
-		const css_computed_style *style)
+uint8_t css_computed_writing_mode(const css_computed_style *style)
 {
-	if (style->uncommon != NULL) {
-		uint8_t bits = style->uncommon->bits[CSS_WRITING_MODE_INDEX];
-		bits &= CSS_WRITING_MODE_MASK;
-		bits >>= CSS_WRITING_MODE_SHIFT;
-
-		/* 2bits: type */
-		return bits;
-	}
-
-	return CSS_WRITING_MODE_HORIZONTAL_TB;
+	return get_writing_mode(style);
 }
-#undef CSS_WRITING_MODE_MASK
-#undef CSS_WRITING_MODE_SHIFT
-#undef CSS_WRITING_MODE_INDEX
 
-#define CSS_COUNTER_INCREMENT_INDEX 3
-#define CSS_COUNTER_INCREMENT_SHIFT 1
-#define CSS_COUNTER_INCREMENT_MASK  0x2
-uint8_t css_computed_counter_increment(
-		const css_computed_style *style, 
+uint8_t css_computed_counter_increment(const css_computed_style *style,
 		const css_computed_counter **counters)
 {
-	if (style->uncommon != NULL) {
-		uint8_t bits = 
-			style->uncommon->bits[CSS_COUNTER_INCREMENT_INDEX];
-		bits &= CSS_COUNTER_INCREMENT_MASK;
-		bits >>= CSS_COUNTER_INCREMENT_SHIFT;
-
-		/* 1bit: type */
-		*counters = style->uncommon->counter_increment;
-
-		return bits;
-	}
-
-	return CSS_COUNTER_INCREMENT_NONE;
+	return get_counter_increment(style, counters);
 }
-#undef CSS_COUNTER_INCREMENT_MASK
-#undef CSS_COUNTER_INCREMENT_SHIFT
-#undef CSS_COUNTER_INCREMENT_INDEX
 
-#define CSS_COUNTER_RESET_INDEX 3
-#define CSS_COUNTER_RESET_SHIFT 0
-#define CSS_COUNTER_RESET_MASK  0x1
-uint8_t css_computed_counter_reset(
-		const css_computed_style *style, 
+uint8_t css_computed_counter_reset(const css_computed_style *style,
 		const css_computed_counter **counters)
 {
-	if (style->uncommon != NULL) {
-		uint8_t bits = style->uncommon->bits[CSS_COUNTER_RESET_INDEX];
-		bits &= CSS_COUNTER_RESET_MASK;
-		bits >>= CSS_COUNTER_RESET_SHIFT;
-
-		/* 1bit: type */
-		*counters = style->uncommon->counter_reset;
-
-		return bits;
-	}
-
-	return CSS_COUNTER_RESET_NONE;
+	return get_counter_reset(style, counters);
 }
-#undef CSS_COUNTER_RESET_MASK
-#undef CSS_COUNTER_RESET_SHIFT
-#undef CSS_COUNTER_RESET_INDEX
 
-#define CSS_CURSOR_INDEX 4
-#define CSS_CURSOR_SHIFT 3
-#define CSS_CURSOR_MASK  0xf8
-uint8_t css_computed_cursor(
-		const css_computed_style *style, 
+uint8_t css_computed_cursor(const css_computed_style *style,
 		lwc_string ***urls)
 {
-	if (style->uncommon != NULL) {
-		uint8_t bits = style->uncommon->bits[CSS_CURSOR_INDEX];
-		bits &= CSS_CURSOR_MASK;
-		bits >>= CSS_CURSOR_SHIFT;
-
-		/* 5bits: type */
-		*urls = style->uncommon->cursor;
-
-		return bits;
-	}
-
-	return CSS_CURSOR_AUTO;
+	return get_cursor(style, urls);
 }
-#undef CSS_CURSOR_MASK
-#undef CSS_CURSOR_SHIFT
-#undef CSS_CURSOR_INDEX
 
-#define CSS_CLIP_INDEX 7
-#define CSS_CLIP_SHIFT 2
-#define CSS_CLIP_MASK  0xfc
-#define CSS_CLIP_INDEX1 5
-#define CSS_CLIP_SHIFT1 0
-#define CSS_CLIP_MASK1 0xff
-#define CSS_CLIP_INDEX2 6
-#define CSS_CLIP_SHIFT2 0
-#define CSS_CLIP_MASK2 0xff
-uint8_t css_computed_clip(
-		const css_computed_style *style, 
+uint8_t css_computed_clip(const css_computed_style *style,
 		css_computed_clip_rect *rect)
 {
-	if (style->uncommon != NULL) {
-		uint8_t bits = style->uncommon->bits[CSS_CLIP_INDEX];
-		bits &= CSS_CLIP_MASK;
-		bits >>= CSS_CLIP_SHIFT;
-
-		/* 6bits: trblyy : top | right | bottom | left | type */
-		if ((bits & 0x3) == CSS_CLIP_RECT) {
-			uint8_t bits1; 
-
-			rect->left_auto = (bits & 0x4);
-			rect->bottom_auto = (bits & 0x8);
-			rect->right_auto = (bits & 0x10);
-			rect->top_auto = (bits & 0x20);
-
-			if (rect->top_auto == false ||
-					rect->right_auto == false) {
-				/* 8bits: ttttrrrr : top | right */
-				bits1 = style->uncommon->bits[CSS_CLIP_INDEX1];
-				bits1 &= CSS_CLIP_MASK1;
-				bits1 >>= CSS_CLIP_SHIFT1;
-			} else {
-				bits1 = 0;
-			}
-
-			rect->top = style->uncommon->clip[0];
-			rect->tunit = (css_unit) (bits1 >> 4);
-
-			rect->right = style->uncommon->clip[1];
-			rect->runit = (css_unit) (bits1 & 0xf);
-
-			if (rect->bottom_auto == false ||
-					rect->left_auto == false) {
-				/* 8bits: bbbbllll : bottom | left */
-				bits1 = style->uncommon->bits[CSS_CLIP_INDEX2];
-				bits1 &= CSS_CLIP_MASK2;
-				bits1 >>= CSS_CLIP_SHIFT2;
-			} else {
-				bits1 = 0;
-			}
-
-			rect->bottom = style->uncommon->clip[2];
-			rect->bunit = (css_unit) (bits1 >> 4);
-
-			rect->left = style->uncommon->clip[3];
-			rect->lunit = (css_unit) (bits1 & 0xf);
-		}
-
-		return (bits & 0x3);
-	}
-
-	return CSS_CLIP_AUTO;
+	return get_clip(style, rect);
 }
-#undef CSS_CLIP_MASK2
-#undef CSS_CLIP_SHIFT2
-#undef CSS_CLIP_INDEX2
-#undef CSS_CLIP_MASK1
-#undef CSS_CLIP_SHIFT1
-#undef CSS_CLIP_INDEX1
-#undef CSS_CLIP_MASK
-#undef CSS_CLIP_SHIFT
-#undef CSS_CLIP_INDEX
 
-#define CSS_CONTENT_INDEX 7
-#define CSS_CONTENT_SHIFT 0
-#define CSS_CONTENT_MASK  0x3
-uint8_t css_computed_content(
-		const css_computed_style *style, 
+uint8_t css_computed_content(const css_computed_style *style,
 		const css_computed_content_item **content)
 {
-	if (style->uncommon != NULL) {
-		uint8_t bits = style->uncommon->bits[CSS_CONTENT_INDEX];
-		bits &= CSS_CONTENT_MASK;
-		bits >>= CSS_CONTENT_SHIFT;
-
-		/* 2bits: type */
-		*content = style->uncommon->content;
-
-		return bits;
-	}
-
-	return CSS_CONTENT_NORMAL;
+	return get_content(style, content);
 }
-#undef CSS_CONTENT_MASK
-#undef CSS_CONTENT_SHIFT
-#undef CSS_CONTENT_INDEX
 
-#define CSS_VERTICAL_ALIGN_INDEX 0
-#define CSS_VERTICAL_ALIGN_SHIFT 0
-#define CSS_VERTICAL_ALIGN_MASK  0xff
-uint8_t css_computed_vertical_align(
-		const css_computed_style *style, 
+uint8_t css_computed_vertical_align(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_VERTICAL_ALIGN_INDEX];
-	bits &= CSS_VERTICAL_ALIGN_MASK;
-	bits >>= CSS_VERTICAL_ALIGN_SHIFT;
-
-	/* 8bits: uuuutttt : units | type */
-	if ((bits & 0xf) == CSS_VERTICAL_ALIGN_SET) {
-		*length = style->vertical_align;
-		*unit = (css_unit) (bits >> 4);
-	}
-
-	return (bits & 0xf);
+	return get_vertical_align(style, length, unit);
 }
-#undef CSS_VERTICAL_ALIGN_MASK
-#undef CSS_VERTICAL_ALIGN_SHIFT
-#undef CSS_VERTICAL_ALIGN_INDEX
 
-#define CSS_FONT_SIZE_INDEX 1
-#define CSS_FONT_SIZE_SHIFT 0
-#define CSS_FONT_SIZE_MASK  0xff
-uint8_t css_computed_font_size(
-		const css_computed_style *style, 
+uint8_t css_computed_font_size(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_FONT_SIZE_INDEX];
-	bits &= CSS_FONT_SIZE_MASK;
-	bits >>= CSS_FONT_SIZE_SHIFT;
-
-	/* 8bits: uuuutttt : units | type */
-	if ((bits & 0xf) == CSS_FONT_SIZE_DIMENSION) {
-		*length = style->font_size;
-		*unit = (css_unit) (bits >> 4);
-	}
-
-	return (bits & 0xf);
+	return get_font_size(style, length, unit);
 }
-#undef CSS_FONT_SIZE_MASK
-#undef CSS_FONT_SIZE_SHIFT
-#undef CSS_FONT_SIZE_INDEX
 
-#define CSS_BORDER_TOP_WIDTH_INDEX 2
-#define CSS_BORDER_TOP_WIDTH_SHIFT 1
-#define CSS_BORDER_TOP_WIDTH_MASK  0xfe
-uint8_t css_computed_border_top_width(
-		const css_computed_style *style, 
+uint8_t css_computed_border_top_width(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_BORDER_TOP_WIDTH_INDEX];
-	bits &= CSS_BORDER_TOP_WIDTH_MASK;
-	bits >>= CSS_BORDER_TOP_WIDTH_SHIFT;
-
-	/* 7bits: uuuuttt : units | type */
-	if ((bits & 0x7) == CSS_BORDER_WIDTH_WIDTH) {
-		*length = style->border_width[0];
-		*unit = (css_unit) (bits >> 3);
-	}
-
-	return (bits & 0x7);
+	return get_border_top_width(style, length, unit);
 }
-#undef CSS_BORDER_TOP_WIDTH_MASK
-#undef CSS_BORDER_TOP_WIDTH_SHIFT
-#undef CSS_BORDER_TOP_WIDTH_INDEX
 
-#define CSS_BORDER_RIGHT_WIDTH_INDEX 3
-#define CSS_BORDER_RIGHT_WIDTH_SHIFT 1
-#define CSS_BORDER_RIGHT_WIDTH_MASK  0xfe
-uint8_t css_computed_border_right_width(
-		const css_computed_style *style, 
+uint8_t css_computed_border_right_width(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_BORDER_RIGHT_WIDTH_INDEX];
-	bits &= CSS_BORDER_RIGHT_WIDTH_MASK;
-	bits >>= CSS_BORDER_RIGHT_WIDTH_SHIFT;
-
-	/* 7bits: uuuuttt : units | type */
-	if ((bits & 0x7) == CSS_BORDER_WIDTH_WIDTH) {
-		*length = style->border_width[1];
-		*unit = (css_unit) (bits >> 3);
-	}
-
-	return (bits & 0x7);
+	return get_border_right_width(style, length, unit);
 }
-#undef CSS_BORDER_RIGHT_WIDTH_MASK
-#undef CSS_BORDER_RIGHT_WIDTH_SHIFT
-#undef CSS_BORDER_RIGHT_WIDTH_INDEX
 
-#define CSS_BORDER_BOTTOM_WIDTH_INDEX 4
-#define CSS_BORDER_BOTTOM_WIDTH_SHIFT 1
-#define CSS_BORDER_BOTTOM_WIDTH_MASK  0xfe
-uint8_t css_computed_border_bottom_width(
-		const css_computed_style *style, 
+uint8_t css_computed_border_bottom_width(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_BORDER_BOTTOM_WIDTH_INDEX];
-	bits &= CSS_BORDER_BOTTOM_WIDTH_MASK;
-	bits >>= CSS_BORDER_BOTTOM_WIDTH_SHIFT;
-
-	/* 7bits: uuuuttt : units | type */
-	if ((bits & 0x7) == CSS_BORDER_WIDTH_WIDTH) {
-		*length = style->border_width[2];
-		*unit = (css_unit) (bits >> 3);
-	}
-
-	return (bits & 0x7);
+	return get_border_bottom_width(style, length, unit);
 }
-#undef CSS_BORDER_BOTTOM_WIDTH_MASK
-#undef CSS_BORDER_BOTTOM_WIDTH_SHIFT
-#undef CSS_BORDER_BOTTOM_WIDTH_INDEX
 
-#define CSS_BORDER_LEFT_WIDTH_INDEX 5
-#define CSS_BORDER_LEFT_WIDTH_SHIFT 1
-#define CSS_BORDER_LEFT_WIDTH_MASK  0xfe
-uint8_t css_computed_border_left_width(
-		const css_computed_style *style, 
+uint8_t css_computed_border_left_width(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_BORDER_LEFT_WIDTH_INDEX];
-	bits &= CSS_BORDER_LEFT_WIDTH_MASK;
-	bits >>= CSS_BORDER_LEFT_WIDTH_SHIFT;
-
-	/* 7bits: uuuuttt : units | type */
-	if ((bits & 0x7) == CSS_BORDER_WIDTH_WIDTH) {
-		*length = style->border_width[3];
-		*unit = (css_unit) (bits >> 3);
-	}
-
-	return (bits & 0x7);
+	return get_border_left_width(style, length, unit);
 }
-#undef CSS_BORDER_LEFT_WIDTH_MASK
-#undef CSS_BORDER_LEFT_WIDTH_SHIFT
-#undef CSS_BORDER_LEFT_WIDTH_INDEX
 
-#define CSS_BACKGROUND_IMAGE_INDEX 2
-#define CSS_BACKGROUND_IMAGE_SHIFT 0
-#define CSS_BACKGROUND_IMAGE_MASK  0x1
-uint8_t css_computed_background_image(
-		const css_computed_style *style, 
+uint8_t css_computed_background_image(const css_computed_style *style,
 		lwc_string **url)
 {
-	uint8_t bits = style->bits[CSS_BACKGROUND_IMAGE_INDEX];
-	bits &= CSS_BACKGROUND_IMAGE_MASK;
-	bits >>= CSS_BACKGROUND_IMAGE_SHIFT;
-
-	/* 1bit: type */
-	*url = style->background_image;
-
-	return bits;
+	return get_background_image(style, url);
 }
-#undef CSS_BACKGROUND_IMAGE_MASK
-#undef CSS_BACKGROUND_IMAGE_SHIFT
-#undef CSS_BACKGROUND_IMAGE_INDEX
 
-#define CSS_COLOR_INDEX 3
-#define CSS_COLOR_SHIFT 0
-#define CSS_COLOR_MASK  0x1
-uint8_t css_computed_color(
-		const css_computed_style *style, 
+uint8_t css_computed_color(const css_computed_style *style,
 		css_color *color)
 {
-	uint8_t bits = style->bits[CSS_COLOR_INDEX];
-	bits &= CSS_COLOR_MASK;
-	bits >>= CSS_COLOR_SHIFT;
-
-	/* 1bit: type */
-	*color = style->color;
-
-	return bits;
+	return get_color(style, color);
 }
-#undef CSS_COLOR_MASK
-#undef CSS_COLOR_SHIFT
-#undef CSS_COLOR_INDEX
 
-#define CSS_LIST_STYLE_IMAGE_INDEX 4
-#define CSS_LIST_STYLE_IMAGE_SHIFT 0
-#define CSS_LIST_STYLE_IMAGE_MASK  0x1
-uint8_t css_computed_list_style_image(
-		const css_computed_style *style, 
+uint8_t css_computed_list_style_image(const css_computed_style *style,
 		lwc_string **url)
 {
-	uint8_t bits = style->bits[CSS_LIST_STYLE_IMAGE_INDEX];
-	bits &= CSS_LIST_STYLE_IMAGE_MASK;
-	bits >>= CSS_LIST_STYLE_IMAGE_SHIFT;
-
-	/* 1bit: type */
-	*url = style->list_style_image;
-
-	return bits;
+	return get_list_style_image(style, url);
 }
-#undef CSS_LIST_STYLE_IMAGE_MASK
-#undef CSS_LIST_STYLE_IMAGE_SHIFT
-#undef CSS_LIST_STYLE_IMAGE_INDEX
 
-#define CSS_QUOTES_INDEX 5
-#define CSS_QUOTES_SHIFT 0
-#define CSS_QUOTES_MASK  0x1
-uint8_t css_computed_quotes(
-		const css_computed_style *style, 
+uint8_t css_computed_quotes(const css_computed_style *style,
 		lwc_string ***quotes)
 {
-	uint8_t bits = style->bits[CSS_QUOTES_INDEX];
-	bits &= CSS_QUOTES_MASK;
-	bits >>= CSS_QUOTES_SHIFT;
-
-	/* 1bit: type */
-	*quotes = style->quotes;
-
-	return bits;
+	return get_quotes(style, quotes);
 }
-#undef CSS_QUOTES_MASK
-#undef CSS_QUOTES_SHIFT
-#undef CSS_QUOTES_INDEX
 
 #define CSS_TOP_INDEX 6
 #define CSS_TOP_SHIFT 2
@@ -1079,421 +634,120 @@ uint8_t css_computed_left(
 #undef CSS_TOP_SHIFT
 #undef CSS_TOP_INDEX
 
-#define CSS_BORDER_TOP_COLOR_INDEX 6
-#define CSS_BORDER_TOP_COLOR_SHIFT 0
-#define CSS_BORDER_TOP_COLOR_MASK  0x3
-uint8_t css_computed_border_top_color(
-		const css_computed_style *style, 
+uint8_t css_computed_border_top_color(const css_computed_style *style,
 		css_color *color)
 {
-	uint8_t bits = style->bits[CSS_BORDER_TOP_COLOR_INDEX];
-	bits &= CSS_BORDER_TOP_COLOR_MASK;
-	bits >>= CSS_BORDER_TOP_COLOR_SHIFT;
-
-	/* 2bits: type */
-	*color = style->border_color[0];
-
-	return bits;
+	return get_border_top_color(style, color);
 }
-#undef CSS_BORDER_TOP_COLOR_MASK
-#undef CSS_BORDER_TOP_COLOR_SHIFT
-#undef CSS_BORDER_TOP_COLOR_INDEX
 
-#define CSS_BORDER_RIGHT_COLOR_INDEX 7
-#define CSS_BORDER_RIGHT_COLOR_SHIFT 0
-#define CSS_BORDER_RIGHT_COLOR_MASK  0x3
-uint8_t css_computed_border_right_color(
-		const css_computed_style *style, 
+uint8_t css_computed_border_right_color(const css_computed_style *style,
 		css_color *color)
 {
-	uint8_t bits = style->bits[CSS_BORDER_RIGHT_COLOR_INDEX];
-	bits &= CSS_BORDER_RIGHT_COLOR_MASK;
-	bits >>= CSS_BORDER_RIGHT_COLOR_SHIFT;
-
-	/* 2bits: type */
-	*color = style->border_color[1];
-
-	return bits;
+	return get_border_right_color(style, color);
 }
-#undef CSS_BORDER_RIGHT_COLOR_MASK
-#undef CSS_BORDER_RIGHT_COLOR_SHIFT
-#undef CSS_BORDER_RIGHT_COLOR_INDEX
 
-#define CSS_BORDER_BOTTOM_COLOR_INDEX 8
-#define CSS_BORDER_BOTTOM_COLOR_SHIFT 0
-#define CSS_BORDER_BOTTOM_COLOR_MASK  0x3
-uint8_t css_computed_border_bottom_color(
-		const css_computed_style *style, 
+uint8_t css_computed_border_bottom_color(const css_computed_style *style,
 		css_color *color)
 {
-	uint8_t bits = style->bits[CSS_BORDER_BOTTOM_COLOR_INDEX];
-	bits &= CSS_BORDER_BOTTOM_COLOR_MASK;
-	bits >>= CSS_BORDER_BOTTOM_COLOR_SHIFT;
-
-	/* 2bits: type */
-	*color = style->border_color[2];
-
-	return bits;
+	return get_border_bottom_color(style, color);
 }
-#undef CSS_BORDER_BOTTOM_COLOR_MASK
-#undef CSS_BORDER_BOTTOM_COLOR_SHIFT
-#undef CSS_BORDER_BOTTOM_COLOR_INDEX
 
-#define CSS_BORDER_LEFT_COLOR_INDEX 9
-#define CSS_BORDER_LEFT_COLOR_SHIFT 0
-#define CSS_BORDER_LEFT_COLOR_MASK  0x3
-uint8_t css_computed_border_left_color(
-		const css_computed_style *style, 
+uint8_t css_computed_border_left_color(const css_computed_style *style,
 		css_color *color)
 {
-	uint8_t bits = style->bits[CSS_BORDER_LEFT_COLOR_INDEX];
-	bits &= CSS_BORDER_LEFT_COLOR_MASK;
-	bits >>= CSS_BORDER_LEFT_COLOR_SHIFT;
-
-	/* 2bits: type */
-	*color = style->border_color[3];
-
-	return bits;
+	return get_border_left_color(style, color);
 }
-#undef CSS_BORDER_LEFT_COLOR_MASK
-#undef CSS_BORDER_LEFT_COLOR_SHIFT
-#undef CSS_BORDER_LEFT_COLOR_INDEX
 
-#define CSS_HEIGHT_INDEX 10
-#define CSS_HEIGHT_SHIFT 2
-#define CSS_HEIGHT_MASK  0xfc
-uint8_t css_computed_height(
-		const css_computed_style *style, 
+uint8_t css_computed_height(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_HEIGHT_INDEX];
-	bits &= CSS_HEIGHT_MASK;
-	bits >>= CSS_HEIGHT_SHIFT;
-
-	/* 6bits: uuuutt : units | type */
-	if ((bits & 0x3) == CSS_HEIGHT_SET) {
-		*length = style->height;
-		*unit = (css_unit) (bits >> 2);
-	}
-
-	return (bits & 0x3);
+	return get_height(style, length, unit);
 }
-#undef CSS_HEIGHT_MASK
-#undef CSS_HEIGHT_SHIFT
-#undef CSS_HEIGHT_INDEX
 
-#define CSS_LINE_HEIGHT_INDEX 11
-#define CSS_LINE_HEIGHT_SHIFT 2
-#define CSS_LINE_HEIGHT_MASK  0xfc
-uint8_t css_computed_line_height(
-		const css_computed_style *style, 
+uint8_t css_computed_line_height(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_LINE_HEIGHT_INDEX];
-	bits &= CSS_LINE_HEIGHT_MASK;
-	bits >>= CSS_LINE_HEIGHT_SHIFT;
-
-	/* 6bits: uuuutt : units | type */
-	if ((bits & 0x3) == CSS_LINE_HEIGHT_NUMBER || 
-			(bits & 0x3) == CSS_LINE_HEIGHT_DIMENSION) {
-		*length = style->line_height;
-	}
-
-	if ((bits & 0x3) == CSS_LINE_HEIGHT_DIMENSION) {
-		*unit = (css_unit) (bits >> 2);
-	}
-
-	return (bits & 0x3);
+	return get_line_height(style, length, unit);
 }
-#undef CSS_LINE_HEIGHT_MASK
-#undef CSS_LINE_HEIGHT_SHIFT
-#undef CSS_LINE_HEIGHT_INDEX
 
-#define CSS_BACKGROUND_COLOR_INDEX 10
-#define CSS_BACKGROUND_COLOR_SHIFT 0
-#define CSS_BACKGROUND_COLOR_MASK  0x3
-uint8_t css_computed_background_color(
-		const css_computed_style *style, 
+uint8_t css_computed_background_color(const css_computed_style *style,
 		css_color *color)
 {
-	uint8_t bits = style->bits[CSS_BACKGROUND_COLOR_INDEX];
-	bits &= CSS_BACKGROUND_COLOR_MASK;
-	bits >>= CSS_BACKGROUND_COLOR_SHIFT;
-
-	/* 2bits: type */
-	*color = style->background_color;
-
-	return bits;
+	return get_background_color(style, color);
 }
-#undef CSS_BACKGROUND_COLOR_MASK
-#undef CSS_BACKGROUND_COLOR_SHIFT
-#undef CSS_BACKGROUND_COLOR_INDEX
 
-#define CSS_Z_INDEX_INDEX 11
-#define CSS_Z_INDEX_SHIFT 0
-#define CSS_Z_INDEX_MASK  0x3
-uint8_t css_computed_z_index(
-		const css_computed_style *style, 
+uint8_t css_computed_z_index(const css_computed_style *style,
 		int32_t *z_index)
 {
-	uint8_t bits = style->bits[CSS_Z_INDEX_INDEX];
-	bits &= CSS_Z_INDEX_MASK;
-	bits >>= CSS_Z_INDEX_SHIFT;
-
-	/* 2bits: type */
-	*z_index = style->z_index;
-
-	return bits;
+	return get_z_index(style, z_index);
 }
-#undef CSS_Z_INDEX_MASK
-#undef CSS_Z_INDEX_SHIFT
-#undef CSS_Z_INDEX_INDEX
 
-#define CSS_MARGIN_TOP_INDEX 12
-#define CSS_MARGIN_TOP_SHIFT 2
-#define CSS_MARGIN_TOP_MASK  0xfc
-uint8_t css_computed_margin_top(
-		const css_computed_style *style, 
+uint8_t css_computed_margin_top(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_MARGIN_TOP_INDEX];
-	bits &= CSS_MARGIN_TOP_MASK;
-	bits >>= CSS_MARGIN_TOP_SHIFT;
-
-	/* 6bits: uuuutt : units | type */
-	if ((bits & 0x3) == CSS_MARGIN_SET) {
-		*length = style->margin[0];
-		*unit = (css_unit) (bits >> 2);
-	}
-
-	return (bits & 0x3);
+	return get_margin_top(style, length, unit);
 }
-#undef CSS_MARGIN_TOP_MASK
-#undef CSS_MARGIN_TOP_SHIFT
-#undef CSS_MARGIN_TOP_INDEX
 
-#define CSS_MARGIN_RIGHT_INDEX 13
-#define CSS_MARGIN_RIGHT_SHIFT 2
-#define CSS_MARGIN_RIGHT_MASK  0xfc
-uint8_t css_computed_margin_right(
-		const css_computed_style *style, 
+uint8_t css_computed_margin_right(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_MARGIN_RIGHT_INDEX];
-	bits &= CSS_MARGIN_RIGHT_MASK;
-	bits >>= CSS_MARGIN_RIGHT_SHIFT;
-
-	/* 6bits: uuuutt : units | type */
-	if ((bits & 0x3) == CSS_MARGIN_SET) {
-		*length = style->margin[1];
-		*unit = (css_unit) (bits >> 2);
-	}
-
-	return (bits & 0x3);
+	return get_margin_right(style, length, unit);
 }
-#undef CSS_MARGIN_RIGHT_MASK
-#undef CSS_MARGIN_RIGHT_SHIFT
-#undef CSS_MARGIN_RIGHT_INDEX
 
-#define CSS_MARGIN_BOTTOM_INDEX 14
-#define CSS_MARGIN_BOTTOM_SHIFT 2
-#define CSS_MARGIN_BOTTOM_MASK  0xfc
-uint8_t css_computed_margin_bottom(
-		const css_computed_style *style, 
+uint8_t css_computed_margin_bottom(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_MARGIN_BOTTOM_INDEX];
-	bits &= CSS_MARGIN_BOTTOM_MASK;
-	bits >>= CSS_MARGIN_BOTTOM_SHIFT;
-
-	/* 6bits: uuuutt : units | type */
-	if ((bits & 0x3) == CSS_MARGIN_SET) {
-		*length = style->margin[2];
-		*unit = (css_unit) (bits >> 2);
-	}
-
-	return (bits & 0x3);
+	return get_margin_bottom(style, length, unit);
 }
-#undef CSS_MARGIN_BOTTOM_MASK
-#undef CSS_MARGIN_BOTTOM_SHIFT
-#undef CSS_MARGIN_BOTTOM_INDEX
 
-#define CSS_MARGIN_LEFT_INDEX 15
-#define CSS_MARGIN_LEFT_SHIFT 2
-#define CSS_MARGIN_LEFT_MASK  0xfc
-uint8_t css_computed_margin_left(
-		const css_computed_style *style, 
+uint8_t css_computed_margin_left(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_MARGIN_LEFT_INDEX];
-	bits &= CSS_MARGIN_LEFT_MASK;
-	bits >>= CSS_MARGIN_LEFT_SHIFT;
-
-	/* 6bits: uuuutt : units | type */
-	if ((bits & 0x3) == CSS_MARGIN_SET) {
-		*length = style->margin[3];
-		*unit = (css_unit) (bits >> 2);
-	}
-
-	return (bits & 0x3);
+	return get_margin_left(style, length, unit);
 }
-#undef CSS_MARGIN_LEFT_MASK
-#undef CSS_MARGIN_LEFT_SHIFT
-#undef CSS_MARGIN_LEFT_INDEX
 
-#define CSS_BACKGROUND_ATTACHMENT_INDEX 12
-#define CSS_BACKGROUND_ATTACHMENT_SHIFT 0
-#define CSS_BACKGROUND_ATTACHMENT_MASK  0x3
-uint8_t css_computed_background_attachment(
-		const css_computed_style *style)
+uint8_t css_computed_background_attachment(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_BACKGROUND_ATTACHMENT_INDEX];
-	bits &= CSS_BACKGROUND_ATTACHMENT_MASK;
-	bits >>= CSS_BACKGROUND_ATTACHMENT_SHIFT;
-
-	/* 2bits: type */
-	return bits;
+	return get_background_attachment(style);
 }
-#undef CSS_BACKGROUND_ATTACHMENT_MASK
-#undef CSS_BACKGROUND_ATTACHMENT_SHIFT
-#undef CSS_BACKGROUND_ATTACHMENT_INDEX
 
-#define CSS_BORDER_COLLAPSE_INDEX 13
-#define CSS_BORDER_COLLAPSE_SHIFT 0
-#define CSS_BORDER_COLLAPSE_MASK  0x3
-uint8_t css_computed_border_collapse(
-		const css_computed_style *style)
+uint8_t css_computed_border_collapse(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_BORDER_COLLAPSE_INDEX];
-	bits &= CSS_BORDER_COLLAPSE_MASK;
-	bits >>= CSS_BORDER_COLLAPSE_SHIFT;
-
-	/* 2bits: type */
-	return bits;
+	return get_border_collapse(style);
 }
-#undef CSS_BORDER_COLLAPSE_MASK
-#undef CSS_BORDER_COLLAPSE_SHIFT
-#undef CSS_BORDER_COLLAPSE_INDEX
 
-#define CSS_CAPTION_SIDE_INDEX 14
-#define CSS_CAPTION_SIDE_SHIFT 0
-#define CSS_CAPTION_SIDE_MASK  0x3
-uint8_t css_computed_caption_side(
-		const css_computed_style *style)
+uint8_t css_computed_caption_side(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_CAPTION_SIDE_INDEX];
-	bits &= CSS_CAPTION_SIDE_MASK;
-	bits >>= CSS_CAPTION_SIDE_SHIFT;
-
-	/* 2bits: type */
-	return bits;
+	return get_caption_side(style);
 }
-#undef CSS_CAPTION_SIDE_MASK
-#undef CSS_CAPTION_SIDE_SHIFT
-#undef CSS_CAPTION_SIDE_INDEX
 
-#define CSS_DIRECTION_INDEX 15
-#define CSS_DIRECTION_SHIFT 0
-#define CSS_DIRECTION_MASK  0x3
-uint8_t css_computed_direction(
-		const css_computed_style *style)
+uint8_t css_computed_direction(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_DIRECTION_INDEX];
-	bits &= CSS_DIRECTION_MASK;
-	bits >>= CSS_DIRECTION_SHIFT;
-
-	/* 2bits: type */
-	return bits;
+	return get_direction(style);
 }
-#undef CSS_DIRECTION_MASK
-#undef CSS_DIRECTION_SHIFT
-#undef CSS_DIRECTION_INDEX
 
-#define CSS_MAX_HEIGHT_INDEX 16
-#define CSS_MAX_HEIGHT_SHIFT 2
-#define CSS_MAX_HEIGHT_MASK  0xfc
-uint8_t css_computed_max_height(
-		const css_computed_style *style, 
+uint8_t css_computed_max_height(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_MAX_HEIGHT_INDEX];
-	bits &= CSS_MAX_HEIGHT_MASK;
-	bits >>= CSS_MAX_HEIGHT_SHIFT;
-
-	/* 6bits: uuuutt : units | type */
-	if ((bits & 0x3) == CSS_MAX_HEIGHT_SET) {
-		*length = style->max_height;
-		*unit = (css_unit) (bits >> 2);
-	}
-
-	return (bits & 0x3);
+	return get_max_height(style, length, unit);
 }
-#undef CSS_MAX_HEIGHT_MASK
-#undef CSS_MAX_HEIGHT_SHIFT
-#undef CSS_MAX_HEIGHT_INDEX
 
-#define CSS_MAX_WIDTH_INDEX 17
-#define CSS_MAX_WIDTH_SHIFT 2
-#define CSS_MAX_WIDTH_MASK  0xfc
-uint8_t css_computed_max_width(
-		const css_computed_style *style, 
+uint8_t css_computed_max_width(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_MAX_WIDTH_INDEX];
-	bits &= CSS_MAX_WIDTH_MASK;
-	bits >>= CSS_MAX_WIDTH_SHIFT;
-
-	/* 6bits: uuuutt : units | type */
-	if ((bits & 0x3) == CSS_MAX_WIDTH_SET) {
-		*length = style->max_width;
-		*unit = (css_unit) (bits >> 2);
-	}
-
-	return (bits & 0x3);
+	return get_max_width(style, length, unit);
 }
-#undef CSS_MAX_WIDTH_MASK
-#undef CSS_MAX_WIDTH_SHIFT
-#undef CSS_MAX_WIDTH_INDEX
 
-#define CSS_WIDTH_INDEX 18
-#define CSS_WIDTH_SHIFT 2
-#define CSS_WIDTH_MASK  0xfc
-uint8_t css_computed_width(
-		const css_computed_style *style, 
+uint8_t css_computed_width(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_WIDTH_INDEX];
-	bits &= CSS_WIDTH_MASK;
-	bits >>= CSS_WIDTH_SHIFT;
-
-	/* 6bits: uuuutt : units | type */
-	if ((bits & 0x3) == CSS_WIDTH_SET) {
-		*length = style->width;
-		*unit = (css_unit) (bits >> 2);
-	}
-
-	return (bits & 0x3);
+	return get_width(style, length, unit);
 }
-#undef CSS_WIDTH_MASK
-#undef CSS_WIDTH_SHIFT
-#undef CSS_WIDTH_INDEX
 
-#define CSS_EMPTY_CELLS_INDEX 16
-#define CSS_EMPTY_CELLS_SHIFT 0
-#define CSS_EMPTY_CELLS_MASK  0x3
-uint8_t css_computed_empty_cells(
-		const css_computed_style *style)
+uint8_t css_computed_empty_cells(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_EMPTY_CELLS_INDEX];
-	bits &= CSS_EMPTY_CELLS_MASK;
-	bits >>= CSS_EMPTY_CELLS_SHIFT;
-
-	/* 2bits: type */
-	return bits;
+	return get_empty_cells(style);
 }
-#undef CSS_EMPTY_CELLS_MASK
-#undef CSS_EMPTY_CELLS_SHIFT
-#undef CSS_EMPTY_CELLS_INDEX
 
 #define CSS_FLOAT_INDEX 17
 #define CSS_FLOAT_SHIFT 0
@@ -1517,345 +771,95 @@ uint8_t css_computed_float(
 #undef CSS_FLOAT_SHIFT
 #undef CSS_FLOAT_INDEX
 
-#define CSS_FONT_STYLE_INDEX 18
-#define CSS_FONT_STYLE_SHIFT 0
-#define CSS_FONT_STYLE_MASK  0x3
-uint8_t css_computed_font_style(
-		const css_computed_style *style)
+uint8_t css_computed_font_style(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_FONT_STYLE_INDEX];
-	bits &= CSS_FONT_STYLE_MASK;
-	bits >>= CSS_FONT_STYLE_SHIFT;
-
-	/* 2bits: type */
-	return bits;
+	return get_font_style(style);
 }
-#undef CSS_FONT_STYLE_MASK
-#undef CSS_FONT_STYLE_SHIFT
-#undef CSS_FONT_STYLE_INDEX
 
-#define CSS_MIN_HEIGHT_INDEX 19
-#define CSS_MIN_HEIGHT_SHIFT 3
-#define CSS_MIN_HEIGHT_MASK  0xf8
-uint8_t css_computed_min_height(
-		const css_computed_style *style, 
+uint8_t css_computed_min_height(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_MIN_HEIGHT_INDEX];
-	bits &= CSS_MIN_HEIGHT_MASK;
-	bits >>= CSS_MIN_HEIGHT_SHIFT;
-
-	/* 5bits: uuuut : units | type */
-	if ((bits & 0x1) == CSS_MIN_HEIGHT_SET) {
-		*length = style->min_height;
-		*unit = (css_unit) (bits >> 1);
-	}
-
-	return (bits & 0x1);
+	return get_min_height(style, length, unit);
 }
-#undef CSS_MIN_HEIGHT_MASK
-#undef CSS_MIN_HEIGHT_SHIFT
-#undef CSS_MIN_HEIGHT_INDEX
 
-#define CSS_MIN_WIDTH_INDEX 20
-#define CSS_MIN_WIDTH_SHIFT 3
-#define CSS_MIN_WIDTH_MASK  0xf8
-uint8_t css_computed_min_width(
-		const css_computed_style *style, 
+uint8_t css_computed_min_width(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_MIN_WIDTH_INDEX];
-	bits &= CSS_MIN_WIDTH_MASK;
-	bits >>= CSS_MIN_WIDTH_SHIFT;
-
-	/* 5bits: uuuut : units | type */
-	if ((bits & 0x1) == CSS_MIN_WIDTH_SET) {
-		*length = style->min_width;
-		*unit = (css_unit) (bits >> 1);
-	}
-
-	return (bits & 0x1);
+	return get_min_width(style, length, unit);
 }
-#undef CSS_MIN_WIDTH_MASK
-#undef CSS_MIN_WIDTH_SHIFT
-#undef CSS_MIN_WIDTH_INDEX
 
-#define CSS_BACKGROUND_REPEAT_INDEX 19
-#define CSS_BACKGROUND_REPEAT_SHIFT 0
-#define CSS_BACKGROUND_REPEAT_MASK  0x7
-uint8_t css_computed_background_repeat(
-		const css_computed_style *style)
+uint8_t css_computed_background_repeat(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_BACKGROUND_REPEAT_INDEX];
-	bits &= CSS_BACKGROUND_REPEAT_MASK;
-	bits >>= CSS_BACKGROUND_REPEAT_SHIFT;
-
-	/* 3bits: type */
-	return bits;
+	return get_background_repeat(style);
 }
-#undef CSS_BACKGROUND_REPEAT_MASK
-#undef CSS_BACKGROUND_REPEAT_SHIFT
-#undef CSS_BACKGROUND_REPEAT_INDEX
 
-#define CSS_CLEAR_INDEX 20
-#define CSS_CLEAR_SHIFT 0
-#define CSS_CLEAR_MASK  0x7
-uint8_t css_computed_clear(
-		const css_computed_style *style)
+uint8_t css_computed_clear(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_CLEAR_INDEX];
-	bits &= CSS_CLEAR_MASK;
-	bits >>= CSS_CLEAR_SHIFT;
-
-	/* 3bits: type */
-	return bits;
+	return get_clear(style);
 }
-#undef CSS_CLEAR_MASK
-#undef CSS_CLEAR_SHIFT
-#undef CSS_CLEAR_INDEX
 
-#define CSS_PADDING_TOP_INDEX 21
-#define CSS_PADDING_TOP_SHIFT 3
-#define CSS_PADDING_TOP_MASK  0xf8
-uint8_t css_computed_padding_top(
-		const css_computed_style *style, 
+uint8_t css_computed_padding_top(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_PADDING_TOP_INDEX];
-	bits &= CSS_PADDING_TOP_MASK;
-	bits >>= CSS_PADDING_TOP_SHIFT;
-
-	/* 5bits: uuuut : units | type */
-	if ((bits & 0x1) == CSS_PADDING_SET) {
-		*length = style->padding[0];
-		*unit = (css_unit) (bits >> 1);
-	}
-
-	return (bits & 0x1);
+	return get_padding_top(style, length, unit);
 }
-#undef CSS_PADDING_TOP_MASK
-#undef CSS_PADDING_TOP_SHIFT
-#undef CSS_PADDING_TOP_INDEX
 
-#define CSS_PADDING_RIGHT_INDEX 22
-#define CSS_PADDING_RIGHT_SHIFT 3
-#define CSS_PADDING_RIGHT_MASK  0xf8
-uint8_t css_computed_padding_right(
-		const css_computed_style *style, 
+uint8_t css_computed_padding_right(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_PADDING_RIGHT_INDEX];
-	bits &= CSS_PADDING_RIGHT_MASK;
-	bits >>= CSS_PADDING_RIGHT_SHIFT;
-
-	/* 5bits: uuuut : units | type */
-	if ((bits & 0x1) == CSS_PADDING_SET) {
-		*length = style->padding[1];
-		*unit = (css_unit) (bits >> 1);
-	}
-
-	return (bits & 0x1);
+	return get_padding_right(style, length, unit);
 }
-#undef CSS_PADDING_RIGHT_MASK
-#undef CSS_PADDING_RIGHT_SHIFT
-#undef CSS_PADDING_RIGHT_INDEX
 
-#define CSS_PADDING_BOTTOM_INDEX 23
-#define CSS_PADDING_BOTTOM_SHIFT 3
-#define CSS_PADDING_BOTTOM_MASK  0xf8
-uint8_t css_computed_padding_bottom(
-		const css_computed_style *style, 
+uint8_t css_computed_padding_bottom(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_PADDING_BOTTOM_INDEX];
-	bits &= CSS_PADDING_BOTTOM_MASK;
-	bits >>= CSS_PADDING_BOTTOM_SHIFT;
-
-	/* 5bits: uuuut : units | type */
-	if ((bits & 0x1) == CSS_PADDING_SET) {
-		*length = style->padding[2];
-		*unit = (css_unit) (bits >> 1);
-	}
-
-	return (bits & 0x1);
+	return get_padding_bottom(style, length, unit);
 }
-#undef CSS_PADDING_BOTTOM_MASK
-#undef CSS_PADDING_BOTTOM_SHIFT
-#undef CSS_PADDING_BOTTOM_INDEX
 
-#define CSS_PADDING_LEFT_INDEX 24
-#define CSS_PADDING_LEFT_SHIFT 3
-#define CSS_PADDING_LEFT_MASK  0xf8
-uint8_t css_computed_padding_left(
-		const css_computed_style *style, 
+uint8_t css_computed_padding_left(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_PADDING_LEFT_INDEX];
-	bits &= CSS_PADDING_LEFT_MASK;
-	bits >>= CSS_PADDING_LEFT_SHIFT;
-
-	/* 5bits: uuuut : units | type */
-	if ((bits & 0x1) == CSS_PADDING_SET) {
-		*length = style->padding[3];
-		*unit = (css_unit) (bits >> 1);
-	}
-
-	return (bits & 0x1);
+	return get_padding_left(style, length, unit);
 }
-#undef CSS_PADDING_LEFT_MASK
-#undef CSS_PADDING_LEFT_SHIFT
-#undef CSS_PADDING_LEFT_INDEX
 
-#define CSS_OVERFLOW_INDEX 21
-#define CSS_OVERFLOW_SHIFT 0
-#define CSS_OVERFLOW_MASK  0x7
-uint8_t css_computed_overflow(
-		const css_computed_style *style)
+uint8_t css_computed_overflow(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_OVERFLOW_INDEX];
-	bits &= CSS_OVERFLOW_MASK;
-	bits >>= CSS_OVERFLOW_SHIFT;
-
-	/* 3bits: type */
-	return bits;
+	return get_overflow(style);
 }
-#undef CSS_OVERFLOW_MASK
-#undef CSS_OVERFLOW_SHIFT
-#undef CSS_OVERFLOW_INDEX
 
-#define CSS_POSITION_INDEX 22
-#define CSS_POSITION_SHIFT 0
-#define CSS_POSITION_MASK  0x7
-uint8_t css_computed_position(
-		const css_computed_style *style)
+uint8_t css_computed_position(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_POSITION_INDEX];
-	bits &= CSS_POSITION_MASK;
-	bits >>= CSS_POSITION_SHIFT;
-
-	/* 3bits: type */
-	return bits;
+	return get_position(style);
 }
-#undef CSS_POSITION_MASK
-#undef CSS_POSITION_SHIFT
-#undef CSS_POSITION_INDEX
 
-#define CSS_OPACITY_INDEX 23
-#define CSS_OPACITY_SHIFT 2
-#define CSS_OPACITY_MASK  0x04
-uint8_t css_computed_opacity(
-		const css_computed_style *style, 
+uint8_t css_computed_opacity(const css_computed_style *style,
 		css_fixed *opacity)
 {
-	uint8_t bits = style->bits[CSS_OPACITY_INDEX];
-	bits &= CSS_OPACITY_MASK;
-	bits >>= CSS_OPACITY_SHIFT;
-
-	/* 1bit: t : type */
-	if ((bits & 0x1) == CSS_OPACITY_SET) {
-		*opacity = style->opacity;
-	}
-
-	return (bits & 0x1);
+	return get_opacity(style, opacity);
 }
-#undef CSS_OPACITY_MASK
-#undef CSS_OPACITY_SHIFT
-#undef CSS_OPACITY_INDEX
 
-#define CSS_TEXT_TRANSFORM_INDEX 24
-#define CSS_TEXT_TRANSFORM_SHIFT 0
-#define CSS_TEXT_TRANSFORM_MASK  0x7
-uint8_t css_computed_text_transform(
-		const css_computed_style *style)
+uint8_t css_computed_text_transform(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_TEXT_TRANSFORM_INDEX];
-	bits &= CSS_TEXT_TRANSFORM_MASK;
-	bits >>= CSS_TEXT_TRANSFORM_SHIFT;
-
-	/* 3bits: type */
-	return bits;
+	return get_text_transform(style);
 }
-#undef CSS_TEXT_TRANSFORM_MASK
-#undef CSS_TEXT_TRANSFORM_SHIFT
-#undef CSS_TEXT_TRANSFORM_INDEX
 
-#define CSS_TEXT_INDENT_INDEX 25
-#define CSS_TEXT_INDENT_SHIFT 3
-#define CSS_TEXT_INDENT_MASK  0xf8
-uint8_t css_computed_text_indent(
-		const css_computed_style *style, 
+uint8_t css_computed_text_indent(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_TEXT_INDENT_INDEX];
-	bits &= CSS_TEXT_INDENT_MASK;
-	bits >>= CSS_TEXT_INDENT_SHIFT;
-
-	/* 5bits: uuuut : units | type */
-	if ((bits & 0x1) == CSS_TEXT_INDENT_SET) {
-		*length = style->text_indent;
-		*unit = (css_unit) (bits >> 1);
-	}
-
-	return (bits & 0x1);
+	return get_text_indent(style, length, unit);
 }
-#undef CSS_TEXT_INDENT_MASK
-#undef CSS_TEXT_INDENT_SHIFT
-#undef CSS_TEXT_INDENT_INDEX
 
-#define CSS_WHITE_SPACE_INDEX 25
-#define CSS_WHITE_SPACE_SHIFT 0
-#define CSS_WHITE_SPACE_MASK  0x7
-uint8_t css_computed_white_space(
-		const css_computed_style *style)
+uint8_t css_computed_white_space(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_WHITE_SPACE_INDEX];
-	bits &= CSS_WHITE_SPACE_MASK;
-	bits >>= CSS_WHITE_SPACE_SHIFT;
-
-	/* 3bits: type */
-	return bits;
+	return get_white_space(style);
 }
-#undef CSS_WHITE_SPACE_MASK
-#undef CSS_WHITE_SPACE_SHIFT
-#undef CSS_WHITE_SPACE_INDEX
 
-#define CSS_BACKGROUND_POSITION_INDEX 27
-#define CSS_BACKGROUND_POSITION_SHIFT 7
-#define CSS_BACKGROUND_POSITION_MASK  0x80
-#define CSS_BACKGROUND_POSITION_INDEX1 26
-#define CSS_BACKGROUND_POSITION_SHIFT1 0
-#define CSS_BACKGROUND_POSITION_MASK1 0xff
-uint8_t css_computed_background_position(
-		const css_computed_style *style, 
+uint8_t css_computed_background_position(const css_computed_style *style,
 		css_fixed *hlength, css_unit *hunit,
 		css_fixed *vlength, css_unit *vunit)
 {
-	uint8_t bits = style->bits[CSS_BACKGROUND_POSITION_INDEX];
-	bits &= CSS_BACKGROUND_POSITION_MASK;
-	bits >>= CSS_BACKGROUND_POSITION_SHIFT;
-
-	/* 1bit: type */
-	if (bits == CSS_BACKGROUND_POSITION_SET) {
-		uint8_t bits1 = style->bits[CSS_BACKGROUND_POSITION_INDEX1];
-		bits1 &= CSS_BACKGROUND_POSITION_MASK1;
-		bits1 >>= CSS_BACKGROUND_POSITION_SHIFT1;
-
-		/* 8bits: hhhhvvvv : hunit | vunit */
-		*hlength = style->background_position[0];
-		*hunit = (css_unit) (bits1 >> 4);
-
-		*vlength = style->background_position[1];
-		*vunit = (css_unit) (bits1 & 0xf);
-	}
-
-	return bits;
+	return get_background_position(style, hlength, hunit, vlength, vunit);
 }
-#undef CSS_BACKGROUND_POSITION_MASK1
-#undef CSS_BACKGROUND_POSITION_SHIFT1
-#undef CSS_BACKGROUND_POSITION_INDEX1
-#undef CSS_BACKGROUND_POSITION_MASK
-#undef CSS_BACKGROUND_POSITION_SHIFT
-#undef CSS_BACKGROUND_POSITION_INDEX
 
 #define CSS_DISPLAY_INDEX 27
 #define CSS_DISPLAY_SHIFT 2
@@ -1899,342 +903,105 @@ uint8_t css_computed_display(
 	/* 5. */
 	return bits;
 }
-
-uint8_t css_computed_display_static(
-		const css_computed_style *style)
-{
-	uint8_t bits = style->bits[CSS_DISPLAY_INDEX];
-	bits &= CSS_DISPLAY_MASK;
-	bits >>= CSS_DISPLAY_SHIFT;
-
-	/* 5bits: type */
-	return bits;
-}
-
 #undef CSS_DISPLAY_MASK
 #undef CSS_DISPLAY_SHIFT
 #undef CSS_DISPLAY_INDEX
 
-#define CSS_FONT_VARIANT_INDEX 27
-#define CSS_FONT_VARIANT_SHIFT 0
-#define CSS_FONT_VARIANT_MASK  0x3
-uint8_t css_computed_font_variant(
-		const css_computed_style *style)
+uint8_t css_computed_display_static(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_FONT_VARIANT_INDEX];
-	bits &= CSS_FONT_VARIANT_MASK;
-	bits >>= CSS_FONT_VARIANT_SHIFT;
-
-	/* 2bits: type */
-	return bits;
+	return get_display_static(style);
 }
-#undef CSS_FONT_VARIANT_MASK
-#undef CSS_FONT_VARIANT_SHIFT
-#undef CSS_FONT_VARIANT_INDEX
 
-#define CSS_TEXT_DECORATION_INDEX 28
-#define CSS_TEXT_DECORATION_SHIFT 3
-#define CSS_TEXT_DECORATION_MASK  0xf8
-uint8_t css_computed_text_decoration(
-		const css_computed_style *style)
+uint8_t css_computed_font_variant(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_TEXT_DECORATION_INDEX];
-	bits &= CSS_TEXT_DECORATION_MASK;
-	bits >>= CSS_TEXT_DECORATION_SHIFT;
-
-	/* 5bits: type */
-	return bits;
+	return get_font_variant(style);
 }
-#undef CSS_TEXT_DECORATION_MASK
-#undef CSS_TEXT_DECORATION_SHIFT
-#undef CSS_TEXT_DECORATION_INDEX
 
-#define CSS_FONT_FAMILY_INDEX 28
-#define CSS_FONT_FAMILY_SHIFT 0
-#define CSS_FONT_FAMILY_MASK  0x7
-uint8_t css_computed_font_family(
-		const css_computed_style *style, 
+uint8_t css_computed_text_decoration(const css_computed_style *style)
+{
+	return get_text_decoration(style);
+}
+
+uint8_t css_computed_font_family(const css_computed_style *style,
 		lwc_string ***names)
 {
-	uint8_t bits = style->bits[CSS_FONT_FAMILY_INDEX];
-	bits &= CSS_FONT_FAMILY_MASK;
-	bits >>= CSS_FONT_FAMILY_SHIFT;
-
-	/* 3bits: type */
-	*names = style->font_family;
-
-	return bits;
+	return get_font_family(style, names);
 }
-#undef CSS_FONT_FAMILY_MASK
-#undef CSS_FONT_FAMILY_SHIFT
-#undef CSS_FONT_FAMILY_INDEX
 
-#define CSS_BORDER_TOP_STYLE_INDEX 29
-#define CSS_BORDER_TOP_STYLE_SHIFT 4
-#define CSS_BORDER_TOP_STYLE_MASK  0xf0
-uint8_t css_computed_border_top_style(
-		const css_computed_style *style)
+uint8_t css_computed_border_top_style(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_BORDER_TOP_STYLE_INDEX];
-	bits &= CSS_BORDER_TOP_STYLE_MASK;
-	bits >>= CSS_BORDER_TOP_STYLE_SHIFT;
-
-	/* 4bits: type */
-	return bits;
+	return get_border_top_style(style);
 }
-#undef CSS_BORDER_TOP_STYLE_MASK
-#undef CSS_BORDER_TOP_STYLE_SHIFT
-#undef CSS_BORDER_TOP_STYLE_INDEX
 
-#define CSS_BORDER_RIGHT_STYLE_INDEX 29
-#define CSS_BORDER_RIGHT_STYLE_SHIFT 0
-#define CSS_BORDER_RIGHT_STYLE_MASK  0xf
-uint8_t css_computed_border_right_style(
-		const css_computed_style *style)
+uint8_t css_computed_border_right_style(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_BORDER_RIGHT_STYLE_INDEX];
-	bits &= CSS_BORDER_RIGHT_STYLE_MASK;
-	bits >>= CSS_BORDER_RIGHT_STYLE_SHIFT;
-
-	/* 4bits: type */
-	return bits;
+	return get_border_right_style(style);
 }
-#undef CSS_BORDER_RIGHT_STYLE_MASK
-#undef CSS_BORDER_RIGHT_STYLE_SHIFT
-#undef CSS_BORDER_RIGHT_STYLE_INDEX
 
-#define CSS_BORDER_BOTTOM_STYLE_INDEX 30
-#define CSS_BORDER_BOTTOM_STYLE_SHIFT 4
-#define CSS_BORDER_BOTTOM_STYLE_MASK  0xf0
-uint8_t css_computed_border_bottom_style(
-		const css_computed_style *style)
+uint8_t css_computed_border_bottom_style(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_BORDER_BOTTOM_STYLE_INDEX];
-	bits &= CSS_BORDER_BOTTOM_STYLE_MASK;
-	bits >>= CSS_BORDER_BOTTOM_STYLE_SHIFT;
-
-	/* 4bits: type */
-	return bits;
+	return get_border_bottom_style(style);
 }
-#undef CSS_BORDER_BOTTOM_STYLE_MASK
-#undef CSS_BORDER_BOTTOM_STYLE_SHIFT
-#undef CSS_BORDER_BOTTOM_STYLE_INDEX
 
-#define CSS_BORDER_LEFT_STYLE_INDEX 30
-#define CSS_BORDER_LEFT_STYLE_SHIFT 0
-#define CSS_BORDER_LEFT_STYLE_MASK  0xf
-uint8_t css_computed_border_left_style(
-		const css_computed_style *style)
+uint8_t css_computed_border_left_style(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_BORDER_LEFT_STYLE_INDEX];
-	bits &= CSS_BORDER_LEFT_STYLE_MASK;
-	bits >>= CSS_BORDER_LEFT_STYLE_SHIFT;
-
-	/* 4bits: type */
-	return bits;
+	return get_border_left_style(style);
 }
-#undef CSS_BORDER_LEFT_STYLE_MASK
-#undef CSS_BORDER_LEFT_STYLE_SHIFT
-#undef CSS_BORDER_LEFT_STYLE_INDEX
 
-#define CSS_FONT_WEIGHT_INDEX 31
-#define CSS_FONT_WEIGHT_SHIFT 4
-#define CSS_FONT_WEIGHT_MASK  0xf0
-uint8_t css_computed_font_weight(
-		const css_computed_style *style)
+uint8_t css_computed_font_weight(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_FONT_WEIGHT_INDEX];
-	bits &= CSS_FONT_WEIGHT_MASK;
-	bits >>= CSS_FONT_WEIGHT_SHIFT;
-
-	/* 4bits: type */
-	return bits;
+	return get_font_weight(style);
 }
-#undef CSS_FONT_WEIGHT_MASK
-#undef CSS_FONT_WEIGHT_SHIFT
-#undef CSS_FONT_WEIGHT_INDEX
 
-#define CSS_LIST_STYLE_TYPE_INDEX 31
-#define CSS_LIST_STYLE_TYPE_SHIFT 0
-#define CSS_LIST_STYLE_TYPE_MASK  0xf
-uint8_t css_computed_list_style_type(
-		const css_computed_style *style)
+uint8_t css_computed_list_style_type(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_LIST_STYLE_TYPE_INDEX];
-	bits &= CSS_LIST_STYLE_TYPE_MASK;
-	bits >>= CSS_LIST_STYLE_TYPE_SHIFT;
-
-	/* 4bits: type */
-	return bits;
+	return get_list_style_type(style);
 }
-#undef CSS_LIST_STYLE_TYPE_MASK
-#undef CSS_LIST_STYLE_TYPE_SHIFT
-#undef CSS_LIST_STYLE_TYPE_INDEX
 
-#define CSS_OUTLINE_STYLE_INDEX 32
-#define CSS_OUTLINE_STYLE_SHIFT 4
-#define CSS_OUTLINE_STYLE_MASK  0xf0
-uint8_t css_computed_outline_style(
-		const css_computed_style *style)
+uint8_t css_computed_outline_style(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_OUTLINE_STYLE_INDEX];
-	bits &= CSS_OUTLINE_STYLE_MASK;
-	bits >>= CSS_OUTLINE_STYLE_SHIFT;
-
-	/* 4bits: type */
-	return bits;
+	return get_outline_style(style);
 }
-#undef CSS_OUTLINE_STYLE_MASK
-#undef CSS_OUTLINE_STYLE_SHIFT
-#undef CSS_OUTLINE_STYLE_INDEX
 
-#define CSS_TABLE_LAYOUT_INDEX 32
-#define CSS_TABLE_LAYOUT_SHIFT 2
-#define CSS_TABLE_LAYOUT_MASK  0xc
-uint8_t css_computed_table_layout(
-		const css_computed_style *style)
+uint8_t css_computed_table_layout(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_TABLE_LAYOUT_INDEX];
-	bits &= CSS_TABLE_LAYOUT_MASK;
-	bits >>= CSS_TABLE_LAYOUT_SHIFT;
-
-	/* 2bits: type */
-	return bits;
+	return get_table_layout(style);
 }
-#undef CSS_TABLE_LAYOUT_MASK
-#undef CSS_TABLE_LAYOUT_SHIFT
-#undef CSS_TABLE_LAYOUT_INDEX
 
-#define CSS_UNICODE_BIDI_INDEX 32
-#define CSS_UNICODE_BIDI_SHIFT 0
-#define CSS_UNICODE_BIDI_MASK  0x3
-uint8_t css_computed_unicode_bidi(
-		const css_computed_style *style)
+uint8_t css_computed_unicode_bidi(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_UNICODE_BIDI_INDEX];
-	bits &= CSS_UNICODE_BIDI_MASK;
-	bits >>= CSS_UNICODE_BIDI_SHIFT;
-
-	/* 2bits: type */
-	return bits;
+	return get_unicode_bidi(style);
 }
-#undef CSS_UNICODE_BIDI_MASK
-#undef CSS_UNICODE_BIDI_SHIFT
-#undef CSS_UNICODE_BIDI_INDEX
 
-#define CSS_VISIBILITY_INDEX 33
-#define CSS_VISIBILITY_SHIFT 6
-#define CSS_VISIBILITY_MASK  0xc0
-uint8_t css_computed_visibility(
-		const css_computed_style *style)
+uint8_t css_computed_visibility(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_VISIBILITY_INDEX];
-	bits &= CSS_VISIBILITY_MASK;
-	bits >>= CSS_VISIBILITY_SHIFT;
-
-	/* 2bits: type */
-	return bits;
+	return get_visibility(style);
 }
-#undef CSS_VISIBILITY_MASK
-#undef CSS_VISIBILITY_SHIFT
-#undef CSS_VISIBILITY_INDEX
 
-#define CSS_LIST_STYLE_POSITION_INDEX 33
-#define CSS_LIST_STYLE_POSITION_SHIFT 4
-#define CSS_LIST_STYLE_POSITION_MASK  0x30
-uint8_t css_computed_list_style_position(
-		const css_computed_style *style)
+uint8_t css_computed_list_style_position(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_LIST_STYLE_POSITION_INDEX];
-	bits &= CSS_LIST_STYLE_POSITION_MASK;
-	bits >>= CSS_LIST_STYLE_POSITION_SHIFT;
-
-	/* 2bits: type */
-	return bits;
+	return get_list_style_position(style);
 }
-#undef CSS_LIST_STYLE_POSITION_MASK
-#undef CSS_LIST_STYLE_POSITION_SHIFT
-#undef CSS_LIST_STYLE_POSITION_INDEX
 
-#define CSS_TEXT_ALIGN_INDEX 33
-#define CSS_TEXT_ALIGN_SHIFT 0
-#define CSS_TEXT_ALIGN_MASK  0xf
-uint8_t css_computed_text_align(
-		const css_computed_style *style)
+uint8_t css_computed_text_align(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_TEXT_ALIGN_INDEX];
-	bits &= CSS_TEXT_ALIGN_MASK;
-	bits >>= CSS_TEXT_ALIGN_SHIFT;
-
-	/* 4bits: type */
-	return bits;
+	return get_text_align(style);
 }
-#undef CSS_TEXT_ALIGN_MASK
-#undef CSS_TEXT_ALIGN_SHIFT
-#undef CSS_TEXT_ALIGN_INDEX
 
-#define CSS_PAGE_BREAK_AFTER_INDEX 0
-#define CSS_PAGE_BREAK_AFTER_SHIFT 0
-#define CSS_PAGE_BREAK_AFTER_MASK 0x7
-uint8_t css_computed_page_break_after(
-		const css_computed_style *style)
+uint8_t css_computed_page_break_after(const css_computed_style *style)
 {
-	if (style->page != NULL) {
-		uint8_t bits = style->page->bits[CSS_PAGE_BREAK_AFTER_INDEX];
-		bits &= CSS_PAGE_BREAK_AFTER_MASK;
-		bits >>= CSS_PAGE_BREAK_AFTER_SHIFT;
-	
-		/* 3bits: type */
-		return bits;
-	}
-    
-	return CSS_PAGE_BREAK_AFTER_AUTO;
+	return get_page_break_after(style);
 }
-#undef CSS_PAGE_BREAK_AFTER_MASK
-#undef CSS_PAGE_BREAK_AFTER_SHIFT
-#undef CSS_PAGE_BREAK_AFTER_INDEX
  
-#define CSS_PAGE_BREAK_BEFORE_INDEX 0
-#define CSS_PAGE_BREAK_BEFORE_SHIFT 3
-#define CSS_PAGE_BREAK_BEFORE_MASK 0x38
-uint8_t css_computed_page_break_before(
-		const css_computed_style *style)
+uint8_t css_computed_page_break_before(const css_computed_style *style)
 {
-	if (style->page != NULL) {
-		uint8_t bits = style->page->bits[CSS_PAGE_BREAK_BEFORE_INDEX];
-		bits &= CSS_PAGE_BREAK_BEFORE_MASK;
-		bits >>= CSS_PAGE_BREAK_BEFORE_SHIFT;
-	
-		/* 3bits: type */
-		return bits;
-	}
-    
-	return CSS_PAGE_BREAK_BEFORE_AUTO;
+	return get_page_break_before(style);
 }
-#undef CSS_PAGE_BREAK_BEFORE_MASK
-#undef CSS_PAGE_BREAK_BEFORE_SHIFT
-#undef CSS_PAGE_BREAK_BEFORE_INDEX
     
-#define CSS_PAGE_BREAK_INSIDE_INDEX 0
-#define CSS_PAGE_BREAK_INSIDE_SHIFT 6
-#define CSS_PAGE_BREAK_INSIDE_MASK 0xc0
-uint8_t css_computed_page_break_inside(
-	    const css_computed_style *style)
+uint8_t css_computed_page_break_inside(const css_computed_style *style)
 {
-	if (style->page != NULL) {
-		uint8_t bits = style->page->bits[CSS_PAGE_BREAK_INSIDE_INDEX];
-		bits &= CSS_PAGE_BREAK_INSIDE_MASK;
-		bits >>= CSS_PAGE_BREAK_INSIDE_SHIFT;
-	
-		/* 2bits: type */
-		return bits;
-	}
-    
-	return CSS_PAGE_BREAK_INSIDE_AUTO;
+	return get_page_break_inside(style);
 }
-#undef CSS_PAGE_BREAK_INSIDE_MASK
-#undef CSS_PAGE_BREAK_INSIDE_SHIFT
-#undef CSS_PAGE_BREAK_INSIDE_INDEX
 
 #define CSS_ORPHANS_INDEX 1
 #define CSS_ORPHANS_SHIFT 0

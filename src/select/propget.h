@@ -184,6 +184,8 @@ static inline uint8_t get_writing_mode(
 		uint8_t bits = style->uncommon->bits[WRITING_MODE_INDEX];
 		bits &= WRITING_MODE_MASK;
 		bits >>= WRITING_MODE_SHIFT;
+
+		/* 2bits: type */
 		return bits;
 	}
 
@@ -1500,7 +1502,6 @@ static inline uint8_t get_display_static(
 	/* 5bits: type */
 	return bits;
 }
-
 #undef DISPLAY_MASK
 #undef DISPLAY_SHIFT
 #undef DISPLAY_INDEX
