@@ -107,8 +107,8 @@ visibility.c \
 voice_family.c \
 volume.c \
 white_space.c \
+widows.c \
 width.c \
-windows.c \
 word_spacing.c \
 writing_mode.c \
 z_index.c
