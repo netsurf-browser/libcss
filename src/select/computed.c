@@ -749,27 +749,18 @@ uint8_t css_computed_empty_cells(const css_computed_style *style)
 	return get_empty_cells(style);
 }
 
-#define CSS_FLOAT_INDEX 17
-#define CSS_FLOAT_SHIFT 0
-#define CSS_FLOAT_MASK  0x3
-uint8_t css_computed_float(
-		const css_computed_style *style)
+uint8_t css_computed_float(const css_computed_style *style)
 {
-	uint8_t bits = style->bits[CSS_FLOAT_INDEX];
-	bits &= CSS_FLOAT_MASK;
-	bits >>= CSS_FLOAT_SHIFT;
+	uint8_t position = css_computed_position(style);
+	uint8_t value = get_float(style);
 
 	/* Fix up as per $9.7:2 */
-	if (css_computed_position(style) == CSS_POSITION_ABSOLUTE ||
-			css_computed_position(style) == CSS_POSITION_FIXED)
+	if (position == CSS_POSITION_ABSOLUTE ||
+			position == CSS_POSITION_FIXED)
 		return CSS_FLOAT_NONE;
 
-	/* 2bits: type */
-	return bits;
+	return value;
 }
-#undef CSS_FLOAT_MASK
-#undef CSS_FLOAT_SHIFT
-#undef CSS_FLOAT_INDEX
 
 uint8_t css_computed_font_style(const css_computed_style *style)
 {
