@@ -97,10 +97,10 @@ css_error css__compose_display(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
-	uint8_t type = get_display_static(child);
+	uint8_t type = get_display(child);
 
 	if (type == CSS_DISPLAY_INHERIT) {
-		type = get_display_static(parent);
+		type = get_display(parent);
 	}
 
 	return set_display(result, type);

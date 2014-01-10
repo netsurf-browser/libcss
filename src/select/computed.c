@@ -861,55 +861,45 @@ uint8_t css_computed_background_position(const css_computed_style *style,
 	return get_background_position(style, hlength, hunit, vlength, vunit);
 }
 
-#define CSS_DISPLAY_INDEX 27
-#define CSS_DISPLAY_SHIFT 2
-#define CSS_DISPLAY_MASK  0x7c
-uint8_t css_computed_display(
-		const css_computed_style *style, bool root)
+uint8_t css_computed_display(const css_computed_style *style,
+		bool root)
 {
-	uint8_t position;
-	uint8_t bits = style->bits[CSS_DISPLAY_INDEX];
-	bits &= CSS_DISPLAY_MASK;
-	bits >>= CSS_DISPLAY_SHIFT;
+	uint8_t position = css_computed_position(style);
+	uint8_t display = get_display(style);
 
 	/* Return computed display as per $9.7 */
-	position = css_computed_position(style);
 
-	/* 5bits: type */
-	if (bits == CSS_DISPLAY_NONE)
-		return bits; /* 1. */
+	if (display == CSS_DISPLAY_NONE)
+		return display; /* 1. */
 
 	if ((position == CSS_POSITION_ABSOLUTE || 
 			position == CSS_POSITION_FIXED) /* 2. */ ||
 			css_computed_float(style) != CSS_FLOAT_NONE /* 3. */ ||
 			root /* 4. */) {
-		if (bits == CSS_DISPLAY_INLINE_TABLE) {
+		if (display == CSS_DISPLAY_INLINE_TABLE) {
 			return CSS_DISPLAY_TABLE;
-		} else if (bits == CSS_DISPLAY_INLINE ||
-				bits == CSS_DISPLAY_RUN_IN ||
-				bits == CSS_DISPLAY_TABLE_ROW_GROUP ||
-				bits == CSS_DISPLAY_TABLE_COLUMN ||
-				bits == CSS_DISPLAY_TABLE_COLUMN_GROUP ||
-				bits == CSS_DISPLAY_TABLE_HEADER_GROUP ||
-				bits == CSS_DISPLAY_TABLE_FOOTER_GROUP ||
-				bits == CSS_DISPLAY_TABLE_ROW ||
-				bits == CSS_DISPLAY_TABLE_CELL ||
-				bits == CSS_DISPLAY_TABLE_CAPTION ||
-				bits == CSS_DISPLAY_INLINE_BLOCK) {
+		} else if (display == CSS_DISPLAY_INLINE ||
+				display == CSS_DISPLAY_RUN_IN ||
+				display == CSS_DISPLAY_TABLE_ROW_GROUP ||
+				display == CSS_DISPLAY_TABLE_COLUMN ||
+				display == CSS_DISPLAY_TABLE_COLUMN_GROUP ||
+				display == CSS_DISPLAY_TABLE_HEADER_GROUP ||
+				display == CSS_DISPLAY_TABLE_FOOTER_GROUP ||
+				display == CSS_DISPLAY_TABLE_ROW ||
+				display == CSS_DISPLAY_TABLE_CELL ||
+				display == CSS_DISPLAY_TABLE_CAPTION ||
+				display == CSS_DISPLAY_INLINE_BLOCK) {
 			return CSS_DISPLAY_BLOCK;
 		}
 	}
 
 	/* 5. */
-	return bits;
+	return display;
 }
-#undef CSS_DISPLAY_MASK
-#undef CSS_DISPLAY_SHIFT
-#undef CSS_DISPLAY_INDEX
 
 uint8_t css_computed_display_static(const css_computed_style *style)
 {
-	return get_display_static(style);
+	return get_display(style);
 }
 
 uint8_t css_computed_font_variant(const css_computed_style *style)
