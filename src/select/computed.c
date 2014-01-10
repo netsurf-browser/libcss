@@ -437,202 +437,132 @@ uint8_t css_computed_quotes(const css_computed_style *style,
 	return get_quotes(style, quotes);
 }
 
-#define CSS_TOP_INDEX 6
-#define CSS_TOP_SHIFT 2
-#define CSS_TOP_MASK  0xfc
-#define CSS_RIGHT_INDEX 7
-#define CSS_RIGHT_SHIFT 2
-#define CSS_RIGHT_MASK  0xfc
-#define CSS_BOTTOM_INDEX 8
-#define CSS_BOTTOM_SHIFT 2
-#define CSS_BOTTOM_MASK  0xfc
-#define CSS_LEFT_INDEX 9
-#define CSS_LEFT_SHIFT 2
-#define CSS_LEFT_MASK  0xfc
-uint8_t css_computed_top(
-		const css_computed_style *style, 
+uint8_t css_computed_top(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_TOP_INDEX];
-	bits &= CSS_TOP_MASK;
-	bits >>= CSS_TOP_SHIFT;
+	uint8_t position = css_computed_position(style);
+	uint8_t top = get_top(style, length, unit);
 
 	/* Fix up, based on computed position */
-	if (css_computed_position(style) == CSS_POSITION_STATIC) {
+	if (position == CSS_POSITION_STATIC) {
 		/* Static -> auto */
-		bits = CSS_TOP_AUTO;
-	} else if (css_computed_position(style) == CSS_POSITION_RELATIVE) {
+		top = CSS_TOP_AUTO;
+	} else if (position == CSS_POSITION_RELATIVE) {
 		/* Relative -> follow $9.4.3 */
-		uint8_t bottom = style->bits[CSS_BOTTOM_INDEX];
-		bottom &= CSS_BOTTOM_MASK;
-		bottom >>= CSS_BOTTOM_SHIFT;
+		uint8_t bottom = get_bottom_bits(style);
 
-		if ((bits & 0x3) == CSS_TOP_AUTO && 
-				(bottom & 0x3) == CSS_BOTTOM_AUTO) {
+		if (top == CSS_TOP_AUTO && (bottom & 0x3) == CSS_BOTTOM_AUTO) {
 			/* Both auto => 0px */
 			*length = 0;
 			*unit = CSS_UNIT_PX;
-		} else if ((bits & 0x3) == CSS_TOP_AUTO) {
+		} else if (top == CSS_TOP_AUTO) {
 			/* Top is auto => -bottom */
 			*length = -style->bottom;
 			*unit = (css_unit) (bottom >> 2);
-		} else {
-			*length = style->top;
-			*unit = (css_unit) (bits >> 2);
 		}
 
-		bits = CSS_TOP_SET;
-	} else if ((bits & 0x3) == CSS_TOP_SET) {
-		*length = style->top;
-		*unit = (css_unit) (bits >> 2);
+		top = CSS_TOP_SET;
 	}
 
-	/* 6bits: uuuutt : units | type */
-	return (bits & 0x3);
+	return top;
 }
 
-uint8_t css_computed_right(
-		const css_computed_style *style, 
+uint8_t css_computed_right(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_RIGHT_INDEX];
-	bits &= CSS_RIGHT_MASK;
-	bits >>= CSS_RIGHT_SHIFT;
+	uint8_t position = css_computed_position(style);
+	uint8_t right = get_right(style, length, unit);
 
 	/* Fix up, based on computed position */
-	if (css_computed_position(style) == CSS_POSITION_STATIC) {
+	if (position == CSS_POSITION_STATIC) {
 		/* Static -> auto */
-		bits = CSS_RIGHT_AUTO;
-	} else if (css_computed_position(style) == CSS_POSITION_RELATIVE) {
+		right = CSS_RIGHT_AUTO;
+	} else if (position == CSS_POSITION_RELATIVE) {
 		/* Relative -> follow $9.4.3 */
-		uint8_t left = style->bits[CSS_LEFT_INDEX];
-		left &= CSS_LEFT_MASK;
-		left >>= CSS_LEFT_SHIFT;
+		uint8_t left = get_left_bits(style);
 
-		if ((bits & 0x3) == CSS_RIGHT_AUTO && 
-				(left & 0x3) == CSS_LEFT_AUTO) {
+		if (right == CSS_RIGHT_AUTO && (left & 0x3) == CSS_LEFT_AUTO) {
 			/* Both auto => 0px */
 			*length = 0;
 			*unit = CSS_UNIT_PX;
-		} else if ((bits & 0x3) == CSS_RIGHT_AUTO) {
+		} else if (right == CSS_RIGHT_AUTO) {
 			/* Right is auto => -left */
 			*length = -style->left;
 			*unit = (css_unit) (left >> 2);
 		} else {
 			/** \todo Consider containing block's direction 
 			 * if overconstrained */
-			*length = style->right;
-			*unit = (css_unit) (bits >> 2);
 		}
 
-		bits = CSS_RIGHT_SET;
-	} else if ((bits & 0x3) == CSS_RIGHT_SET) {
-		*length = style->right;
-		*unit = (css_unit) (bits >> 2);
+		right = CSS_RIGHT_SET;
 	}
 
-	/* 6bits: uuuutt : units | type */
-	return (bits & 0x3);
+	return right;
 }
 
-uint8_t css_computed_bottom(
-		const css_computed_style *style, 
+uint8_t css_computed_bottom(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_BOTTOM_INDEX];
-	bits &= CSS_BOTTOM_MASK;
-	bits >>= CSS_BOTTOM_SHIFT;
+	uint8_t position = css_computed_position(style);
+	uint8_t bottom = get_bottom(style, length, unit);
 
 	/* Fix up, based on computed position */
-	if (css_computed_position(style) == CSS_POSITION_STATIC) {
+	if (position == CSS_POSITION_STATIC) {
 		/* Static -> auto */
-		bits = CSS_BOTTOM_AUTO;
-	} else if (css_computed_position(style) == CSS_POSITION_RELATIVE) {
+		bottom = CSS_BOTTOM_AUTO;
+	} else if (position == CSS_POSITION_RELATIVE) {
 		/* Relative -> follow $9.4.3 */
-		uint8_t top = style->bits[CSS_TOP_INDEX];
-		top &= CSS_TOP_MASK;
-		top >>= CSS_TOP_SHIFT;
+		uint8_t top = get_top_bits(style);
 
-		if ((bits & 0x3) == CSS_BOTTOM_AUTO &&
-				(top & 0x3) == CSS_TOP_AUTO) {
+		if (bottom == CSS_BOTTOM_AUTO && (top & 0x3) == CSS_TOP_AUTO) {
 			/* Both auto => 0px */
 			*length = 0;
 			*unit = CSS_UNIT_PX;
-		} else if ((bits & 0x3) == CSS_BOTTOM_AUTO || 
+		} else if (bottom == CSS_BOTTOM_AUTO ||
 				(top & 0x3) != CSS_TOP_AUTO) {
 			/* Bottom is auto or top is not auto => -top */
 			*length = -style->top;
 			*unit = (css_unit) (top >> 2);
-		} else {
-			*length = style->bottom;
-			*unit = (css_unit) (bits >> 2);
 		}
 
-		bits = CSS_BOTTOM_SET;
-	} else if ((bits & 0x3) == CSS_BOTTOM_SET) {
-		*length = style->bottom;
-		*unit = (css_unit) (bits >> 2);
+		bottom = CSS_BOTTOM_SET;
 	}
 
-	/* 6bits: uuuutt : units | type */
-	return (bits & 0x3);
+	return bottom;
 }
 
-uint8_t css_computed_left(
-		const css_computed_style *style, 
+uint8_t css_computed_left(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	uint8_t bits = style->bits[CSS_LEFT_INDEX];
-	bits &= CSS_LEFT_MASK;
-	bits >>= CSS_LEFT_SHIFT;
+	uint8_t position = css_computed_position(style);
+	uint8_t left = get_left(style, length, unit);
 
 	/* Fix up, based on computed position */
-	if (css_computed_position(style) == CSS_POSITION_STATIC) {
+	if (position == CSS_POSITION_STATIC) {
 		/* Static -> auto */
-		bits = CSS_LEFT_AUTO;
-	} else if (css_computed_position(style) == CSS_POSITION_RELATIVE) {
+		left = CSS_LEFT_AUTO;
+	} else if (position == CSS_POSITION_RELATIVE) {
 		/* Relative -> follow $9.4.3 */
-		uint8_t right = style->bits[CSS_RIGHT_INDEX];
-		right &= CSS_RIGHT_MASK;
-		right >>= CSS_RIGHT_SHIFT;
+		uint8_t right = get_right_bits(style);
 
-		if ((bits & 0x3) == CSS_LEFT_AUTO && 
-				(right & 0x3) == CSS_RIGHT_AUTO) {
+		if (left == CSS_LEFT_AUTO && (right & 0x3) == CSS_RIGHT_AUTO) {
 			/* Both auto => 0px */
 			*length = 0;
 			*unit = CSS_UNIT_PX;
-		} else if ((bits & 0x3) == CSS_LEFT_AUTO) {
+		} else if (left == CSS_LEFT_AUTO) {
 			/* Left is auto => -right */
 			*length = -style->right;
 			*unit = (css_unit) (right >> 2);
 		} else {
 			/** \todo Consider containing block's direction 
 			 * if overconstrained */
-			*length = style->left;
-			*unit = (css_unit) (bits >> 2);
 		}
 
-		bits = CSS_LEFT_SET;
-	} else if ((bits & 0x3) == CSS_LEFT_SET) {
-		*length = style->left;
-		*unit = (css_unit) (bits >> 2);
+		left = CSS_LEFT_SET;
 	}
 
-	/* 6bits: uuuutt : units | type */
-	return (bits & 0x3);
+	return left;
 }
-#undef CSS_LEFT_MASK
-#undef CSS_LEFT_SHIFT
-#undef CSS_LEFT_INDEX
-#undef CSS_BOTTOM_MASK
-#undef CSS_BOTTOM_SHIFT
-#undef CSS_BOTTOM_INDEX
-#undef CSS_RIGHT_MASK
-#undef CSS_RIGHT_SHIFT
-#undef CSS_RIGHT_INDEX
-#undef CSS_TOP_MASK
-#undef CSS_TOP_SHIFT
-#undef CSS_TOP_INDEX
 
 uint8_t css_computed_border_top_color(const css_computed_style *style,
 		css_color *color)

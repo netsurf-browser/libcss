@@ -603,6 +603,16 @@ static inline uint8_t get_top(
 
 	return (bits & 0x3);
 }
+static inline uint8_t get_top_bits(
+		const css_computed_style *style)
+{
+	uint8_t bits = style->bits[TOP_INDEX];
+	bits &= TOP_MASK;
+	bits >>= TOP_SHIFT;
+
+	/* 6bits: uuuutt : units | type */
+	return bits;
+}
 #undef TOP_MASK
 #undef TOP_SHIFT
 #undef TOP_INDEX
@@ -625,6 +635,16 @@ static inline uint8_t get_right(
 	}
 
 	return (bits & 0x3);
+}
+static inline uint8_t get_right_bits(
+		const css_computed_style *style)
+{
+	uint8_t bits = style->bits[RIGHT_INDEX];
+	bits &= RIGHT_MASK;
+	bits >>= RIGHT_SHIFT;
+
+	/* 6bits: uuuutt : units | type */
+	return bits;
 }
 #undef RIGHT_MASK
 #undef RIGHT_SHIFT
@@ -649,6 +669,16 @@ static inline uint8_t get_bottom(
 
 	return (bits & 0x3);
 }
+static inline uint8_t get_bottom_bits(
+		const css_computed_style *style)
+{
+	uint8_t bits = style->bits[BOTTOM_INDEX];
+	bits &= BOTTOM_MASK;
+	bits >>= BOTTOM_SHIFT;
+
+	/* 6bits: uuuutt : units | type */
+	return bits;
+}
 #undef BOTTOM_MASK
 #undef BOTTOM_SHIFT
 #undef BOTTOM_INDEX
@@ -671,6 +701,16 @@ static inline uint8_t get_left(
 	}
 
 	return (bits & 0x3);
+}
+static inline uint8_t get_left_bits(
+		const css_computed_style *style)
+{
+	uint8_t bits = style->bits[LEFT_INDEX];
+	bits &= LEFT_MASK;
+	bits >>= LEFT_SHIFT;
+
+	/* 6bits: uuuutt : units | type */
+	return bits;
 }
 #undef LEFT_MASK
 #undef LEFT_SHIFT
