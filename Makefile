@@ -57,5 +57,5 @@ INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/properties.h
 INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/select.h
 INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/stylesheet.h
 INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/types.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) /lib/pkgconfig:lib$(COMPONENT).pc.in
-INSTALL_ITEMS := $(INSTALL_ITEMS) /lib:$(OUTPUT)
+INSTALL_ITEMS := $(INSTALL_ITEMS) /$(LIBDIR)/pkgconfig:lib$(COMPONENT).pc.in
+INSTALL_ITEMS := $(INSTALL_ITEMS) /$(LIBDIR):$(OUTPUT)
