@@ -500,6 +500,7 @@ int main(int argc, char **argv)
 		outputf = fopen(argv[2], "w");
 		if (outputf == NULL) {
 			perror("unable to open file");
+			return 2; /* exit on output file output error */
 		}
 		descriptor = strdup(argv[3]);
 	} else {
