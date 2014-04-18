@@ -1,6 +1,6 @@
 # Component settings
 COMPONENT := css
-COMPONENT_VERSION := 0.2.0
+COMPONENT_VERSION := 0.3.0
 # Default to a static library
 COMPONENT_TYPE ?= lib-static
 
