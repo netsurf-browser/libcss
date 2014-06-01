@@ -233,9 +233,9 @@ struct css_computed_style {
  * 34 vvlltttt	visibility          | list-style-position   | text-align
  * 35 yyy.....	overflow-y          | <unused>
  */
-	uint8_t bits[34];
+	uint8_t bits[35];
 
-	uint8_t unused[2];
+	uint8_t unused[1];
 
 	css_color background_color;
 	lwc_string *background_image;
