@@ -319,7 +319,7 @@ struct prop_table prop_dispatch[CSS_N_PROPERTIES] = {
 		GROUP_UNCOMMON
 	},
 	{
-		PROPERTY_FUNCS(overflow),
+		PROPERTY_FUNCS(overflow_x),
 		0,
 		GROUP_NORMAL
 	},
@@ -577,5 +577,10 @@ struct prop_table prop_dispatch[CSS_N_PROPERTIES] = {
 		PROPERTY_FUNCS(writing_mode),
 		0,
 		GROUP_UNCOMMON
+	},
+	{
+		PROPERTY_FUNCS(overflow_y),
+		0,
+		GROUP_NORMAL
 	}
 };

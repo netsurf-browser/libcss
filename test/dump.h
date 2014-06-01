@@ -425,7 +425,7 @@ static const char *opcode_names[] = {
 	"outline-color",
 	"outline-style",
 	"outline-width",
-	"overflow",
+	"overflow-x",
 	"padding-top",
 	"padding-right",
 	"padding-bottom",
@@ -477,6 +477,7 @@ static const char *opcode_names[] = {
 	"column-span",
 	"column-width",
 	"writing-mode",
+	"overflow-y",
 };
 
 static void dump_css_fixed(css_fixed f, char **ptr)
@@ -2076,7 +2077,8 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					break;
 				}
 				break;
-			case CSS_PROP_OVERFLOW:
+			case CSS_PROP_OVERFLOW_X:
+			case CSS_PROP_OVERFLOW_Y:
 				switch (value) {
 				case OVERFLOW_VISIBLE:
 					*ptr += sprintf(*ptr, "visible");

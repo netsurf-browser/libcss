@@ -2447,11 +2447,11 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #reset
 
 ##
-## 3c - overflow
+## 3c - overflow-x
 ##
 
 #data
-* { overflow: visible; }
+* { overflow-x: visible; }
 #errors
 #expected
 | 1 *
@@ -2459,7 +2459,7 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #reset
 
 #data
-* { overflow: hidden; }
+* { overflow-x: hidden; }
 #errors
 #expected
 | 1 *
@@ -2467,7 +2467,7 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #reset
 
 #data
-* { overflow: scroll; }
+* { overflow-x: scroll; }
 #errors
 #expected
 | 1 *
@@ -2475,11 +2475,47 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #reset
 
 #data
-* { overflow: auto; }
+* { overflow-x: auto; }
 #errors
 #expected
 | 1 *
 |   0x000c003c
+#reset
+
+##
+## 70 - overflow-y
+##
+
+#data
+* { overflow-y: visible; }
+#errors
+#expected
+| 1 *
+|   0x00000070
+#reset
+
+#data
+* { overflow-y: hidden; }
+#errors
+#expected
+| 1 *
+|   0x00040070
+#reset
+
+#data
+* { overflow-y: scroll; }
+#errors
+#expected
+| 1 *
+|   0x00080070
+#reset
+
+#data
+* { overflow-y: auto; }
+#errors
+#expected
+| 1 *
+|   0x000c0070
 #reset
 
 ##

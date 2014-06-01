@@ -739,7 +739,7 @@ Opcodes
 					  0000010 => thick,
 					  other   => rffe.
 
-3c - overflow
+3c - overflow-x
 	<value> (14bits) :
 		0     => visible,
 		1     => hidden,
@@ -1241,6 +1241,13 @@ Opcodes
 			00000010 => vertical-lr,
 			other    => Reserved for future expansion.
 
+70 - overflow-y
+	<value> (14bits) :
+		0     => visible,
+		1     => hidden,
+		2     => scroll,
+		3     => auto,
+		other => Reserved for future expansion.
 
-70-3ff - Reserved for future expansion.
+71-3ff - Reserved for future expansion.
 

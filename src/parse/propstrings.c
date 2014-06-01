@@ -171,6 +171,8 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	{ "outline-style", SLEN("outline-style") },
 	{ "outline-width", SLEN("outline-width") },
 	{ "overflow", SLEN("overflow") },
+	{ "overflow-x", SLEN("overflow-x") },
+	{ "overflow-y", SLEN("overflow-y") },
 	{ "padding", SLEN("padding") },
 	{ "padding-bottom", SLEN("padding-bottom") },
 	{ "padding-left", SLEN("padding-left") },

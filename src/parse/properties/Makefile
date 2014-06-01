@@ -53,6 +53,7 @@ DIR_SOURCES :=				\
 	margin.c			\
 	opacity.c			\
 	outline.c			\
+	overflow.c			\
 	padding.c			\
 	pause.c				\
 	play_during.c			\

@@ -35,3 +35,24 @@ LibCSS 0.2.0 --> LibCSS 0.3.0
     get_libcss_node_data
       New selection handler function used to retrieve private cache belonging
       to libcss from document element nodes.
+
+
+LibCSS 0.3.0 --> LibCSS 0.4.0
+-----------------------------
+
+  The API is changed.
+
+  Due to the change from CSS2 overflow to CSS3 overflow properties, the
+  computed style access functions for overflow properties have changed.
+  The overflow property is removed.  Added are overflow-x and overflow-y
+  properties.  (The overflow shorthand property now sets overflow-x and
+  overflow-y.)
+
+  This change affects the following functions:
+
+    Removed from   include/libcss/computed.h    --  css_computed_overflow()
+
+    Added to       include/libcss/computed.h    --  css_computed_overflow_x()
+
+    Added to       include/libcss/computed.h    --  css_computed_overflow_y()
+

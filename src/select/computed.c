@@ -743,9 +743,14 @@ uint8_t css_computed_padding_left(const css_computed_style *style,
 	return get_padding_left(style, length, unit);
 }
 
-uint8_t css_computed_overflow(const css_computed_style *style)
+uint8_t css_computed_overflow_x(const css_computed_style *style)
 {
-	return get_overflow(style);
+	return get_overflow_x(style);
+}
+
+uint8_t css_computed_overflow_y(const css_computed_style *style)
+{
+	return get_overflow_y(style);
 }
 
 uint8_t css_computed_position(const css_computed_style *style)

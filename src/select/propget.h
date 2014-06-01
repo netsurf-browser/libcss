@@ -1338,22 +1338,39 @@ static inline uint8_t get_padding_left(
 #undef PADDING_LEFT_SHIFT
 #undef PADDING_LEFT_INDEX
 
-#define OVERFLOW_INDEX 21
-#define OVERFLOW_SHIFT 0
-#define OVERFLOW_MASK  0x7
-static inline uint8_t get_overflow(
+#define OVERFLOW_X_INDEX 21
+#define OVERFLOW_X_SHIFT 0
+#define OVERFLOW_X_MASK  0x7
+static inline uint8_t get_overflow_x(
 		const css_computed_style *style)
 {
-	uint8_t bits = style->bits[OVERFLOW_INDEX];
-	bits &= OVERFLOW_MASK;
-	bits >>= OVERFLOW_SHIFT;
+	uint8_t bits = style->bits[OVERFLOW_X_INDEX];
+	bits &= OVERFLOW_X_MASK;
+	bits >>= OVERFLOW_X_SHIFT;
 
 	/* 3bits: type */
 	return bits;
 }
-#undef OVERFLOW_MASK
-#undef OVERFLOW_SHIFT
-#undef OVERFLOW_INDEX
+#undef OVERFLOW_X_MASK
+#undef OVERFLOW_X_SHIFT
+#undef OVERFLOW_X_INDEX
+
+#define OVERFLOW_Y_INDEX 34
+#define OVERFLOW_Y_SHIFT 5
+#define OVERFLOW_Y_MASK  0xe0
+static inline uint8_t get_overflow_y(
+		const css_computed_style *style)
+{
+	uint8_t bits = style->bits[OVERFLOW_Y_INDEX];
+	bits &= OVERFLOW_Y_MASK;
+	bits >>= OVERFLOW_Y_SHIFT;
+
+	/* 3bits: type */
+	return bits;
+}
+#undef OVERFLOW_Y_MASK
+#undef OVERFLOW_Y_SHIFT
+#undef OVERFLOW_Y_INDEX
 
 #define POSITION_INDEX 22
 #define POSITION_SHIFT 0

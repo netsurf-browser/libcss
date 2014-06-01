@@ -1918,23 +1918,48 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	ptr += wrote;
 	*len -= wrote;
 
-	/* overflow */
-	val = css_computed_overflow(style);
+	/* overflow-x */
+	val = css_computed_overflow_x(style);
 	switch (val) {
 	case CSS_OVERFLOW_INHERIT:
-		wrote = snprintf(ptr, *len, "overflow: inherit\n");
+		wrote = snprintf(ptr, *len, "overflow-x: inherit\n");
 		break;
 	case CSS_OVERFLOW_VISIBLE:
-		wrote = snprintf(ptr, *len, "overflow: visible\n");
+		wrote = snprintf(ptr, *len, "overflow-x: visible\n");
 		break;
 	case CSS_OVERFLOW_HIDDEN:
-		wrote = snprintf(ptr, *len, "overflow: hidden\n");
+		wrote = snprintf(ptr, *len, "overflow-x: hidden\n");
 		break;
 	case CSS_OVERFLOW_SCROLL:
-		wrote = snprintf(ptr, *len, "overflow: scroll\n");
+		wrote = snprintf(ptr, *len, "overflow-x: scroll\n");
 		break;
 	case CSS_OVERFLOW_AUTO:
-		wrote = snprintf(ptr, *len, "overflow: auto\n");
+		wrote = snprintf(ptr, *len, "overflow-x: auto\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
+	/* overflow-y */
+	val = css_computed_overflow_y(style);
+	switch (val) {
+	case CSS_OVERFLOW_INHERIT:
+		wrote = snprintf(ptr, *len, "overflow-y: inherit\n");
+		break;
+	case CSS_OVERFLOW_VISIBLE:
+		wrote = snprintf(ptr, *len, "overflow-y: visible\n");
+		break;
+	case CSS_OVERFLOW_HIDDEN:
+		wrote = snprintf(ptr, *len, "overflow-y: hidden\n");
+		break;
+	case CSS_OVERFLOW_SCROLL:
+		wrote = snprintf(ptr, *len, "overflow-y: scroll\n");
+		break;
+	case CSS_OVERFLOW_AUTO:
+		wrote = snprintf(ptr, *len, "overflow-y: auto\n");
 		break;
 	default:
 		wrote = 0;

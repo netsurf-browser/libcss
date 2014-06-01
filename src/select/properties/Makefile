@@ -72,7 +72,8 @@ orphans.c \
 outline_color.c \
 outline_style.c \
 outline_width.c \
-overflow.c \
+overflow_x.c \
+overflow_y.c \
 padding_bottom.c \
 padding_left.c \
 padding_right.c \

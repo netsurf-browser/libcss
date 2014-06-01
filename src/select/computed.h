@@ -218,7 +218,7 @@ struct css_computed_style {
  * 19 wwwwwwff	width               | font-style
  * 20 mmmmmbbb	min-height          | background-repeat
  * 21 mmmmmccc	min-width           | clear
- * 22 tttttooo	padding-top         | overflow
+ * 22 tttttxxx	padding-top         | overflow-x
  * 23 rrrrrppp	padding-right       | position
  * 24 bbbbbo..	padding-bottom      | opacity               | <unused>
  * 25 lllllttt	padding-left        | text-transform
@@ -231,6 +231,7 @@ struct css_computed_style {
  * 32 ffffllll	font-weight         | list-style-type
  * 33 oooottuu	outline-style       | table-layout          | unicode-bidi
  * 34 vvlltttt	visibility          | list-style-position   | text-align
+ * 35 yyy.....	overflow-y          | <unused>
  */
 	uint8_t bits[34];
 

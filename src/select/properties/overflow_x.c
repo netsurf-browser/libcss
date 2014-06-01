@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_overflow(uint32_t opv, css_style *style, 
+css_error css__cascade_overflow_x(uint32_t opv, css_style *style, 
 		css_select_state *state)
 {
 	uint16_t value = CSS_OVERFLOW_INHERIT;
@@ -40,33 +40,33 @@ css_error css__cascade_overflow(uint32_t opv, css_style *style,
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
 			isInherit(opv))) {
-		return set_overflow(state->computed, value);
+		return set_overflow_x(state->computed, value);
 	}
 
 	return CSS_OK;
 }
 
-css_error css__set_overflow_from_hint(const css_hint *hint,
+css_error css__set_overflow_x_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
-	return set_overflow(style, hint->status);
+	return set_overflow_x(style, hint->status);
 }
 
-css_error css__initial_overflow(css_select_state *state)
+css_error css__initial_overflow_x(css_select_state *state)
 {
-	return set_overflow(state->computed, CSS_OVERFLOW_VISIBLE);
+	return set_overflow_x(state->computed, CSS_OVERFLOW_VISIBLE);
 }
 
-css_error css__compose_overflow(const css_computed_style *parent,
+css_error css__compose_overflow_x(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
-	uint8_t type = get_overflow(child);
+	uint8_t type = get_overflow_x(child);
 
 	if (type == CSS_OVERFLOW_INHERIT) {
-		type = get_overflow(parent);
+		type = get_overflow_x(parent);
 	}
 
-	return set_overflow(result, type);
+	return set_overflow_x(result, type);
 }
 
