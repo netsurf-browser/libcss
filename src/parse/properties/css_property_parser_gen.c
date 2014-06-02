@@ -523,7 +523,8 @@ int main(int argc, char **argv)
 	while (*curpos != 0) {
 		rkv = get_keyval(&curpos);
 		if (rkv == NULL) {
-			fprintf(stderr,"Token error at offset %ld\n", curpos - descriptor);
+			fprintf(stderr,"Token error at offset %ld\n",
+					(long)(curpos - descriptor));
 			fclose(outputf);
 			return 2;
 		}
