@@ -1,7 +1,7 @@
 prefix=PREFIX
 exec_prefix=${prefix}
 libdir=${exec_prefix}/LIBDIR
-includedir=${prefix}/include
+includedir=${prefix}/INCLUDEDIR
 
 Name: libcss
 Description: CSS parsing and selection library

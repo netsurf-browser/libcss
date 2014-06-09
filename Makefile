@@ -44,7 +44,7 @@ endif
 include $(NSBUILD)/Makefile.top
 
 # Extra installation rules
-I := /include/libcss
+I := /$(INCLUDEDIR)/libcss
 
 INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/computed.h
 INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/errors.h
