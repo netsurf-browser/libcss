@@ -734,13 +734,14 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 		opcode_t op;
 		uint32_t value;
 		uint32_t opv = *((uint32_t *) bytecode);
+		uint32_t i;
 
 		ADVANCE(sizeof(opv));
 
 		op = getOpcode(opv);
 
 		*((*ptr)++) = '|';
-		for (uint32_t i = 0; i < depth; i++)
+		for (i = 0; i < depth; i++)
 			*((*ptr)++) = ' ';
 		*ptr += sprintf(*ptr, "%s: ", opcode_names[op]);
 
@@ -2659,10 +2660,10 @@ void dump_font_face(css_font_face *font_face, char **ptr)
 		uint32_t i;
 		css_font_face_src *srcs = font_face->srcs;
 		for (i = 0; i < font_face->n_srcs; ++i) {
+			css_font_face_format format;
 			*ptr += sprintf(*ptr, "\n|  src: ");
 			
-			css_font_face_format format = 
-					css_font_face_src_format(&srcs[i]);
+			format = css_font_face_src_format(&srcs[i]);
 			
 			*ptr += sprintf(*ptr, "\n|   format: ");
 			
