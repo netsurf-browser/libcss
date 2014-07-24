@@ -356,7 +356,7 @@ void css__make_style_important(css_style *style)
 				break;
 
 			case CSS_PROP_PLAY_DURING:
-				if (value == PLAY_DURING_URI)
+				if (value & PLAY_DURING_URI)
 					offset++; /* string table entry */
 				break;
 
