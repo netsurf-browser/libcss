@@ -123,6 +123,30 @@
 #reset
 
 #data
+* { azimuth: behind !important; }
+#errors
+#expected
+| 1 *
+|   0x00900400
+#reset
+
+#data
+* { azimuth: behind far-right !important; }
+#errors
+#expected
+| 1 *
+|   0x009c0400
+#reset
+
+#data
+* { azimuth: far-right behind !important; }
+#errors
+#expected
+| 1 *
+|   0x009c0400
+#reset
+
+#data
 * { azimuth: far-right; }
 #errors
 #expected
@@ -378,6 +402,14 @@
 |   0x00a00004 0x00002800 0x00000100
 #reset
 
+#data
+* { background-position: 10% 20% !important; }
+#errors
+#expected
+| 1 *
+|   0x02200404 0x00002800 0x00000100 0x00005000 0x00000100
+#reset
+
 ##
 ## 05 - background-repeat
 ##
@@ -460,6 +492,30 @@
 #expected
 | 1 *
 |   0x02000007 0x00000c00 0x00000000 0x00000a00 0x00000002
+#reset
+
+#data
+* { border-spacing: 3em !important; }
+#errors
+#expected
+| 1 *
+|   0x02000407 0x00000c00 0x00000002 0x00000c00 0x00000002
+#reset
+
+#data
+* { border-spacing: 2.5em 2.5em !important; }
+#errors
+#expected
+| 1 *
+|   0x02000407 0x00000a00 0x00000002 0x00000a00 0x00000002
+#reset
+
+#data
+* { border-spacing: 3px 2.5em !important; }
+#errors
+#expected
+| 1 *
+|   0x02000407 0x00000c00 0x00000000 0x00000a00 0x00000002
 #reset
 
 ##
@@ -779,6 +835,54 @@
 |   0x02000017 0x00000000 0x00000000 0x00037000 0x00000000 0x000006cd 0x00000002 0x00000000 0x00000000
 #reset
 
+#data
+* { clip: auto !important; }
+#errors
+#expected
+| 1 *
+|   0x00000417
+#reset
+
+#data
+* { clip: rect(10px, auto, auto, 10px) !important; }
+#errors
+#expected
+| 1 *
+|   0x02c00417 0x00002800 0x00000000 0x00002800 0x00000000
+#reset
+
+#data
+* { clip: rect(auto, auto, auto, auto) !important; }
+#errors
+#expected
+| 1 *
+|   0x03e00417
+#reset
+
+#data
+* { clip: rect(1px, 2px, 3px, 4px) !important; }
+#errors
+#expected
+| 1 *
+|   0x02000417 0x00000400 0x00000000 0x00000800 0x00000000 0x00000c00 0x00000000 0x00001000 0x00000000
+#reset
+
+#data
+* { clip: rect(auto 1em 1em auto) !important; }
+#errors
+#expected
+| 1 *
+|   0x03200417 0x00000400 0x00000002 0x00000400 0x00000002
+#reset
+
+#data
+* { clip: rect(0px, 220px, 1.7em, 0px) !important }
+#errors
+#expected
+| 1 *
+|   0x02000417 0x00000000 0x00000000 0x00037000 0x00000000 0x000006cd 0x00000002 0x00000000 0x00000000
+#reset
+
 ##
 ## 18 - color
 ##
@@ -927,6 +1031,126 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 |   0x00080019 0x00000081 PTR(http://picodrive.acornarcade.com/) 0x00000080 PTR( : ) 0x00000084 PTR(name) 0x00000080 PTR( ) 0x00000382 PTR(x) 0x00000080 PTR(.) 0x00000383 PTR(y) PTR(.) 0x00000003 0x00000000
 #reset
 
+#data
+p:after { content: normal !important; }
+#errors
+#expected
+| 1 p:after
+|   0x00000419
+#reset
+
+#data
+p:after { content: none !important; }
+#errors
+#expected
+| 1 p:after
+|   0x00040419
+#reset
+
+#data
+p:before { content: open-quote !important; }
+#errors
+#expected
+| 1 p:before
+|   0x00080419 0x00000000
+#reset
+
+#data
+p:after { content: close-quote !important; }
+#errors
+#expected
+| 1 p:after
+|   0x000c0419 0x00000000
+#reset
+
+#data
+p:before { content: no-open-quote !important; }
+#errors
+#expected
+| 1 p:before
+|   0x00100419 0x00000000
+#reset
+
+#data
+p:after { content: no-close-quote !important; }
+#errors
+#expected
+| 1 p:after
+|   0x00140419 0x00000000
+#reset
+
+#data
+a:after { content: " a" !important; }
+#errors
+#expected
+| 1 a:after
+|   0x02000419 PTR( a) 0x00000000
+#reset
+
+#data
+p:after { content: url("http://www.netsurf-browser.org/") !important; }
+#errors
+#expected
+| 1 p:after
+|   0x02040419 PTR(http://www.netsurf-browser.org/) 0x00000000
+#reset
+
+#data
+p:after { content: counter(n) !important; }
+#errors
+#expected
+| 1 p:after
+|   0x0e080419 PTR(n) 0x00000000
+#reset
+
+#data
+p:after { content: counter(n, upper-roman) !important; }
+#errors
+#expected
+| 1 p:after
+|   0x1a080419 PTR(n) 0x00000000
+#reset
+
+#data
+p:after { content: counters(n, ".") !important; }
+#errors
+#expected
+| 1 p:after
+|   0x0e0c0419 PTR(n) PTR(.) 0x00000000
+#reset
+
+#data
+p:after { content: counters(n, '.', disc) !important; }
+#errors
+#expected
+| 1 p:after
+|   0x020c0419 PTR(n) PTR(.) 0x00000000
+#reset
+
+#data
+p:after { content: attr(name) !important; }
+#errors
+#expected
+| 1 p:after
+|   0x02100419 PTR(name) 0x00000000
+#reset
+
+#data
+h2:before { content: "Chapter " counter(chapters) ': \'' !important; }
+#errors
+#expected
+| 1 h2:before
+|   0x02000419 PTR(Chapter ) 0x00000382 PTR(chapters) 0x00000080 PTR(: ') 0x00000000
+#reset
+
+#data
+p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " attr(name) " " counter(x) "." counters(y, ".") close-quote !important; }
+#errors
+#expected
+| 1 p:before
+|   0x00080419 0x00000081 PTR(http://picodrive.acornarcade.com/) 0x00000080 PTR( : ) 0x00000084 PTR(name) 0x00000080 PTR( ) 0x00000382 PTR(x) 0x00000080 PTR(.) 0x00000383 PTR(y) PTR(.) 0x00000003 0x00000000
+#reset
+
 ##
 ## 1a - counter-increment
 ##
@@ -977,6 +1201,54 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #expected
 | 1 *
 |   0x0200001a PTR(moose) 0x00000400 0x00000080 PTR(a) 0x00000400 0x00000000
+#reset
+
+#data
+* { counter-increment: none !important; }
+#errors
+#expected
+| 1 *
+|   0x0000041a
+#reset
+
+#data
+* { counter-increment: a !important; }
+#errors
+#expected
+| 1 *
+|   0x0200041a PTR(a) 0x00000400 0x00000000
+#reset
+
+#data
+* { counter-increment: moose 10 !important; }
+#errors
+#expected
+| 1 *
+|   0x0200041a PTR(moose) 0x00002800 0x00000000
+#reset
+
+#data
+* { counter-increment: a moose 10 !important; }
+#errors
+#expected
+| 1 *
+|   0x0200041a PTR(a) 0x00000400 0x00000080 PTR(moose) 0x00002800 0x00000000
+#reset
+
+#data
+* { counter-increment: a 2 moose !important; }
+#errors
+#expected
+| 1 *
+|   0x0200041a PTR(a) 0x00000800 0x00000080 PTR(moose) 0x00000400 0x00000000
+#reset
+
+#data
+* { counter-increment: moose a !important; }
+#errors
+#expected
+| 1 *
+|   0x0200041a PTR(moose) 0x00000400 0x00000080 PTR(a) 0x00000400 0x00000000
 #reset
 
 ##
@@ -1220,6 +1492,14 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #reset
 
 #data
+* { cursor: url(cursor.png), pointer !important; }
+#errors
+#expected
+| 1 *
+|   0x0200041e PTR(cursor.png) 0x00000003
+#reset
+
+#data
 * { cursor: url(cursor.svg), url(cursor.png), pointer; }
 #errors
 #expected
@@ -1453,6 +1733,22 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #expected
 | 1 *
 |   0x02000021 0x00000324 0x00000202
+#reset
+
+#data
+* { elevation: lower !important; }
+#errors
+#expected
+| 1 *
+|   0x00100421
+#reset
+
+#data
+* { elevation: 45deg !important; }
+#errors
+#expected
+| 1 *
+|   0x02000421 0x0000b400 0x00000200
 #reset
 
 ##
@@ -1911,6 +2207,14 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 |   0x0200002b 0x00000152 0x00000004
 #reset
 
+#data
+* { letter-spacing: 0.33cm !important; }
+#errors
+#expected
+| 1 *
+|   0x0200042b 0x00000152 0x00000004
+#reset
+
 ##
 ## 2c - line-height
 ##
@@ -1937,6 +2241,22 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #expected
 | 1 *
 |   0x0204002c 0x00003000 0x00000005
+#reset
+
+#data
+* { line-height: 1.2 !important; }
+#errors
+#expected
+| 1 *
+|   0x0200042c 0x000004cd
+#reset
+
+#data
+* { line-height: 12mm !important; }
+#errors
+#expected
+| 1 *
+|   0x0204042c 0x00003000 0x00000005
 #reset
 
 #data
@@ -2200,6 +2520,14 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #expected
 | 1 *
 |   0x02000034 0x00019000 0x00000000
+#reset
+
+#data
+* { max-height: 100px !important; }
+#errors
+#expected
+| 1 *
+|   0x02000434 0x00019000 0x00000000
 #reset
 
 #data
@@ -2765,6 +3093,14 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 |   0x02000046 0x00019000
 #reset
 
+#data
+* { pitch-range: 100 !important; }
+#errors
+#expected
+| 1 *
+|   0x02000446 0x00019000
+#reset
+
 ##
 ## 47 - pitch
 ##
@@ -2818,6 +3154,14 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #reset
 
 #data
+* { pitch: 0 !important; }
+#errors
+#expected
+| 1 *
+|   0x02000447 0x00000000 0x00000800
+#reset
+
+#data
 * { pitch: 400Hz; }
 #errors
 #expected
@@ -2851,6 +3195,14 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #expected
 | 1 *
 |   0x00040048
+#reset
+
+#data
+* { play-during: none !important; }
+#errors
+#expected
+| 1 *
+|   0x00040448
 #reset
 
 #data
@@ -2891,6 +3243,14 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #expected
 | 1 *
 |   0x02800048 PTR(death_rattle.wav)
+#reset
+
+#data
+* { play-during: url(death_rattle.wav) repeat !important; }
+#errors
+#expected
+| 1 *
+|   0x02800448 PTR(death_rattle.wav)
 #reset
 
 ##
@@ -2955,6 +3315,14 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #expected
 | 1 *
 |   0x0200004a PTR(') PTR(') 0x00000080 PTR(") PTR(") 0x00000000
+#reset
+
+#data
+* { quotes: "'" '\'' '"' '"' !important; }
+#errors
+#expected
+| 1 *
+|   0x0200044a PTR(') PTR(') 0x00000080 PTR(") PTR(") 0x00000000
 #reset
 
 ##
@@ -3169,6 +3537,14 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 |   0x02000051 0x0002f800
 #reset
 
+#data
+* { speech-rate: 190 !important; }
+#errors
+#expected
+| 1 *
+|   0x02000451 0x0002f800
+#reset
+
 ##
 ## 52 - stress
 ##
@@ -3179,6 +3555,14 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #expected
 | 1 *
 |   0x02000052 0x00000000
+#reset
+
+#data
+* { stress: 0 !important; }
+#errors
+#expected
+| 1 *
+|   0x02000452 0x00000000
 #reset
 
 #data
@@ -3534,6 +3918,14 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #reset
 
 #data
+* { vertical-align: -10% !important; }
+#errors
+#expected
+| 1 *
+|   0x0200045a 0xffffd800 0x00000100
+#reset
+
+#data
 * { vertical-align: -10%; }
 #errors
 #expected
@@ -3630,6 +4022,22 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #reset
 
 #data
+* { voice-family: child !important; }
+#errors
+#expected
+| 1 *
+|   0x000c045c 0x00000000
+#reset
+
+#data
+* { voice-family: romeo !important; }
+#errors
+#expected
+| 1 *
+|   0x0204045c PTR(romeo) 0x00000000
+#reset
+
+#data
 * { voice-family: "juliet"; }
 #errors
 #expected
@@ -3713,6 +4121,14 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 |   0x0200005d 0x0000c800
 #reset
 
+#data
+* { volume: 50 !important; }
+#errors
+#expected
+| 1 *
+|   0x0200045d 0x0000c800
+#reset
+
 # dunno if % can be tested here, cos it's a percentage of the inherited value
 #data
 * { volume: 33.33%; }
@@ -3720,6 +4136,15 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #expected
 | 1 *
 |   0x0204005d 0x00008552 0x00000100
+#reset
+
+# dunno if % can be tested here, cos it's a percentage of the inherited value
+#data
+* { volume: 33.33% !important; }
+#errors
+#expected
+| 1 *
+|   0x0204045d 0x00008552 0x00000100
 #reset
 
 ##
@@ -3844,6 +4269,22 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #expected
 | 1 *
 |   0x02000062 0x00000800
+#reset
+
+#data
+* { z-index: auto !important; }
+#errors
+#expected
+| 1 *
+|   0x00000462
+#reset
+
+#data
+* { z-index: 2 !important; }
+#errors
+#expected
+| 1 *
+|   0x02000462 0x00000800
 #reset
 
 #data

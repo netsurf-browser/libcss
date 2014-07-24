@@ -22,6 +22,14 @@
 #reset
 
 #data
+* { azimuth: 45deg !important }
+#errors
+#expected
+| *
+|  azimuth: 45deg !important
+#reset
+
+#data
 * { cursor: inherit }
 #errors
 #expected
