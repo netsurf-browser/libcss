@@ -7,6 +7,7 @@
 
 #include <assert.h>
 #include <string.h>
+#include <strings.h>
 
 #include "stylesheet.h"
 #include "bytecode/bytecode.h"
