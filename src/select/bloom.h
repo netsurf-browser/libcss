@@ -24,11 +24,6 @@
 #ifndef libcss_bloom_h_
 #define libcss_bloom_h_
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 #include <stdint.h>
 
 /* Size of bloom filter as multiple of 32 bits.
@@ -196,10 +191,6 @@ static inline void css_bloom_init(css_bloom bloom[CSS_BLOOM_SIZE])
 	bloom[15] = 0;
 #endif
 }
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 
