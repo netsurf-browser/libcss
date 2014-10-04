@@ -37,6 +37,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: #ffff0000
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -134,6 +135,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: #ffff0000
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -231,6 +233,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -328,6 +331,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -417,6 +421,7 @@ caption-side: top
 clear: none
 clip: auto
 color: #ff000000
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -504,6 +509,7 @@ caption-side: top
 clear: none
 clip: auto
 color: #ff000000
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -592,6 +598,7 @@ caption-side: top
 clear: none
 clip: auto
 color: #ff000000
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -680,6 +687,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -767,6 +775,7 @@ caption-side: top
 clear: none
 clip: auto
 color: #ff000000
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -859,6 +868,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -951,6 +961,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1044,6 +1055,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1140,6 +1152,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1235,6 +1248,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1336,6 +1350,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1437,6 +1452,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1538,6 +1554,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1643,6 +1660,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1747,6 +1765,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1849,6 +1868,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1950,6 +1970,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2051,6 +2072,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2152,6 +2174,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2253,6 +2276,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2354,6 +2378,7 @@ caption-side: inherit
 clear: inherit
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2455,6 +2480,7 @@ caption-side: inherit
 clear: left
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2556,6 +2582,7 @@ caption-side: inherit
 clear: both
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2657,6 +2684,7 @@ caption-side: inherit
 clear: right
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2758,6 +2786,7 @@ caption-side: inherit
 clear: right
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2859,6 +2888,7 @@ caption-side: inherit
 clear: right
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2960,6 +2990,7 @@ caption-side: inherit
 clear: right
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3061,6 +3092,7 @@ caption-side: inherit
 clear: right
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3162,6 +3194,7 @@ caption-side: inherit
 clear: right
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3263,6 +3296,7 @@ caption-side: inherit
 clear: right
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3364,6 +3398,7 @@ caption-side: inherit
 clear: right
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3465,6 +3500,7 @@ caption-side: inherit
 clear: right
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3566,6 +3602,7 @@ caption-side: inherit
 clear: right
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3667,6 +3704,7 @@ caption-side: inherit
 clear: right
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3768,6 +3806,7 @@ caption-side: inherit
 clear: right
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3869,6 +3908,7 @@ caption-side: inherit
 clear: right
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3963,6 +4003,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -4057,6 +4098,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -4151,6 +4193,7 @@ caption-side: inherit
 clear: none
 clip: auto
 color: inherit
+column-count: auto
 content: normal
 counter-increment: none
 counter-reset: none
@@ -4207,3 +4250,4 @@ word-spacing: inherit
 writing-mode: vertical-lr
 z-index: auto
 #reset
+

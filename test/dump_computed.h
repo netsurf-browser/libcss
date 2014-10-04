@@ -151,7 +151,7 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	const css_computed_content_item *content = NULL;
 	const css_computed_counter *counter = NULL;
 	lwc_string **string_list = NULL;
-	int32_t zindex = 0;
+	int32_t integer = 0;
 
 	/* background-attachment */
 	val = css_computed_background_attachment(style);
@@ -823,6 +823,25 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	}
         ptr += wrote;
         *len -= wrote;
+
+	/* column-count */
+	val = css_computed_column_count(style, &integer);
+	switch (val) {
+	case CSS_COLUMN_COUNT_INHERIT:
+		wrote = snprintf(ptr, *len, "column-count: inherit\n");
+		break;
+	case CSS_COLUMN_COUNT_AUTO:
+		wrote = snprintf(ptr, *len, "column-count: auto\n");
+		break;
+	case CSS_COLUMN_COUNT_SET:
+		wrote = snprintf(ptr, *len, "column-count: %d\n", integer);
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
 
 	/* content */
 	val = css_computed_content(style, &content);
@@ -2520,7 +2539,7 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	*len -= wrote;
 
 	/* z-index */
-	val = css_computed_z_index(style, &zindex);
+	val = css_computed_z_index(style, &integer);
 	switch (val) {
 	case CSS_Z_INDEX_INHERIT:
 		wrote = snprintf(ptr, *len, "z-index: inherit\n");
@@ -2529,7 +2548,7 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 		wrote = snprintf(ptr, *len, "z-index: auto\n");
 		break;
 	case CSS_Z_INDEX_SET:
-		wrote = snprintf(ptr, *len, "z-index: %d\n", zindex);
+		wrote = snprintf(ptr, *len, "z-index: %d\n", integer);
 		break;
 	default:
 		wrote = 0;
