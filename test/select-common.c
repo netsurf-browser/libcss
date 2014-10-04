@@ -721,6 +721,41 @@ void css__parse_expected(line_ctx *ctx, const char *data, size_t len)
 	ctx->expused += len;
 }
 
+static void show_differences(size_t len, const char *exp, const char *res)
+{
+	const char *pos_exp, *opos_exp;
+	const char *pos_res, *opos_res;
+
+	opos_exp = pos_exp = exp;
+	opos_res = pos_res = res;
+
+	printf("Line differences:\n");
+	while (pos_exp < exp + len && pos_res < res + len) {
+		if (*pos_exp == '\n' && *pos_res == '\n') {
+			if (pos_exp - opos_exp != pos_res - opos_res ||
+					memcmp(opos_exp, opos_res,
+					pos_exp - opos_exp) != 0) {
+				printf("Expected:\t%.*s\n",
+						(int)(pos_exp - opos_exp),
+						opos_exp);
+				printf("  Result:\t%.*s\n",
+						(int)(pos_res - opos_res),
+						opos_res);
+				printf("\n");
+			}
+			opos_exp = ++pos_exp;
+			opos_res = ++pos_res;
+		} else if (*pos_exp == '\n') {
+			pos_res++;
+		} else if (*pos_res == '\n') {
+			pos_exp++;
+		} else {
+			pos_exp++;
+			pos_res++;
+		}
+	}
+}
+
 void run_test(line_ctx *ctx, const char *exp, size_t explen)
 {
 	css_select_ctx *select;
@@ -756,10 +791,13 @@ void run_test(line_ctx *ctx, const char *exp, size_t explen)
 	dump_computed_style(results->styles[ctx->pseudo_element], buf, &buflen);
 
 	if (8192 - buflen != explen || memcmp(buf, exp, explen) != 0) {
+		size_t len = 8192 - buflen < explen ? 8192 - buflen : explen;
 		printf("Expected (%u):\n%.*s\n", 
 				(int) explen, (int) explen, exp);
 		printf("Result (%u):\n%.*s\n", (int) (8192 - buflen),
 			(int) (8192 - buflen), buf);
+
+		show_differences(len, exp, buf);
 		assert(0 && "Result doesn't match expected");
 	}
 
