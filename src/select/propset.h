@@ -25,10 +25,12 @@ static const css_computed_uncommon default_uncommon = {
 	  (CSS_CURSOR_INHERIT << 3) | (CSS_WRITING_MODE_INHERIT << 1) | 0,
 	  0,
 	  0,
-	  (CSS_CLIP_AUTO << 2) | CSS_CONTENT_NORMAL
+	  (CSS_CLIP_AUTO << 2) | CSS_CONTENT_NORMAL,
+	  (CSS_COLUMN_COUNT_AUTO << 6)
 	},
 	{ 0, 0 },
 	{ 0, 0, 0, 0 },
+	0,
 	0,
 	0,
 	0,
@@ -403,6 +405,30 @@ static inline css_error set_clip(
 #undef CLIP_MASK
 #undef CLIP_SHIFT
 #undef CLIP_INDEX
+
+#define COLUMN_COUNT_INDEX 8
+#define COLUMN_COUNT_SHIFT 6
+#define COLUMN_COUNT_MASK  0xc0
+static inline css_error set_column_count(
+		css_computed_style *style, uint8_t type, int32_t count)
+{
+	uint8_t *bits;
+
+	ENSURE_UNCOMMON;
+
+	bits = &style->uncommon->bits[COLUMN_COUNT_INDEX];
+
+	/* 2bits: tt : type */
+	*bits = (*bits & ~COLUMN_COUNT_MASK) |
+			((type & 0x3) << COLUMN_COUNT_SHIFT);
+
+	style->uncommon->column_count = count;
+
+	return CSS_OK;
+}
+#undef COLUMN_COUNT_MASK
+#undef COLUMN_COUNT_SHIFT
+#undef COLUMN_COUNT_INDEX
 
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0

@@ -342,6 +342,29 @@ static inline uint8_t get_clip(
 #undef CLIP_SHIFT
 #undef CLIP_INDEX
 
+#define COLUMN_COUNT_INDEX 8
+#define COLUMN_COUNT_SHIFT 6
+#define COLUMN_COUNT_MASK  0xc0
+static inline uint8_t get_column_count(
+		const css_computed_style *style, int32_t *count)
+{
+	if (style->uncommon != NULL) {
+		uint8_t bits = style->uncommon->bits[COLUMN_COUNT_INDEX];
+		bits &= COLUMN_COUNT_MASK;
+		bits >>= COLUMN_COUNT_SHIFT;
+
+		/* 2bits: tt : type */
+		*count = style->uncommon->column_count;
+
+		return bits;
+	}
+
+	return CSS_COLUMN_COUNT_AUTO;
+}
+#undef COLUMN_COUNT_MASK
+#undef COLUMN_COUNT_SHIFT
+#undef COLUMN_COUNT_INDEX
+
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0
 #define CONTENT_MASK  0x3
