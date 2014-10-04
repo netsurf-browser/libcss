@@ -332,6 +332,10 @@ uint8_t css_computed_background_position(
 		css_fixed *hlength, css_unit *hunit,
 		css_fixed *vlength, css_unit *vunit);
 
+uint8_t css_computed_column_count(
+		const css_computed_style *style,
+		int32_t *column_count);
+
 uint8_t css_computed_display(
 		const css_computed_style *style, bool root);
 
