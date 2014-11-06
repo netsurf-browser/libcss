@@ -282,8 +282,8 @@ enum css_column_fill_e {
 
 enum css_column_gap_e {
 	CSS_COLUMN_GAP_INHERIT			= 0x0,
-	CSS_COLUMN_GAP_NORMAL			= 0x1,
-	CSS_COLUMN_GAP_SET			= 0x2
+	CSS_COLUMN_GAP_SET			= 0x1,
+	CSS_COLUMN_GAP_NORMAL			= 0x2
 };
 
 enum css_column_rule_color_e {
@@ -474,9 +474,9 @@ enum css_left_e {
 };
 
 enum css_letter_spacing_e {
-	CSS_LETTER_SPACING_INHERIT		= 0x0,
-	CSS_LETTER_SPACING_SET			= 0x1,
-	CSS_LETTER_SPACING_NORMAL		= 0x2
+	CSS_LETTER_SPACING_INHERIT		= CSS_COLUMN_GAP_INHERIT,
+	CSS_LETTER_SPACING_SET			= CSS_COLUMN_GAP_SET,
+	CSS_LETTER_SPACING_NORMAL		= CSS_COLUMN_GAP_NORMAL
 };
 
 enum css_line_height_e {
