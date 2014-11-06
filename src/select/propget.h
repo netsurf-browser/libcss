@@ -365,6 +365,27 @@ static inline uint8_t get_column_count(
 #undef COLUMN_COUNT_SHIFT
 #undef COLUMN_COUNT_INDEX
 
+#define COLUMN_FILL_INDEX 8
+#define COLUMN_FILL_SHIFT 6
+#define COLUMN_FILL_MASK  0x30
+static inline uint8_t get_column_fill(
+		const css_computed_style *style)
+{
+	if (style->uncommon != NULL) {
+		uint8_t bits = style->uncommon->bits[COLUMN_FILL_INDEX];
+		bits &= COLUMN_FILL_MASK;
+		bits >>= COLUMN_FILL_SHIFT;
+
+		/* 2bits: type */
+		return bits;
+	}
+
+	return CSS_COLUMN_FILL_BALANCE;
+}
+#undef COLUMN_FILL_MASK
+#undef COLUMN_FILL_SHIFT
+#undef COLUMN_FILL_INDEX
+
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0
 #define CONTENT_MASK  0x3

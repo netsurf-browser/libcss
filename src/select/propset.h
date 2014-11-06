@@ -26,7 +26,7 @@ static const css_computed_uncommon default_uncommon = {
 	  0,
 	  0,
 	  (CSS_CLIP_AUTO << 2) | CSS_CONTENT_NORMAL,
-	  (CSS_COLUMN_COUNT_AUTO << 6)
+	  (CSS_COLUMN_COUNT_AUTO << 6) | (CSS_COLUMN_FILL_BALANCE << 4)
 	},
 	{ 0, 0 },
 	{ 0, 0, 0, 0 },
@@ -429,6 +429,28 @@ static inline css_error set_column_count(
 #undef COLUMN_COUNT_MASK
 #undef COLUMN_COUNT_SHIFT
 #undef COLUMN_COUNT_INDEX
+
+#define COLUMN_FILL_INDEX 8
+#define COLUMN_FILL_SHIFT 6
+#define COLUMN_FILL_MASK  0x30
+static inline css_error set_column_fill(
+		css_computed_style *style, uint8_t type)
+{
+	uint8_t *bits;
+
+	ENSURE_UNCOMMON;
+
+	bits = &style->uncommon->bits[COLUMN_FILL_INDEX];
+
+	/* 2bits: tt : type */
+	*bits = (*bits & ~COLUMN_FILL_MASK) |
+			((type & 0x3) << COLUMN_FILL_SHIFT);
+
+	return CSS_OK;
+}
+#undef COLUMN_FILL_MASK
+#undef COLUMN_FILL_SHIFT
+#undef COLUMN_FILL_INDEX
 
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0
