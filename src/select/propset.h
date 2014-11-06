@@ -26,10 +26,12 @@ static const css_computed_uncommon default_uncommon = {
 	  0,
 	  0,
 	  (CSS_CLIP_AUTO << 2) | CSS_CONTENT_NORMAL,
-	  (CSS_COLUMN_COUNT_AUTO << 6) | (CSS_COLUMN_FILL_BALANCE << 4)
+	  (CSS_COLUMN_COUNT_AUTO << 6) | (CSS_COLUMN_FILL_BALANCE << 4),
+	  (CSS_COLUMN_GAP_NORMAL << 2)
 	},
 	{ 0, 0 },
 	{ 0, 0, 0, 0 },
+	0,
 	0,
 	0,
 	0,
@@ -451,6 +453,31 @@ static inline css_error set_column_fill(
 #undef COLUMN_FILL_MASK
 #undef COLUMN_FILL_SHIFT
 #undef COLUMN_FILL_INDEX
+
+#define COLUMN_GAP_INDEX 9
+#define COLUMN_GAP_SHIFT 2
+#define COLUMN_GAP_MASK  0xfc
+static inline css_error set_column_gap(
+		css_computed_style *style, uint8_t type,
+		css_fixed length, css_unit unit)
+{
+	uint8_t *bits;
+
+	ENSURE_UNCOMMON;
+
+	bits = &style->uncommon->bits[COLUMN_GAP_INDEX];
+
+	/* 6bits: uuuutt : units | type */
+	*bits = (*bits & ~COLUMN_GAP_MASK) |
+			(((type & 0x3) | (unit << 2)) << COLUMN_GAP_SHIFT);
+
+	style->uncommon->column_gap = length;
+
+	return CSS_OK;
+}
+#undef COLUMN_GAP_MASK
+#undef COLUMN_GAP_SHIFT
+#undef COLUMN_GAP_INDEX
 
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0

@@ -386,6 +386,33 @@ static inline uint8_t get_column_fill(
 #undef COLUMN_FILL_SHIFT
 #undef COLUMN_FILL_INDEX
 
+#define COLUMN_GAP_INDEX 9
+#define COLUMN_GAP_SHIFT 2
+#define COLUMN_GAP_MASK  0xfc
+static inline uint8_t get_column_gap(
+		const css_computed_style *style,
+		css_fixed *length, css_unit *unit)
+{
+	if (style->uncommon != NULL) {
+		uint8_t bits = style->uncommon->bits[COLUMN_GAP_INDEX];
+		bits &= COLUMN_GAP_MASK;
+		bits >>= COLUMN_GAP_SHIFT;
+
+		/* 6bits: uuuutt : units | type */
+		if ((bits & 0x3) == CSS_COLUMN_GAP_SET) {
+			*length = style->uncommon->column_gap;
+			*unit = bits >> 2;
+		}
+
+		return (bits & 0x3);
+	}
+
+	return CSS_COLUMN_GAP_NORMAL;
+}
+#undef COLUMN_GAP_MASK
+#undef COLUMN_GAP_SHIFT
+#undef COLUMN_GAP_INDEX
+
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0
 #define CONTENT_MASK  0x3
