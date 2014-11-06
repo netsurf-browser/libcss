@@ -843,6 +843,25 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	ptr += wrote;
 	*len -= wrote;
 
+	/* column-fill */
+	val = css_computed_column_fill(style);
+	switch (val) {
+	case CSS_COLUMN_FILL_INHERIT:
+		wrote = snprintf(ptr, *len, "column-fill: inherit\n");
+		break;
+	case CSS_COLUMN_FILL_AUTO:
+		wrote = snprintf(ptr, *len, "column-fill: auto\n");
+		break;
+	case CSS_COLUMN_FILL_BALANCE:
+		wrote = snprintf(ptr, *len, "column-fill: balance\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
 	/* content */
 	val = css_computed_content(style, &content);
 	switch (val) {

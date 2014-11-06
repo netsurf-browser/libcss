@@ -38,6 +38,7 @@ clear: none
 clip: auto
 color: #ffff0000
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -136,6 +137,7 @@ clear: none
 clip: auto
 color: #ffff0000
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -234,6 +236,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -332,6 +335,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -422,6 +426,7 @@ clear: none
 clip: auto
 color: #ff000000
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -510,6 +515,7 @@ clear: none
 clip: auto
 color: #ff000000
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -599,6 +605,7 @@ clear: none
 clip: auto
 color: #ff000000
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -688,6 +695,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -776,6 +784,7 @@ clear: none
 clip: auto
 color: #ff000000
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -869,6 +878,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -962,6 +972,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1056,6 +1067,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1153,6 +1165,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1249,6 +1262,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1351,6 +1365,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1453,6 +1468,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1555,6 +1571,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1661,6 +1678,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1766,6 +1784,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1869,6 +1888,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1971,6 +1991,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2073,6 +2094,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2175,6 +2197,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2277,6 +2300,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2379,6 +2403,7 @@ clear: inherit
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2481,6 +2506,7 @@ clear: left
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2583,6 +2609,7 @@ clear: both
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2685,6 +2712,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2787,6 +2815,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2889,6 +2918,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2991,6 +3021,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3093,6 +3124,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3195,6 +3227,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3297,6 +3330,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3399,6 +3433,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3501,6 +3536,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3603,6 +3639,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3705,6 +3742,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3807,6 +3845,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3909,6 +3948,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -4004,6 +4044,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: balance
 content: normal
 counter-increment: none
 counter-reset: none
@@ -4099,6 +4140,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
@@ -4194,6 +4236,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
+column-fill: inherit
 content: normal
 counter-increment: none
 counter-reset: none
