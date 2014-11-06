@@ -20,7 +20,7 @@ static const css_computed_uncommon default_uncommon = {
 	{ (CSS_LETTER_SPACING_INHERIT << 2) | CSS_OUTLINE_COLOR_INVERT,
 	  (CSS_OUTLINE_WIDTH_MEDIUM << 1) | CSS_BORDER_SPACING_INHERIT,
 	  0,
-	  (CSS_WORD_SPACING_INHERIT << 2) | 
+	  (CSS_WORD_SPACING_INHERIT << 2) |
 		(CSS_COUNTER_INCREMENT_NONE << 1) | CSS_COUNTER_RESET_NONE,
 	  (CSS_CURSOR_INHERIT << 3) | (CSS_WRITING_MODE_INHERIT << 1) | 0,
 	  0,
@@ -55,14 +55,14 @@ static const css_computed_uncommon default_uncommon = {
 } while(0)
 
 static const css_computed_page default_page = {
-	{	
-		(CSS_PAGE_BREAK_INSIDE_AUTO <<  6) | 
+	{
+		(CSS_PAGE_BREAK_INSIDE_AUTO <<  6) |
 			(CSS_PAGE_BREAK_BEFORE_AUTO << 3) |
 			CSS_PAGE_BREAK_AFTER_AUTO,
-		(CSS_WIDOWS_SET << 1) | 
+		(CSS_WIDOWS_SET << 1) |
 			CSS_ORPHANS_SET
 	},
-	2 << CSS_RADIX_POINT, 
+	2 << CSS_RADIX_POINT,
 	2 << CSS_RADIX_POINT
 };
 
@@ -81,7 +81,7 @@ static const css_computed_page default_page = {
 #define LETTER_SPACING_SHIFT 2
 #define LETTER_SPACING_MASK  0xfc
 static inline css_error set_letter_spacing(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits;
@@ -91,7 +91,7 @@ static inline css_error set_letter_spacing(
 	bits = &style->uncommon->bits[LETTER_SPACING_INDEX];
 
 	/* 6bits: uuuutt : unit | type */
-	*bits = (*bits & ~LETTER_SPACING_MASK) | 
+	*bits = (*bits & ~LETTER_SPACING_MASK) |
 			(((type & 0x3) | unit << 2) << LETTER_SPACING_SHIFT);
 
 	style->uncommon->letter_spacing = length;
@@ -130,7 +130,7 @@ static inline css_error set_outline_color(
 #define OUTLINE_WIDTH_SHIFT 1
 #define OUTLINE_WIDTH_MASK  0xfe
 static inline css_error set_outline_width(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits;
@@ -157,7 +157,7 @@ static inline css_error set_outline_width(
 #define BORDER_SPACING_INDEX1 2
 #define BORDER_SPACING_SHIFT1 0
 static inline css_error set_border_spacing(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed hlength, css_unit hunit,
 		css_fixed vlength, css_unit vunit)
 {
@@ -168,7 +168,7 @@ static inline css_error set_border_spacing(
 	bits = &style->uncommon->bits[BORDER_SPACING_INDEX];
 
 	/* 1 bit: type */
-	*bits = (*bits & ~BORDER_SPACING_MASK) | 
+	*bits = (*bits & ~BORDER_SPACING_MASK) |
 			((type & 0x1) << BORDER_SPACING_SHIFT);
 
 	bits = &style->uncommon->bits[BORDER_SPACING_INDEX1];
@@ -192,7 +192,7 @@ static inline css_error set_border_spacing(
 #define WORD_SPACING_SHIFT 2
 #define WORD_SPACING_MASK  0xfc
 static inline css_error set_word_spacing(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits;
@@ -204,7 +204,7 @@ static inline css_error set_word_spacing(
 	/* 6bits: uuuutt : unit | type */
 	*bits = (*bits & ~WORD_SPACING_MASK) |
 			(((type & 0x3) | (unit << 2)) << WORD_SPACING_SHIFT);
-	
+
 	style->uncommon->word_spacing = length;
 
 	return CSS_OK;
@@ -239,7 +239,7 @@ static inline css_error set_writing_mode(
 #define COUNTER_INCREMENT_SHIFT 1
 #define COUNTER_INCREMENT_MASK  0x2
 static inline css_error set_counter_increment(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_computed_counter *counters)
 {
 	uint8_t *bits;
@@ -279,7 +279,7 @@ static inline css_error set_counter_increment(
 #define COUNTER_RESET_SHIFT 0
 #define COUNTER_RESET_MASK  0x1
 static inline css_error set_counter_reset(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_computed_counter *counters)
 {
 	uint8_t *bits;
@@ -319,7 +319,7 @@ static inline css_error set_counter_reset(
 #define CURSOR_SHIFT 3
 #define CURSOR_MASK  0xf8
 static inline css_error set_cursor(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		lwc_string **urls)
 {
 	uint8_t *bits;
@@ -363,7 +363,7 @@ static inline css_error set_cursor(
 #define CLIP_INDEX2 6
 #define CLIP_SHIFT2 0
 static inline css_error set_clip(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_computed_clip_rect *rect)
 {
 	uint8_t *bits;
@@ -373,7 +373,7 @@ static inline css_error set_clip(
 	bits = &style->uncommon->bits[CLIP_INDEX];
 
 	/* 6bits: trblyy : top | right | bottom | left | type */
-	*bits = (*bits & ~CLIP_MASK) | 
+	*bits = (*bits & ~CLIP_MASK) |
 			((type & 0x3) << CLIP_SHIFT);
 
 	if (type == CSS_CLIP_RECT) {
@@ -499,7 +499,7 @@ static inline css_error set_content(
 	*bits = (*bits & ~CONTENT_MASK) |
 			((type & 0x3) << CONTENT_SHIFT);
 
-	for (c = content; c != NULL && 
+	for (c = content; c != NULL &&
 			c->type != CSS_COMPUTED_CONTENT_NONE; c++) {
 		switch (c->type) {
 		case CSS_COMPUTED_CONTENT_STRING:
@@ -516,9 +516,9 @@ static inline css_error set_content(
 				lwc_string_ref(c->data.counter.name);
 			break;
 		case CSS_COMPUTED_CONTENT_COUNTERS:
-			c->data.counters.name = 
+			c->data.counters.name =
 				lwc_string_ref(c->data.counters.name);
-			c->data.counters.sep = 
+			c->data.counters.sep =
 				lwc_string_ref(c->data.counters.sep);
 			break;
 		default:
@@ -530,7 +530,7 @@ static inline css_error set_content(
 
 	/* Free existing array */
 	if (oldcontent != NULL) {
-		for (c = oldcontent; 
+		for (c = oldcontent;
 				c->type != CSS_COMPUTED_CONTENT_NONE; c++) {
 			switch (c->type) {
 			case CSS_COMPUTED_CONTENT_STRING:
@@ -568,7 +568,7 @@ static inline css_error set_content(
 #define VERTICAL_ALIGN_INDEX 0
 #define VERTICAL_ALIGN_SHIFT 0
 static inline css_error set_vertical_align(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[VERTICAL_ALIGN_INDEX];
@@ -586,7 +586,7 @@ static inline css_error set_vertical_align(
 #define FONT_SIZE_INDEX 1
 #define FONT_SIZE_SHIFT 0
 static inline css_error set_font_size(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[FONT_SIZE_INDEX];
@@ -605,7 +605,7 @@ static inline css_error set_font_size(
 #define BORDER_TOP_WIDTH_SHIFT 1
 #define BORDER_TOP_WIDTH_MASK  0xfe
 static inline css_error set_border_top_width(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[BORDER_TOP_WIDTH_INDEX];
@@ -626,7 +626,7 @@ static inline css_error set_border_top_width(
 #define BORDER_RIGHT_WIDTH_SHIFT 1
 #define BORDER_RIGHT_WIDTH_MASK  0xfe
 static inline css_error set_border_right_width(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[BORDER_RIGHT_WIDTH_INDEX];
@@ -647,7 +647,7 @@ static inline css_error set_border_right_width(
 #define BORDER_BOTTOM_WIDTH_SHIFT 1
 #define BORDER_BOTTOM_WIDTH_MASK  0xfe
 static inline css_error set_border_bottom_width(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[BORDER_BOTTOM_WIDTH_INDEX];
@@ -668,7 +668,7 @@ static inline css_error set_border_bottom_width(
 #define BORDER_LEFT_WIDTH_SHIFT 1
 #define BORDER_LEFT_WIDTH_MASK  0xfe
 static inline css_error set_border_left_width(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[BORDER_LEFT_WIDTH_INDEX];
@@ -689,7 +689,7 @@ static inline css_error set_border_left_width(
 #define BACKGROUND_IMAGE_SHIFT 0
 #define BACKGROUND_IMAGE_MASK  0x1
 static inline css_error set_background_image(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		lwc_string *url)
 {
 	uint8_t *bits = &style->bits[BACKGROUND_IMAGE_INDEX];
@@ -718,7 +718,7 @@ static inline css_error set_background_image(
 #define COLOR_SHIFT 0
 #define COLOR_MASK  0x1
 static inline css_error set_color(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_color color)
 {
 	uint8_t *bits = &style->bits[COLOR_INDEX];
@@ -739,7 +739,7 @@ static inline css_error set_color(
 #define LIST_STYLE_IMAGE_SHIFT 0
 #define LIST_STYLE_IMAGE_MASK  0x1
 static inline css_error set_list_style_image(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		lwc_string *url)
 {
 	uint8_t *bits = &style->bits[LIST_STYLE_IMAGE_INDEX];
@@ -768,7 +768,7 @@ static inline css_error set_list_style_image(
 #define QUOTES_SHIFT 0
 #define QUOTES_MASK  0x1
 static inline css_error set_quotes(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		lwc_string **quotes)
 {
 	uint8_t *bits = &style->bits[QUOTES_INDEX];
@@ -803,7 +803,7 @@ static inline css_error set_quotes(
 #define TOP_SHIFT 2
 #define TOP_MASK  0xfc
 static inline css_error set_top(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[TOP_INDEX];
@@ -824,7 +824,7 @@ static inline css_error set_top(
 #define RIGHT_SHIFT 2
 #define RIGHT_MASK  0xfc
 static inline css_error set_right(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[RIGHT_INDEX];
@@ -845,7 +845,7 @@ static inline css_error set_right(
 #define BOTTOM_SHIFT 2
 #define BOTTOM_MASK  0xfc
 static inline css_error set_bottom(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[BOTTOM_INDEX];
@@ -866,7 +866,7 @@ static inline css_error set_bottom(
 #define LEFT_SHIFT 2
 #define LEFT_MASK  0xfc
 static inline css_error set_left(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[LEFT_INDEX];
@@ -887,7 +887,7 @@ static inline css_error set_left(
 #define BORDER_TOP_COLOR_SHIFT 0
 #define BORDER_TOP_COLOR_MASK  0x3
 static inline css_error set_border_top_color(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_color color)
 {
 	uint8_t *bits = &style->bits[BORDER_TOP_COLOR_INDEX];
@@ -908,7 +908,7 @@ static inline css_error set_border_top_color(
 #define BORDER_RIGHT_COLOR_SHIFT 0
 #define BORDER_RIGHT_COLOR_MASK  0x3
 static inline css_error set_border_right_color(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_color color)
 {
 	uint8_t *bits = &style->bits[BORDER_RIGHT_COLOR_INDEX];
@@ -929,7 +929,7 @@ static inline css_error set_border_right_color(
 #define BORDER_BOTTOM_COLOR_SHIFT 0
 #define BORDER_BOTTOM_COLOR_MASK  0x3
 static inline css_error set_border_bottom_color(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_color color)
 {
 	uint8_t *bits = &style->bits[BORDER_BOTTOM_COLOR_INDEX];
@@ -950,7 +950,7 @@ static inline css_error set_border_bottom_color(
 #define BORDER_LEFT_COLOR_SHIFT 0
 #define BORDER_LEFT_COLOR_MASK  0x3
 static inline css_error set_border_left_color(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_color color)
 {
 	uint8_t *bits = &style->bits[BORDER_LEFT_COLOR_INDEX];
@@ -971,7 +971,7 @@ static inline css_error set_border_left_color(
 #define HEIGHT_SHIFT 2
 #define HEIGHT_MASK  0xfc
 static inline css_error set_height(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[HEIGHT_INDEX];
@@ -992,7 +992,7 @@ static inline css_error set_height(
 #define LINE_HEIGHT_SHIFT 2
 #define LINE_HEIGHT_MASK  0xfc
 static inline css_error set_line_height(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[LINE_HEIGHT_INDEX];
@@ -1013,7 +1013,7 @@ static inline css_error set_line_height(
 #define BACKGROUND_COLOR_SHIFT 0
 #define BACKGROUND_COLOR_MASK  0x3
 static inline css_error set_background_color(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_color color)
 {
 	uint8_t *bits = &style->bits[BACKGROUND_COLOR_INDEX];
@@ -1034,7 +1034,7 @@ static inline css_error set_background_color(
 #define Z_INDEX_SHIFT 0
 #define Z_INDEX_MASK  0x3
 static inline css_error set_z_index(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		int32_t z_index)
 {
 	uint8_t *bits = &style->bits[Z_INDEX_INDEX];
@@ -1055,7 +1055,7 @@ static inline css_error set_z_index(
 #define MARGIN_TOP_SHIFT 2
 #define MARGIN_TOP_MASK  0xfc
 static inline css_error set_margin_top(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[MARGIN_TOP_INDEX];
@@ -1076,7 +1076,7 @@ static inline css_error set_margin_top(
 #define MARGIN_RIGHT_SHIFT 2
 #define MARGIN_RIGHT_MASK  0xfc
 static inline css_error set_margin_right(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[MARGIN_RIGHT_INDEX];
@@ -1097,7 +1097,7 @@ static inline css_error set_margin_right(
 #define MARGIN_BOTTOM_SHIFT 2
 #define MARGIN_BOTTOM_MASK  0xfc
 static inline css_error set_margin_bottom(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[MARGIN_BOTTOM_INDEX];
@@ -1118,7 +1118,7 @@ static inline css_error set_margin_bottom(
 #define MARGIN_LEFT_SHIFT 2
 #define MARGIN_LEFT_MASK  0xfc
 static inline css_error set_margin_left(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[MARGIN_LEFT_INDEX];
@@ -1211,7 +1211,7 @@ static inline css_error set_direction(
 #define MAX_HEIGHT_SHIFT 2
 #define MAX_HEIGHT_MASK  0xfc
 static inline css_error set_max_height(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[MAX_HEIGHT_INDEX];
@@ -1232,7 +1232,7 @@ static inline css_error set_max_height(
 #define MAX_WIDTH_SHIFT 2
 #define MAX_WIDTH_MASK  0xfc
 static inline css_error set_max_width(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[MAX_WIDTH_INDEX];
@@ -1253,7 +1253,7 @@ static inline css_error set_max_width(
 #define WIDTH_SHIFT 2
 #define WIDTH_MASK  0xfc
 static inline css_error set_width(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[WIDTH_INDEX];
@@ -1328,7 +1328,7 @@ static inline css_error set_font_style(
 #define MIN_HEIGHT_SHIFT 3
 #define MIN_HEIGHT_MASK  0xf8
 static inline css_error set_min_height(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[MIN_HEIGHT_INDEX];
@@ -1349,7 +1349,7 @@ static inline css_error set_min_height(
 #define MIN_WIDTH_SHIFT 3
 #define MIN_WIDTH_MASK  0xf8
 static inline css_error set_min_width(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[MIN_WIDTH_INDEX];
@@ -1406,7 +1406,7 @@ static inline css_error set_clear(
 #define PADDING_TOP_SHIFT 3
 #define PADDING_TOP_MASK  0xf8
 static inline css_error set_padding_top(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[PADDING_TOP_INDEX];
@@ -1427,7 +1427,7 @@ static inline css_error set_padding_top(
 #define PADDING_RIGHT_SHIFT 3
 #define PADDING_RIGHT_MASK  0xf8
 static inline css_error set_padding_right(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[PADDING_RIGHT_INDEX];
@@ -1448,7 +1448,7 @@ static inline css_error set_padding_right(
 #define PADDING_BOTTOM_SHIFT 3
 #define PADDING_BOTTOM_MASK  0xf8
 static inline css_error set_padding_bottom(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[PADDING_BOTTOM_INDEX];
@@ -1469,7 +1469,7 @@ static inline css_error set_padding_bottom(
 #define PADDING_LEFT_SHIFT 3
 #define PADDING_LEFT_MASK  0xf8
 static inline css_error set_padding_left(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[PADDING_LEFT_INDEX];
@@ -1544,7 +1544,7 @@ static inline css_error set_position(
 #define OPACITY_SHIFT 2
 #define OPACITY_MASK  0x04
 static inline css_error set_opacity(
-		css_computed_style *style, 
+		css_computed_style *style,
 		uint8_t type, css_fixed opacity)
 {
 	uint8_t *bits = &style->bits[OPACITY_INDEX];
@@ -1583,7 +1583,7 @@ static inline css_error set_text_transform(
 #define TEXT_INDENT_SHIFT 3
 #define TEXT_INDENT_MASK  0xf8
 static inline css_error set_text_indent(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->bits[TEXT_INDENT_INDEX];
@@ -1624,7 +1624,7 @@ static inline css_error set_white_space(
 #define BACKGROUND_POSITION_INDEX1 26
 #define BACKGROUND_POSITION_SHIFT1 0
 static inline css_error set_background_position(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		css_fixed hlength, css_unit hunit,
 		css_fixed vlength, css_unit vunit)
 {
@@ -1633,7 +1633,7 @@ static inline css_error set_background_position(
 	bits = &style->bits[BACKGROUND_POSITION_INDEX];
 
 	/* 1 bit: type */
-	*bits = (*bits & ~BACKGROUND_POSITION_MASK) | 
+	*bits = (*bits & ~BACKGROUND_POSITION_MASK) |
 			((type & 0x1) << BACKGROUND_POSITION_SHIFT);
 
 	bits = &style->bits[BACKGROUND_POSITION_INDEX1];
@@ -1710,7 +1710,7 @@ static inline css_error set_text_decoration(
 #define FONT_FAMILY_SHIFT 0
 #define FONT_FAMILY_MASK  0x7
 static inline css_error set_font_family(
-		css_computed_style *style, uint8_t type, 
+		css_computed_style *style, uint8_t type,
 		lwc_string **names)
 {
 	uint8_t *bits = &style->bits[FONT_FAMILY_INDEX];
@@ -1998,9 +1998,9 @@ static inline css_error set_page_break_before(
 			return CSS_OK;
 		}
 	}
-	
+
 	ENSURE_PAGE;
-	
+
 	bits = &style->page->bits[PAGE_BREAK_BEFORE_INDEX];
 
 	/* 3bits: type */
@@ -2026,7 +2026,7 @@ static inline css_error set_page_break_inside(
 			return CSS_OK;
 		}
 	}
-	
+
 	ENSURE_PAGE;
 
 	bits = &style->page->bits[PAGE_BREAK_INSIDE_INDEX];
@@ -2048,7 +2048,7 @@ static inline css_error set_orphans(
 		css_computed_style *style, uint8_t type, int32_t count)
 {
 	uint8_t *bits;
-	
+
 	if (style->page == NULL) {
 		if (type == CSS_ORPHANS_SET && count == 2) {
 			return CSS_OK;
@@ -2056,14 +2056,14 @@ static inline css_error set_orphans(
 	}
 
 	ENSURE_PAGE;
-	
+
 	bits = &style->page->bits[ORPHANS_INDEX];
-	
+
 	/* 1bit: type */
 	*bits = (*bits & ~ORPHANS_MASK) | ((type & 0x1) << ORPHANS_SHIFT);
-	
+
 	style->page->orphans = count;
-	
+
 	return CSS_OK;
 }
 #undef ORPHANS_INDEX
@@ -2077,22 +2077,22 @@ static inline css_error set_widows(
 		css_computed_style *style, uint8_t type, int32_t count)
 {
 	uint8_t *bits;
-	
+
 	if (style->page == NULL) {
 		if (type == CSS_WIDOWS_SET && count == 2) {
 			return CSS_OK;
 		}
 	}
-	
+
 	ENSURE_PAGE;
-	
+
 	bits = &style->page->bits[WIDOWS_INDEX];
-	
+
 	/* 1bit: type */
 	*bits = (*bits & ~WIDOWS_MASK) | ((type & 0x1) << WIDOWS_SHIFT);
-	
+
 	style->page->widows = count;
-	
+
 	return CSS_OK;
 }
 #undef WIDOWS_INDEX
