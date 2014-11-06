@@ -862,6 +862,33 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	ptr += wrote;
 	*len -= wrote;
 
+	/* column-gap */
+	val = css_computed_column_gap(style, &len1, &unit1);
+	switch (val) {
+	case CSS_COLUMN_GAP_INHERIT:
+		wrote = snprintf(ptr, *len, "column-gap: inherit\n");
+		break;
+	case CSS_COLUMN_GAP_NORMAL:
+		wrote = snprintf(ptr, *len, "column-gap: normal\n");
+		break;
+	case CSS_COLUMN_GAP_SET:
+		wrote = snprintf(ptr, *len, "column-gap: ");
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = dump_css_unit(len1, unit1, ptr, *len);
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = snprintf(ptr, *len, "\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
 	/* content */
 	val = css_computed_content(style, &content);
 	switch (val) {
