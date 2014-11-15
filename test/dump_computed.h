@@ -889,6 +889,23 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	ptr += wrote;
 	*len -= wrote;
 
+	/* column-rule-color */
+	val = css_computed_column_rule_color(style, &color);
+	switch (val) {
+	case CSS_COLUMN_RULE_COLOR_INHERIT:
+		wrote = snprintf(ptr, *len, "column-rule-color: inherit\n");
+		break;
+	case CSS_COLUMN_RULE_COLOR_CURRENT_COLOR:
+		wrote = snprintf(ptr, *len, "column-rule-color: currentColor\n");
+		break;
+	case CSS_COLUMN_RULE_COLOR_COLOR:
+		wrote = snprintf(ptr, *len, "column-rule-color: #%08x\n",
+				color);
+		break;
+	}
+        ptr += wrote;
+        *len -= wrote;
+
 	/* content */
 	val = css_computed_content(style, &content);
 	switch (val) {
