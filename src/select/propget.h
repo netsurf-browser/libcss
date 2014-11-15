@@ -413,6 +413,31 @@ static inline uint8_t get_column_gap(
 #undef COLUMN_GAP_SHIFT
 #undef COLUMN_GAP_INDEX
 
+#define COLUMN_RULE_COLOR_INDEX 9
+#define COLUMN_RULE_COLOR_SHIFT 0
+#define COLUMN_RULE_COLOR_MASK  0x3
+static inline uint8_t get_column_rule_color(
+		const css_computed_style *style,
+		css_color *color)
+{
+	if (style->uncommon != NULL) {
+		uint8_t bits = style->uncommon->bits[COLUMN_RULE_COLOR_INDEX];
+		bits &= COLUMN_RULE_COLOR_MASK;
+		bits >>= COLUMN_RULE_COLOR_SHIFT;
+
+		/* 2bits: type */
+		*color = style->uncommon->column_rule_color;
+
+		return bits;
+	}
+
+	*color = 0;
+	return CSS_COLUMN_RULE_COLOR_CURRENT_COLOR;
+}
+#undef COLUMN_RULE_COLOR_MASK
+#undef COLUMN_RULE_COLOR_SHIFT
+#undef COLUMN_RULE_COLOR_INDEX
+
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0
 #define CONTENT_MASK  0x3

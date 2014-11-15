@@ -27,10 +27,11 @@ static const css_computed_uncommon default_uncommon = {
 	  0,
 	  (CSS_CLIP_AUTO << 2) | CSS_CONTENT_NORMAL,
 	  (CSS_COLUMN_COUNT_AUTO << 6) | (CSS_COLUMN_FILL_BALANCE << 4),
-	  (CSS_COLUMN_GAP_NORMAL << 2)
+	  (CSS_COLUMN_GAP_NORMAL << 2) | (CSS_COLUMN_RULE_COLOR_CURRENT_COLOR)
 	},
 	{ 0, 0 },
 	{ 0, 0, 0, 0 },
+	0,
 	0,
 	0,
 	0,
@@ -478,6 +479,31 @@ static inline css_error set_column_gap(
 #undef COLUMN_GAP_MASK
 #undef COLUMN_GAP_SHIFT
 #undef COLUMN_GAP_INDEX
+
+#define COLUMN_RULE_COLOR_INDEX 9
+#define COLUMN_RULE_COLOR_SHIFT 0
+#define COLUMN_RULE_COLOR_MASK  0x3
+static inline css_error set_column_rule_color(
+		css_computed_style *style, uint8_t type,
+		css_color color)
+{
+	uint8_t *bits;
+
+	ENSURE_UNCOMMON;
+
+	bits = &style->uncommon->bits[COLUMN_RULE_COLOR_INDEX];
+
+	/* 2bits: type */
+	*bits = (*bits & ~COLUMN_RULE_COLOR_MASK) |
+			((type & 0x3) << COLUMN_RULE_COLOR_SHIFT);
+
+	style->uncommon->column_rule_color = color;
+
+	return CSS_OK;
+}
+#undef COLUMN_RULE_COLOR_MASK
+#undef COLUMN_RULE_COLOR_SHIFT
+#undef COLUMN_RULE_COLOR_INDEX
 
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0
