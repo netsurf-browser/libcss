@@ -804,6 +804,12 @@ uint8_t css_computed_column_gap(const css_computed_style *style,
 	return get_column_gap(style, length, unit);
 }
 
+uint8_t css_computed_column_rule_color(const css_computed_style *style,
+		css_color *color)
+{
+	return get_column_rule_color(style, color);
+}
+
 uint8_t css_computed_display(const css_computed_style *style,
 		bool root)
 {
