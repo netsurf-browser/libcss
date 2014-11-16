@@ -17,57 +17,35 @@
 css_error css__cascade_column_rule_width(uint32_t opv, css_style *style, 
 		css_select_state *state)
 {
-	css_fixed length = 0;
-	uint32_t unit = UNIT_PX;
-
-	if (isInherit(opv) == false) {
-		switch (getValue(opv)) {
-		case COLUMN_RULE_WIDTH_SET:
-			length = *((css_fixed *) style->bytecode);
-			advance_bytecode(style, sizeof(length));
-			unit = *((uint32_t *) style->bytecode);
-			advance_bytecode(style, sizeof(unit));
-			break;
-		case COLUMN_RULE_WIDTH_THIN:
-		case COLUMN_RULE_WIDTH_MEDIUM:
-		case COLUMN_RULE_WIDTH_THICK:
-			/** \todo convert to public values */
-			break;
-		}
-	}
-
-	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
-		/** \todo set computed elevation */
-	}
-
-	return CSS_OK;
+	return css__cascade_border_width(opv, style, state,
+			set_column_rule_width);
 }
 
 css_error css__set_column_rule_width_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
-	UNUSED(hint);
-	UNUSED(style);
-
-	return CSS_OK;
+	return set_column_rule_width(style, hint->status,
+			hint->data.length.value, hint->data.length.unit);
 }
 
 css_error css__initial_column_rule_width(css_select_state *state)
 {
-	UNUSED(state);
-
-	return CSS_OK;
+	return set_column_rule_width(state->computed,
+			CSS_COLUMN_RULE_WIDTH_MEDIUM, 0, CSS_UNIT_PX);
 }
 
 css_error css__compose_column_rule_width(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
-	UNUSED(parent);
-	UNUSED(child);
-	UNUSED(result);
+	css_fixed length = 0;
+	css_unit unit = CSS_UNIT_PX;
+	uint8_t type = get_column_rule_width(child, &length, &unit);
 
-	return CSS_OK;
+	if (type == CSS_COLUMN_RULE_WIDTH_INHERIT) {
+		type = get_column_rule_width(parent, &length, &unit);
+	}
+
+	return set_column_rule_width(result, type, length, unit);
 }
 

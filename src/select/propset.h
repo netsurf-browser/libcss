@@ -28,10 +28,12 @@ static const css_computed_uncommon default_uncommon = {
 	  (CSS_CLIP_AUTO << 2) | CSS_CONTENT_NORMAL,
 	  (CSS_COLUMN_COUNT_AUTO << 6) | (CSS_COLUMN_FILL_BALANCE << 4) |
 		(CSS_COLUMN_RULE_STYLE_NONE << 0),
-	  (CSS_COLUMN_GAP_NORMAL << 2) | (CSS_COLUMN_RULE_COLOR_CURRENT_COLOR)
+	  (CSS_COLUMN_GAP_NORMAL << 2) | (CSS_COLUMN_RULE_COLOR_CURRENT_COLOR),
+	  (CSS_COLUMN_RULE_WIDTH_MEDIUM << 1)
 	},
 	{ 0, 0 },
 	{ 0, 0, 0, 0 },
+	0,
 	0,
 	0,
 	0,
@@ -527,6 +529,31 @@ static inline css_error set_column_rule_style(
 #undef COLUMN_RULE_STYLE_MASK
 #undef COLUMN_RULE_STYLE_SHIFT
 #undef COLUMN_RULE_STYLE_INDEX
+
+#define COLUMN_RULE_WIDTH_INDEX 10
+#define COLUMN_RULE_WIDTH_SHIFT 1
+#define COLUMN_RULE_WIDTH_MASK  0xfe
+static inline css_error set_column_rule_width(
+		css_computed_style *style, uint8_t type,
+		css_fixed length, css_unit unit)
+{
+	uint8_t *bits;
+
+	ENSURE_UNCOMMON;
+
+	bits = &style->uncommon->bits[COLUMN_RULE_WIDTH_INDEX];
+
+	/* 7bits: uuuuttt : units | type */
+	*bits = (*bits & ~COLUMN_RULE_WIDTH_MASK) |
+		(((type & 0x7) | (unit << 3)) << COLUMN_RULE_WIDTH_SHIFT);
+
+	style->uncommon->column_rule_width = length;
+
+	return CSS_OK;
+}
+#undef COLUMN_RULE_WIDTH_MASK
+#undef COLUMN_RULE_WIDTH_SHIFT
+#undef COLUMN_RULE_WIDTH_INDEX
 
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0

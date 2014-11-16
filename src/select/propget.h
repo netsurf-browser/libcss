@@ -459,6 +459,33 @@ static inline uint8_t get_column_rule_style(
 #undef COLUMN_RULE_STYLE_SHIFT
 #undef COLUMN_RULE_STYLE_INDEX
 
+#define COLUMN_RULE_WIDTH_INDEX 10
+#define COLUMN_RULE_WIDTH_SHIFT 1
+#define COLUMN_RULE_WIDTH_MASK  0xfe
+static inline uint8_t get_column_rule_width(
+		const css_computed_style *style,
+		css_fixed *length, css_unit *unit)
+{
+	if (style->uncommon != NULL) {
+		uint8_t bits = style->uncommon->bits[COLUMN_RULE_WIDTH_INDEX];
+		bits &= COLUMN_RULE_WIDTH_MASK;
+		bits >>= COLUMN_RULE_WIDTH_SHIFT;
+
+		/* 7bits: uuuuttt : units | type */
+		if ((bits & 0x7) == CSS_COLUMN_RULE_WIDTH_WIDTH) {
+			*length = style->uncommon->column_rule_width;
+			*unit = bits >> 3;
+		}
+
+		return (bits & 0x7);
+	}
+
+	return CSS_COLUMN_RULE_WIDTH_MEDIUM;
+}
+#undef COLUMN_RULE_WIDTH_MASK
+#undef COLUMN_RULE_WIDTH_SHIFT
+#undef COLUMN_RULE_WIDTH_INDEX
+
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0
 #define CONTENT_MASK  0x3
