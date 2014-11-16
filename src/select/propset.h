@@ -26,7 +26,8 @@ static const css_computed_uncommon default_uncommon = {
 	  0,
 	  0,
 	  (CSS_CLIP_AUTO << 2) | CSS_CONTENT_NORMAL,
-	  (CSS_COLUMN_COUNT_AUTO << 6) | (CSS_COLUMN_FILL_BALANCE << 4),
+	  (CSS_COLUMN_COUNT_AUTO << 6) | (CSS_COLUMN_FILL_BALANCE << 4) |
+		(CSS_COLUMN_RULE_STYLE_NONE << 0),
 	  (CSS_COLUMN_GAP_NORMAL << 2) | (CSS_COLUMN_RULE_COLOR_CURRENT_COLOR)
 	},
 	{ 0, 0 },
@@ -504,6 +505,28 @@ static inline css_error set_column_rule_color(
 #undef COLUMN_RULE_COLOR_MASK
 #undef COLUMN_RULE_COLOR_SHIFT
 #undef COLUMN_RULE_COLOR_INDEX
+
+#define COLUMN_RULE_STYLE_INDEX 8
+#define COLUMN_RULE_STYLE_SHIFT 0
+#define COLUMN_RULE_STYLE_MASK  0xf
+static inline css_error set_column_rule_style(
+		css_computed_style *style, uint8_t type)
+{
+	uint8_t *bits;
+
+	ENSURE_UNCOMMON;
+
+	bits = &style->uncommon->bits[COLUMN_RULE_STYLE_INDEX];
+
+	/* 4bits: type */
+	*bits = (*bits & ~COLUMN_RULE_STYLE_MASK) |
+			((type & 0xf) << COLUMN_RULE_STYLE_SHIFT);
+
+	return CSS_OK;
+}
+#undef COLUMN_RULE_STYLE_MASK
+#undef COLUMN_RULE_STYLE_SHIFT
+#undef COLUMN_RULE_STYLE_INDEX
 
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0

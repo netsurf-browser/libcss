@@ -438,6 +438,27 @@ static inline uint8_t get_column_rule_color(
 #undef COLUMN_RULE_COLOR_SHIFT
 #undef COLUMN_RULE_COLOR_INDEX
 
+#define COLUMN_RULE_STYLE_INDEX 8
+#define COLUMN_RULE_STYLE_SHIFT 0
+#define COLUMN_RULE_STYLE_MASK  0xf
+static inline uint8_t get_column_rule_style(
+		const css_computed_style *style)
+{
+	if (style->uncommon != NULL) {
+		uint8_t bits = style->uncommon->bits[COLUMN_RULE_STYLE_INDEX];
+		bits &= COLUMN_RULE_STYLE_MASK;
+		bits >>= COLUMN_RULE_STYLE_SHIFT;
+
+		/* 4bits: type */
+		return bits;
+	}
+
+	return CSS_COLUMN_RULE_STYLE_NONE;
+}
+#undef COLUMN_RULE_STYLE_MASK
+#undef COLUMN_RULE_STYLE_SHIFT
+#undef COLUMN_RULE_STYLE_INDEX
+
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0
 #define CONTENT_MASK  0x3
