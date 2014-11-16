@@ -42,6 +42,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -144,6 +145,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -246,6 +248,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -348,6 +351,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -442,6 +446,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -534,6 +539,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -627,6 +633,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -720,6 +727,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -812,6 +820,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -909,6 +918,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1006,6 +1016,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1104,6 +1115,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1205,6 +1217,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1305,6 +1318,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1411,6 +1425,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1517,6 +1532,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1623,6 +1639,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1733,6 +1750,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1842,6 +1860,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -1949,6 +1968,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2055,6 +2075,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2161,6 +2182,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2267,6 +2289,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2373,6 +2396,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2479,6 +2503,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2585,6 +2610,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2691,6 +2717,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2797,6 +2824,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -2903,6 +2931,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3009,6 +3038,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3115,6 +3145,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3221,6 +3252,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3327,6 +3359,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3433,6 +3466,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3539,6 +3573,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3645,6 +3680,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3751,6 +3787,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3857,6 +3894,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -3963,6 +4001,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -4069,6 +4108,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -4168,6 +4208,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: currentColor
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -4267,6 +4308,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none
@@ -4366,6 +4408,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 column-rule-style: none
+column-rule-width: medium
 content: normal
 counter-increment: none
 counter-reset: none

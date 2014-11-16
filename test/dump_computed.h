@@ -949,6 +949,39 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	ptr += wrote;
 	*len -= wrote;
 
+	/* column-rule-width */
+	val = css_computed_column_rule_width(style, &len1, &unit1);
+	switch (val) {
+	case CSS_COLUMN_RULE_WIDTH_INHERIT:
+		wrote = snprintf(ptr, *len, "column-rule-width: inherit\n");
+		break;
+	case CSS_COLUMN_RULE_WIDTH_THIN:
+		wrote = snprintf(ptr, *len, "column-rule-width: thin\n");
+		break;
+	case CSS_COLUMN_RULE_WIDTH_MEDIUM:
+		wrote = snprintf(ptr, *len, "column-rule-width: medium\n");
+		break;
+	case CSS_COLUMN_RULE_WIDTH_THICK:
+		wrote = snprintf(ptr, *len, "column-rule-width: thick\n");
+		break;
+	case CSS_COLUMN_RULE_WIDTH_WIDTH:
+		wrote = snprintf(ptr, *len, "column-rule-width: ");
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = dump_css_unit(len1, unit1, ptr, *len);
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = snprintf(ptr, *len, "\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
 	/* content */
 	val = css_computed_content(style, &content);
 	switch (val) {
