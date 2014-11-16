@@ -2031,7 +2031,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -2136,7 +2136,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -2241,7 +2241,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -2346,7 +2346,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -2451,7 +2451,7 @@ clear: inherit
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -2556,7 +2556,7 @@ clear: left
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -2661,7 +2661,7 @@ clear: both
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -2766,7 +2766,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -2871,7 +2871,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -2976,7 +2976,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -3081,7 +3081,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -3186,7 +3186,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -3291,7 +3291,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -3396,7 +3396,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -3501,7 +3501,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -3606,7 +3606,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -3711,7 +3711,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -3816,7 +3816,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -3921,7 +3921,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -4026,7 +4026,7 @@ clear: right
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -4222,7 +4222,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal
@@ -4320,7 +4320,7 @@ clear: none
 clip: auto
 color: inherit
 column-count: auto
-column-fill: inherit
+column-fill: balance
 column-gap: normal
 column-rule-color: inherit
 content: normal

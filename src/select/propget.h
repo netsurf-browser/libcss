@@ -366,7 +366,7 @@ static inline uint8_t get_column_count(
 #undef COLUMN_COUNT_INDEX
 
 #define COLUMN_FILL_INDEX 8
-#define COLUMN_FILL_SHIFT 6
+#define COLUMN_FILL_SHIFT 4
 #define COLUMN_FILL_MASK  0x30
 static inline uint8_t get_column_fill(
 		const css_computed_style *style)
