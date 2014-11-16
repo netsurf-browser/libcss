@@ -347,6 +347,9 @@ uint8_t css_computed_column_rule_color(
 		const css_computed_style *style,
 		css_color *color);
 
+uint8_t css_computed_column_rule_style(
+		const css_computed_style *style);
+
 uint8_t css_computed_display(
 		const css_computed_style *style, bool root);
 
