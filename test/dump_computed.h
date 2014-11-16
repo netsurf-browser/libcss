@@ -906,6 +906,49 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
         ptr += wrote;
         *len -= wrote;
 
+	/* column-rule-style */
+	val = css_computed_column_rule_style(style);
+	switch (val) {
+	case CSS_COLUMN_RULE_STYLE_INHERIT:
+		wrote = snprintf(ptr, *len, "column-rule-style: inherit\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_NONE:
+		wrote = snprintf(ptr, *len, "column-rule-style: none\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_HIDDEN:
+		wrote = snprintf(ptr, *len, "column-rule-style: hidden\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_DOTTED:
+		wrote = snprintf(ptr, *len, "column-rule-style: dotted\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_DASHED:
+		wrote = snprintf(ptr, *len, "column-rule-style: dashed\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_SOLID:
+		wrote = snprintf(ptr, *len, "column-rule-style: solid\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_DOUBLE:
+		wrote = snprintf(ptr, *len, "column-rule-style: double\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_GROOVE:
+		wrote = snprintf(ptr, *len, "column-rule-style: groove\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_RIDGE:
+		wrote = snprintf(ptr, *len, "column-rule-style: ridge\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_INSET:
+		wrote = snprintf(ptr, *len, "column-rule-style: inset\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_OUTSET:
+		wrote = snprintf(ptr, *len, "column-rule-style: outset\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
 	/* content */
 	val = css_computed_content(style, &content);
 	switch (val) {
