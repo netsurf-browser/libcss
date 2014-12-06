@@ -29,7 +29,8 @@ static const css_computed_uncommon default_uncommon = {
 	  (CSS_COLUMN_COUNT_AUTO << 6) | (CSS_COLUMN_FILL_BALANCE << 4) |
 		(CSS_COLUMN_RULE_STYLE_NONE << 0),
 	  (CSS_COLUMN_GAP_NORMAL << 2) | (CSS_COLUMN_RULE_COLOR_CURRENT_COLOR),
-	  (CSS_COLUMN_RULE_WIDTH_MEDIUM << 1)
+	  (CSS_COLUMN_RULE_WIDTH_MEDIUM << 1),
+	  (CSS_COLUMN_SPAN_NONE << 6)
 	},
 	{ 0, 0 },
 	{ 0, 0, 0, 0 },
@@ -554,6 +555,28 @@ static inline css_error set_column_rule_width(
 #undef COLUMN_RULE_WIDTH_MASK
 #undef COLUMN_RULE_WIDTH_SHIFT
 #undef COLUMN_RULE_WIDTH_INDEX
+
+#define COLUMN_SPAN_INDEX 11
+#define COLUMN_SPAN_SHIFT 6
+#define COLUMN_SPAN_MASK  0xc0
+static inline css_error set_column_span(
+		css_computed_style *style, uint8_t type)
+{
+	uint8_t *bits;
+
+	ENSURE_UNCOMMON;
+
+	bits = &style->uncommon->bits[COLUMN_SPAN_INDEX];
+
+	/* 2bits: tt : type */
+	*bits = (*bits & ~COLUMN_SPAN_MASK) |
+			((type & 0x3) << COLUMN_SPAN_SHIFT);
+
+	return CSS_OK;
+}
+#undef COLUMN_SPAN_MASK
+#undef COLUMN_SPAN_SHIFT
+#undef COLUMN_SPAN_INDEX
 
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0

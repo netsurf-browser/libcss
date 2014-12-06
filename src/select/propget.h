@@ -486,6 +486,27 @@ static inline uint8_t get_column_rule_width(
 #undef COLUMN_RULE_WIDTH_SHIFT
 #undef COLUMN_RULE_WIDTH_INDEX
 
+#define COLUMN_SPAN_INDEX 11
+#define COLUMN_SPAN_SHIFT 6
+#define COLUMN_SPAN_MASK  0xc0
+static inline uint8_t get_column_span(
+		const css_computed_style *style)
+{
+	if (style->uncommon != NULL) {
+		uint8_t bits = style->uncommon->bits[COLUMN_SPAN_INDEX];
+		bits &= COLUMN_SPAN_MASK;
+		bits >>= COLUMN_SPAN_SHIFT;
+
+		/* 2bits: type */
+		return bits;
+	}
+
+	return CSS_COLUMN_SPAN_NONE;
+}
+#undef COLUMN_SPAN_MASK
+#undef COLUMN_SPAN_SHIFT
+#undef COLUMN_SPAN_INDEX
+
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0
 #define CONTENT_MASK  0x3
