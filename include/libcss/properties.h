@@ -322,8 +322,8 @@ enum css_column_span_e {
 
 enum css_column_width_e {
 	CSS_COLUMN_WIDTH_INHERIT		= 0x0,
-	CSS_COLUMN_WIDTH_AUTO			= 0x1,
-	CSS_COLUMN_WIDTH_SET			= 0x2
+	CSS_COLUMN_WIDTH_SET			= 0x1,
+	CSS_COLUMN_WIDTH_AUTO			= 0x2
 };
 
 enum css_content_e {
