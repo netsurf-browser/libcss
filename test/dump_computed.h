@@ -982,6 +982,25 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	ptr += wrote;
 	*len -= wrote;
 
+	/* column-span */
+	val = css_computed_column_span(style);
+	switch (val) {
+	case CSS_COLUMN_SPAN_INHERIT:
+		wrote = snprintf(ptr, *len, "column-span: inherit\n");
+		break;
+	case CSS_COLUMN_SPAN_NONE:
+		wrote = snprintf(ptr, *len, "column-span: none\n");
+		break;
+	case CSS_COLUMN_SPAN_ALL:
+		wrote = snprintf(ptr, *len, "column-span: all\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
 	/* content */
 	val = css_computed_content(style, &content);
 	switch (val) {
