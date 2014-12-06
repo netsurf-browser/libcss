@@ -151,7 +151,7 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	const css_computed_content_item *content = NULL;
 	const css_computed_counter *counter = NULL;
 	lwc_string **string_list = NULL;
-	int32_t zindex = 0;
+	int32_t integer = 0;
 
 	/* background-attachment */
 	val = css_computed_background_attachment(style);
@@ -823,6 +823,210 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	}
         ptr += wrote;
         *len -= wrote;
+
+	/* column-count */
+	val = css_computed_column_count(style, &integer);
+	switch (val) {
+	case CSS_COLUMN_COUNT_INHERIT:
+		wrote = snprintf(ptr, *len, "column-count: inherit\n");
+		break;
+	case CSS_COLUMN_COUNT_AUTO:
+		wrote = snprintf(ptr, *len, "column-count: auto\n");
+		break;
+	case CSS_COLUMN_COUNT_SET:
+		wrote = snprintf(ptr, *len, "column-count: %d\n", integer);
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
+	/* column-fill */
+	val = css_computed_column_fill(style);
+	switch (val) {
+	case CSS_COLUMN_FILL_INHERIT:
+		wrote = snprintf(ptr, *len, "column-fill: inherit\n");
+		break;
+	case CSS_COLUMN_FILL_AUTO:
+		wrote = snprintf(ptr, *len, "column-fill: auto\n");
+		break;
+	case CSS_COLUMN_FILL_BALANCE:
+		wrote = snprintf(ptr, *len, "column-fill: balance\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
+	/* column-gap */
+	val = css_computed_column_gap(style, &len1, &unit1);
+	switch (val) {
+	case CSS_COLUMN_GAP_INHERIT:
+		wrote = snprintf(ptr, *len, "column-gap: inherit\n");
+		break;
+	case CSS_COLUMN_GAP_NORMAL:
+		wrote = snprintf(ptr, *len, "column-gap: normal\n");
+		break;
+	case CSS_COLUMN_GAP_SET:
+		wrote = snprintf(ptr, *len, "column-gap: ");
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = dump_css_unit(len1, unit1, ptr, *len);
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = snprintf(ptr, *len, "\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
+	/* column-rule-color */
+	val = css_computed_column_rule_color(style, &color);
+	switch (val) {
+	case CSS_COLUMN_RULE_COLOR_INHERIT:
+		wrote = snprintf(ptr, *len, "column-rule-color: inherit\n");
+		break;
+	case CSS_COLUMN_RULE_COLOR_CURRENT_COLOR:
+		wrote = snprintf(ptr, *len, "column-rule-color: currentColor\n");
+		break;
+	case CSS_COLUMN_RULE_COLOR_COLOR:
+		wrote = snprintf(ptr, *len, "column-rule-color: #%08x\n",
+				color);
+		break;
+	}
+        ptr += wrote;
+        *len -= wrote;
+
+	/* column-rule-style */
+	val = css_computed_column_rule_style(style);
+	switch (val) {
+	case CSS_COLUMN_RULE_STYLE_INHERIT:
+		wrote = snprintf(ptr, *len, "column-rule-style: inherit\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_NONE:
+		wrote = snprintf(ptr, *len, "column-rule-style: none\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_HIDDEN:
+		wrote = snprintf(ptr, *len, "column-rule-style: hidden\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_DOTTED:
+		wrote = snprintf(ptr, *len, "column-rule-style: dotted\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_DASHED:
+		wrote = snprintf(ptr, *len, "column-rule-style: dashed\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_SOLID:
+		wrote = snprintf(ptr, *len, "column-rule-style: solid\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_DOUBLE:
+		wrote = snprintf(ptr, *len, "column-rule-style: double\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_GROOVE:
+		wrote = snprintf(ptr, *len, "column-rule-style: groove\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_RIDGE:
+		wrote = snprintf(ptr, *len, "column-rule-style: ridge\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_INSET:
+		wrote = snprintf(ptr, *len, "column-rule-style: inset\n");
+		break;
+	case CSS_COLUMN_RULE_STYLE_OUTSET:
+		wrote = snprintf(ptr, *len, "column-rule-style: outset\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
+	/* column-rule-width */
+	val = css_computed_column_rule_width(style, &len1, &unit1);
+	switch (val) {
+	case CSS_COLUMN_RULE_WIDTH_INHERIT:
+		wrote = snprintf(ptr, *len, "column-rule-width: inherit\n");
+		break;
+	case CSS_COLUMN_RULE_WIDTH_THIN:
+		wrote = snprintf(ptr, *len, "column-rule-width: thin\n");
+		break;
+	case CSS_COLUMN_RULE_WIDTH_MEDIUM:
+		wrote = snprintf(ptr, *len, "column-rule-width: medium\n");
+		break;
+	case CSS_COLUMN_RULE_WIDTH_THICK:
+		wrote = snprintf(ptr, *len, "column-rule-width: thick\n");
+		break;
+	case CSS_COLUMN_RULE_WIDTH_WIDTH:
+		wrote = snprintf(ptr, *len, "column-rule-width: ");
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = dump_css_unit(len1, unit1, ptr, *len);
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = snprintf(ptr, *len, "\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
+	/* column-span */
+	val = css_computed_column_span(style);
+	switch (val) {
+	case CSS_COLUMN_SPAN_INHERIT:
+		wrote = snprintf(ptr, *len, "column-span: inherit\n");
+		break;
+	case CSS_COLUMN_SPAN_NONE:
+		wrote = snprintf(ptr, *len, "column-span: none\n");
+		break;
+	case CSS_COLUMN_SPAN_ALL:
+		wrote = snprintf(ptr, *len, "column-span: all\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
+	/* column-width */
+	val = css_computed_column_width(style, &len1, &unit1);
+	switch (val) {
+	case CSS_COLUMN_WIDTH_INHERIT:
+		wrote = snprintf(ptr, *len, "column-width: inherit\n");
+		break;
+	case CSS_COLUMN_WIDTH_AUTO:
+		wrote = snprintf(ptr, *len, "column-width: auto\n");
+		break;
+	case CSS_COLUMN_WIDTH_SET:
+		wrote = snprintf(ptr, *len, "column-width: ");
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = dump_css_unit(len1, unit1, ptr, *len);
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = snprintf(ptr, *len, "\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
 
 	/* content */
 	val = css_computed_content(style, &content);
@@ -2520,7 +2724,7 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	*len -= wrote;
 
 	/* z-index */
-	val = css_computed_z_index(style, &zindex);
+	val = css_computed_z_index(style, &integer);
 	switch (val) {
 	case CSS_Z_INDEX_INHERIT:
 		wrote = snprintf(ptr, *len, "z-index: inherit\n");
@@ -2529,7 +2733,7 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 		wrote = snprintf(ptr, *len, "z-index: auto\n");
 		break;
 	case CSS_Z_INDEX_SET:
-		wrote = snprintf(ptr, *len, "z-index: %d\n", zindex);
+		wrote = snprintf(ptr, *len, "z-index: %d\n", integer);
 		break;
 	default:
 		wrote = 0;

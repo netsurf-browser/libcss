@@ -17,57 +17,32 @@
 css_error css__cascade_column_rule_style(uint32_t opv, css_style *style, 
 		css_select_state *state)
 {
-	UNUSED(style);
-
-	if (isInherit(opv) == false) {
-		switch (getValue(opv)) {
-		case COLUMN_RULE_STYLE_NONE:
-		case COLUMN_RULE_STYLE_HIDDEN:
-		case COLUMN_RULE_STYLE_DOTTED:
-		case COLUMN_RULE_STYLE_DASHED:
-		case COLUMN_RULE_STYLE_SOLID:
-		case COLUMN_RULE_STYLE_DOUBLE:
-		case COLUMN_RULE_STYLE_GROOVE:
-		case COLUMN_RULE_STYLE_RIDGE:
-		case COLUMN_RULE_STYLE_INSET:
-		case COLUMN_RULE_STYLE_OUTSET:
-			/** \todo convert to public values */
-			break;
-		}
-	}
-
-	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
-		/** \todo set computed elevation */
-	}
-
-	return CSS_OK;
+	return css__cascade_border_style(opv, style, state,
+			set_column_rule_style);
 }
 
 css_error css__set_column_rule_style_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
-	UNUSED(hint);
-	UNUSED(style);
-
-	return CSS_OK;
+	return set_column_rule_style(style, hint->status);
 }
 
 css_error css__initial_column_rule_style(css_select_state *state)
 {
-	UNUSED(state);
-
-	return CSS_OK;
+	return set_column_rule_style(state->computed,
+			CSS_COLUMN_RULE_STYLE_NONE);
 }
 
 css_error css__compose_column_rule_style(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
-	UNUSED(parent);
-	UNUSED(child);
-	UNUSED(result);
+	uint8_t type = get_column_rule_style(child);
 
-	return CSS_OK;
+	if (type == CSS_COLUMN_RULE_STYLE_INHERIT) {
+		type = get_column_rule_style(parent);
+	}
+
+	return set_column_rule_style(result, type);
 }
 

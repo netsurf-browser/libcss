@@ -536,42 +536,42 @@ struct prop_table prop_dispatch[CSS_N_PROPERTIES] = {
 	{
 		PROPERTY_FUNCS(column_count),
 		0,
-		GROUP_NORMAL
+		GROUP_UNCOMMON
 	},
 	{
 		PROPERTY_FUNCS(column_fill),
 		0,
-		GROUP_NORMAL
+		GROUP_UNCOMMON
 	},
 	{
 		PROPERTY_FUNCS(column_gap),
 		0,
-		GROUP_NORMAL
+		GROUP_UNCOMMON
 	},
 	{
 		PROPERTY_FUNCS(column_rule_color),
 		0,
-		GROUP_NORMAL
+		GROUP_UNCOMMON
 	},
 	{
 		PROPERTY_FUNCS(column_rule_style),
 		0,
-		GROUP_NORMAL
+		GROUP_UNCOMMON
 	},
 	{
 		PROPERTY_FUNCS(column_rule_width),
 		0,
-		GROUP_NORMAL
+		GROUP_UNCOMMON
 	},
 	{
 		PROPERTY_FUNCS(column_span),
 		0,
-		GROUP_NORMAL
+		GROUP_UNCOMMON
 	},
 	{
 		PROPERTY_FUNCS(column_width),
 		0,
-		GROUP_NORMAL
+		GROUP_UNCOMMON
 	},
 	{
 		PROPERTY_FUNCS(writing_mode),

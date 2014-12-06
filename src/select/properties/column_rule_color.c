@@ -17,24 +17,31 @@
 css_error css__cascade_column_rule_color(uint32_t opv, css_style *style, 
 		css_select_state *state)
 {
+	bool inherit = isInherit(opv);
+	uint16_t value = CSS_COLUMN_RULE_COLOR_INHERIT;
 	css_color color = 0;
 
 	if (isInherit(opv) == false) {
 		switch (getValue(opv)) {
-		case COLUMN_RULE_COLOR_SET: 
+		case COLUMN_RULE_COLOR_TRANSPARENT:
+			value = CSS_COLUMN_RULE_COLOR_COLOR;
+			break;
+		case COLUMN_RULE_COLOR_CURRENT_COLOR:
+			/* color: currentColor always computes to inherit */
+			value = CSS_COLUMN_RULE_COLOR_INHERIT;
+			inherit = true;
+			break;
+		case COLUMN_RULE_COLOR_SET:
+			value = CSS_COLUMN_RULE_COLOR_COLOR;
 			color = *((css_fixed *) style->bytecode);
 			advance_bytecode(style, sizeof(color));
-			break;
-		case COLUMN_RULE_COLOR_TRANSPARENT:
-		case COLUMN_RULE_COLOR_CURRENT_COLOR:
-			/** \todo convert to public values */
 			break;
 		}
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
-		/** \todo set computed elevation */
+			inherit)) {
+		return set_column_rule_color(state->computed, value, color);
 	}
 
 	return CSS_OK;
@@ -43,27 +50,26 @@ css_error css__cascade_column_rule_color(uint32_t opv, css_style *style,
 css_error css__set_column_rule_color_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
-	UNUSED(hint);
-	UNUSED(style);
-
-	return CSS_OK;
+	return set_column_rule_color(style, hint->status, hint->data.color);
 }
 
 css_error css__initial_column_rule_color(css_select_state *state)
 {
-	UNUSED(state);
-
-	return CSS_OK;
+	return set_column_rule_color(state->computed,
+			CSS_COLUMN_RULE_COLOR_INHERIT, 0);
 }
 
 css_error css__compose_column_rule_color(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
-	UNUSED(parent);
-	UNUSED(child);
-	UNUSED(result);
+	css_color color;
+	uint8_t type = get_column_rule_color(child, &color);
 
-	return CSS_OK;
+	if (type == CSS_COLUMN_RULE_COLOR_INHERIT) {
+		type = get_column_rule_color(parent, &color);
+	}
+
+	return set_column_rule_color(result, type, color);
 }
 

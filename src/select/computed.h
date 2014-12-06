@@ -17,12 +17,20 @@ typedef struct css_computed_uncommon {
 /*
  * border_spacing		  1 + 2(4)	  2(4)
  * clip				  2 + 4(4) + 4	  4(4)
+ * column_count			  2		  4
+ * column_fill			  2		  0
+ * column_gap			  2 + 4		  4
+ * column_rule_color		  2		  4
+ * column_rule_style		  4		  0
+ * column_rule_width		  3 + 4		  4
+ * column_span			  2		  0
+ * column_width			  2 + 4		  4
  * letter_spacing		  2 + 4		  4
  * outline_color		  2		  4
  * outline_width		  3 + 4		  4
  * word_spacing			  2 + 4		  4
  * 				---		---
- * 				 52 bits	 40 bytes
+ * 				 83 bits	 60 bytes
  *
  * Encode counter_increment and _reset as an array of name, value pairs,
  * terminated with a blank entry.
@@ -46,25 +54,29 @@ typedef struct css_computed_uncommon {
  * 				  2 bits	  sizeof(ptr)
  *
  * 				___		___
- * 				 61 bits	 40 + 4sizeof(ptr) bytes
+ * 				 96 bits	 62 + 4sizeof(ptr) bytes
  *
- * 				  8 bytes	 40 + 4sizeof(ptr) bytes
+ * 				 12 bytes	 62 + 4sizeof(ptr) bytes
  * 				===================
- * 				 48 + 4sizeof(ptr) bytes
+ * 				 72 + 4sizeof(ptr) bytes
  *
  * Bit allocations:
  *
  *    76543210
- *  1 llllllcc	letter-spacing | outline-color
- *  2 ooooooob	outline-width  | border-spacing
+ *  1 llllllcc	letter-spacing    | outline-color
+ *  2 ooooooob	outline-width     | border-spacing
  *  3 bbbbbbbb	border-spacing
- *  4 wwwwwwir	word-spacing   | counter-increment | counter-reset
- *  5 uuuuumm.	cursor         | writing-mode      | <unused>
+ *  4 wwwwwwir	word-spacing      | counter-increment | counter-reset
+ *  5 uuuuumm.	cursor            | writing-mode      | <unused>
  *  6 cccccccc	clip
  *  7 cccccccc	clip
- *  8 ccccccoo	clip           | content
+ *  8 ccccccoo	clip              | content
+ *  9 ccffssss  column_count      | column-fill       | column-rule-style
+ * 10 ggggggcc  column-gap        | column-rule-color
+ * 11 wwwwwww.  column-rule-width | <unused>
+ * 12 sswwwwww  column-span       | column_width
  */
-	uint8_t bits[8];
+	uint8_t bits[12];
 
 	css_fixed border_spacing[2];
 
@@ -76,6 +88,12 @@ typedef struct css_computed_uncommon {
 	css_fixed outline_width;
 
 	css_fixed word_spacing;
+
+	int32_t column_count;
+	css_fixed column_gap;
+	css_color column_rule_color;
+	css_fixed column_rule_width;
+	css_fixed column_width;
 
 	css_computed_counter *counter_increment;
 	css_computed_counter *counter_reset;

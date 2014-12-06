@@ -17,20 +17,24 @@
 css_error css__cascade_column_fill(uint32_t opv, css_style *style, 
 		css_select_state *state)
 {
+	uint16_t value = CSS_COLUMN_FILL_INHERIT;
+
 	UNUSED(style);
 
 	if (isInherit(opv) == false) {
 		switch (getValue(opv)) {
 		case COLUMN_FILL_BALANCE:
+			value = CSS_COLUMN_FILL_BALANCE;
+			break;
 		case COLUMN_FILL_AUTO:
-			/** \todo convert to public values */
+			value = CSS_COLUMN_FILL_AUTO;
 			break;
 		}
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
 			isInherit(opv))) {
-		/** \todo set computed elevation */
+		return set_column_fill(state->computed, value);
 	}
 
 	return CSS_OK;
@@ -39,27 +43,24 @@ css_error css__cascade_column_fill(uint32_t opv, css_style *style,
 css_error css__set_column_fill_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
-	UNUSED(hint);
-	UNUSED(style);
-
-	return CSS_OK;
+	return set_column_fill(style, hint->status);
 }
 
 css_error css__initial_column_fill(css_select_state *state)
 {
-	UNUSED(state);
-
-	return CSS_OK;
+	return set_column_fill(state->computed, CSS_COLUMN_FILL_BALANCE);
 }
 
 css_error css__compose_column_fill(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
-	UNUSED(parent);
-	UNUSED(child);
-	UNUSED(result);
+	uint8_t type = get_column_fill(child);
 
-	return CSS_OK;
+	if (type == CSS_COLUMN_FILL_INHERIT) {
+		type = get_column_fill(parent);
+	}
+
+	return set_column_fill(result, type);
 }
 
