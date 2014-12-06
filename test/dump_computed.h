@@ -1001,6 +1001,33 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	ptr += wrote;
 	*len -= wrote;
 
+	/* column-width */
+	val = css_computed_column_width(style, &len1, &unit1);
+	switch (val) {
+	case CSS_COLUMN_WIDTH_INHERIT:
+		wrote = snprintf(ptr, *len, "column-width: inherit\n");
+		break;
+	case CSS_COLUMN_WIDTH_AUTO:
+		wrote = snprintf(ptr, *len, "column-width: auto\n");
+		break;
+	case CSS_COLUMN_WIDTH_SET:
+		wrote = snprintf(ptr, *len, "column-width: ");
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = dump_css_unit(len1, unit1, ptr, *len);
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = snprintf(ptr, *len, "\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
 	/* content */
 	val = css_computed_content(style, &content);
 	switch (val) {
