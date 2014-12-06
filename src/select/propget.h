@@ -507,6 +507,33 @@ static inline uint8_t get_column_span(
 #undef COLUMN_SPAN_SHIFT
 #undef COLUMN_SPAN_INDEX
 
+#define COLUMN_WIDTH_INDEX 11
+#define COLUMN_WIDTH_SHIFT 0
+#define COLUMN_WIDTH_MASK  0x3f
+static inline uint8_t get_column_width(
+		const css_computed_style *style,
+		css_fixed *length, css_unit *unit)
+{
+	if (style->uncommon != NULL) {
+		uint8_t bits = style->uncommon->bits[COLUMN_WIDTH_INDEX];
+		bits &= COLUMN_WIDTH_MASK;
+		bits >>= COLUMN_WIDTH_SHIFT;
+
+		/* 6bits: uuuutt : units | type */
+		if ((bits & 0x3) == CSS_COLUMN_WIDTH_SET) {
+			*length = style->uncommon->column_width;
+			*unit = bits >> 2;
+		}
+
+		return (bits & 0x3);
+	}
+
+	return CSS_COLUMN_WIDTH_AUTO;
+}
+#undef COLUMN_WIDTH_MASK
+#undef COLUMN_WIDTH_SHIFT
+#undef COLUMN_WIDTH_INDEX
+
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0
 #define CONTENT_MASK  0x3

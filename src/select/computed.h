@@ -24,12 +24,13 @@ typedef struct css_computed_uncommon {
  * column_rule_style		  4		  0
  * column_rule_width		  3 + 4		  4
  * column_span			  2		  0
+ * column_width			  2 + 4		  4
  * letter_spacing		  2 + 4		  4
  * outline_color		  2		  4
  * outline_width		  3 + 4		  4
  * word_spacing			  2 + 4		  4
  * 				---		---
- * 				 77 bits	 56 bytes
+ * 				 83 bits	 60 bytes
  *
  * Encode counter_increment and _reset as an array of name, value pairs,
  * terminated with a blank entry.
@@ -53,11 +54,11 @@ typedef struct css_computed_uncommon {
  * 				  2 bits	  sizeof(ptr)
  *
  * 				___		___
- * 				 90 bits	 58 + 4sizeof(ptr) bytes
+ * 				 96 bits	 62 + 4sizeof(ptr) bytes
  *
- * 				 12 bytes	 58 + 4sizeof(ptr) bytes
+ * 				 12 bytes	 62 + 4sizeof(ptr) bytes
  * 				===================
- * 				 68 + 4sizeof(ptr) bytes
+ * 				 72 + 4sizeof(ptr) bytes
  *
  * Bit allocations:
  *
@@ -72,8 +73,8 @@ typedef struct css_computed_uncommon {
  *  8 ccccccoo	clip              | content
  *  9 ccffssss  column_count      | column-fill       | column-rule-style
  * 10 ggggggcc  column-gap        | column-rule-color
- * 11 wwwwwww.  column-rule-width
- * 12 ss......  column-span
+ * 11 wwwwwww.  column-rule-width | <unused>
+ * 12 sswwwwww  column-span       | column_width
  */
 	uint8_t bits[12];
 
@@ -92,6 +93,7 @@ typedef struct css_computed_uncommon {
 	css_fixed column_gap;
 	css_color column_rule_color;
 	css_fixed column_rule_width;
+	css_fixed column_width;
 
 	css_computed_counter *counter_increment;
 	css_computed_counter *counter_reset;

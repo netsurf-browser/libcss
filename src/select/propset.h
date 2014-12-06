@@ -30,10 +30,11 @@ static const css_computed_uncommon default_uncommon = {
 		(CSS_COLUMN_RULE_STYLE_NONE << 0),
 	  (CSS_COLUMN_GAP_NORMAL << 2) | (CSS_COLUMN_RULE_COLOR_CURRENT_COLOR),
 	  (CSS_COLUMN_RULE_WIDTH_MEDIUM << 1),
-	  (CSS_COLUMN_SPAN_NONE << 6)
+	  (CSS_COLUMN_SPAN_NONE << 6) | CSS_COLUMN_WIDTH_AUTO
 	},
 	{ 0, 0 },
 	{ 0, 0, 0, 0 },
+	0,
 	0,
 	0,
 	0,
@@ -577,6 +578,31 @@ static inline css_error set_column_span(
 #undef COLUMN_SPAN_MASK
 #undef COLUMN_SPAN_SHIFT
 #undef COLUMN_SPAN_INDEX
+
+#define COLUMN_WIDTH_INDEX 11
+#define COLUMN_WIDTH_SHIFT 0
+#define COLUMN_WIDTH_MASK  0x3f
+static inline css_error set_column_width(
+		css_computed_style *style, uint8_t type,
+		css_fixed length, css_unit unit)
+{
+	uint8_t *bits;
+
+	ENSURE_UNCOMMON;
+
+	bits = &style->uncommon->bits[COLUMN_WIDTH_INDEX];
+
+	/* 6bits: uuuutt : units | type */
+	*bits = (*bits & ~COLUMN_WIDTH_MASK) |
+			(((type & 0x3) | (unit << 2)) << COLUMN_WIDTH_SHIFT);
+
+	style->uncommon->column_width = length;
+
+	return CSS_OK;
+}
+#undef COLUMN_WIDTH_MASK
+#undef COLUMN_WIDTH_SHIFT
+#undef COLUMN_WIDTH_INDEX
 
 #define CONTENT_INDEX 7
 #define CONTENT_SHIFT 0
