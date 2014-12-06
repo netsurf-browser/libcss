@@ -826,6 +826,12 @@ uint8_t css_computed_column_span(const css_computed_style *style)
 	return get_column_span(style);
 }
 
+uint8_t css_computed_column_width(const css_computed_style *style,
+		css_fixed *length, css_unit *unit)
+{
+	return get_column_width(style, length, unit);
+}
+
 uint8_t css_computed_display(const css_computed_style *style,
 		bool root)
 {
