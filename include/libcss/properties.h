@@ -220,7 +220,7 @@ enum css_break_after_e {
 	CSS_BREAK_AFTER_COLUMN			= 0x7,
 	CSS_BREAK_AFTER_AVOID_PAGE		= 0x8,
 	CSS_BREAK_AFTER_AVOID_COLUMN		= 0x9
-};	
+};
 
 enum css_break_before_e {
 	CSS_BREAK_BEFORE_INHERIT		= CSS_BREAK_AFTER_INHERIT,
@@ -605,7 +605,7 @@ enum css_page_break_after_e {
 	CSS_PAGE_BREAK_AFTER_ALWAYS		= CSS_BREAK_AFTER_ALWAYS,
 	CSS_PAGE_BREAK_AFTER_LEFT		= CSS_BREAK_AFTER_LEFT,
 	CSS_PAGE_BREAK_AFTER_RIGHT		= CSS_BREAK_AFTER_RIGHT
-};	
+};
 
 enum css_page_break_before_e {
 	CSS_PAGE_BREAK_BEFORE_INHERIT		= CSS_BREAK_AFTER_INHERIT,
@@ -729,8 +729,8 @@ enum css_white_space_e {
 enum css_widows_e {
 	CSS_WIDOWS_INHERIT			= 0x0,
 	CSS_WIDOWS_SET				= 0x1
-};	
-	
+};
+
 enum css_width_e {
 	CSS_WIDTH_INHERIT			= 0x0,
 	CSS_WIDTH_SET				= 0x1,
