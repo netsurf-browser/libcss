@@ -63,7 +63,7 @@ css_error css__compose_column_count(const css_computed_style *parent,
 			type == CSS_COLUMN_COUNT_INHERIT ||
 			(child->uncommon != NULL && result != child)) {
 		if ((child->uncommon == NULL && parent->uncommon != NULL) ||
-				type == CSS_OUTLINE_COLOR_INHERIT) {
+				type == CSS_COLUMN_COUNT_INHERIT) {
 			type = get_column_count(parent, &count);
 		}
 
