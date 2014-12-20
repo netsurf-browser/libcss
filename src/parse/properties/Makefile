@@ -7,7 +7,7 @@ define build_gen_parser
 
 $(BUILDDIR)/gen_parser: $(DIR)css_property_parser_gen.c
 	$$(VQ)$$(ECHO) $$(ECHOFLAGS) " PREPARE: $$@"
-	$$(Q)$$(HOST_CC) -o $$@ $$^
+	$$(Q)$$(BUILD_CC) -o $$@ $$^
 
 endef
 
