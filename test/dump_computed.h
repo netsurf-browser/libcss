@@ -715,6 +715,111 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	ptr += wrote;
 	*len -= wrote;
 
+	/* break-after */
+	val = css_computed_break_after(style);
+	switch (val) {
+	case CSS_BREAK_AFTER_INHERIT:
+		wrote = snprintf(ptr, *len, "break-after: inherit\n");
+		break;
+	case CSS_BREAK_AFTER_AUTO:
+		wrote = snprintf(ptr, *len, "break-after: auto\n");
+		break;
+	case CSS_BREAK_AFTER_ALWAYS:
+		wrote = snprintf(ptr, *len, "break-after: always\n");
+		break;
+	case CSS_BREAK_AFTER_AVOID:
+		wrote = snprintf(ptr, *len, "break-after: avoid\n");
+		break;
+	case CSS_BREAK_AFTER_LEFT:
+		wrote = snprintf(ptr, *len, "break-after: left\n");
+		break;
+	case CSS_BREAK_AFTER_RIGHT:
+		wrote = snprintf(ptr, *len, "break-after: right\n");
+		break;
+	case CSS_BREAK_AFTER_PAGE:
+		wrote = snprintf(ptr, *len, "break-after: page\n");
+		break;
+	case CSS_BREAK_AFTER_COLUMN:
+		wrote = snprintf(ptr, *len, "break-after: column\n");
+		break;
+	case CSS_BREAK_AFTER_AVOID_PAGE:
+		wrote = snprintf(ptr, *len, "break-after: avoid-page\n");
+		break;
+	case CSS_BREAK_AFTER_AVOID_COLUMN:
+		wrote = snprintf(ptr, *len, "break-after: avoid-column\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
+	/* break-before */
+	val = css_computed_break_before(style);
+	switch (val) {
+	case CSS_BREAK_BEFORE_INHERIT:
+		wrote = snprintf(ptr, *len, "break-before: inherit\n");
+		break;
+	case CSS_BREAK_BEFORE_AUTO:
+		wrote = snprintf(ptr, *len, "break-before: auto\n");
+		break;
+	case CSS_BREAK_BEFORE_ALWAYS:
+		wrote = snprintf(ptr, *len, "break-before: always\n");
+		break;
+	case CSS_BREAK_BEFORE_AVOID:
+		wrote = snprintf(ptr, *len, "break-before: avoid\n");
+		break;
+	case CSS_BREAK_BEFORE_LEFT:
+		wrote = snprintf(ptr, *len, "break-before: left\n");
+		break;
+	case CSS_BREAK_BEFORE_RIGHT:
+		wrote = snprintf(ptr, *len, "break-before: right\n");
+		break;
+	case CSS_BREAK_BEFORE_PAGE:
+		wrote = snprintf(ptr, *len, "break-before: page\n");
+		break;
+	case CSS_BREAK_BEFORE_COLUMN:
+		wrote = snprintf(ptr, *len, "break-before: column\n");
+		break;
+	case CSS_BREAK_BEFORE_AVOID_PAGE:
+		wrote = snprintf(ptr, *len, "break-before: avoid-page\n");
+		break;
+	case CSS_BREAK_BEFORE_AVOID_COLUMN:
+		wrote = snprintf(ptr, *len, "break-before: avoid-column\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
+	/* break-inside */
+	val = css_computed_break_inside(style);
+	switch (val) {
+	case CSS_BREAK_INSIDE_INHERIT:
+		wrote = snprintf(ptr, *len, "break-inside: inherit\n");
+		break;
+	case CSS_BREAK_INSIDE_AUTO:
+		wrote = snprintf(ptr, *len, "break-inside: auto\n");
+		break;
+	case CSS_BREAK_INSIDE_AVOID:
+		wrote = snprintf(ptr, *len, "break-inside: avoid\n");
+		break;
+	case CSS_BREAK_INSIDE_AVOID_PAGE:
+		wrote = snprintf(ptr, *len, "break-inside: avoid-page\n");
+		break;
+	case CSS_BREAK_INSIDE_AVOID_COLUMN:
+		wrote = snprintf(ptr, *len, "break-inside: avoid-column\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
 	/* caption-side */
 	val = css_computed_caption_side(style);
 	switch (val) {

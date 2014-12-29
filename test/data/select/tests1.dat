@@ -29,6 +29,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -133,6 +136,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -238,6 +244,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -343,6 +352,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -448,6 +460,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -545,6 +560,9 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: top
 clear: none
 clip: auto
@@ -640,6 +658,9 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: top
 clear: none
 clip: auto
@@ -736,6 +757,9 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: top
 clear: none
 clip: auto
@@ -832,6 +856,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -927,6 +954,9 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: top
 clear: none
 clip: auto
@@ -1027,6 +1057,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -1127,6 +1160,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -1228,6 +1264,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -1332,6 +1371,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -1435,6 +1477,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -1544,6 +1589,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -1653,6 +1701,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -1762,6 +1813,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -1875,6 +1929,9 @@ border-right-width: medium
 border-bottom-width: thick
 border-left-width: 2px
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -1987,6 +2044,9 @@ border-right-width: 2em
 border-bottom-width: thick
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -2097,6 +2157,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -2206,6 +2269,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -2315,6 +2381,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -2424,6 +2493,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -2533,6 +2605,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -2642,6 +2717,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: inherit
 clip: auto
@@ -2751,6 +2829,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: left
 clip: auto
@@ -2860,6 +2941,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: both
 clip: auto
@@ -2969,6 +3053,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: right
 clip: auto
@@ -3078,6 +3165,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: right
 clip: auto
@@ -3187,6 +3277,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: right
 clip: auto
@@ -3296,6 +3389,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: right
 clip: auto
@@ -3405,6 +3501,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: right
 clip: auto
@@ -3514,6 +3613,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: right
 clip: auto
@@ -3623,6 +3725,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: right
 clip: auto
@@ -3732,6 +3837,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: right
 clip: auto
@@ -3841,6 +3949,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: right
 clip: auto
@@ -3950,6 +4061,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: right
 clip: auto
@@ -4059,6 +4173,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: right
 clip: auto
@@ -4168,6 +4285,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: right
 clip: auto
@@ -4277,6 +4397,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: right
 clip: auto
@@ -4379,6 +4502,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -4481,6 +4607,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -4583,6 +4712,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
@@ -4682,6 +4814,9 @@ border-right-width: medium
 border-bottom-width: medium
 border-left-width: medium
 bottom: auto
+break-after: auto
+break-before: auto
+break-inside: auto
 caption-side: inherit
 clear: none
 clip: auto
