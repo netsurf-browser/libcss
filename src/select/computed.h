@@ -16,6 +16,9 @@
 typedef struct css_computed_uncommon {
 /*
  * border_spacing		  1 + 2(4)	  2(4)
+ * break_before			  4		  0
+ * break_after			  4		  0
+ * break_inside			  4		  0
  * clip				  2 + 4(4) + 4	  4(4)
  * column_count			  2		  4
  * column_fill			  2		  0
@@ -30,7 +33,7 @@ typedef struct css_computed_uncommon {
  * outline_width		  3 + 4		  4
  * word_spacing			  2 + 4		  4
  * 				---		---
- * 				 83 bits	 60 bytes
+ * 				 95 bits	 60 bytes
  *
  * Encode counter_increment and _reset as an array of name, value pairs,
  * terminated with a blank entry.
@@ -54,11 +57,11 @@ typedef struct css_computed_uncommon {
  * 				  2 bits	  sizeof(ptr)
  *
  * 				___		___
- * 				 96 bits	 62 + 4sizeof(ptr) bytes
+ * 				108 bits	 62 + 4sizeof(ptr) bytes
  *
- * 				 12 bytes	 62 + 4sizeof(ptr) bytes
+ * 				 14 bytes	 62 + 4sizeof(ptr) bytes
  * 				===================
- * 				 72 + 4sizeof(ptr) bytes
+ * 				 74 + 4sizeof(ptr) bytes
  *
  * Bit allocations:
  *
@@ -75,8 +78,10 @@ typedef struct css_computed_uncommon {
  * 10 ggggggcc  column-gap        | column-rule-color
  * 11 wwwwwww.  column-rule-width | <unused>
  * 12 sswwwwww  column-span       | column_width
+ * 13 bbbbaaaa  break-before      | break-after
+ * 14 iiii....  break-inside      | <unused>
  */
-	uint8_t bits[12];
+	uint8_t bits[14];
 
 	css_fixed border_spacing[2];
 

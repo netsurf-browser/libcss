@@ -144,6 +144,28 @@ static inline uint8_t get_border_spacing(
 #undef BORDER_SPACING_SHIFT
 #undef BORDER_SPACING_INDEX
 
+#define BREAK_AFTER_INDEX 12
+#define BREAK_AFTER_SHIFT 0
+#define BREAK_AFTER_MASK  0xf
+static inline uint8_t get_break_after(
+		const css_computed_style *style)
+{
+	if (style->uncommon != NULL) {
+		uint8_t bits = style->uncommon->bits[BREAK_AFTER_INDEX];
+		bits &= BREAK_AFTER_MASK;
+		bits >>= BREAK_AFTER_SHIFT;
+
+		/* 4bits: type */
+		return bits;
+	}
+
+	/* Not inherited; initial value */
+	return CSS_BREAK_AFTER_AUTO;
+}
+#undef BREAK_AFTER_MASK
+#undef BREAK_AFTER_SHIFT
+#undef BREAK_AFTER_INDEX
+
 #define WORD_SPACING_INDEX 3
 #define WORD_SPACING_SHIFT 2
 #define WORD_SPACING_MASK  0xfc

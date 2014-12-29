@@ -32,7 +32,9 @@ static const css_computed_uncommon default_uncommon = {
 		(CSS_COLUMN_RULE_STYLE_NONE << 0),
 	  (CSS_COLUMN_GAP_NORMAL << 2) | (CSS_COLUMN_RULE_COLOR_CURRENT_COLOR),
 	  (CSS_COLUMN_RULE_WIDTH_MEDIUM << 1),
-	  (CSS_COLUMN_SPAN_NONE << 6) | CSS_COLUMN_WIDTH_AUTO
+	  (CSS_COLUMN_SPAN_NONE << 6) | CSS_COLUMN_WIDTH_AUTO,
+	  (CSS_BREAK_BEFORE_AUTO << 4) | CSS_BREAK_AFTER_AUTO,
+	  (CSS_BREAK_INSIDE_AUTO)
 	},
 	{ 0, 0 },
 	{ 0, 0, 0, 0 },
@@ -195,6 +197,28 @@ static inline css_error set_border_spacing(
 #undef BORDER_SPACING_MASK
 #undef BORDER_SPACING_SHIFT
 #undef BORDER_SPACING_INDEX
+
+#define BREAK_AFTER_INDEX 12
+#define BREAK_AFTER_SHIFT 0
+#define BREAK_AFTER_MASK  0xf
+static inline css_error set_break_after(
+		css_computed_style *style, uint8_t type)
+{
+	uint8_t *bits;
+
+	ENSURE_UNCOMMON;
+
+	bits = &style->uncommon->bits[BREAK_AFTER_INDEX];
+
+	/* 4bits: type */
+	*bits = (*bits & ~BREAK_AFTER_MASK) |
+			((type & 0xf) << BREAK_AFTER_SHIFT);
+
+	return CSS_OK;
+}
+#undef BREAK_AFTER_MASK
+#undef BREAK_AFTER_SHIFT
+#undef BREAK_AFTER_INDEX
 
 #define WORD_SPACING_INDEX 3
 #define WORD_SPACING_SHIFT 2
