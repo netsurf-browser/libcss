@@ -395,6 +395,55 @@ css_error css__cascade_page_break_after_before_inside(uint32_t opv,
 	return CSS_OK;
 }
 
+css_error css__cascade_break_after_before_inside(uint32_t opv,
+		css_style *style, css_select_state *state,
+		css_error (*fun)(css_computed_style *, uint8_t))
+{
+	uint16_t value = CSS_BREAK_AFTER_AUTO;
+
+	UNUSED(style);
+
+	if (isInherit(opv) == false) {
+		switch (getValue(opv)) {
+		case BREAK_AFTER_AUTO:
+			value = CSS_BREAK_AFTER_AUTO;
+			break;
+		case BREAK_AFTER_ALWAYS:
+			value = CSS_BREAK_AFTER_ALWAYS;
+			break;
+		case BREAK_AFTER_AVOID:
+			value = CSS_BREAK_AFTER_AVOID;
+			break;
+		case BREAK_AFTER_LEFT:
+			value = CSS_BREAK_AFTER_LEFT;
+			break;
+		case BREAK_AFTER_RIGHT:
+			value = CSS_BREAK_AFTER_RIGHT;
+			break;
+		case BREAK_AFTER_PAGE:
+			value = CSS_BREAK_AFTER_PAGE;
+			break;
+		case BREAK_AFTER_COLUMN:
+			value = CSS_BREAK_AFTER_COLUMN;
+			break;
+		case BREAK_AFTER_AVOID_PAGE:
+			value = CSS_BREAK_AFTER_AVOID_PAGE;
+			break;
+		case BREAK_AFTER_AVOID_COLUMN:
+			value = CSS_BREAK_AFTER_AVOID_COLUMN;
+			break;
+		}
+	}
+
+	/** \todo lose fun != NULL */
+	if (fun != NULL && css__outranks_existing(getOpcode(opv),
+			isImportant(opv), state, isInherit(opv))) {
+		return fun(state->computed, value);
+	}
+
+	return CSS_OK;
+}
+
 css_error css__cascade_counter_increment_reset(uint32_t opv, css_style *style,
 		css_select_state *state,
 		css_error (*fun)(css_computed_style *, uint8_t,

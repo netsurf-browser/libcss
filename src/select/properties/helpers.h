@@ -51,6 +51,9 @@ css_error css__cascade_number(uint32_t opv, css_style *style,
 css_error css__cascade_page_break_after_before_inside(uint32_t opv, 
 		css_style *style, css_select_state *state,
 		css_error (*fun)(css_computed_style *, uint8_t));
+css_error css__cascade_break_after_before_inside(uint32_t opv,
+		css_style *style, css_select_state *state,
+		css_error (*fun)(css_computed_style *, uint8_t));
 css_error css__cascade_counter_increment_reset(uint32_t opv, css_style *style,
 		css_select_state *state,
 		css_error (*fun)(css_computed_style *, uint8_t,
