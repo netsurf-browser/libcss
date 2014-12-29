@@ -17,23 +17,23 @@
 css_error css__cascade_break_inside(uint32_t opv, css_style *style, 
 		css_select_state *state)
 {
-	uint16_t value = CSS_BREAK_AFTER_AUTO;
+	uint16_t value = CSS_BREAK_INSIDE_AUTO;
 
 	UNUSED(style);
 
 	if (isInherit(opv) == false) {
 		switch (getValue(opv)) {
 		case BREAK_INSIDE_AUTO:
-			value = CSS_BREAK_AFTER_AUTO;
+			value = CSS_BREAK_INSIDE_AUTO;
 			break;
 		case BREAK_INSIDE_AVOID:
-			value = CSS_BREAK_AFTER_AVOID;
+			value = CSS_BREAK_INSIDE_AVOID;
 			break;
 		case BREAK_INSIDE_AVOID_PAGE:
-			value = CSS_BREAK_AFTER_AVOID_PAGE;
+			value = CSS_BREAK_INSIDE_AVOID_PAGE;
 			break;
 		case BREAK_INSIDE_AVOID_COLUMN:
-			value = CSS_BREAK_AFTER_AVOID_COLUMN;
+			value = CSS_BREAK_INSIDE_AVOID_COLUMN;
 			break;
 		}
 	}
