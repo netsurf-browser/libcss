@@ -36,7 +36,8 @@ static inline uint8_t get_letter_spacing(
 		return (bits & 3);
 	}
 
-	return CSS_LETTER_SPACING_NORMAL;
+	/* Inherited */
+	return CSS_LETTER_SPACING_INHERIT;
 }
 #undef LETTER_SPACING_MASK
 #undef LETTER_SPACING_SHIFT
@@ -62,6 +63,7 @@ static inline uint8_t get_outline_color(
 		return (bits & 3);
 	}
 
+	/* Not inherited; initial value */
 	return CSS_OUTLINE_COLOR_INVERT;
 }
 #undef OUTLINE_COLOR_MASK
@@ -90,10 +92,8 @@ static inline uint8_t get_outline_width(
 		return (bits & 7);
 	}
 
-	*length = INTTOFIX(2);
-	*unit = CSS_UNIT_PX;
-
-	return CSS_OUTLINE_WIDTH_WIDTH;
+	/* Not inherited; initial value */
+	return CSS_OUTLINE_WIDTH_MEDIUM;
 }
 #undef OUTLINE_WIDTH_MASK
 #undef OUTLINE_WIDTH_SHIFT
@@ -132,12 +132,10 @@ static inline uint8_t get_border_spacing(
 		}
 
 		return bits;
-	} else {
-		*hlength = *vlength = 0;
-		*hunit = *vunit = CSS_UNIT_PX;
 	}
 
-	return CSS_BORDER_SPACING_SET;
+	/* Inherited */
+	return CSS_BORDER_SPACING_INHERIT;
 }
 #undef BORDER_SPACING_MASK1
 #undef BORDER_SPACING_SHIFT1
@@ -168,7 +166,8 @@ static inline uint8_t get_word_spacing(
 		return (bits & 3);
 	}
 
-	return CSS_WORD_SPACING_NORMAL;
+	/* Inherited */
+	return CSS_WORD_SPACING_INHERIT;
 }
 #undef WORD_SPACING_MASK
 #undef WORD_SPACING_SHIFT
@@ -189,7 +188,8 @@ static inline uint8_t get_writing_mode(
 		return bits;
 	}
 
-	return CSS_WRITING_MODE_HORIZONTAL_TB;
+	/* Inherited */
+	return CSS_WRITING_MODE_INHERIT;
 }
 #undef WRITING_MODE_INDEX
 #undef WRITING_MODE_MASK
@@ -213,6 +213,7 @@ static inline uint8_t get_counter_increment(
 		return bits;
 	}
 
+	/* Not inherited; initial value */
 	return CSS_COUNTER_INCREMENT_NONE;
 }
 #undef COUNTER_INCREMENT_MASK
@@ -237,6 +238,7 @@ static inline uint8_t get_counter_reset(
 		return bits;
 	}
 
+	/* Not inherited; initial value */
 	return CSS_COUNTER_RESET_NONE;
 }
 #undef COUNTER_RESET_MASK
@@ -261,7 +263,8 @@ static inline uint8_t get_cursor(
 		return bits;
 	}
 
-	return CSS_CURSOR_AUTO;
+	/* Inherited */
+	return CSS_CURSOR_INHERIT;
 }
 #undef CURSOR_MASK
 #undef CURSOR_SHIFT
@@ -330,6 +333,7 @@ static inline uint8_t get_clip(
 		return (bits & 0x3);
 	}
 
+	/* Not inherited; initial value */
 	return CSS_CLIP_AUTO;
 }
 #undef CLIP_MASK2
@@ -359,6 +363,7 @@ static inline uint8_t get_column_count(
 		return bits;
 	}
 
+	/* Not inherited; initial value */
 	return CSS_COLUMN_COUNT_AUTO;
 }
 #undef COLUMN_COUNT_MASK
@@ -380,6 +385,7 @@ static inline uint8_t get_column_fill(
 		return bits;
 	}
 
+	/* Not inherited; initial value */
 	return CSS_COLUMN_FILL_BALANCE;
 }
 #undef COLUMN_FILL_MASK
@@ -407,6 +413,7 @@ static inline uint8_t get_column_gap(
 		return (bits & 0x3);
 	}
 
+	/* Not inherited; initial value */
 	return CSS_COLUMN_GAP_NORMAL;
 }
 #undef COLUMN_GAP_MASK
@@ -431,6 +438,7 @@ static inline uint8_t get_column_rule_color(
 		return bits;
 	}
 
+	/* Not inherited; initial value */
 	*color = 0;
 	return CSS_COLUMN_RULE_COLOR_CURRENT_COLOR;
 }
@@ -453,6 +461,7 @@ static inline uint8_t get_column_rule_style(
 		return bits;
 	}
 
+	/* Not inherited; initial value */
 	return CSS_COLUMN_RULE_STYLE_NONE;
 }
 #undef COLUMN_RULE_STYLE_MASK
@@ -480,6 +489,7 @@ static inline uint8_t get_column_rule_width(
 		return (bits & 0x7);
 	}
 
+	/* Not inherited; initial value */
 	return CSS_COLUMN_RULE_WIDTH_MEDIUM;
 }
 #undef COLUMN_RULE_WIDTH_MASK
@@ -501,6 +511,7 @@ static inline uint8_t get_column_span(
 		return bits;
 	}
 
+	/* Not inherited; initial value */
 	return CSS_COLUMN_SPAN_NONE;
 }
 #undef COLUMN_SPAN_MASK
@@ -528,6 +539,7 @@ static inline uint8_t get_column_width(
 		return (bits & 0x3);
 	}
 
+	/* Not inherited; initial value */
 	return CSS_COLUMN_WIDTH_AUTO;
 }
 #undef COLUMN_WIDTH_MASK
@@ -552,6 +564,7 @@ static inline uint8_t get_content(
 		return bits;
 	}
 
+	/* Not inherited; initial value */
 	return CSS_CONTENT_NORMAL;
 }
 #undef CONTENT_MASK
@@ -1988,6 +2001,7 @@ static inline uint8_t get_page_break_after(
 		return bits;
 	}
 
+	/* Not inherited; initial value */
 	return CSS_PAGE_BREAK_AFTER_AUTO;
 }
 #undef PAGE_BREAK_AFTER_MASK
@@ -2009,6 +2023,7 @@ static inline uint8_t get_page_break_before(
 		return bits;
 	}
 
+	/* Not inherited; initial value */
 	return CSS_PAGE_BREAK_BEFORE_AUTO;
 }
 #undef PAGE_BREAK_BEFORE_MASK
@@ -2030,6 +2045,7 @@ static inline uint8_t get_page_break_inside(
 		return bits;
 	}
 
+	/* Not inherited; initial value */
 	return CSS_PAGE_BREAK_INSIDE_AUTO;
 }
 #undef PAGE_BREAK_INSIDE_MASK
@@ -2054,8 +2070,8 @@ static inline uint8_t get_orphans(
 		return bits;
 	}
 
-	*orphans = 2;
-	return CSS_ORPHANS_SET;
+	/* Inherited */
+	return CSS_ORPHANS_INHERIT;
 }
 #undef ORPHANS_MASK
 #undef ORPHANS_SHIFT
@@ -2079,8 +2095,8 @@ static inline uint8_t get_widows(
 		return bits;
 	}
 
-	*widows = 2;
-	return CSS_WIDOWS_SET;
+	/* Inherited */
+	return CSS_WIDOWS_INHERIT;
 }
 #undef WIDOWS_MASK
 #undef WIDOWS_SHIFT
