@@ -792,6 +792,11 @@ uint8_t css_computed_break_after(const css_computed_style *style)
 	return get_break_after(style);
 }
 
+uint8_t css_computed_break_before(const css_computed_style *style)
+{
+	return get_break_before(style);
+}
+
 uint8_t css_computed_column_count(const css_computed_style *style,
 		int32_t *column_count)
 {
