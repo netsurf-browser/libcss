@@ -1324,9 +1324,7 @@ css_error compute_absolute_border_side_width(css_computed_style *style,
 	} else if (type == CSS_BORDER_WIDTH_THICK) {
 		length = INTTOFIX(4);
 		unit = CSS_UNIT_PX;
-	}
-
-	if (unit == CSS_UNIT_EX) {
+	} else if (unit == CSS_UNIT_EX) {
 		length = FMUL(length, ex_size->value);
 		unit = ex_size->unit;
 	}
