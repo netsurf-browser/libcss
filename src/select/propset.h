@@ -242,6 +242,28 @@ static inline css_error set_break_before(
 #undef BREAK_BEFORE_SHIFT
 #undef BREAK_BEFORE_INDEX
 
+#define BREAK_INSIDE_INDEX 13
+#define BREAK_INSIDE_SHIFT 4
+#define BREAK_INSIDE_MASK  (0xf << 4)
+static inline css_error set_break_inside(
+		css_computed_style *style, uint8_t type)
+{
+	uint8_t *bits;
+
+	ENSURE_UNCOMMON;
+
+	bits = &style->uncommon->bits[BREAK_INSIDE_INDEX];
+
+	/* 4bits: type */
+	*bits = (*bits & ~BREAK_INSIDE_MASK) |
+			((type & 0xf) << BREAK_INSIDE_SHIFT);
+
+	return CSS_OK;
+}
+#undef BREAK_INSIDE_MASK
+#undef BREAK_INSIDE_SHIFT
+#undef BREAK_INSIDE_INDEX
+
 #define WORD_SPACING_INDEX 3
 #define WORD_SPACING_SHIFT 2
 #define WORD_SPACING_MASK  0xfc

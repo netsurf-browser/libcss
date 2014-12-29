@@ -17,51 +17,31 @@
 css_error css__cascade_break_inside(uint32_t opv, css_style *style, 
 		css_select_state *state)
 {
-	UNUSED(style);
-
-	if (isInherit(opv) == false) {
-		switch (getValue(opv)) {
-		case BREAK_INSIDE_AUTO:
-		case BREAK_INSIDE_AVOID:
-		case BREAK_INSIDE_AVOID_PAGE:
-		case BREAK_INSIDE_AVOID_COLUMN:
-			/** \todo convert to public values */
-			break;
-		}
-	}
-
-	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
-		/** \todo set computed elevation */
-	}
-
-	return CSS_OK;
+	return css__cascade_break_after_before_inside(opv, style, state,
+			set_break_inside);
 }
 
 css_error css__set_break_inside_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
-	UNUSED(hint);
-	UNUSED(style);
-
-	return CSS_OK;
+	return set_break_inside(style, hint->status);
 }
 
 css_error css__initial_break_inside(css_select_state *state)
 {
-	UNUSED(state);
-
-	return CSS_OK;
+	return set_break_inside(state->computed, CSS_BREAK_INSIDE_AUTO);
 }
 
 css_error css__compose_break_inside(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
-	UNUSED(parent);
-	UNUSED(child);
-	UNUSED(result);
+	uint8_t type = get_break_inside(child);
 
-	return CSS_OK;
+	if (type == CSS_BREAK_INSIDE_INHERIT) {
+		type = get_break_inside(parent);
+	}
+
+	return set_break_inside(result, type);
 }
 

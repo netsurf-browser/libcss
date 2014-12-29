@@ -188,6 +188,28 @@ static inline uint8_t get_break_before(
 #undef BREAK_BEFORE_SHIFT
 #undef BREAK_BEFORE_INDEX
 
+#define BREAK_INSIDE_INDEX 13
+#define BREAK_INSIDE_SHIFT 4
+#define BREAK_INSIDE_MASK  (0xf << 4)
+static inline uint8_t get_break_inside(
+		const css_computed_style *style)
+{
+	if (style->uncommon != NULL) {
+		uint8_t bits = style->uncommon->bits[BREAK_INSIDE_INDEX];
+		bits &= BREAK_INSIDE_MASK;
+		bits >>= BREAK_INSIDE_SHIFT;
+
+		/* 4bits: type */
+		return bits;
+	}
+
+	/* Not inherited; initial value */
+	return CSS_BREAK_INSIDE_AUTO;
+}
+#undef BREAK_INSIDE_MASK
+#undef BREAK_INSIDE_SHIFT
+#undef BREAK_INSIDE_INDEX
+
 #define WORD_SPACING_INDEX 3
 #define WORD_SPACING_SHIFT 2
 #define WORD_SPACING_MASK  0xfc

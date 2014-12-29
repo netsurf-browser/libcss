@@ -338,6 +338,9 @@ uint8_t css_computed_break_after(
 uint8_t css_computed_break_before(
 		const css_computed_style *style);
 
+uint8_t css_computed_break_inside(
+		const css_computed_style *style);
+
 uint8_t css_computed_column_count(
 		const css_computed_style *style,
 		int32_t *column_count);
