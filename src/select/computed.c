@@ -1667,16 +1667,18 @@ css_error compute_absolute_length_normal(css_computed_style *style,
 	uint8_t type;
 
 	type = get(style, &length, &unit);
-	if (type != CSS_LETTER_SPACING_NORMAL) {
+	if (type == CSS_LETTER_SPACING_SET) {
 		if (unit == CSS_UNIT_EX) {
 			length = FMUL(length, ex_size->value);
 			unit = ex_size->unit;
 		}
-
-		return set(style, CSS_LETTER_SPACING_SET, length, unit);
+	} else {
+		/* NORMAL or INHERIT */
+		length = INTTOFIX(0);
+		unit = CSS_UNIT_PX;
 	}
 
-	return set(style, CSS_LETTER_SPACING_NORMAL, 0, CSS_UNIT_PX);
+	return set(style, CSS_LETTER_SPACING_SET, length, unit);
 }
 
 /**
