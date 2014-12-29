@@ -17,8 +17,33 @@
 css_error css__cascade_break_inside(uint32_t opv, css_style *style, 
 		css_select_state *state)
 {
-	return css__cascade_break_after_before_inside(opv, style, state,
-			set_break_inside);
+	uint16_t value = CSS_BREAK_AFTER_AUTO;
+
+	UNUSED(style);
+
+	if (isInherit(opv) == false) {
+		switch (getValue(opv)) {
+		case BREAK_INSIDE_AUTO:
+			value = CSS_BREAK_AFTER_AUTO;
+			break;
+		case BREAK_INSIDE_AVOID:
+			value = CSS_BREAK_AFTER_AVOID;
+			break;
+		case BREAK_INSIDE_AVOID_PAGE:
+			value = CSS_BREAK_AFTER_AVOID_PAGE;
+			break;
+		case BREAK_INSIDE_AVOID_COLUMN:
+			value = CSS_BREAK_AFTER_AVOID_COLUMN;
+			break;
+		}
+	}
+
+	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
+			isInherit(opv))) {
+		return set_break_inside(state->computed, value);
+	}
+
+	return CSS_OK;
 }
 
 css_error css__set_break_inside_from_hint(const css_hint *hint,
