@@ -16,6 +16,8 @@
 /* Important: keep this file in sync with computed.h */
 /** \todo Is there a better way to ensure this happens? */
 
+/** Default values are 'initial value', unless the property is inherited,
+ *  in which case it is 'inherit'. */
 static const css_computed_uncommon default_uncommon = {
 	{ (CSS_LETTER_SPACING_INHERIT << 2) | CSS_OUTLINE_COLOR_INVERT,
 	  (CSS_OUTLINE_WIDTH_MEDIUM << 1) | CSS_BORDER_SPACING_INHERIT,
