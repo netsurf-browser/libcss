@@ -27,9 +27,7 @@ css_error css__cascade_column_rule_color(uint32_t opv, css_style *style,
 			value = CSS_COLUMN_RULE_COLOR_COLOR;
 			break;
 		case COLUMN_RULE_COLOR_CURRENT_COLOR:
-			/* color: currentColor always computes to inherit */
-			value = CSS_COLUMN_RULE_COLOR_INHERIT;
-			inherit = true;
+			value = CSS_COLUMN_RULE_COLOR_CURRENT_COLOR;
 			break;
 		case COLUMN_RULE_COLOR_SET:
 			value = CSS_COLUMN_RULE_COLOR_COLOR;
@@ -56,7 +54,7 @@ css_error css__set_column_rule_color_from_hint(const css_hint *hint,
 css_error css__initial_column_rule_color(css_select_state *state)
 {
 	return set_column_rule_color(state->computed,
-			CSS_COLUMN_RULE_COLOR_INHERIT, 0);
+			CSS_COLUMN_RULE_COLOR_CURRENT_COLOR, 0);
 }
 
 css_error css__compose_column_rule_color(const css_computed_style *parent,
