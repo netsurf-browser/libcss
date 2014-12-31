@@ -521,17 +521,17 @@ struct prop_table prop_dispatch[CSS_N_PROPERTIES] = {
 	{
 		PROPERTY_FUNCS(break_after),
 		0,
-		GROUP_NORMAL
+		GROUP_UNCOMMON
 	},
 	{
 		PROPERTY_FUNCS(break_before),
 		0,
-		GROUP_NORMAL
+		GROUP_UNCOMMON
 	},
 	{
 		PROPERTY_FUNCS(break_inside),
 		0,
-		GROUP_NORMAL
+		GROUP_UNCOMMON
 	},
 	{
 		PROPERTY_FUNCS(column_count),
