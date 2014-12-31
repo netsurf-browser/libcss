@@ -29,6 +29,7 @@ typedef struct node {
 	uint32_t n_attrs;
 	attribute *attrs;
 
+	css_select_results *sr;
 	void *libcss_node_data;
 
 	struct node *parent;
@@ -756,6 +757,38 @@ static void show_differences(size_t len, const char *exp, const char *res)
 	}
 }
 
+
+static void run_test_select_tree(css_select_ctx *select,
+		node *node, line_ctx *ctx,
+		char *buf, size_t *buflen)
+{
+	css_select_results *sr;
+	struct node *n = NULL;
+
+	assert(css_select_style(select, node, ctx->media, NULL, 
+			&select_handler, ctx, &sr) == CSS_OK);
+
+	if (node->parent != NULL) {
+		assert(css_computed_style_compose(
+				node->parent->sr->styles[ctx->pseudo_element],
+				sr->styles[ctx->pseudo_element],
+				compute_font_size, NULL,
+				sr->styles[ctx->pseudo_element]) == CSS_OK);
+	}
+
+	node->sr = sr;
+
+	if (node == ctx->target) {
+		dump_computed_style(sr->styles[ctx->pseudo_element],
+				buf, buflen);
+	}
+
+	for (n = node->children; n != NULL; n = n->next) {
+		run_test_select_tree(select, n, ctx, buf, buflen);
+	}
+}
+
+
 void run_test(line_ctx *ctx, const char *exp, size_t explen)
 {
 	css_select_ctx *select;
@@ -783,12 +816,10 @@ void run_test(line_ctx *ctx, const char *exp, size_t explen)
 
 	testnum++;
 
-	assert(css_select_style(select, ctx->target, ctx->media, NULL, 
-			&select_handler, ctx, &results) == CSS_OK);
+	run_test_select_tree(select, ctx->tree, ctx, buf, &buflen);
 
+	results = ctx->target->sr;
 	assert(results->styles[ctx->pseudo_element] != NULL);
-
-	dump_computed_style(results->styles[ctx->pseudo_element], buf, &buflen);
 
 	if (8192 - buflen != explen || memcmp(buf, exp, explen) != 0) {
 		size_t len = 8192 - buflen < explen ? 8192 - buflen : explen;
@@ -802,9 +833,7 @@ void run_test(line_ctx *ctx, const char *exp, size_t explen)
 	}
 
 	/* Clean up */
-	css_select_results_destroy(results);
 	css_select_ctx_destroy(select);
-
 	destroy_tree(ctx->tree);
 
 	for (i = 0; i < ctx->n_sheets; i++) {
@@ -834,6 +863,8 @@ void destroy_tree(node *root)
 
 		destroy_tree(n);
 	}
+
+	css_select_results_destroy(root->sr);
 	
 	for (i = 0; i < root->n_attrs; ++i) {
 		lwc_string_unref(root->attrs[i].name);
