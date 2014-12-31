@@ -822,6 +822,14 @@ uint8_t css_computed_column_gap(const css_computed_style *style,
 uint8_t css_computed_column_rule_color(const css_computed_style *style,
 		css_color *color)
 {
+	/* This property is in the uncommon block, so we need to do
+	 * absolute value calculation here. */
+	if (get_column_rule_color(style, color) ==
+			CSS_COLUMN_RULE_COLOR_CURRENT_COLOR) {
+		css_computed_color(style, color);
+
+		return CSS_COLUMN_RULE_COLOR_COLOR;
+	}
 	return get_column_rule_color(style, color);
 }
 
