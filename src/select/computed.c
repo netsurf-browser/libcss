@@ -841,10 +841,8 @@ uint8_t css_computed_column_rule_color(const css_computed_style *style,
 	if (get_column_rule_color(style, color) ==
 			CSS_COLUMN_RULE_COLOR_CURRENT_COLOR) {
 		css_computed_color(style, color);
-
-		return CSS_COLUMN_RULE_COLOR_COLOR;
 	}
-	return get_column_rule_color(style, color);
+	return CSS_COLUMN_RULE_COLOR_COLOR;
 }
 
 uint8_t css_computed_column_rule_style(const css_computed_style *style)
