@@ -56,7 +56,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -93,7 +93,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset
@@ -159,7 +159,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -196,7 +196,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset
@@ -266,7 +266,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -303,7 +303,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset
@@ -374,7 +374,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -411,7 +411,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset
@@ -482,7 +482,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -519,7 +519,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset
@@ -590,7 +590,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -627,7 +627,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset
@@ -688,7 +688,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -725,7 +725,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset
@@ -787,7 +787,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -824,7 +824,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset
@@ -886,7 +886,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -923,7 +923,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset
@@ -984,7 +984,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -1021,7 +1021,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset
@@ -1087,7 +1087,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -1124,7 +1124,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset
@@ -1190,7 +1190,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -1227,7 +1227,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset
@@ -1294,7 +1294,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -1331,7 +1331,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset
@@ -1401,7 +1401,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -1438,7 +1438,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset
@@ -1507,7 +1507,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -1544,7 +1544,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset
@@ -4532,7 +4532,7 @@ font-variant: normal
 font-weight: normal
 height: auto
 left: auto
-letter-spacing: normal
+letter-spacing: 0px
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -4569,7 +4569,7 @@ vertical-align: baseline
 visibility: visible
 white-space: normal
 width: auto
-word-spacing: normal
+word-spacing: 0px
 writing-mode: horizontal-tb
 z-index: auto
 #reset

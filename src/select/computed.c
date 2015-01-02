@@ -314,7 +314,14 @@ css_error css_computed_style_compose(const css_computed_style *parent,
 uint8_t css_computed_letter_spacing(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	return get_letter_spacing(style, length, unit);
+	/* This property is in the uncommon block, so we need to do
+	 * absolute value calculation here. */
+	if (get_letter_spacing(style, length, unit) != CSS_LETTER_SPACING_SET) {
+		*length = INTTOFIX(0);
+		*unit = CSS_UNIT_PX;
+	}
+
+	return CSS_LETTER_SPACING_SET;
 }
 
 uint8_t css_computed_outline_color(const css_computed_style *style,
@@ -339,7 +346,14 @@ uint8_t css_computed_border_spacing(const css_computed_style *style,
 uint8_t css_computed_word_spacing(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	return get_word_spacing(style, length, unit);
+	/* This property is in the uncommon block, so we need to do
+	 * absolute value calculation here. */
+	if (get_word_spacing(style, length, unit) != CSS_WORD_SPACING_SET) {
+		*length = INTTOFIX(0);
+		*unit = CSS_UNIT_PX;
+	}
+
+	return CSS_WORD_SPACING_SET;
 }
 
 uint8_t css_computed_writing_mode(const css_computed_style *style)
