@@ -1349,21 +1349,26 @@ css_error compute_absolute_border_side_width(css_computed_style *style,
 {
 	css_fixed length;
 	css_unit unit;
-	uint8_t type;
 
-	type = get(style, &length, &unit);
-	if (type == CSS_BORDER_WIDTH_THIN) {
+	switch (get(style, &length, &unit)) {
+	case CSS_BORDER_WIDTH_THIN:
 		length = INTTOFIX(1);
 		unit = CSS_UNIT_PX;
-	} else if (type == CSS_BORDER_WIDTH_MEDIUM) {
+		break;
+	case CSS_BORDER_WIDTH_MEDIUM:
 		length = INTTOFIX(2);
 		unit = CSS_UNIT_PX;
-	} else if (type == CSS_BORDER_WIDTH_THICK) {
+		break;
+	case CSS_BORDER_WIDTH_THICK:
 		length = INTTOFIX(4);
 		unit = CSS_UNIT_PX;
-	} else if (unit == CSS_UNIT_EX) {
-		length = FMUL(length, ex_size->value);
-		unit = ex_size->unit;
+		break;
+	case CSS_BORDER_WIDTH_WIDTH:
+		if (unit == CSS_UNIT_EX) {
+			length = FMUL(length, ex_size->value);
+			unit = ex_size->unit;
+		}
+		break;
 	}
 
 	return set(style, CSS_BORDER_WIDTH_WIDTH, length, unit);
