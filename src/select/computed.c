@@ -1210,6 +1210,14 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 				set_column_rule_width);
 		if (error != CSS_OK)
 			return error;
+
+		/* Fix up column-width */
+		error = compute_absolute_length(style,
+				&ex_size.data.length,
+				get_column_width,
+				set_column_width);
+		if (error != CSS_OK)
+			return error;
 	}
 
 	return CSS_OK;
