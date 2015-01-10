@@ -308,14 +308,7 @@ css_error css_computed_style_compose(const css_computed_style *parent,
 uint8_t css_computed_letter_spacing(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	/* This property is in the uncommon block, so we need to do
-	 * absolute value calculation here. */
-	if (get_letter_spacing(style, length, unit) != CSS_LETTER_SPACING_SET) {
-		*length = INTTOFIX(0);
-		*unit = CSS_UNIT_PX;
-	}
-
-	return CSS_LETTER_SPACING_SET;
+	return get_letter_spacing(style, length, unit);
 }
 
 uint8_t css_computed_outline_color(const css_computed_style *style,
@@ -327,7 +320,14 @@ uint8_t css_computed_outline_color(const css_computed_style *style,
 uint8_t css_computed_outline_width(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	return get_outline_width(style, length, unit);
+	/* This property is in the uncommon block, so we need to handle
+	 * absolute value calculation for initial value (medium) here. */
+	if (get_outline_width(style, length, unit) == CSS_BORDER_WIDTH_MEDIUM) {
+		*length = INTTOFIX(2);
+		*unit = CSS_UNIT_PX;
+	}
+
+	return CSS_BORDER_WIDTH_WIDTH;
 }
 
 uint8_t css_computed_border_spacing(const css_computed_style *style,
@@ -340,14 +340,7 @@ uint8_t css_computed_border_spacing(const css_computed_style *style,
 uint8_t css_computed_word_spacing(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	/* This property is in the uncommon block, so we need to do
-	 * absolute value calculation here. */
-	if (get_word_spacing(style, length, unit) != CSS_WORD_SPACING_SET) {
-		*length = INTTOFIX(0);
-		*unit = CSS_UNIT_PX;
-	}
-
-	return CSS_WORD_SPACING_SET;
+	return get_word_spacing(style, length, unit);
 }
 
 uint8_t css_computed_writing_mode(const css_computed_style *style)
