@@ -58,12 +58,6 @@ static css_error compute_absolute_length_none(css_computed_style *style,
 				css_fixed *len, css_unit *unit),
 		css_error (*set)(css_computed_style *style, uint8_t type,
 				css_fixed len, css_unit unit));
-static css_error compute_absolute_length_normal(css_computed_style *style,
-		const css_hint_length *ex_size,
-		uint8_t (*get)(const css_computed_style *style, 
-				css_fixed *len, css_unit *unit),
-		css_error (*set)(css_computed_style *style, uint8_t type,
-				css_fixed len, css_unit unit));
 static css_error compute_absolute_length_pair(css_computed_style *style,
 		const css_hint_length *ex_size,
 		uint8_t (*get)(const css_computed_style *style, 
@@ -1178,7 +1172,7 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 			return error;
 
 		/* Fix up letter-spacing */
-		error = compute_absolute_length_normal(style,
+		error = compute_absolute_length(style,
 				&ex_size.data.length,
 				get_letter_spacing, 
 				set_letter_spacing);
@@ -1201,7 +1195,7 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 			return error;
 
 		/* Fix up word spacing */
-		error = compute_absolute_length_normal(style,
+		error = compute_absolute_length(style,
 				&ex_size.data.length,
 				get_word_spacing, 
 				set_word_spacing);
@@ -1684,41 +1678,6 @@ css_error compute_absolute_length_none(css_computed_style *style,
 	}
 
 	return set(style, CSS_MAX_HEIGHT_NONE, 0, CSS_UNIT_PX);
-}
-
-/**
- * Compute the absolute value of length or normal
- *
- * \param style      Style to process
- * \param ex_size    Ex size, in ems
- * \param get        Function to read length
- * \param set        Function to write length
- * \return CSS_OK on success
- */
-css_error compute_absolute_length_normal(css_computed_style *style,
-		const css_hint_length *ex_size,
-		uint8_t (*get)(const css_computed_style *style, 
-				css_fixed *len, css_unit *unit),
-		css_error (*set)(css_computed_style *style, uint8_t type,
-				css_fixed len, css_unit unit))
-{
-	css_fixed length;
-	css_unit unit;
-	uint8_t type;
-
-	type = get(style, &length, &unit);
-	if (type == CSS_LETTER_SPACING_SET) {
-		if (unit == CSS_UNIT_EX) {
-			length = FMUL(length, ex_size->value);
-			unit = ex_size->unit;
-		}
-	} else {
-		/* NORMAL or INHERIT */
-		length = INTTOFIX(0);
-		unit = CSS_UNIT_PX;
-	}
-
-	return set(style, CSS_LETTER_SPACING_SET, length, unit);
 }
 
 /**
