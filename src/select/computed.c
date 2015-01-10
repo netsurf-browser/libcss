@@ -840,7 +840,15 @@ uint8_t css_computed_column_rule_style(const css_computed_style *style)
 uint8_t css_computed_column_rule_width(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	return get_column_rule_width(style, length, unit);
+	/* This property is in the uncommon block, so we need to handle
+	 * absolute value calculation for initial value (medium) here. */
+	if (get_column_rule_width(style, length, unit) ==
+			CSS_BORDER_WIDTH_MEDIUM) {
+		*length = INTTOFIX(2);
+		*unit = CSS_UNIT_PX;
+	}
+
+	return CSS_BORDER_WIDTH_WIDTH;
 }
 
 uint8_t css_computed_column_span(const css_computed_style *style)
@@ -1187,11 +1195,19 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 		if (error != CSS_OK)
 			return error;
 
-		/* Fix up word spacing */
+		/* Fix up word-spacing */
 		error = compute_absolute_length(style,
 				&ex_size.data.length,
 				get_word_spacing, 
 				set_word_spacing);
+		if (error != CSS_OK)
+			return error;
+
+		/* Fix up column-rule-width */
+		error = compute_absolute_border_side_width(style,
+				&ex_size.data.length,
+				get_column_rule_width,
+				set_column_rule_width);
 		if (error != CSS_OK)
 			return error;
 	}

@@ -38,7 +38,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -141,7 +141,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -248,7 +248,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ffff0000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -356,7 +356,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ffff0000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -464,7 +464,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ffffffff
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -572,7 +572,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ffffffff
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -670,7 +670,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -769,7 +769,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -868,7 +868,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -966,7 +966,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -1069,7 +1069,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -1172,7 +1172,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -1276,7 +1276,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -1383,7 +1383,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -1489,7 +1489,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -1601,7 +1601,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -1713,7 +1713,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -1825,7 +1825,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -1941,7 +1941,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -2056,7 +2056,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -2169,7 +2169,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -2281,7 +2281,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -2393,7 +2393,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -2505,7 +2505,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -2617,7 +2617,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -2729,7 +2729,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -2841,7 +2841,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -2953,7 +2953,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -3065,7 +3065,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -3177,7 +3177,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -3289,7 +3289,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -3401,7 +3401,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -3513,7 +3513,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -3625,7 +3625,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -3737,7 +3737,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -3849,7 +3849,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -3961,7 +3961,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -4073,7 +4073,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -4185,7 +4185,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -4297,7 +4297,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -4409,7 +4409,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -4514,7 +4514,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -4619,7 +4619,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -4724,7 +4724,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -4929,7 +4929,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -5032,7 +5032,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
@@ -5135,7 +5135,7 @@ column-fill: balance
 column-gap: normal
 column-rule-color: #ff000000
 column-rule-style: none
-column-rule-width: medium
+column-rule-width: 2px
 column-span: none
 column-width: auto
 content: normal
