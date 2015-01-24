@@ -83,11 +83,9 @@ css_error css_computed_style_create(css_computed_style **result)
 	if (result == NULL)
 		return CSS_BADPARM;
 
-	s = malloc(sizeof(css_computed_style));
+	s = calloc(sizeof(css_computed_style), 1);
 	if (s == NULL)
 		return CSS_NOMEM;
-
-	memset(s, 0, sizeof(css_computed_style));
 
 	*result = s;
 
