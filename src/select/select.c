@@ -230,11 +230,9 @@ css_error css_select_ctx_create(css_select_ctx **result)
 	if (result == NULL)
 		return CSS_BADPARM;
 
-	c = malloc(sizeof(css_select_ctx));
+	c = calloc(sizeof(css_select_ctx), 1);
 	if (c == NULL)
 		return CSS_NOMEM;
-
-	memset(c, 0, sizeof(css_select_ctx));
 
 	error = intern_strings(c);
 	if (error != CSS_OK) {
