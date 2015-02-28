@@ -46,18 +46,6 @@ static css_error compute_absolute_length(css_computed_style *style,
 				css_fixed *len, css_unit *unit),
 		css_error (*set)(css_computed_style *style, uint8_t type,
 				css_fixed len, css_unit unit));
-static css_error compute_absolute_length_auto(css_computed_style *style,
-		const css_hint_length *ex_size,
-		uint8_t (*get)(const css_computed_style *style, 
-				css_fixed *len, css_unit *unit),
-		css_error (*set)(css_computed_style *style, uint8_t type,
-				css_fixed len, css_unit unit));
-static css_error compute_absolute_length_none(css_computed_style *style,
-		const css_hint_length *ex_size,
-		uint8_t (*get)(const css_computed_style *style, 
-				css_fixed *len, css_unit *unit),
-		css_error (*set)(css_computed_style *style, uint8_t type,
-				css_fixed len, css_unit unit));
 static css_error compute_absolute_length_pair(css_computed_style *style,
 		const css_hint_length *ex_size,
 		uint8_t (*get)(const css_computed_style *style, 
@@ -1094,7 +1082,7 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 		return error;
 
 	/* Fix up height */
-	error = compute_absolute_length_auto(style, &ex_size.data.length, 
+	error = compute_absolute_length(style, &ex_size.data.length,
 			get_height, set_height);
 	if (error != CSS_OK)
 		return error;
@@ -1110,25 +1098,25 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 		return error;
 
 	/* Fix up max-height */
-	error = compute_absolute_length_none(style, &ex_size.data.length, 
+	error = compute_absolute_length(style, &ex_size.data.length,
 			get_max_height, set_max_height);
 	if (error != CSS_OK)
 		return error;
 
 	/* Fix up max-width */
-	error = compute_absolute_length_none(style, &ex_size.data.length, 
+	error = compute_absolute_length(style, &ex_size.data.length,
 			get_max_width, set_max_width);
 	if (error != CSS_OK)
 		return error;
 
 	/* Fix up min-height */
-	error = compute_absolute_length(style, &ex_size.data.length, 
+	error = compute_absolute_length(style, &ex_size.data.length,
 			get_min_height, set_min_height);
 	if (error != CSS_OK)
 		return error;
 
 	/* Fix up min-width */
-	error = compute_absolute_length(style, &ex_size.data.length, 
+	error = compute_absolute_length(style, &ex_size.data.length,
 			get_min_width, set_min_width);
 	if (error != CSS_OK)
 		return error;
@@ -1139,7 +1127,7 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 		return error;
 
 	/* Fix up text-indent */
-	error = compute_absolute_length(style, &ex_size.data.length, 
+	error = compute_absolute_length(style, &ex_size.data.length,
 			get_text_indent, set_text_indent);
 	if (error != CSS_OK)
 		return error;
@@ -1150,7 +1138,7 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 		return error;
 
 	/* Fix up width */
-	error = compute_absolute_length_auto(style, &ex_size.data.length, 
+	error = compute_absolute_length(style, &ex_size.data.length,
 			get_width, set_width);
 	if (error != CSS_OK)
 		return error;
@@ -1484,21 +1472,22 @@ css_error compute_absolute_sides(css_computed_style *style,
 	css_error error;
 
 	/* Calculate absolute lengths for sides */
-	error = compute_absolute_length_auto(style, ex_size, get_top, set_top);
+	error = compute_absolute_length(style, ex_size,
+			get_top, set_top);
 	if (error != CSS_OK)
 		return error;
 
-	error = compute_absolute_length_auto(style, ex_size,
+	error = compute_absolute_length(style, ex_size,
 			get_right, set_right);
 	if (error != CSS_OK)
 		return error;
 
-	error = compute_absolute_length_auto(style, ex_size,
+	error = compute_absolute_length(style, ex_size,
 			get_bottom, set_bottom);
 	if (error != CSS_OK)
 		return error;
 
-	error = compute_absolute_length_auto(style, ex_size,
+	error = compute_absolute_length(style, ex_size,
 			get_left, set_left);
 	if (error != CSS_OK)
 		return error;
@@ -1518,22 +1507,22 @@ css_error compute_absolute_margins(css_computed_style *style,
 {
 	css_error error;
 
-	error = compute_absolute_length_auto(style, ex_size,
+	error = compute_absolute_length(style, ex_size,
 			get_margin_top, set_margin_top);
 	if (error != CSS_OK)
 		return error;
 
-	error = compute_absolute_length_auto(style, ex_size,
+	error = compute_absolute_length(style, ex_size,
 			get_margin_right, set_margin_right);
 	if (error != CSS_OK)
 		return error;
 
-	error = compute_absolute_length_auto(style, ex_size,
+	error = compute_absolute_length(style, ex_size,
 			get_margin_bottom, set_margin_bottom);
 	if (error != CSS_OK)
 		return error;
 
-	error = compute_absolute_length_auto(style, ex_size,
+	error = compute_absolute_length(style, ex_size,
 			get_margin_left, set_margin_left);
 	if (error != CSS_OK)
 		return error;
@@ -1629,79 +1618,16 @@ css_error compute_absolute_length(css_computed_style *style,
 
 	type = get(style, &length, &unit);
 
-	if (unit == CSS_UNIT_EX) {
+	if (type == CSS_WIDTH_SET && unit == CSS_UNIT_EX) {
 		length = FMUL(length, ex_size->value);
 		unit = ex_size->unit;
+
+		return set(style, type, length, unit);
 	}
 
-	return set(style, type, length, unit);
+	return CSS_OK;
 }
 
-/**
- * Compute the absolute value of length or auto
- *
- * \param style      Style to process
- * \param ex_size    Ex size, in ems
- * \param get        Function to read length
- * \param set        Function to write length
- * \return CSS_OK on success
- */
-css_error compute_absolute_length_auto(css_computed_style *style,
-		const css_hint_length *ex_size,
-		uint8_t (*get)(const css_computed_style *style, 
-				css_fixed *len, css_unit *unit),
-		css_error (*set)(css_computed_style *style, uint8_t type,
-				css_fixed len, css_unit unit))
-{
-	css_fixed length;
-	css_unit unit;
-	uint8_t type;
-
-	type = get(style, &length, &unit);
-	if (type != CSS_BOTTOM_AUTO) {
-		if (unit == CSS_UNIT_EX) {
-			length = FMUL(length, ex_size->value);
-			unit = ex_size->unit;
-		}
-
-		return set(style, CSS_BOTTOM_SET, length, unit);
-	}
-
-	return set(style, CSS_BOTTOM_AUTO, 0, CSS_UNIT_PX);
-}
-
-/**
- * Compute the absolute value of length or none
- *
- * \param style      Style to process
- * \param ex_size    Ex size, in ems
- * \param get        Function to read length
- * \param set        Function to write length
- * \return CSS_OK on success
- */
-css_error compute_absolute_length_none(css_computed_style *style,
-		const css_hint_length *ex_size,
-		uint8_t (*get)(const css_computed_style *style, 
-				css_fixed *len, css_unit *unit),
-		css_error (*set)(css_computed_style *style, uint8_t type,
-				css_fixed len, css_unit unit))
-{
-	css_fixed length;
-	css_unit unit;
-	uint8_t type;
-
-	type = get(style, &length, &unit);
-	if (type != CSS_MAX_HEIGHT_NONE) {
-		if (unit == CSS_UNIT_EX) {
-			length = FMUL(length, ex_size->value);
-			unit = ex_size->unit;
-		}
-
-		return set(style, CSS_MAX_HEIGHT_SET, length, unit);
-	}
-
-	return set(style, CSS_MAX_HEIGHT_NONE, 0, CSS_UNIT_PX);
-}
 
 /**
  * Compute the absolute value of length pair
