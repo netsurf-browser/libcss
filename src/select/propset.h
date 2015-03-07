@@ -19,38 +19,45 @@
 /** Default values are 'initial value', unless the property is inherited,
  *  in which case it is 'inherit'. */
 static const css_computed_uncommon default_uncommon = {
-	{ (CSS_LETTER_SPACING_INHERIT << 2) | CSS_OUTLINE_COLOR_INVERT,
-	  (CSS_OUTLINE_WIDTH_MEDIUM << 1) | CSS_BORDER_SPACING_INHERIT,
-	  0,
-	  (CSS_WORD_SPACING_INHERIT << 2) |
-		(CSS_COUNTER_INCREMENT_NONE << 1) | CSS_COUNTER_RESET_NONE,
-	  (CSS_CURSOR_INHERIT << 3) | (CSS_WRITING_MODE_INHERIT << 1) | 0,
-	  0,
-	  0,
-	  (CSS_CLIP_AUTO << 2) | CSS_CONTENT_NORMAL,
-	  (CSS_COLUMN_COUNT_AUTO << 6) | (CSS_COLUMN_FILL_BALANCE << 4) |
-		(CSS_COLUMN_RULE_STYLE_NONE << 0),
-	  (CSS_COLUMN_GAP_NORMAL << 2) | (CSS_COLUMN_RULE_COLOR_CURRENT_COLOR),
-	  (CSS_COLUMN_RULE_WIDTH_MEDIUM << 1),
-	  (CSS_COLUMN_SPAN_NONE << 6) | CSS_COLUMN_WIDTH_AUTO,
-	  (CSS_BREAK_BEFORE_AUTO << 4) | CSS_BREAK_AFTER_AUTO,
-	  (CSS_BREAK_INSIDE_AUTO)
+	.bits = {
+		(CSS_LETTER_SPACING_INHERIT << 2) |
+			CSS_OUTLINE_COLOR_INVERT,
+		(CSS_OUTLINE_WIDTH_MEDIUM << 1) |
+			CSS_BORDER_SPACING_INHERIT,
+		0,
+		(CSS_WORD_SPACING_INHERIT << 2) |
+			(CSS_COUNTER_INCREMENT_NONE << 1) |
+			CSS_COUNTER_RESET_NONE,
+		(CSS_CURSOR_INHERIT << 3) |
+			(CSS_WRITING_MODE_INHERIT << 1),
+		0,
+		0,
+		(CSS_CLIP_AUTO << 2) | CSS_CONTENT_NORMAL,
+		(CSS_COLUMN_COUNT_AUTO << 6) |
+			(CSS_COLUMN_FILL_BALANCE << 4) |
+			(CSS_COLUMN_RULE_STYLE_NONE << 0),
+		(CSS_COLUMN_GAP_NORMAL << 2) |
+			(CSS_COLUMN_RULE_COLOR_CURRENT_COLOR),
+		(CSS_COLUMN_RULE_WIDTH_MEDIUM << 1),
+		(CSS_COLUMN_SPAN_NONE << 6) | CSS_COLUMN_WIDTH_AUTO,
+		(CSS_BREAK_BEFORE_AUTO << 4) | CSS_BREAK_AFTER_AUTO,
+		(CSS_BREAK_INSIDE_AUTO)
 	},
-	{ 0, 0 },
-	{ 0, 0, 0, 0 },
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	NULL,
-	NULL,
-	NULL,
-	NULL
+	.border_spacing = { 0, 0 },
+	.clip = { 0, 0, 0, 0 },
+	.letter_spacing = 0,
+	.outline_color = 0x0,
+	.outline_width = 0,
+	.word_spacing = 0,
+	.column_count = 0,
+	.column_gap = 0,
+	.column_rule_color = 0,
+	.column_rule_width = 0,
+	.column_width = 0,
+	.counter_increment = NULL,
+	.counter_reset = NULL,
+	.content = NULL,
+	.cursor = NULL
 };
 
 #define ENSURE_UNCOMMON do {						\
