@@ -172,13 +172,13 @@ css_error css__compose_cursor(const css_computed_style *parent,
 	lwc_string **urls = NULL;
 	uint8_t type = get_cursor(child, &urls);
 
-	if ((child->uncommon == NULL && parent->uncommon != NULL) ||
+	if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
 			type == CSS_CURSOR_INHERIT ||
-			(child->uncommon != NULL && result != child)) {
+			(child->i.uncommon != NULL && result != child)) {
 		size_t n_urls = 0;
 		lwc_string **copy = NULL;
 
-		if ((child->uncommon == NULL && parent->uncommon != NULL) ||
+		if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
 				type == CSS_CURSOR_INHERIT) {
 			type = get_cursor(parent, &urls);
 		}

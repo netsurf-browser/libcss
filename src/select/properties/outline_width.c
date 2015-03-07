@@ -41,10 +41,10 @@ css_error css__compose_outline_width(const css_computed_style *parent,
 	css_unit unit = CSS_UNIT_PX;
 	uint8_t type = get_outline_width(child, &length, &unit);
 
-	if ((child->uncommon == NULL && parent->uncommon != NULL) ||
+	if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
 			type == CSS_OUTLINE_WIDTH_INHERIT ||
-			(child->uncommon != NULL && result != child)) {
-		if ((child->uncommon == NULL && parent->uncommon != NULL) ||
+			(child->i.uncommon != NULL && result != child)) {
+		if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
 				type == CSS_OUTLINE_WIDTH_INHERIT) {
 			type = get_outline_width(parent, &length, &unit);
 		}

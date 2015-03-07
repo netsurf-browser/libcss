@@ -55,13 +55,13 @@ css_error css__compose_counter_reset(const css_computed_style *parent,
 	const css_computed_counter *items = NULL;
 	uint8_t type = get_counter_reset(child, &items);
 
-	if ((child->uncommon == NULL && parent->uncommon != NULL) ||
+	if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
 			type ==	CSS_COUNTER_RESET_INHERIT ||
-			(child->uncommon != NULL && result != child)) {
+			(child->i.uncommon != NULL && result != child)) {
 		size_t n_items = 0;
 		css_computed_counter *copy = NULL;
 
-		if ((child->uncommon == NULL && parent->uncommon != NULL) ||
+		if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
 				type ==	CSS_COUNTER_RESET_INHERIT) {
 			type = get_counter_reset(parent, &items);
 		}
