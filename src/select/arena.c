@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "select/arena.h"
+#include "select/arena_hash.h"
 #include "select/computed.h"
 
 #define TU_SIZE 3037
@@ -16,23 +17,6 @@
 
 struct css_computed_uncommon *table_u[TU_SIZE];
 struct css_computed_style *table_s[TS_SIZE];
-
-
-/**
- * FNV-1 hash
- */
-static inline uint32_t css__arena_hash(const uint8_t *data, size_t len)
-{
-	lwc_hash h = 0x811c9dc5;
-
-	while (len > 0) {
-		h *= 0x01000193;
-		h ^= *data++;
-                len--;
-	}
-
-	return h;
-}
 
 
 static inline uint32_t css__arena_hash_uncommon(struct css_computed_uncommon *u)
