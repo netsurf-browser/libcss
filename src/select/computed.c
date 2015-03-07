@@ -7,6 +7,7 @@
 
 #include <string.h>
 
+#include "select/arena.h"
 #include "select/computed.h"
 #include "select/dispatch.h"
 #include "select/propget.h"
@@ -92,6 +93,13 @@ css_error css__computed_uncommon_destroy(css_computed_uncommon *uncommon)
 	if (uncommon == NULL)
 		return CSS_BADPARM;
 
+	if (uncommon->count > 1) {
+		uncommon->count--;
+		return CSS_OK;
+
+	} else if (uncommon->count == 1) {
+		css__arena_remove_uncommon_style(uncommon);
+	}
 
 	if (uncommon != NULL) {
 		if (uncommon->counter_increment != NULL) {
@@ -176,6 +184,13 @@ css_error css_computed_style_destroy(css_computed_style *style)
 
 	css__computed_uncommon_destroy(style->i.uncommon);
 
+	if (style->count > 1) {
+		style->count--;
+		return CSS_OK;
+
+	} else if (style->count == 1) {
+		css__arena_remove_style(style);
+	}
 
 	if (style->page != NULL) {
 		free(style->page);
@@ -270,11 +285,11 @@ css_error css_computed_style_initialise(css_computed_style *style,
  * \note \a child and \a result may point at the same object
  */
 css_error css_computed_style_compose(const css_computed_style *parent,
-		const css_computed_style *child,
+		css_computed_style *child,
 		css_error (*compute_font_size)(void *pw,
 			const css_hint *parent, css_hint *size),
 		void *pw,
-		css_computed_style *result)
+		css_computed_style **result)
 {
 	css_error error = CSS_OK;
 	size_t i;
@@ -297,13 +312,19 @@ css_error css_computed_style_compose(const css_computed_style *parent,
 			continue;
 
 		/* Compose the property */
-		error = prop_dispatch[i].compose(parent, child, result);
+		error = prop_dispatch[i].compose(parent, child, *result);
 		if (error != CSS_OK)
 			break;
 	}
 
 	/* Finally, compute absolute values for everything */
-	return css__compute_absolute_values(parent, result, compute_font_size, pw);
+	error = css__compute_absolute_values(parent, *result,
+			compute_font_size, pw);
+	if (error != CSS_OK) {
+		return error;
+	}
+
+	return css__arena_intern_style(result);
 }
 
 /******************************************************************************

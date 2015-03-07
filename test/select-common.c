@@ -773,7 +773,7 @@ static void run_test_select_tree(css_select_ctx *select,
 				node->parent->sr->styles[ctx->pseudo_element],
 				sr->styles[ctx->pseudo_element],
 				compute_font_size, NULL,
-				sr->styles[ctx->pseudo_element]) == CSS_OK);
+				&(sr->styles[ctx->pseudo_element])) == CSS_OK);
 	}
 
 	node->sr = sr;
