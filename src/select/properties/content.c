@@ -49,6 +49,7 @@ css_error css__cascade_content(uint32_t opv, css_style *style,
 				}
 
 				content = temp;
+				memset(content + n_contents, 0, sizeof(css_computed_content_item));
 
 				switch (v & 0xff) {
 				case CONTENT_COUNTER:
