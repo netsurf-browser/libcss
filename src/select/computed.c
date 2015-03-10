@@ -1159,7 +1159,7 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 			return error;
 
 		/* Fix up letter-spacing */
-		error = compute_absolute_length_auto(style,
+		error = compute_absolute_length(style,
 				&ex_size.data.length,
 				get_letter_spacing, 
 				set_letter_spacing);
@@ -1182,7 +1182,7 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 			return error;
 
 		/* Fix up word-spacing */
-		error = compute_absolute_length_auto(style,
+		error = compute_absolute_length(style,
 				&ex_size.data.length,
 				get_word_spacing, 
 				set_word_spacing);
@@ -1198,7 +1198,7 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 			return error;
 
 		/* Fix up column-width */
-		error = compute_absolute_length_auto(style,
+		error = compute_absolute_length(style,
 				&ex_size.data.length,
 				get_column_width,
 				set_column_width);
@@ -1206,7 +1206,7 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 			return error;
 
 		/* Fix up column-gap */
-		error = compute_absolute_length_auto(style,
+		error = compute_absolute_length(style,
 				&ex_size.data.length,
 				get_column_gap,
 				set_column_gap);
