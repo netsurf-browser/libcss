@@ -49,7 +49,8 @@ typedef struct css_hint {
 		lwc_string **strings;
 	} data;
 
-	uint8_t status;
+	uint32_t prop;		/**< Property index */
+	uint8_t status;		/**< Property value */
 } css_hint;
 
 #ifdef __cplusplus

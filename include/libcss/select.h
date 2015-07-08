@@ -117,8 +117,8 @@ typedef struct css_select_handler {
 	css_error (*node_is_lang)(void *pw, void *node,
 			lwc_string *lang, bool *match);
 
-	css_error (*node_presentational_hint)(void *pw, void *node, 
-			uint32_t property, css_hint *hint);
+	css_error (*node_presentational_hint)(void *pw, void *node,
+			uint32_t *nhints, css_hint **hints);
 
 	css_error (*ua_default_for_property)(void *pw, uint32_t property,
 			css_hint *hint);
