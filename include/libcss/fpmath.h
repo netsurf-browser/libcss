@@ -144,6 +144,7 @@ css_float_to_fixed(const float a) {
 #define F_1	0x00000400	/*   1 */
 #define F_10	0x00002800	/*  10 */
 #define F_72	0x00012000	/*  72 */
+#define F_96	0x00018000	/*  96 */
 #define F_100	0x00019000	/* 100 */
 #define F_200	0x00032000	/* 200 */
 #define F_255	0x0003FC00	/* 255 */
