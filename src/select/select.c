@@ -1173,26 +1173,25 @@ css_error set_initial(css_select_state *state,
 		 * accessors to return the initial values for the 
 		 * property.
 		 */
-		if (group == GROUP_NORMAL) {
-			error = prop_dispatch[prop].initial(state);
-			if (error != CSS_OK)
-				return error;
-		} else if (group == GROUP_UNCOMMON &&
-				state->computed->uncommon != NULL) {
-			error = prop_dispatch[prop].initial(state);
-			if (error != CSS_OK)
-				return error;
-		} else if (group == GROUP_PAGE &&
-				state->computed->page != NULL) {
-			error = prop_dispatch[prop].initial(state);
-			if (error != CSS_OK)
-				return error;
-		} else if (group == GROUP_AURAL &&
-				state->computed->aural != NULL) {
-			error = prop_dispatch[prop].initial(state);
-			if (error != CSS_OK)
-				return error;
+		switch (group) {
+		case GROUP_NORMAL:
+			break;
+		case GROUP_UNCOMMON:
+			if (state->computed->uncommon == NULL)
+				return CSS_OK;
+			break;
+		case GROUP_PAGE:
+			if (state->computed->page == NULL)
+				return CSS_OK;
+			break;
+		case GROUP_AURAL:
+			if (state->computed->aural == NULL)
+				return CSS_OK;
+			break;
 		}
+		error = prop_dispatch[prop].initial(state);
+		if (error != CSS_OK)
+			return error;
 	}
 
 	return CSS_OK;
