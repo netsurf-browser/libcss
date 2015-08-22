@@ -296,20 +296,24 @@ css_error css_computed_style_compose(const css_computed_style *parent,
 
 	/* Iterate through the properties */
 	for (i = 0; i < CSS_N_PROPERTIES; i++) {
-		/* Skip any in extension blocks if the block does not exist */	
-		if (prop_dispatch[i].group == GROUP_UNCOMMON &&
-				parent->i.uncommon == NULL &&
-				child->i.uncommon == NULL)
-			continue;
-
-		if (prop_dispatch[i].group == GROUP_PAGE &&
-				parent->page == NULL && child->page == NULL)
-			continue;
-
-		if (prop_dispatch[i].group == GROUP_AURAL &&
-				parent->i.aural == NULL &&
-				child->i.aural == NULL)
-			continue;
+		/* Skip any in extension blocks if the block does not exist */
+		switch(prop_dispatch[i].group) {
+		case GROUP_NORMAL:
+			break;
+		case GROUP_UNCOMMON:
+			if (parent->i.uncommon == NULL &&
+					child->i.uncommon == NULL)
+				continue;
+			break;
+		case GROUP_PAGE:
+			if (parent->page == NULL && child->page == NULL)
+				continue;
+			break;
+		case GROUP_AURAL:
+			if (parent->i.aural == NULL && child->i.aural == NULL)
+				continue;
+			break;
+		}
 
 		/* Compose the property */
 		error = prop_dispatch[i].compose(parent, child, *result);
