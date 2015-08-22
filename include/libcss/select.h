@@ -227,7 +227,7 @@ css_error css_select_font_faces(css_select_ctx *ctx,
 		uint64_t media, lwc_string *font_family,
 		css_select_font_faces_results **result);
 css_error css_select_font_faces_results_destroy(
-		css_select_font_faces_results *results);	
+		css_select_font_faces_results *results);
 
 #ifdef __cplusplus
 }
