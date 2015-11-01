@@ -73,7 +73,7 @@ typedef struct css_computed_content_item {
 			lwc_string *sep;
 			uint8_t style;
 		} counters;
-	} data;	
+	} data;
 } css_computed_content_item;
 
 css_error css_computed_style_create(css_computed_style **result);
