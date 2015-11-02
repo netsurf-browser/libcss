@@ -277,22 +277,33 @@ css_error css_computed_style_initialise(css_computed_style *style,
  * \param child              Child style
  * \param compute_font_size  Function to compute an absolute font size
  * \param pw                 Client data for compute_font_size
- * \param result             Pointer to style to compose into
+ * \param result             Updated to point to new composed style
+ *                           Ownership passed to client.
  * \return CSS_OK on success, appropriate error otherwise.
  *
  * \pre \a parent is a fully composed style (thus has no inherited properties)
- *
- * \note \a child and \a result may point at the same object
  */
-css_error css_computed_style_compose(const css_computed_style *parent,
-		css_computed_style *child,
+css_error css_computed_style_compose(
+		const css_computed_style *restrict parent,
+		const css_computed_style *restrict child,
 		css_error (*compute_font_size)(void *pw,
 			const css_hint *parent, css_hint *size),
 		void *pw,
-		css_computed_style **result)
+		css_computed_style **restrict result)
 {
-	css_error error = CSS_OK;
+	css_computed_style *composed;
+	css_error error;
 	size_t i;
+
+	/* TODO:
+	 *   Make this function take a composition context, to allow us
+	 *   to avoid the churn of unnecesaraly allocating and freeing
+	 *   the memory to compose styles into.
+	 */
+	error = css_computed_style_create(&composed);
+	if (error != CSS_OK) {
+		return error;
+	}
 
 	/* Iterate through the properties */
 	for (i = 0; i < CSS_N_PROPERTIES; i++) {
@@ -316,18 +327,19 @@ css_error css_computed_style_compose(const css_computed_style *parent,
 		}
 
 		/* Compose the property */
-		error = prop_dispatch[i].compose(parent, child, *result);
+		error = prop_dispatch[i].compose(parent, child, composed);
 		if (error != CSS_OK)
 			break;
 	}
 
 	/* Finally, compute absolute values for everything */
-	error = css__compute_absolute_values(parent, *result,
+	error = css__compute_absolute_values(parent, composed,
 			compute_font_size, pw);
 	if (error != CSS_OK) {
 		return error;
 	}
 
+	*result = composed;
 	return css__arena_intern_style(result);
 }
 

@@ -325,6 +325,23 @@ struct css_computed_style {
 	uint32_t bin;
 };
 
+
+/**
+ * Take a new reference to a computed style
+ *
+ * \param style  The style to take a new reference to.
+ * \return The new computed style reference
+ */
+static inline css_computed_style * css__computed_style_ref(
+		css_computed_style *style)
+{
+	if (style == NULL)
+		return NULL;
+
+	style->count++;
+	return style;
+}
+
 css_error css__computed_uncommon_destroy(css_computed_uncommon *uncommon);
 
 css_error css__compute_absolute_values(const css_computed_style *parent,

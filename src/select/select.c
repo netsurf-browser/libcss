@@ -15,6 +15,7 @@
 #include "bytecode/bytecode.h"
 #include "bytecode/opcodes.h"
 #include "stylesheet.h"
+#include "select/arena.h"
 #include "select/computed.h"
 #include "select/dispatch.h"
 #include "select/hash.h"
@@ -74,6 +75,9 @@ struct css_select_ctx {
 	lwc_string *first_letter;
 	lwc_string *before;
 	lwc_string *after;
+
+	/* Interned default style */
+	css_computed_style *default_style;
 };
 
 /**
@@ -258,6 +262,9 @@ css_error css_select_ctx_destroy(css_select_ctx *ctx)
 
 	destroy_strings(ctx);
 
+	if (ctx->default_style != NULL)
+		css_computed_style_destroy(ctx->default_style);
+
 	if (ctx->sheets != NULL)
 		free(ctx->sheets);
 
@@ -405,6 +412,78 @@ css_error css_select_ctx_get_sheet(css_select_ctx *ctx, uint32_t index,
 
 	return CSS_OK;
 }
+
+
+/**
+ * Create a default style on the selection context
+ *
+ * \param ctx		Context to create default style in
+ * \param handler	Dispatch table of handler functions
+ * \param pw		Client-specific private data for handler functions
+ * \return CSS_OK on success, appropriate error otherwise
+ */
+static css_error css__select_ctx_create_default_style(css_select_ctx *ctx,
+		css_select_handler *handler, void *pw)
+{
+	css_computed_style *style;
+	css_error error;
+
+	/* Need to construct the default style */
+	error = css_computed_style_create(&style);
+	if (error != CSS_OK)
+		return error;
+
+	error = css_computed_style_initialise(style, handler, pw);
+	if (error != CSS_OK) {
+		css_computed_style_destroy(style);
+		return error;
+	}
+
+	/* Neither create nor initialise intern the style, so intern it now */
+	error = css__arena_intern_style(&style);
+	if (error != CSS_OK)
+		return error;
+
+	/* Store it on the ctx */
+	ctx->default_style = style;
+
+	return CSS_OK;
+}
+
+
+/**
+ * Get a default style, e.g. for an implied element's anonamous box
+ *
+ * \param ctx		Selection context (used to avoid recreating default)
+ * \param handler	Dispatch table of handler functions
+ * \param pw		Client-specific private data for handler functions
+ * \param style		Pointer to location to receive default style
+ * \return CSS_OK on success, appropriate error otherwise.
+ */
+css_error css_select_default_style(css_select_ctx *ctx,
+		css_select_handler *handler, void *pw,
+		css_computed_style **style)
+{
+	css_error error;
+
+	if (ctx == NULL || style == NULL || handler == NULL ||
+			handler->handler_version !=
+					CSS_SELECT_HANDLER_VERSION_1)
+		return CSS_BADPARM;
+
+	/* Ensure the ctx has a default style */
+	if (ctx->default_style == NULL) {
+		error = css__select_ctx_create_default_style(ctx, handler, pw);
+		if (error != CSS_OK) {
+			return error;
+		}
+	}
+
+	/* Pass a ref back to the client */
+	*style = css__computed_style_ref(ctx->default_style);
+	return CSS_OK;
+}
+
 
 /**
  * Select a style for the given node
@@ -657,6 +736,18 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 				handler->compute_font_size, pw);
 		if (error != CSS_OK)
 			goto cleanup;
+	}
+
+	/* Intern the partial computed styles */
+	for (j = CSS_PSEUDO_ELEMENT_NONE; j < CSS_PSEUDO_ELEMENT_COUNT; j++) {
+		/* Skip non-existent pseudo elements */
+		if (state.results->styles[j] == NULL)
+			continue;
+
+		error = css__arena_intern_style(&state.results->styles[j]);
+		if (error != CSS_OK) {
+			goto cleanup;
+		}
 	}
 
 	/* Add node name to bloom */

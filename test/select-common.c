@@ -769,11 +769,14 @@ static void run_test_select_tree(css_select_ctx *select,
 			&select_handler, ctx, &sr) == CSS_OK);
 
 	if (node->parent != NULL) {
+		css_computed_style *composed;
 		assert(css_computed_style_compose(
 				node->parent->sr->styles[ctx->pseudo_element],
 				sr->styles[ctx->pseudo_element],
 				compute_font_size, NULL,
-				&(sr->styles[ctx->pseudo_element])) == CSS_OK);
+				&composed) == CSS_OK);
+		css_computed_style_destroy(sr->styles[ctx->pseudo_element]);
+		sr->styles[ctx->pseudo_element] = composed;
 	}
 
 	node->sr = sr;
