@@ -65,7 +65,7 @@ static css_error compute_absolute_length_pair(css_computed_style *style,
  *         CSS_NOMEM on memory exhaustion,
  *         CSS_BADPARM on bad parameters.
  */
-css_error css_computed_style_create(css_computed_style **result)
+css_error css__computed_style_create(css_computed_style **result)
 {
 	css_computed_style *s;
 
@@ -239,7 +239,7 @@ css_error css_computed_style_destroy(css_computed_style *style)
  * \param pw       Client-specific private data for handler functions
  * \return CSS_OK on success.
  */
-css_error css_computed_style_initialise(css_computed_style *style,
+css_error css__computed_style_initialise(css_computed_style *style,
 		css_select_handler *handler, void *pw)
 {
 	css_select_state state;
@@ -300,7 +300,7 @@ css_error css_computed_style_compose(
 	 *   to avoid the churn of unnecesaraly allocating and freeing
 	 *   the memory to compose styles into.
 	 */
-	error = css_computed_style_create(&composed);
+	error = css__computed_style_create(&composed);
 	if (error != CSS_OK) {
 		return error;
 	}

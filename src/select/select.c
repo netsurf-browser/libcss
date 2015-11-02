@@ -429,11 +429,11 @@ static css_error css__select_ctx_create_default_style(css_select_ctx *ctx,
 	css_error error;
 
 	/* Need to construct the default style */
-	error = css_computed_style_create(&style);
+	error = css__computed_style_create(&style);
 	if (error != CSS_OK)
 		return error;
 
-	error = css_computed_style_initialise(style, handler, pw);
+	error = css__computed_style_initialise(style, handler, pw);
 	if (error != CSS_OK) {
 		css_computed_style_destroy(style);
 		return error;
@@ -543,7 +543,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		state.results->styles[i] = NULL;
 
 	/* Base element style is guaranteed to exist */
-	error = css_computed_style_create(
+	error = css__computed_style_create(
 			&state.results->styles[CSS_PSEUDO_ELEMENT_NONE]);
 	if (error != CSS_OK) {
 		free(state.results);
@@ -626,7 +626,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		struct css_computed_style *computed_style =
 				state.results->styles[CSS_PSEUDO_ELEMENT_NONE];
 		if (computed_style == NULL) {
-			error = css_computed_style_create(&computed_style);
+			error = css__computed_style_create(&computed_style);
 			if (error != CSS_OK)
 				goto cleanup;
 		}
@@ -1799,7 +1799,7 @@ css_error match_selector_chain(css_select_ctx *ctx,
 
 	/* Ensure that the appropriate computed style exists */
 	if (state->results->styles[pseudo] == NULL) {
-		error = css_computed_style_create(
+		error = css__computed_style_create(
 				&state->results->styles[pseudo]); 
 		if (error != CSS_OK)
 			return error;
