@@ -123,7 +123,7 @@ css_error css__computed_uncommon_destroy(css_computed_uncommon *uncommon)
 
 			free(uncommon->counter_reset);
 		}
-	
+
 		if (uncommon->cursor != NULL) {
 			lwc_string **s;
 
