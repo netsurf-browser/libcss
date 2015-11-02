@@ -233,6 +233,7 @@ css_error css__arena_intern_style(struct css_computed_style **style)
 	struct css_computed_style *s = *style;
 	uint32_t hash, index;
 
+	/* Don't try to intern an already-interned computed style */
 	if (s->count != 0) {
 		return CSS_BADPARM;
 	}
