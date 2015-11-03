@@ -484,6 +484,143 @@ css_error css_select_default_style(css_select_ctx *ctx,
 	return CSS_OK;
 }
 
+/**
+ * Get a bloom filter for the parent node
+ *
+ * \param parent	Parent node to get bloom filter for
+ * \param handler	Dispatch table of handler functions
+ * \param pw		Client-specific private data for handler functions
+ * \param parent_bloom	Updated to parent bloom to use.
+ *                    	Note: if there's no parent, the caller must free
+ *                      the returned parent bloom, since it has no node to
+ *                      own it.
+ * \return CSS_OK on success, appropriate error otherwise.
+ */
+static css_error css__get_parent_bloom(void *parent,
+		css_select_handler *handler, void *pw,
+		css_bloom **parent_bloom)
+{
+	css_error error;
+	css_bloom *bloom = NULL;
+
+	/* Get parent node's bloom filter */
+	if (parent != NULL) {
+		/* Get parent bloom filter */
+		/*   Hideous casting to avoid warnings on all platforms
+		 *   we build for. */
+		error = handler->get_libcss_node_data(pw, parent,
+				(void **) (void *) &bloom);
+		if (error != CSS_OK)
+			return error;
+	}
+
+	if (bloom == NULL) {
+		uint32_t i;
+		/* Need to create parent bloom */
+
+		/* TODO:
+		 * Build & set the parent node's bloom properly.  This will
+		 * speed up the case where DOM change has caused bloom to get
+		 * deleted.  For now we fall back to a fully satruated bloom
+		 * filter, which is slower but perfectly valid.
+		 */
+		bloom = malloc(sizeof(css_bloom) * CSS_BLOOM_SIZE);
+		if (bloom == NULL) {
+			return CSS_NOMEM;
+		}
+		if (parent != NULL) {
+			/* Have to make up fully saturated bloom filter */
+			for (i = 0; i < CSS_BLOOM_SIZE; i++) {
+				bloom[i] = ~0;
+			}
+
+			/* Set parent node bloom filter */
+			error = handler->set_libcss_node_data(pw,
+					parent, bloom);
+			if (error != CSS_OK) {
+				free(bloom);
+				return error;
+			}
+		} else {
+			/* No ancestors; empty bloom filter */
+			for (i = 0; i < CSS_BLOOM_SIZE; i++) {
+				bloom[i] = 0;
+			}
+		}
+	}
+
+	*parent_bloom = bloom;
+	return CSS_OK;
+}
+
+/**
+ * Set a node's bloom filter
+ *
+ * \param parent	Node to set bloom filter for
+ * \param handler	Dispatch table of handler functions
+ * \param pw		Client-specific private data for handler functions
+ * \return CSS_OK on success, appropriate error otherwise.
+ */
+static css_error css__set_node_bloom(void *node, css_select_state *state,
+		css_select_handler *handler, void *pw)
+{
+	css_error error;
+	css_bloom *bloom;
+	lwc_hash hash;
+
+	/* Create the node's bloom */
+	bloom = calloc(sizeof(css_bloom), CSS_BLOOM_SIZE);
+	if (bloom == NULL) {
+		return CSS_NOMEM;
+	}
+
+	/* Add node name to bloom */
+	if (lwc_string_caseless_hash_value(state->element.name,
+			&hash) != lwc_error_ok) {
+		error = CSS_NOMEM;
+		goto cleanup;
+	}
+	css_bloom_add_hash(bloom, hash);
+
+	/* Add id name to bloom */
+	if (state->id != NULL) {
+		if (lwc_string_caseless_hash_value(state->id,
+				&hash) != lwc_error_ok) {
+			error = CSS_NOMEM;
+			goto cleanup;
+		}
+		css_bloom_add_hash(bloom, hash);
+	}
+
+	/* Add class names to bloom */
+	if (state->classes != NULL) {
+		for (uint32_t i = 0; i < state->n_classes; i++) {
+			lwc_string *s = state->classes[i];
+			if (lwc_string_caseless_hash_value(s,
+					&hash) != lwc_error_ok) {
+				error = CSS_NOMEM;
+				goto cleanup;
+			}
+			css_bloom_add_hash(bloom, hash);
+		}
+	}
+
+	/* Merge parent bloom into node bloom */
+	css_bloom_merge(state->bloom, bloom);
+
+	/* Set node bloom filter */
+	error = handler->set_libcss_node_data(pw, node, bloom);
+	if (error != CSS_OK)
+		goto cleanup;
+
+	return CSS_OK;
+
+cleanup:
+	free(bloom);
+
+	return error;
+}
+
 
 /**
  * Select a style for the given node
@@ -515,11 +652,9 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	uint32_t i, j, nhints;
 	css_error error;
 	css_select_state state;
-	void *parent = NULL;
-	css_hint *hints = NULL;
-	css_bloom *bloom = NULL;
 	css_bloom *parent_bloom = NULL;
-	lwc_hash hash;
+	css_hint *hints = NULL;
+	void *parent = NULL;
 
 	if (ctx == NULL || node == NULL || result == NULL || handler == NULL ||
 	    handler->handler_version != CSS_SELECT_HANDLER_VERSION_1)
@@ -550,56 +685,15 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		return error;
 	}
 
-	/* Create the node's bloom */
-	bloom = calloc(sizeof(css_bloom), CSS_BLOOM_SIZE);
-	if (bloom == NULL) {
-		error = CSS_NOMEM;
-		goto cleanup;
-	}
-
 	error = handler->parent_node(pw, node, &parent);
 	if (error != CSS_OK)
 		goto cleanup;
 
-	/* Get parent node's bloom filter */
-	if (parent != NULL) {
-		/* Get parent bloom filter */
-		/*   Hideous casting to avoid warnings on all platforms
-		 *   we build for. */
-		error = handler->get_libcss_node_data(pw, parent,
-				(void **) (void *) &state.bloom);
-		if (error != CSS_OK)
-			goto cleanup;
-		/* TODO:
-		 * If state.bloom == NULL, build & set parent node's bloom,
-		 * and use it as state.bloom.  This will speed up the case
-		 * where DOM change has caused bloom to get deleted.
-		 * For now we fall back to a fully satruated bloom filter,
-		 * which is slower but perfectly valid.
-		 */
+	error = css__get_parent_bloom(parent, handler, pw, &parent_bloom);
+	if (error != CSS_OK) {
+		goto cleanup;
 	}
-
-	if (state.bloom == NULL) {
-		/* Need to create parent bloom */
-		parent_bloom = malloc(sizeof(css_bloom) * CSS_BLOOM_SIZE);
-		if (parent_bloom == NULL) {
-			error = CSS_NOMEM;
-			goto cleanup;
-		}
-		if (parent != NULL) {
-			/* Have to make up fully saturated bloom filter */
-			for (i = 0; i < CSS_BLOOM_SIZE; i++) {
-				parent_bloom[i] = ~0;
-			}
-		} else {
-			/* Empty bloom filter */
-			for (i = 0; i < CSS_BLOOM_SIZE; i++) {
-				parent_bloom[i] = 0;
-			}
-		}
-
-		state.bloom = parent_bloom;
-	}
+	state.bloom = parent_bloom;
 
 	/* Get node's name */
 	error = handler->node_name(pw, node, &state.element);
@@ -750,47 +844,10 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		}
 	}
 
-	/* Add node name to bloom */
-
-	if (lwc_string_caseless_hash_value(state.element.name,
-			&hash) != lwc_error_ok) {
-		error = CSS_NOMEM;
+	error = css__set_node_bloom(node, &state, handler, pw);
+	if (error != CSS_OK) {
 		goto cleanup;
 	}
-	css_bloom_add_hash(bloom, hash);
-
-	/* Add id name to bloom */
-	if (state.id != NULL) {
-		if (lwc_string_caseless_hash_value(state.id,
-				&hash) != lwc_error_ok) {
-			error = CSS_NOMEM;
-			goto cleanup;
-		}
-		css_bloom_add_hash(bloom, hash);
-	}
-
-	/* Add class names to bloom */
-	if (state.classes != NULL) {
-		for (i = 0; i < state.n_classes; i++) {
-			lwc_string *s = state.classes[i];
-			if (lwc_string_caseless_hash_value(s,
-					&hash) != lwc_error_ok) {
-				error = CSS_NOMEM;
-				goto cleanup;
-			}
-			css_bloom_add_hash(bloom, hash);
-		}
-	}
-
-	/* Merge parent bloom into node bloom */
-	css_bloom_merge(state.bloom, bloom);
-
-	/* Set node bloom filter */
-	error = handler->set_libcss_node_data(pw, node, bloom);
-	if (error != CSS_OK)
-		goto cleanup;
-
-	bloom = NULL;
 
 	*result = state.results;
 	error = CSS_OK;
@@ -803,12 +860,10 @@ cleanup:
 		css_select_results_destroy(state.results);
 	}
 
-	if (parent_bloom != NULL) {
+	/* If there's no parent, the parent_bloom is not owned by any node,
+	 * so we need to free it. */
+	if (parent == NULL) {
 		free(parent_bloom);
-	}
-
-	if (bloom != NULL) {
-		free(bloom);
 	}
 
 	if (state.classes != NULL) {
