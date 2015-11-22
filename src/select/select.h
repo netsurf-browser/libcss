@@ -31,6 +31,10 @@ typedef struct prop_state {
 	             inherit   : 1;	/* Property is set to inherit */
 } prop_state;
 
+struct css_node_data {
+	css_bloom *bloom;
+};
+
 /**
  * Selection state
  */
@@ -58,7 +62,7 @@ typedef struct css_select_state {
 	reject_item reject_cache[128];	/* Reject cache (filled from end) */
 	reject_item *next_reject;	/* Next free slot in reject cache */
 
-	const css_bloom *bloom;		/* Bloom filter */
+	struct css_node_data *node_data;	/* Data we'll store on node */
 
 	prop_state props[CSS_N_PROPERTIES][CSS_PSEUDO_ELEMENT_COUNT];
 } css_select_state;

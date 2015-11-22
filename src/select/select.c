@@ -154,15 +154,41 @@ static void dump_chain(const css_selector *selector);
 #endif
 
 
+static css_error css__create_node_data(struct css_node_data **node_data)
+{
+	struct css_node_data *nd;
+
+	nd = calloc(sizeof(struct css_node_data), 1);
+	if (nd == NULL) {
+		return CSS_NOMEM;
+	}
+
+	*node_data = nd;
+
+	return CSS_OK;
+}
+
+static void css__destroy_node_data(struct css_node_data *node_data)
+{
+	assert(node_data != NULL);
+
+	if (node_data->bloom != NULL) {
+		free(node_data->bloom);
+	}
+
+	free(node_data);
+}
+
+
 /* Exported function documented in public select.h header. */
 css_error css_libcss_node_data_handler(css_select_handler *handler,
 		css_node_data_action action, void *pw, void *node,
 		void *clone_node, void *libcss_node_data)
 {
-	css_bloom *bloom = libcss_node_data;
-	css_bloom *clone_bloom = NULL;
+	struct css_node_data *node_data = libcss_node_data;
 	css_error error;
-	unsigned int i;
+
+	UNUSED(clone_node);
 
 	if (handler == NULL || libcss_node_data == NULL ||
 	    handler->handler_version != CSS_SELECT_HANDLER_VERSION_1) {
@@ -171,7 +197,7 @@ css_error css_libcss_node_data_handler(css_select_handler *handler,
 
 	switch (action) {
 	case CSS_NODE_DELETED:
-		free(bloom);
+		css__destroy_node_data(node_data);
 		break;
 
 	case CSS_NODE_MODIFIED:
@@ -180,9 +206,9 @@ css_error css_libcss_node_data_handler(css_select_handler *handler,
 			return CSS_BADPARM;
 		}
 
-		free(bloom);
+		css__destroy_node_data(node_data);
 
-		/* Don't bother rebuilding bloom here, it can be done
+		/* Don't bother rebuilding node_data, it can be done
 		 * when the node is selected for.  Just ensure the
 		 * client drops its reference to the libcss_node_data. */
 		error = handler->set_libcss_node_data(pw, node, NULL);
@@ -192,25 +218,10 @@ css_error css_libcss_node_data_handler(css_select_handler *handler,
 		break;
 
 	case CSS_NODE_CLONED:
-		if (node == NULL || clone_node == NULL) {
-			return CSS_BADPARM;
-		}
-
-		clone_bloom = malloc(sizeof(css_bloom) * CSS_BLOOM_SIZE);
-		if (clone_bloom == NULL) {
-			return CSS_NOMEM;
-		}
-
-		for (i = 0; i < CSS_BLOOM_SIZE; i++) {
-			clone_bloom[i] = bloom[i];
-		}
-
-		error = handler->set_libcss_node_data(pw, clone_node,
-				clone_bloom);
-		if (error != CSS_OK) {
-			free(clone_bloom);
-			return error;
-		}
+		/* TODO: is it worth cloning libcss data?  We only store
+		 *       data on the nodes as an optimisation, which is
+		 *       unlikely to be valid for most cloning cases.
+		 */
 		break;
 
 	default:
@@ -484,6 +495,7 @@ css_error css_select_default_style(css_select_ctx *ctx,
 	return CSS_OK;
 }
 
+
 /**
  * Get a bloom filter for the parent node
  *
@@ -500,18 +512,25 @@ static css_error css__get_parent_bloom(void *parent,
 		css_select_handler *handler, void *pw,
 		css_bloom **parent_bloom)
 {
-	css_error error;
+	struct css_node_data *node_data = NULL;
 	css_bloom *bloom = NULL;
+	css_error error;
 
 	/* Get parent node's bloom filter */
 	if (parent != NULL) {
 		/* Get parent bloom filter */
-		/*   Hideous casting to avoid warnings on all platforms
-		 *   we build for. */
+		struct css_node_data *node_data;
+
+		/* Hideous casting to avoid warnings on all platforms
+		 * we build for. */
 		error = handler->get_libcss_node_data(pw, parent,
-				(void **) (void *) &bloom);
-		if (error != CSS_OK)
+				(void **) (void *) &node_data);
+		if (error != CSS_OK) {
 			return error;
+		}
+		if (node_data != NULL) {
+			bloom = node_data->bloom;
+		}
 	}
 
 	if (bloom == NULL) {
@@ -534,12 +553,21 @@ static css_error css__get_parent_bloom(void *parent,
 				bloom[i] = ~0;
 			}
 
-			/* Set parent node bloom filter */
-			error = handler->set_libcss_node_data(pw,
-					parent, bloom);
-			if (error != CSS_OK) {
-				free(bloom);
-				return error;
+			if (node_data == NULL) {
+				error = css__create_node_data(&node_data);
+				if (error != CSS_OK) {
+					free(bloom);
+					return error;
+				}
+				node_data->bloom = bloom;
+
+				/* Set parent node bloom filter */
+				error = handler->set_libcss_node_data(pw,
+						parent, node_data);
+				if (error != CSS_OK) {
+					css__destroy_node_data(node_data);
+					return error;
+				}
 			}
 		} else {
 			/* No ancestors; empty bloom filter */
@@ -554,14 +582,14 @@ static css_error css__get_parent_bloom(void *parent,
 }
 
 /**
- * Set a node's bloom filter
+ * Set a node's data
  *
- * \param parent	Node to set bloom filter for
+ * \param parent	Node to set node data for
  * \param handler	Dispatch table of handler functions
  * \param pw		Client-specific private data for handler functions
  * \return CSS_OK on success, appropriate error otherwise.
  */
-static css_error css__set_node_bloom(void *node, css_select_state *state,
+static css_error css__set_node_data(void *node, css_select_state *state,
 		css_select_handler *handler, void *pw)
 {
 	css_error error;
@@ -606,12 +634,15 @@ static css_error css__set_node_bloom(void *node, css_select_state *state,
 	}
 
 	/* Merge parent bloom into node bloom */
-	css_bloom_merge(state->bloom, bloom);
+	css_bloom_merge(state->node_data->bloom, bloom);
+	state->node_data->bloom = bloom;
 
 	/* Set node bloom filter */
-	error = handler->set_libcss_node_data(pw, node, bloom);
+	error = handler->set_libcss_node_data(pw, node, state->node_data);
 	if (error != CSS_OK)
 		goto cleanup;
+
+	state->node_data = NULL;
 
 	return CSS_OK;
 
@@ -666,6 +697,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	state.media = media;
 	state.handler = handler;
 	state.pw = pw;
+	state.node_data = NULL;
 	state.next_reject = state.reject_cache +
 			(N_ELEMENTS(state.reject_cache) - 1);
 
@@ -685,6 +717,11 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		return error;
 	}
 
+	error = css__create_node_data(&state.node_data);
+	if (error != CSS_OK) {
+		goto cleanup;
+	}
+
 	error = handler->parent_node(pw, node, &parent);
 	if (error != CSS_OK)
 		goto cleanup;
@@ -693,7 +730,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	if (error != CSS_OK) {
 		goto cleanup;
 	}
-	state.bloom = parent_bloom;
+	state.node_data->bloom = parent_bloom;
 
 	/* Get node's name */
 	error = handler->node_name(pw, node, &state.element);
@@ -844,7 +881,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		}
 	}
 
-	error = css__set_node_bloom(node, &state, handler, pw);
+	error = css__set_node_data(node, &state, handler, pw);
 	if (error != CSS_OK) {
 		goto cleanup;
 	}
@@ -864,6 +901,10 @@ cleanup:
 	 * so we need to free it. */
 	if (parent == NULL) {
 		free(parent_bloom);
+	}
+
+	if (state.node_data != NULL) {
+		css__destroy_node_data(state.node_data);
 	}
 
 	if (state.classes != NULL) {
@@ -1639,7 +1680,7 @@ css_error match_selectors_in_sheet(css_select_ctx *ctx,
 
 	/* Set up general selector chain requirments */
 	req.media = state->media;
-	req.node_bloom = state->bloom;
+	req.node_bloom = state->node_data->bloom;
 	req.uni = ctx->universal;
 
 	/* Find hash chain that applies to current node */
