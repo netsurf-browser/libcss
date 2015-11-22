@@ -581,20 +581,14 @@ static css_error css__get_parent_bloom(void *parent,
 	return CSS_OK;
 }
 
-/**
- * Set a node's data
- *
- * \param parent	Node to set node data for
- * \param handler	Dispatch table of handler functions
- * \param pw		Client-specific private data for handler functions
- * \return CSS_OK on success, appropriate error otherwise.
- */
-static css_error css__set_node_data(void *node, css_select_state *state,
-		css_select_handler *handler, void *pw)
+static css_error css__create_node_bloom(
+		css_bloom **node_bloom, css_select_state *state)
 {
 	css_error error;
 	css_bloom *bloom;
 	lwc_hash hash;
+
+	*node_bloom = NULL;
 
 	/* Create the node's bloom */
 	bloom = calloc(sizeof(css_bloom), CSS_BLOOM_SIZE);
@@ -635,14 +629,7 @@ static css_error css__set_node_data(void *node, css_select_state *state,
 
 	/* Merge parent bloom into node bloom */
 	css_bloom_merge(state->node_data->bloom, bloom);
-	state->node_data->bloom = bloom;
-
-	/* Set node bloom filter */
-	error = handler->set_libcss_node_data(pw, node, state->node_data);
-	if (error != CSS_OK)
-		goto cleanup;
-
-	state->node_data = NULL;
+	*node_bloom = bloom;
 
 	return CSS_OK;
 
@@ -650,6 +637,38 @@ cleanup:
 	free(bloom);
 
 	return error;
+}
+
+/**
+ * Set a node's data
+ *
+ * \param node     Node to set node data for
+ * \param state    Selection state for node
+ * \param handler  Dispatch table of handler functions
+ * \param pw       Client-specific private data for handler functions
+ * \return CSS_OK on success, appropriate error otherwise.
+ */
+static css_error css__set_node_data(void *node, css_select_state *state,
+		css_select_handler *handler, void *pw)
+{
+	css_error error;
+	css_bloom *bloom;
+
+	/* Set node bloom filter */
+	error = css__create_node_bloom(&bloom, state);
+	if (error != CSS_OK) {
+		return error;
+	}
+	state->node_data->bloom = bloom;
+
+	error = handler->set_libcss_node_data(pw, node, state->node_data);
+	if (error != CSS_OK) {
+		return error;
+	}
+
+	state->node_data = NULL;
+
+	return CSS_OK;
 }
 
 
