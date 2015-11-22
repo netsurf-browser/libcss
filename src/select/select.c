@@ -170,10 +170,19 @@ static css_error css__create_node_data(struct css_node_data **node_data)
 
 static void css__destroy_node_data(struct css_node_data *node_data)
 {
+	int i;
+
 	assert(node_data != NULL);
 
 	if (node_data->bloom != NULL) {
 		free(node_data->bloom);
+	}
+
+	for (i = 0; i < CSS_PSEUDO_ELEMENT_COUNT; i++) {
+		if (node_data->partial.styles[i] != NULL) {
+			css_computed_style_destroy(
+					node_data->partial.styles[i]);
+		}
 	}
 
 	free(node_data);
@@ -651,18 +660,31 @@ cleanup:
 static css_error css__set_node_data(void *node, css_select_state *state,
 		css_select_handler *handler, void *pw)
 {
+	int i;
 	css_error error;
 	css_bloom *bloom;
+	css_select_results *results;
+
+	struct css_node_data *node_data = state->node_data;
 
 	/* Set node bloom filter */
 	error = css__create_node_bloom(&bloom, state);
 	if (error != CSS_OK) {
 		return error;
 	}
-	state->node_data->bloom = bloom;
+	node_data->bloom = bloom;
 
-	error = handler->set_libcss_node_data(pw, node, state->node_data);
+	/* Set selection results */
+	results = state->results;
+	for (i = 0; i < CSS_PSEUDO_ELEMENT_COUNT; i++) {
+		node_data->partial.styles[i] =
+				css__computed_style_ref(results->styles[i]);
+	}
+
+	error = handler->set_libcss_node_data(pw, node, node_data);
 	if (error != CSS_OK) {
+		css__destroy_node_data(node_data);
+		state->node_data = NULL;
 		return error;
 	}
 

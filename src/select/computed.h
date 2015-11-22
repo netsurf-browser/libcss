@@ -338,6 +338,10 @@ static inline css_computed_style * css__computed_style_ref(
 	if (style == NULL)
 		return NULL;
 
+	if (style->i.uncommon != NULL) {
+		style->i.uncommon->count++;
+	}
+
 	style->count++;
 	return style;
 }

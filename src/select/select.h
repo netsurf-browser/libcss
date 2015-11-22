@@ -32,6 +32,7 @@ typedef struct prop_state {
 } prop_state;
 
 struct css_node_data {
+	css_select_results partial;
 	css_bloom *bloom;
 };
 
