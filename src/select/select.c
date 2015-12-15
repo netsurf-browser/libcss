@@ -703,6 +703,225 @@ static css_error css__set_node_data(void *node, css_select_state *state,
 }
 
 
+/** The releationship of a share candidate node to the selection node. */
+enum share_candidate_type {
+	CANDIDATE_SIBLING,
+	CANDIDATE_COUSIN,
+};
+
+
+/**
+ * Get node_data for candidate node if we can reuse its style.
+ *
+ * \param[in]  state                 The selection state for current node.
+ * \param[in]  share_candidate_node  The node to test id and classes of.
+ * \param[in]  type                  The candidate's relation to selection node.
+ * \param[out] sharable_node_data    Returns node_data or NULL.
+ * \return CSS_OK on success, appropriate error otherwise.
+ */
+static css_error css_select_style__get_sharable_node_data_for_candidate(
+		css_select_state *state,
+		void *share_candidate_node,
+		enum share_candidate_type type,
+		struct css_node_data **sharable_node_data)
+{
+	css_error error;
+	lwc_string *share_candidate_id;
+	uint32_t share_candidate_n_classes;
+	lwc_string **share_candidate_classes;
+	struct css_node_data *node_data;
+
+	UNUSED(type);
+
+	*sharable_node_data = NULL;
+
+	/* We get the candidate node data first, as if it has none, we can't
+	 * share its data anyway.
+	 * Hideous casting to avoid warnings on all platforms we build for. */
+	error = state->handler->get_libcss_node_data(state->pw,
+			share_candidate_node, (void **) (void *) &node_data);
+	if (error != CSS_OK || node_data == NULL) {
+		return error;
+	}
+
+	/* If one node has hints and other doesn't then can't share */
+	if ((node_data->flags & CSS_NODE_FLAGS_HAS_HINTS) !=
+			(state->node_data->flags & CSS_NODE_FLAGS_HAS_HINTS)) {
+		return CSS_OK;
+	}
+
+	/* If the node was affected by attribute or pseudo class rules,
+	 * it's not a candidate for sharing */
+	if (node_data->flags & (
+			CSS_NODE_FLAGS_TAINT_PSEUDO_CLASS |
+			CSS_NODE_FLAGS_TAINT_ATTRIBUTE |
+			CSS_NODE_FLAGS_TAINT_SIBLING)) {
+		return CSS_OK;
+	}
+
+	/* Check candidate ID doesn't prevent sharing */
+	error = state->handler->node_id(state->pw,
+			share_candidate_node,
+			&share_candidate_id);
+	if (error != CSS_OK) {
+		return error;
+
+	} else if (share_candidate_id != NULL) {
+		lwc_string_unref(share_candidate_id);
+		return CSS_OK;
+	}
+
+	/* Check candidate classes don't prevent sharing */
+	error = state->handler->node_classes(state->pw,
+			share_candidate_node,
+			&share_candidate_classes,
+			&share_candidate_n_classes);
+	if (error != CSS_OK) {
+		return error;
+	}
+
+	if (state->n_classes != share_candidate_n_classes) {
+		goto cleanup;
+	}
+
+	/* TODO: no need to care about the order, but it's simpler to
+	 *       have an ordered match, and authors are more likely to be
+	 *       consistent than  not. */
+	for (uint32_t i = 0; i < share_candidate_n_classes; i++) {
+		bool match;
+		if (lwc_string_caseless_isequal(
+				state->classes[i],
+				share_candidate_classes[i],
+				&match) == lwc_error_ok &&
+				match == false) {
+			goto cleanup;
+		}
+	}
+
+	if (node_data->flags & CSS_NODE_FLAGS_HAS_HINTS) {
+		/* TODO: check hints match.  For now, just prevent sharing */
+		goto cleanup;
+	}
+
+	*sharable_node_data = node_data;
+
+cleanup:
+	if (share_candidate_classes != NULL) {
+		for (uint32_t i = 0; i < share_candidate_n_classes; i++) {
+			lwc_string_unref(share_candidate_classes[i]);
+		}
+	}
+
+	return CSS_OK;
+}
+
+
+/**
+ * Get previous named cousin node.
+ *
+ * \param[in]  state       The selection state for current node.
+ * \param[in]  node        The node to get the cousin of.
+ * \param[out] cousin_out  Returns a cousin node or NULL.
+ * \return CSS_OK on success or appropriate error otherwise.
+ */
+static css_error css_select_style__get_named_cousin(
+		css_select_state *state, void *node,
+		void **cousin_out)
+{
+	/* TODO:
+	 *
+	 * Consider cousin nodes; Go to parent's previous sibling's last child.
+	 * The parent and the parent's sibling must be "similar".
+	 */
+	UNUSED(state);
+	UNUSED(node);
+
+	*cousin_out = NULL;
+
+	return CSS_OK;
+}
+
+
+/**
+ * Get node_data for any node that we can reuse the style for.
+ *
+ * This is an optimisation to needing to perform selection for a node,
+ * by sharing the style for a previous node.
+ *
+ * \param[in]  node                Node we're selecting for.
+ * \param[in]  state               The current selection state.
+ * \param[out] sharable_node_data  Returns node_data or NULL.
+ * \return CSS_OK on success or appropriate error otherwise.
+ */
+static css_error css_select_style__get_sharable_node_data(
+		void *node, css_select_state *state,
+		struct css_node_data **sharable_node_data)
+{
+	css_error error;
+	enum share_candidate_type type = CANDIDATE_SIBLING;
+
+	*sharable_node_data = NULL;
+
+	/* TODO: move this test to caller? */
+	if (state->id != NULL) {
+		/* If the node has an ID can't share another node's style. */
+		/* TODO: Consider whether this ID exists in the ID hash tables.
+		 *       (If not, the ID cannot affect the node's style.)
+		 *
+		 *       Call css__selector_hash_find_by_id, for each sheet,
+		 *       and if we get a non-NULL "matched" then return.
+		 *
+		 *       Check overhead is worth cost. */
+		return CSS_OK;
+	}
+
+	while (true) {
+		void *share_candidate_node;
+
+		/* Get previous sibling with same element name */
+		error = state->handler->named_generic_sibling_node(state->pw,
+				node, &state->element, &share_candidate_node);
+		if (error != CSS_OK) {
+			return error;
+		} else {
+			if (share_candidate_node == NULL) {
+				error = css_select_style__get_named_cousin(
+						state, node,
+						&share_candidate_node);
+				if (error != CSS_OK) {
+					return error;
+				} else {
+					if (share_candidate_node == NULL) {
+						break;
+					}
+				}
+				type = CANDIDATE_COUSIN;
+			}
+		}
+
+		/* Check whether we can share the candidate node's
+		 * style.  We already know the element names match,
+		 * check that candidate node's ID and class won't
+		 * prevent sharing. */
+		error = css_select_style__get_sharable_node_data_for_candidate(
+				state, share_candidate_node,
+				type, sharable_node_data);
+		if (error != CSS_OK) {
+			return error;
+		} else {
+			if (sharable_node_data == NULL) {
+				/* Can't share with this; look for another */
+				continue;
+			} else {
+				break;
+			}
+		}
+	}
+
+	return CSS_OK;
+}
+
+
 /**
  * Finalise a selection state, releasing any resources it owns
  *
@@ -775,13 +994,6 @@ static css_error css_select__initialise_selection_state(
 		return CSS_NOMEM;
 	}
 
-	/* Base element style is guaranteed to exist */
-	error = css__computed_style_create(
-			&state->results->styles[CSS_PSEUDO_ELEMENT_NONE]);
-	if (error != CSS_OK) {
-		goto failed;
-	}
-
 	error = css__create_node_data(&state->node_data);
 	if (error != CSS_OK) {
 		goto failed;
@@ -852,6 +1064,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	css_select_state state;
 	css_hint *hints = NULL;
 	void *parent = NULL;
+	struct css_node_data *share;
 
 	if (ctx == NULL || node == NULL || result == NULL || handler == NULL ||
 	    handler->handler_version != CSS_SELECT_HANDLER_VERSION_1)
@@ -866,20 +1079,41 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	if (error != CSS_OK)
 		return error;
 
-	/* Apply presentational hints */
+	/* Fetch presentational hints */
 	error = handler->node_presentational_hint(pw, node, &nhints, &hints);
 	if (error != CSS_OK)
 		goto cleanup;
 	if (nhints > 0) {
+		state.node_data->flags |= CSS_NODE_FLAGS_HAS_HINTS;
+	}
+
+	/* Check if we can share another node's style */
+	error = css_select_style__get_sharable_node_data(node, &state, &share);
+	if (error != CSS_OK) {
+		goto cleanup;
+	} else if (share != NULL) {
+		css_computed_style **styles = share->partial.styles;
+		for (i = 0; i < CSS_PSEUDO_ELEMENT_COUNT; i++) {
+			state.results->styles[i] =
+					css__computed_style_ref(styles[i]);
+		}
+		goto complete;
+	}
+
+	/* Not sharing; need to select.
+	 * Base element style is guaranteed to exist
+	 */
+	error = css__computed_style_create(
+			&state.results->styles[CSS_PSEUDO_ELEMENT_NONE]);
+	if (error != CSS_OK) {
+		goto cleanup;
+	}
+
+	/* Apply any hints */
+	if (nhints > 0) {
 		/* Ensure that the appropriate computed style exists */
 		struct css_computed_style *computed_style =
 				state.results->styles[CSS_PSEUDO_ELEMENT_NONE];
-		if (computed_style == NULL) {
-			error = css__computed_style_create(&computed_style);
-			if (error != CSS_OK)
-				goto cleanup;
-		}
-		state.results->styles[CSS_PSEUDO_ELEMENT_NONE] = computed_style;
 		state.computed = computed_style;
 
 		for (i = 0; i < nhints; i++) {
@@ -999,6 +1233,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		}
 	}
 
+complete:
 	error = css__set_node_data(node, &state, handler, pw);
 	if (error != CSS_OK) {
 		goto cleanup;
@@ -2033,6 +2268,10 @@ css_error match_named_combinator(css_select_ctx *ctx, css_combinator type,
 					n, &selector->data.qname, &n);
 			if (error != CSS_OK)
 				return error;
+			if (node == state->node) {
+				state->node_data->flags |=
+						CSS_NODE_FLAGS_TAINT_SIBLING;
+			}
 			break;
 		case CSS_COMBINATOR_GENERIC_SIBLING:
 			error = state->handler->named_generic_sibling_node(
@@ -2040,6 +2279,10 @@ css_error match_named_combinator(css_select_ctx *ctx, css_combinator type,
 					&n);
 			if (error != CSS_OK)
 				return error;
+			if (node == state->node) {
+				state->node_data->flags |=
+						CSS_NODE_FLAGS_TAINT_SIBLING;
+			}
 		case CSS_COMBINATOR_NONE:
 			break;
 		}
@@ -2128,6 +2371,10 @@ css_error match_universal_combinator(css_select_ctx *ctx, css_combinator type,
 			error = state->handler->sibling_node(state->pw, n, &n);
 			if (error != CSS_OK)
 				return error;
+			if (node == state->node) {
+				state->node_data->flags |=
+						CSS_NODE_FLAGS_TAINT_SIBLING;
+			}
 			break;
 		case CSS_COMBINATOR_NONE:
 			break;
@@ -2395,8 +2642,17 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 		} else if (detail->qname.name == ctx->checked) {
 			error = state->handler->node_is_checked(state->pw,
 					node, match);
-		} else
+		} else {
 			*match = false;
+		}
+		/* If the node in question is the node we're selecting for
+		 * then its style has been tainted by pseudo class specific
+		 * rules.  We don't care whether the rule matched or not,
+		 * just that such rule has been considered. */
+		if (node == state->node) {
+			state->node_data->flags |=
+					CSS_NODE_FLAGS_TAINT_PSEUDO_CLASS;
+		}
 		break;
 	case CSS_SELECTOR_PSEUDO_ELEMENT:
 		*match = true;
@@ -2415,36 +2671,68 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 	case CSS_SELECTOR_ATTRIBUTE:
 		error = state->handler->node_has_attribute(state->pw, node,
 				&detail->qname, match);
+		/* If the node in question is the node we're selecting for
+		 * then its style has been tainted by attribute specific
+		 * rules.  We don't care whether the rule matched or not,
+		 * just that such rule has been considered. */
+		if (node == state->node) {
+			state->node_data->flags |=
+					CSS_NODE_FLAGS_TAINT_ATTRIBUTE;
+		}
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_EQUAL:
 		error = state->handler->node_has_attribute_equal(state->pw, 
 				node, &detail->qname, detail->value.string, 
 				match);
+		if (node == state->node) {
+			state->node_data->flags |=
+					CSS_NODE_FLAGS_TAINT_ATTRIBUTE;
+		}
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_DASHMATCH:
 		error = state->handler->node_has_attribute_dashmatch(state->pw,
 				node, &detail->qname, detail->value.string,
 				match);
+		if (node == state->node) {
+			state->node_data->flags |=
+					CSS_NODE_FLAGS_TAINT_ATTRIBUTE;
+		}
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_INCLUDES:
 		error = state->handler->node_has_attribute_includes(state->pw, 
 				node, &detail->qname, detail->value.string,
 				match);
+		if (node == state->node) {
+			state->node_data->flags |=
+					CSS_NODE_FLAGS_TAINT_ATTRIBUTE;
+		}
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_PREFIX:
 		error = state->handler->node_has_attribute_prefix(state->pw,
 				node, &detail->qname, detail->value.string,
 				match);
+		if (node == state->node) {
+			state->node_data->flags |=
+					CSS_NODE_FLAGS_TAINT_ATTRIBUTE;
+		}
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_SUFFIX:
 		error = state->handler->node_has_attribute_suffix(state->pw,
 				node, &detail->qname, detail->value.string,
 				match);
+		if (node == state->node) {
+			state->node_data->flags |=
+					CSS_NODE_FLAGS_TAINT_ATTRIBUTE;
+		}
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_SUBSTRING:
 		error = state->handler->node_has_attribute_substring(state->pw,
 				node, &detail->qname, detail->value.string,
 				match);
+		if (node == state->node) {
+			state->node_data->flags |=
+					CSS_NODE_FLAGS_TAINT_ATTRIBUTE;
+		}
 		break;
 	}
 

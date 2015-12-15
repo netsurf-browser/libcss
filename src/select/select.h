@@ -34,6 +34,13 @@ typedef struct prop_state {
 struct css_node_data {
 	css_select_results partial;
 	css_bloom *bloom;
+	enum {
+		CSS_NODE_FLAGS_NONE               = 0,
+		CSS_NODE_FLAGS_HAS_HINTS          = (1 << 0),
+		CSS_NODE_FLAGS_TAINT_PSEUDO_CLASS = (1 << 1),
+		CSS_NODE_FLAGS_TAINT_ATTRIBUTE    = (1 << 2),
+		CSS_NODE_FLAGS_TAINT_SIBLING      = (1 << 3),
+	} flags;
 };
 
 /**
