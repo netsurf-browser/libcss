@@ -2,11 +2,11 @@
 #
 # Makefile for libcss
 #
-# Copyright 2009-1015 John-Mark Bell <jmb@netsurf-browser.org>
+# Copyright 2009-2015 John-Mark Bell <jmb@netsurf-browser.org>
 
 # Component settings
 COMPONENT := css
-COMPONENT_VERSION := 0.5.0
+COMPONENT_VERSION := 0.5.1
 # Default to a static library
 COMPONENT_TYPE ?= lib-static
 
