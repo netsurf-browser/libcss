@@ -110,7 +110,7 @@ typedef struct css_select_rule_source {
 } css_select_rule_source;
 
 
-static css_error set_hint(css_select_state *state, uint32_t prop);
+static css_error set_hint(css_select_state *state, css_hint *hint);
 static css_error set_initial(css_select_state *state, 
 		uint32_t prop, css_pseudo_element pseudo,
 		void *parent);
@@ -433,10 +433,11 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		css_select_handler *handler, void *pw,
 		css_select_results **result)
 {
-	uint32_t i, j;
+	uint32_t i, j, nhints;
 	css_error error;
 	css_select_state state;
 	void *parent = NULL;
+	css_hint *hints = NULL;
 	css_bloom *bloom = NULL;
 	css_bloom *parent_bloom = NULL;
 
@@ -536,6 +537,29 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	if (error != CSS_OK)
 		goto cleanup;
 
+	/* Apply presentational hints */
+	error = handler->node_presentational_hint(pw, node, &nhints, &hints);
+	if (error != CSS_OK)
+		goto cleanup;
+	if (nhints > 0) {
+		/* Ensure that the appropriate computed style exists */
+		struct css_computed_style *computed_style =
+				state.results->styles[CSS_PSEUDO_ELEMENT_NONE];
+		if (computed_style == NULL) {
+			error = css_computed_style_create(&computed_style);
+			if (error != CSS_OK)
+				return error;
+		}
+		state.results->styles[CSS_PSEUDO_ELEMENT_NONE] = computed_style;
+		state.computed = computed_style;
+
+		for (i = 0; i < nhints; i++) {
+			error = set_hint(&state, &hints[i]);
+			if (error != CSS_OK)
+				goto cleanup;
+		}
+	}
+
 	/* Iterate through the top-level stylesheets, selecting styles
 	 * from those which apply to our current media requirements and
 	 * are not disabled */
@@ -577,8 +601,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		}
 	}
 
-	/* Take account of presentational hints and fix up any remaining
-	 * unset properties. */
+	/* Fix up any remaining unset properties. */
 
 	/* Base element */
 	state.current_pseudo = CSS_PSEUDO_ELEMENT_NONE;
@@ -586,17 +609,6 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	for (i = 0; i < CSS_N_PROPERTIES; i++) {
 		const prop_state *prop = 
 				&state.props[i][CSS_PSEUDO_ELEMENT_NONE];
-
-		/* Apply presentational hints if the property is unset or 
-		 * the existing property value did not come from an author 
-		 * stylesheet or a user sheet using !important. */
-		if (prop->set == false ||
-				(prop->origin != CSS_ORIGIN_AUTHOR &&
-				prop->important == false)) {
-			error = set_hint(&state, i);
-			if (error != CSS_OK)
-				goto cleanup;
-		}
 
 		/* If the property is still unset or it's set to inherit 
 		 * and we're the root element, then set it to its initial 
@@ -1118,32 +1130,23 @@ void destroy_strings(css_select_ctx *ctx)
 		lwc_string_unref(ctx->after);
 }
 
-css_error set_hint(css_select_state *state, uint32_t prop)
+css_error set_hint(css_select_state *state, css_hint *hint)
 {
-	css_hint hint;
+	uint32_t prop = hint->prop;
+	prop_state *existing = &state->props[prop][CSS_PSEUDO_ELEMENT_NONE];
 	css_error error;
 
-	/* Initialise hint */
-	memset(&hint, 0, sizeof(css_hint));
-
-	/* Retrieve this property's hint from the client */
-	error = state->handler->node_presentational_hint(state->pw, 
-			state->node, prop, &hint);
-	if (error != CSS_OK)
-		return (error == CSS_PROPERTY_NOT_SET) ? CSS_OK : error;
-
 	/* Hint defined -- set it in the result */
-	error = prop_dispatch[prop].set_from_hint(&hint, state->computed);
+	error = prop_dispatch[prop].set_from_hint(hint, state->computed);
 	if (error != CSS_OK)
 		return error;
 
 	/* Keep selection state in sync with reality */
-	state->props[prop][CSS_PSEUDO_ELEMENT_NONE].set = 1;
-	state->props[prop][CSS_PSEUDO_ELEMENT_NONE].specificity = 0;
-	state->props[prop][CSS_PSEUDO_ELEMENT_NONE].origin = CSS_ORIGIN_AUTHOR;
-	state->props[prop][CSS_PSEUDO_ELEMENT_NONE].important = 0;
-	state->props[prop][CSS_PSEUDO_ELEMENT_NONE].inherit = 
-			(hint.status == 0);
+	existing->set = 1;
+	existing->specificity = 0;
+	existing->origin = CSS_ORIGIN_AUTHOR;
+	existing->important = 0;
+	existing->inherit = (hint->status == 0);
 
 	return CSS_OK;
 }
