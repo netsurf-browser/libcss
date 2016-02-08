@@ -548,7 +548,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		if (computed_style == NULL) {
 			error = css_computed_style_create(&computed_style);
 			if (error != CSS_OK)
-				return error;
+				goto cleanup;
 		}
 		state.results->styles[CSS_PSEUDO_ELEMENT_NONE] = computed_style;
 		state.computed = computed_style;
