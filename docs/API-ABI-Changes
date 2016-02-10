@@ -56,3 +56,22 @@ LibCSS 0.3.0 --> LibCSS 0.4.0
 
     Added to       include/libcss/computed.h    --  css_computed_overflow_y()
 
+
+LibCSS 0.5.0 --> LibCSS 0.6.0
+-----------------------------
+
+  The API is changed.
+
+  The way that presentational hints are handled has changed to be more
+  optimal.  Instead of calling the presentational hint callback once
+  per property per node to get each hint, we now call the callback once
+  per node to get all the hints that apply to it.
+
+  There are changes to selection handler callback table:
+
+    node_presentational_hint
+      Rather than asking for any hint for the given node and property,
+      it now asks for an array of hints that should apply to the node.
+
+  The css_hint structure has been changed to include the property which
+  the hint applies to.
