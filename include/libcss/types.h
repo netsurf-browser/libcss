@@ -116,6 +116,132 @@ typedef enum css_unit {
 } css_unit;
 
 /**
+ * Media orienations
+ */
+typedef enum css_media_orientation {
+	CSS_MEDIA_ORIENTATION_PORTRAIT  = 0,
+	CSS_MEDIA_ORIENTATION_LANDSCAPE = 1
+} css_media_orientation;
+
+/**
+ * Media scans
+ */
+typedef enum css_media_scan {
+	CSS_MEDIA_SCAN_PROGRESSIVE = 0,
+	CSS_MEDIA_SCAN_INTERLACE   = 1
+} css_media_scan;
+
+/**
+ * Media update-frequencies
+ */
+typedef enum css_media_update_frequency {
+	CSS_MEDIA_UPDATE_FREQUENCY_NORMAL = 0,
+	CSS_MEDIA_UPDATE_FREQUENCY_SLOW   = 1,
+	CSS_MEDIA_UPDATE_FREQUENCY_NONE   = 2
+} css_media_update_frequency;
+
+/**
+ * Media block overflows
+ */
+typedef enum css_media_overflow_block {
+	CSS_MEDIA_OVERFLOW_BLOCK_NONE           = 0,
+	CSS_MEDIA_OVERFLOW_BLOCK_SCROLL         = 1,
+	CSS_MEDIA_OVERFLOW_BLOCK_OPTIONAL_PAGED = 2,
+	CSS_MEDIA_OVERFLOW_BLOCK_PAGED          = 3
+} css_media_overflow_block;
+
+/**
+ * Media inline overflows
+ */
+typedef enum css_media_overflow_inline {
+	CSS_MEDIA_OVERFLOW_INLINE_NONE   = 0,
+	CSS_MEDIA_OVERFLOW_INLINE_SCROLL = 1
+} css_media_overflow_inline;
+
+/**
+ * Media pointers
+ */
+typedef enum css_media_pointer {
+	CSS_MEDIA_POINTER_NONE   = 0,
+	CSS_MEDIA_POINTER_COARSE = 1,
+	CSS_MEDIA_POINTER_FINE   = 2
+} css_media_pointer;
+
+/**
+ * Media hovers
+ */
+typedef enum css_media_hover {
+	CSS_MEDIA_HOVER_NONE      = 0,
+	CSS_MEDIA_HOVER_ON_DEMAND = 1,
+	CSS_MEDIA_HOVER_HOVER     = 2
+} css_media_hover;
+
+/**
+ * Media light-levels
+ */
+typedef enum css_media_light_level {
+	CSS_MEDIA_LIGHT_LEVEL_NORMAL = 0,
+	CSS_MEDIA_LIGHT_LEVEL_DIM    = 1,
+	CSS_MEDIA_LIGHT_LEVEL_WASHED = 2
+} css_media_light_level;
+
+/**
+ * Media scriptings
+ */
+typedef enum css_media_scripting {
+	CSS_MEDIA_SCRIPTING_NONE         = 0,
+	CSS_MEDIA_SCRIPTING_INITIAL_ONLY = 1,
+	CSS_MEDIA_SCRIPTING_ENABLED      = 2
+} css_media_scripting;
+
+typedef struct css_media_length {
+	css_fixed value;
+	css_unit unit;
+} css_media_length;
+
+typedef struct css_media_resolution {
+	css_fixed value;
+	css_unit unit;
+} css_media_resolution;
+
+/**
+ * Media specification
+ */
+typedef struct css_media {
+	/* Screen / Device media features */
+	css_media_length      width;
+	css_media_length      height;
+	css_fixed             aspect_ratio;
+	css_media_orientation orientation;
+
+	/* Display quality media features */
+	css_media_resolution       resolution;
+	css_media_scan             scan;
+	css_fixed                  grid; /** boolean: {0|1} */
+	css_media_update_frequency update;
+	css_media_overflow_block   overflow_block;
+	css_media_overflow_inline  overflow_inline;
+
+	/* Color media features */
+	css_fixed color;      /* colour bpp (0 for monochrome) */
+	css_fixed color_index;
+	css_fixed monochrome; /* monochrome bpp (0 for colour) */
+	css_fixed inverted_colors; /** boolean: {0|1} */
+
+	/* Interaction media features */
+	css_media_pointer pointer;
+	css_media_pointer any_pointer;
+	css_media_hover   hover;
+	css_media_hover   any_hover;
+
+	/* Environmental media features */
+	css_media_light_level light_level;
+
+	/* Scripting media features */
+	css_media_scripting scripting;
+} css_media;
+
+/**
  * Type of a qualified name
  */
 typedef struct css_qname {
