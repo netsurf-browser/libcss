@@ -60,10 +60,10 @@ typedef enum css_media_type {
 	CSS_MEDIA_TTY               = (1 << 8),
 	CSS_MEDIA_TV                = (1 << 9),
 	CSS_MEDIA_ALL               = CSS_MEDIA_AURAL | CSS_MEDIA_BRAILLE |
-                                      CSS_MEDIA_EMBOSSED | CSS_MEDIA_HANDHELD |
-                                      CSS_MEDIA_PRINT | CSS_MEDIA_PROJECTION |
-                                      CSS_MEDIA_SCREEN | CSS_MEDIA_SPEECH |
-                                      CSS_MEDIA_TTY | CSS_MEDIA_TV
+	                              CSS_MEDIA_EMBOSSED | CSS_MEDIA_HANDHELD |
+	                              CSS_MEDIA_PRINT | CSS_MEDIA_PROJECTION |
+	                              CSS_MEDIA_SCREEN | CSS_MEDIA_SPEECH |
+	                              CSS_MEDIA_TTY | CSS_MEDIA_TV
 } css_media_type;
 
 /**
