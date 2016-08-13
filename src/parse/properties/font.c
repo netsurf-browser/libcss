@@ -160,9 +160,10 @@ static css_error parse_system_font(css_language *c,
 			return error;
 
 		error = css__stylesheet_style_append(result, snumber);
-		if (error != CSS_OK)
-			return error;
 	}
+	if (error != CSS_OK)
+		return error;
+
 	error = css__stylesheet_style_append(result, FONT_FAMILY_END);
 
 	return error;
