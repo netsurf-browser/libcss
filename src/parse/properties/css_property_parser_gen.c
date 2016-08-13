@@ -41,7 +41,6 @@ struct keyval *get_keyval(char **pos)
 		kvlen = strlen(*pos);
 		if (kvlen == 0)
 			return NULL;
-		endpos = *pos + kvlen;
 	} else {
 		kvlen = (endpos - *pos);
 	}
