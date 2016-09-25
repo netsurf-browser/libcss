@@ -546,18 +546,19 @@ static css_error css__get_parent_bloom(void *parent,
 		uint32_t i;
 		/* Need to create parent bloom */
 
-		/* TODO:
-		 * Build & set the parent node's bloom properly.  This will
-		 * speed up the case where DOM change has caused bloom to get
-		 * deleted.  For now we fall back to a fully satruated bloom
-		 * filter, which is slower but perfectly valid.
-		 */
-		bloom = malloc(sizeof(css_bloom) * CSS_BLOOM_SIZE);
-		if (bloom == NULL) {
-			return CSS_NOMEM;
-		}
 		if (parent != NULL) {
-			/* Have to make up fully saturated bloom filter */
+			/* TODO:
+			 * Build & set the parent node's bloom properly.
+			 * This will speed up the case where DOM change
+			 * has caused bloom to get deleted.  For now we
+			 * fall back to a fully satruated bloom filter,
+			 * which is slower but perfectly valid.
+			 */
+			bloom = malloc(sizeof(css_bloom) * CSS_BLOOM_SIZE);
+			if (bloom == NULL) {
+				return CSS_NOMEM;
+			}
+
 			for (i = 0; i < CSS_BLOOM_SIZE; i++) {
 				bloom[i] = ~0;
 			}
@@ -580,9 +581,17 @@ static css_error css__get_parent_bloom(void *parent,
 			}
 		} else {
 			/* No ancestors; empty bloom filter */
-			for (i = 0; i < CSS_BLOOM_SIZE; i++) {
-				bloom[i] = 0;
-			}
+			/* The parent bloom is owned by the parent node's
+			 * node data.  However, for the root node, there is
+			 * no parent node to own the bloom filter.
+			 * As such, we just use a pointer to static storage
+			 * so calling code doesn't need to worry about
+			 * whether the returned parent bloom is owned
+			 * by something or not.
+			 * Note, parent bloom is only read from, and not
+			 * written to. */
+			static css_bloom empty_bloom[CSS_BLOOM_SIZE];
+			bloom = empty_bloom;
 		}
 	}
 
@@ -695,6 +704,123 @@ static css_error css__set_node_data(void *node, css_select_state *state,
 
 
 /**
+ * Finalise a selection state, releasing any resources it owns
+ *
+ * \param[in] state  The selection state to finalise.
+ */
+static void css_select__finalise_selection_state(
+		css_select_state *state)
+{
+	if (state->results != NULL) {
+		css_select_results_destroy(state->results);
+	}
+
+	if (state->node_data != NULL) {
+		css__destroy_node_data(state->node_data);
+	}
+
+	if (state->classes != NULL) {
+		for (uint32_t i = 0; i < state->n_classes; i++) {
+			lwc_string_unref(state->classes[i]);
+		}
+	}
+
+	if (state->id != NULL) {
+		lwc_string_unref(state->id);
+	}
+
+	if (state->element.ns != NULL) {
+		lwc_string_unref(state->element.ns);
+	}
+
+	if (state->element.name != NULL){
+		lwc_string_unref(state->element.name);
+	}
+}
+
+
+/**
+ * Initialise a selection state.
+ *
+ * \param[in]  state    The selection state to initialise
+ * \param[in]  node     The node we are selecting for.
+ * \param[in]  parent   The node's parent node, or NULL.
+ * \param[in]  media    The media type we're selecting for.
+ * \param[in]  handler  The client selection callback table.
+ * \param[in]  pw       The client private data, passsed out to callbacks.
+ * \return CSS_OK or appropriate error otherwise.
+ */
+static css_error css_select__initialise_selection_state(
+		css_select_state *state,
+		void *node,
+		void *parent,
+		uint64_t media,
+		css_select_handler *handler,
+		void *pw)
+{
+	css_error error;
+
+	/* Set up the selection state */
+	memset(state, 0, sizeof(*state));
+	state->node = node;
+	state->media = media;
+	state->handler = handler;
+	state->pw = pw;
+	state->next_reject = state->reject_cache +
+			(N_ELEMENTS(state->reject_cache) - 1);
+
+	/* Allocate the result set */
+	state->results = calloc(1, sizeof(css_select_results));
+	if (state->results == NULL) {
+		return CSS_NOMEM;
+	}
+
+	/* Base element style is guaranteed to exist */
+	error = css__computed_style_create(
+			&state->results->styles[CSS_PSEUDO_ELEMENT_NONE]);
+	if (error != CSS_OK) {
+		goto failed;
+	}
+
+	error = css__create_node_data(&state->node_data);
+	if (error != CSS_OK) {
+		goto failed;
+	}
+
+	error = css__get_parent_bloom(parent, handler, pw,
+			&state->node_data->bloom);
+	if (error != CSS_OK) {
+		goto failed;
+	}
+
+	/* Get node's name */
+	error = handler->node_name(pw, node, &state->element);
+	if (error != CSS_OK){
+		goto failed;
+	}
+
+	/* Get node's ID, if any */
+	error = handler->node_id(pw, node, &state->id);
+	if (error != CSS_OK){
+		goto failed;
+	}
+
+	/* Get node's classes, if any */
+	error = handler->node_classes(pw, node,
+			&state->classes, &state->n_classes);
+	if (error != CSS_OK){
+		goto failed;
+	}
+
+	return CSS_OK;
+
+failed:
+	css_select__finalise_selection_state(state);
+	return error;
+}
+
+
+/**
  * Select a style for the given node
  *
  * \param ctx             Selection context to use
@@ -724,7 +850,6 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	uint32_t i, j, nhints;
 	css_error error;
 	css_select_state state;
-	css_bloom *parent_bloom = NULL;
 	css_hint *hints = NULL;
 	void *parent = NULL;
 
@@ -732,62 +857,14 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	    handler->handler_version != CSS_SELECT_HANDLER_VERSION_1)
 		return CSS_BADPARM;
 
-	/* Set up the selection state */
-	memset(&state, 0, sizeof(css_select_state));
-	state.node = node;
-	state.media = media;
-	state.handler = handler;
-	state.pw = pw;
-	state.node_data = NULL;
-	state.next_reject = state.reject_cache +
-			(N_ELEMENTS(state.reject_cache) - 1);
-
-	/* Allocate the result set */
-	state.results = malloc(sizeof(css_select_results));
-	if (state.results == NULL)
-		return CSS_NOMEM;
-
-	for (i = 0; i < CSS_PSEUDO_ELEMENT_COUNT; i++)
-		state.results->styles[i] = NULL;
-
-	/* Base element style is guaranteed to exist */
-	error = css__computed_style_create(
-			&state.results->styles[CSS_PSEUDO_ELEMENT_NONE]);
-	if (error != CSS_OK) {
-		free(state.results);
-		return error;
-	}
-
-	error = css__create_node_data(&state.node_data);
-	if (error != CSS_OK) {
-		goto cleanup;
-	}
-
 	error = handler->parent_node(pw, node, &parent);
 	if (error != CSS_OK)
-		goto cleanup;
+		return error;
 
-	error = css__get_parent_bloom(parent, handler, pw, &parent_bloom);
-	if (error != CSS_OK) {
-		goto cleanup;
-	}
-	state.node_data->bloom = parent_bloom;
-
-	/* Get node's name */
-	error = handler->node_name(pw, node, &state.element);
+	error = css_select__initialise_selection_state(
+			&state, node, parent, media, handler, pw);
 	if (error != CSS_OK)
-		goto cleanup;
-
-	/* Get node's ID, if any */
-	error = handler->node_id(pw, node, &state.id);
-	if (error != CSS_OK)
-		goto cleanup;
-
-	/* Get node's classes, if any */
-	error = handler->node_classes(pw, node,
-			&state.classes, &state.n_classes);
-	if (error != CSS_OK)
-		goto cleanup;
+		return error;
 
 	/* Apply presentational hints */
 	error = handler->node_presentational_hint(pw, node, &nhints, &hints);
@@ -927,38 +1004,15 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		goto cleanup;
 	}
 
+	/* Steal the results from the selection state, so they don't get
+	 * freed when the selection state is finalised */
 	*result = state.results;
+	state.results = NULL;
+
 	error = CSS_OK;
 
 cleanup:
-	/* Only clean up the results if there's an error. 
-	 * If there is no error, we're going to pass ownership of 
-	 * the results to the client */
-	if (error != CSS_OK && state.results != NULL) {
-		css_select_results_destroy(state.results);
-	}
-
-	/* If there's no parent, the parent_bloom is not owned by any node,
-	 * so we need to free it. */
-	if (parent == NULL) {
-		free(parent_bloom);
-	}
-
-	if (state.node_data != NULL) {
-		css__destroy_node_data(state.node_data);
-	}
-
-	if (state.classes != NULL) {
-		for (i = 0; i < state.n_classes; i++)
-			lwc_string_unref(state.classes[i]);
-	}
-
-	if (state.id != NULL)
-		lwc_string_unref(state.id);
-
-	if (state.element.ns != NULL)
-		lwc_string_unref(state.element.ns);
-	lwc_string_unref(state.element.name);
+	css_select__finalise_selection_state(&state);
 
 	return error;
 }
