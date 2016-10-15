@@ -150,42 +150,38 @@ css_error css__selector_hash_create(css_selector_hash **hash)
 	if (hash == NULL)
 		return CSS_BADPARM;
 
-	h = malloc(sizeof(css_selector_hash));
+	h = calloc(1, sizeof(css_selector_hash));
 	if (h == NULL)
 		return CSS_NOMEM;
 
 	/* Element hash */
-	h->elements.slots = malloc(DEFAULT_SLOTS * sizeof(hash_entry));
+	h->elements.slots = calloc(DEFAULT_SLOTS, sizeof(hash_entry));
 	if (h->elements.slots == NULL) {
 		free(h);
 		return CSS_NOMEM;
 	}
-	memset(h->elements.slots, 0, DEFAULT_SLOTS * sizeof(hash_entry));
 	h->elements.n_slots = DEFAULT_SLOTS;
 
 	/* Class hash */
-	h->classes.slots = malloc(DEFAULT_SLOTS * sizeof(hash_entry));
+	h->classes.slots = calloc(DEFAULT_SLOTS, sizeof(hash_entry));
 	if (h->classes.slots == NULL) {
 		free(h->elements.slots);
 		free(h);
 		return CSS_NOMEM;
 	}
-	memset(h->classes.slots, 0, DEFAULT_SLOTS * sizeof(hash_entry));
 	h->classes.n_slots = DEFAULT_SLOTS;
 
 	/* ID hash */
-	h->ids.slots = malloc(DEFAULT_SLOTS * sizeof(hash_entry));
+	h->ids.slots = calloc(DEFAULT_SLOTS, sizeof(hash_entry));
 	if (h->ids.slots == NULL) {
 		free(h->classes.slots);
 		free(h->elements.slots);
 		free(h);
 		return CSS_NOMEM;
 	}
-	memset(h->ids.slots, 0, DEFAULT_SLOTS * sizeof(hash_entry));
 	h->ids.n_slots = DEFAULT_SLOTS;
 
-	/* Universal chain */
-	memset(&h->universal, 0, sizeof(hash_entry));
+	/* Universal chain head already initiliased by calloc of `h`. */
 
 	h->hash_size = sizeof(css_selector_hash) + 
 			DEFAULT_SLOTS * sizeof(hash_entry) +
