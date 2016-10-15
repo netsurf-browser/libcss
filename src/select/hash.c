@@ -366,6 +366,7 @@ css_error css__selector_hash_find(css_selector_hash *hash,
 		const css_selector ***matched)
 {
 	uint32_t index, mask;
+	lwc_hash name_hash;
 	hash_entry *head;
 
 	if (hash == NULL || req == NULL || iterator == NULL || matched == NULL)
@@ -374,12 +375,11 @@ css_error css__selector_hash_find(css_selector_hash *hash,
 	/* Find index */
 	mask = hash->elements.n_slots - 1;
 
-	if (req->qname.name->insensitive == NULL &&
-			lwc__intern_caseless_string(
-			req->qname.name) != lwc_error_ok) {
+	if (lwc_string_caseless_hash_value(req->qname.name,
+			&name_hash) != lwc_error_ok) {
 		return CSS_NOMEM;
 	}
-	index = _hash_name(req->qname.name) & mask;
+	index = name_hash & mask;
 
 	head = &hash->elements.slots[index];
 
@@ -437,6 +437,7 @@ css_error css__selector_hash_find_by_class(css_selector_hash *hash,
 		const css_selector ***matched)
 {
 	uint32_t index, mask;
+	lwc_hash class_hash;
 	hash_entry *head;
 
 	if (hash == NULL || req == NULL || req->class == NULL ||
@@ -446,12 +447,11 @@ css_error css__selector_hash_find_by_class(css_selector_hash *hash,
 	/* Find index */
 	mask = hash->classes.n_slots - 1;
 
-	if (req->class->insensitive == NULL &&
-			lwc__intern_caseless_string(
-			req->class) != lwc_error_ok) {
+	if (lwc_string_caseless_hash_value(req->class,
+			&class_hash) != lwc_error_ok) {
 		return CSS_NOMEM;
 	}
-	index = _hash_name(req->class) & mask;
+	index = class_hash & mask;
 
 	head = &hash->classes.slots[index];
 
@@ -517,6 +517,7 @@ css_error css__selector_hash_find_by_id(css_selector_hash *hash,
 		const css_selector ***matched)
 {
 	uint32_t index, mask;
+	lwc_hash id_hash;
 	hash_entry *head;
 
 	if (hash == NULL || req == NULL || req->id == NULL ||
@@ -526,12 +527,11 @@ css_error css__selector_hash_find_by_id(css_selector_hash *hash,
 	/* Find index */
 	mask = hash->ids.n_slots - 1;
 
-	if (req->id->insensitive == NULL &&
-			lwc__intern_caseless_string(
-			req->id) != lwc_error_ok) {
+	if (lwc_string_caseless_hash_value(req->id,
+			&id_hash) != lwc_error_ok) {
 		return CSS_NOMEM;
 	}
-	index = _hash_name(req->id) & mask;
+	index = id_hash & mask;
 
 	head = &hash->ids.slots[index];
 

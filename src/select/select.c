@@ -440,6 +440,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	css_hint *hints = NULL;
 	css_bloom *bloom = NULL;
 	css_bloom *parent_bloom = NULL;
+	lwc_hash hash;
 
 	if (ctx == NULL || node == NULL || result == NULL || handler == NULL ||
 	    handler->handler_version != CSS_SELECT_HANDLER_VERSION_1)
@@ -659,43 +660,34 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	}
 
 	/* Add node name to bloom */
-	if (state.element.name->insensitive == NULL) {
-		if (lwc__intern_caseless_string(
-				state.element.name) != lwc_error_ok) {
-			error = CSS_NOMEM;
-			goto cleanup;
-		}
+
+	if (lwc_string_caseless_hash_value(state.element.name,
+			&hash) != lwc_error_ok) {
+		error = CSS_NOMEM;
+		goto cleanup;
 	}
-	css_bloom_add_hash(bloom, lwc_string_hash_value(
-			state.element.name->insensitive));
+	css_bloom_add_hash(bloom, hash);
 
 	/* Add id name to bloom */
 	if (state.id != NULL) {
-		if (state.id->insensitive == NULL) {
-			if (lwc__intern_caseless_string(state.id) !=
-					lwc_error_ok) {
-				error = CSS_NOMEM;
-				goto cleanup;
-			}
+		if (lwc_string_caseless_hash_value(state.id,
+				&hash) != lwc_error_ok) {
+			error = CSS_NOMEM;
+			goto cleanup;
 		}
-		css_bloom_add_hash(bloom, lwc_string_hash_value(
-				state.id->insensitive));
+		css_bloom_add_hash(bloom, hash);
 	}
 
 	/* Add class names to bloom */
 	if (state.classes != NULL) {
-		lwc_string *s;
 		for (i = 0; i < state.n_classes; i++) {
-			s = state.classes[i];
-			if (s->insensitive == NULL) {
-				if (lwc__intern_caseless_string(s) !=
-						lwc_error_ok) {
-					error = CSS_NOMEM;
-					goto cleanup;
-				}
+			lwc_string *s = state.classes[i];
+			if (lwc_string_caseless_hash_value(s,
+					&hash) != lwc_error_ok) {
+				error = CSS_NOMEM;
+				goto cleanup;
 			}
-			css_bloom_add_hash(bloom, lwc_string_hash_value(
-					s->insensitive));
+			css_bloom_add_hash(bloom, hash);
 		}
 	}
 
