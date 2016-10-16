@@ -1037,7 +1037,6 @@ failed:
  *
  * \param ctx             Selection context to use
  * \param node            Node to select style for
- * \param bloom           Node's bloom filter filled with ancestor tag,id,class
  * \param media           Currently active media types
  * \param inline_style    Corresponding inline style for node, or NULL
  * \param handler         Dispatch table of handler functions
