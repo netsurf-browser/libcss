@@ -28,6 +28,9 @@
 /* Define this to enable verbose messages when matching selector chains */
 #undef DEBUG_CHAIN_MATCHING
 
+/* Define this to enable verbose messages when attempting to share styles */
+#undef DEBUG_STYLE_SHARING
+
 /**
  * Container for stylesheet selection info
  */
@@ -741,12 +744,20 @@ static css_error css_select_style__get_sharable_node_data_for_candidate(
 	error = state->handler->get_libcss_node_data(state->pw,
 			share_candidate_node, (void **) (void *) &node_data);
 	if (error != CSS_OK || node_data == NULL) {
+#ifdef DEBUG_STYLE_SHARING
+		printf("      \t%s\tno share: no candidate node data\n",
+				lwc_string_data(state->element.name));
+#endif
 		return error;
 	}
 
 	/* If one node has hints and other doesn't then can't share */
 	if ((node_data->flags & CSS_NODE_FLAGS_HAS_HINTS) !=
 			(state->node_data->flags & CSS_NODE_FLAGS_HAS_HINTS)) {
+#ifdef DEBUG_STYLE_SHARING
+		printf("      \t%s\tno share: have hints mismatch\n",
+				lwc_string_data(state->element.name));
+#endif
 		return CSS_OK;
 	}
 
@@ -756,6 +767,19 @@ static css_error css_select_style__get_sharable_node_data_for_candidate(
 			CSS_NODE_FLAGS_TAINT_PSEUDO_CLASS |
 			CSS_NODE_FLAGS_TAINT_ATTRIBUTE |
 			CSS_NODE_FLAGS_TAINT_SIBLING)) {
+#ifdef DEBUG_STYLE_SHARING
+		printf("      \t%s\tno share: candidate flags: %s%s%s\n",
+				lwc_string_data(state->element.name),
+				(node_data->flags &
+					CSS_NODE_FLAGS_TAINT_PSEUDO_CLASS) ?
+						"PSEUDOCLASS" : "",
+				(node_data->flags &
+					CSS_NODE_FLAGS_TAINT_ATTRIBUTE) ?
+						" ATTRIBUTE" : "",
+				(node_data->flags &
+					CSS_NODE_FLAGS_TAINT_SIBLING) ?
+						" SIBLING" : "");
+#endif
 		return CSS_OK;
 	}
 
@@ -768,6 +792,10 @@ static css_error css_select_style__get_sharable_node_data_for_candidate(
 
 	} else if (share_candidate_id != NULL) {
 		lwc_string_unref(share_candidate_id);
+#ifdef DEBUG_STYLE_SHARING
+		printf("      \t%s\tno share: candidate id\n",
+				lwc_string_data(state->element.name));
+#endif
 		return CSS_OK;
 	}
 
@@ -781,6 +809,10 @@ static css_error css_select_style__get_sharable_node_data_for_candidate(
 	}
 
 	if (state->n_classes != share_candidate_n_classes) {
+#ifdef DEBUG_STYLE_SHARING
+		printf("      \t%s\tno share: class count mismatch\n",
+				lwc_string_data(state->element.name));
+#endif
 		goto cleanup;
 	}
 
@@ -794,12 +826,20 @@ static css_error css_select_style__get_sharable_node_data_for_candidate(
 				share_candidate_classes[i],
 				&match) == lwc_error_ok &&
 				match == false) {
+#ifdef DEBUG_STYLE_SHARING
+			printf("      \t%s\tno share: class mismatch\n",
+					lwc_string_data(state->element.name));
+#endif
 			goto cleanup;
 		}
 	}
 
 	if (node_data->flags & CSS_NODE_FLAGS_HAS_HINTS) {
 		/* TODO: check hints match.  For now, just prevent sharing */
+#ifdef DEBUG_STYLE_SHARING
+		printf("      \t%s\tno share: hints\n",
+				lwc_string_data(state->element.name));
+#endif
 		goto cleanup;
 	}
 
@@ -872,6 +912,9 @@ static css_error css_select_style__get_sharable_node_data(
 		 *       and if we get a non-NULL "matched" then return.
 		 *
 		 *       Check overhead is worth cost. */
+#ifdef DEBUG_STYLE_SHARING
+printf("      \t%s\tno share: node id (%s)\n", lwc_string_data(state->element.name), lwc_string_data(state->id));
+#endif
 		return CSS_OK;
 	}
 
@@ -1096,8 +1139,15 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 			state.results->styles[i] =
 					css__computed_style_ref(styles[i]);
 		}
+#ifdef DEBUG_STYLE_SHARING
+		printf("style:\t%s\tSHARED!\n",
+				lwc_string_data(state.element.name));
+#endif
 		goto complete;
 	}
+#ifdef DEBUG_STYLE_SHARING
+	printf("style:\t%s\tSELECTED\n", lwc_string_data(state.element.name));
+#endif
 
 	/* Not sharing; need to select.
 	 * Base element style is guaranteed to exist
