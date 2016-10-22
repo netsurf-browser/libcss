@@ -2361,6 +2361,18 @@ css_error match_named_combinator(css_select_ctx *ctx, css_combinator type,
 	return CSS_OK;
 }
 
+static inline void add_node_flags(const void *node,
+		const css_select_state *state, css_node_flags flags)
+{
+	/* If the node in question is the node we're selecting for then its
+	 * style has been tainted by particular rules that affect whether the
+	 * node's style can be shared.  We don't care whether the rule matched
+	 * or not, just that such a rule has been considered. */
+	if (node == state->node) {
+		state->node_data->flags |= flags;
+	}
+}
+
 css_error match_universal_combinator(css_select_ctx *ctx, css_combinator type,
 		const css_selector *selector, css_select_state *state,
 		void *node, bool may_optimise, bool *rejected_by_cache,
@@ -2420,10 +2432,8 @@ css_error match_universal_combinator(css_select_ctx *ctx, css_combinator type,
 			error = state->handler->sibling_node(state->pw, n, &n);
 			if (error != CSS_OK)
 				return error;
-			if (node == state->node) {
-				state->node_data->flags |=
-						CSS_NODE_FLAGS_TAINT_SIBLING;
-			}
+			add_node_flags(node, state,
+					CSS_NODE_FLAGS_TAINT_SIBLING);
 			break;
 		case CSS_COMBINATOR_NONE:
 			break;
@@ -2694,14 +2704,7 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 		} else {
 			*match = false;
 		}
-		/* If the node in question is the node we're selecting for
-		 * then its style has been tainted by pseudo class specific
-		 * rules.  We don't care whether the rule matched or not,
-		 * just that such rule has been considered. */
-		if (node == state->node) {
-			state->node_data->flags |=
-					CSS_NODE_FLAGS_TAINT_PSEUDO_CLASS;
-		}
+		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_PSEUDO_CLASS);
 		break;
 	case CSS_SELECTOR_PSEUDO_ELEMENT:
 		*match = true;
@@ -2720,68 +2723,43 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 	case CSS_SELECTOR_ATTRIBUTE:
 		error = state->handler->node_has_attribute(state->pw, node,
 				&detail->qname, match);
-		/* If the node in question is the node we're selecting for
-		 * then its style has been tainted by attribute specific
-		 * rules.  We don't care whether the rule matched or not,
-		 * just that such rule has been considered. */
-		if (node == state->node) {
-			state->node_data->flags |=
-					CSS_NODE_FLAGS_TAINT_ATTRIBUTE;
-		}
+		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_EQUAL:
 		error = state->handler->node_has_attribute_equal(state->pw, 
 				node, &detail->qname, detail->value.string, 
 				match);
-		if (node == state->node) {
-			state->node_data->flags |=
-					CSS_NODE_FLAGS_TAINT_ATTRIBUTE;
-		}
+		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_DASHMATCH:
 		error = state->handler->node_has_attribute_dashmatch(state->pw,
 				node, &detail->qname, detail->value.string,
 				match);
-		if (node == state->node) {
-			state->node_data->flags |=
-					CSS_NODE_FLAGS_TAINT_ATTRIBUTE;
-		}
+		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_INCLUDES:
 		error = state->handler->node_has_attribute_includes(state->pw, 
 				node, &detail->qname, detail->value.string,
 				match);
-		if (node == state->node) {
-			state->node_data->flags |=
-					CSS_NODE_FLAGS_TAINT_ATTRIBUTE;
-		}
+		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_PREFIX:
 		error = state->handler->node_has_attribute_prefix(state->pw,
 				node, &detail->qname, detail->value.string,
 				match);
-		if (node == state->node) {
-			state->node_data->flags |=
-					CSS_NODE_FLAGS_TAINT_ATTRIBUTE;
-		}
+		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_SUFFIX:
 		error = state->handler->node_has_attribute_suffix(state->pw,
 				node, &detail->qname, detail->value.string,
 				match);
-		if (node == state->node) {
-			state->node_data->flags |=
-					CSS_NODE_FLAGS_TAINT_ATTRIBUTE;
-		}
+		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_SUBSTRING:
 		error = state->handler->node_has_attribute_substring(state->pw,
 				node, &detail->qname, detail->value.string,
 				match);
-		if (node == state->node) {
-			state->node_data->flags |=
-					CSS_NODE_FLAGS_TAINT_ATTRIBUTE;
-		}
+		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	}
 
