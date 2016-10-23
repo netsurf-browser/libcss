@@ -30,6 +30,7 @@
 
 /* Define this to enable verbose messages when attempting to share styles */
 #undef DEBUG_STYLE_SHARING
+#define DEBUG_STYLE_SHARING
 
 /**
  * Container for stylesheet selection info
@@ -761,6 +762,19 @@ static css_error css_select_style__get_sharable_node_data_for_candidate(
 		return CSS_OK;
 	}
 
+	/* If the node and candidate node had different pseudo classes, we
+	 * can't share. */
+	if ((node_data->flags & CSS_NODE_FLAGS__PSEUDO_CLASSES_MASK) !=
+			(state->node_data->flags &
+					CSS_NODE_FLAGS__PSEUDO_CLASSES_MASK)) {
+#ifdef DEBUG_STYLE_SHARING
+		printf("      \t%s\tno share: different pseudo classes\n",
+				lwc_string_data(state->element.name));
+#endif
+		return CSS_OK;
+
+	}
+
 	/* If the node was affected by attribute or pseudo class rules,
 	 * it's not a candidate for sharing */
 	if (node_data->flags & (
@@ -1021,6 +1035,7 @@ static css_error css_select__initialise_selection_state(
 		void *pw)
 {
 	css_error error;
+	bool match;
 
 	/* Set up the selection state */
 	memset(state, 0, sizeof(*state));
@@ -1065,6 +1080,42 @@ static css_error css_select__initialise_selection_state(
 			&state->classes, &state->n_classes);
 	if (error != CSS_OK){
 		goto failed;
+	}
+
+	/* Node pseudo classes */
+	error = handler->node_is_link(pw, node, &match);
+	if (error != CSS_OK){
+		goto failed;
+	} else if (match) {
+		state->node_data->flags |= CSS_NODE_FLAGS_PSEUDO_CLASS_LINK;
+	}
+
+	error = handler->node_is_visited(pw, node, &match);
+	if (error != CSS_OK){
+		goto failed;
+	} else if (match) {
+		state->node_data->flags |= CSS_NODE_FLAGS_PSEUDO_CLASS_VISITED;
+	}
+
+	error = handler->node_is_hover(pw, node, &match);
+	if (error != CSS_OK){
+		goto failed;
+	} else if (match) {
+		state->node_data->flags |= CSS_NODE_FLAGS_PSEUDO_CLASS_HOVER;
+	}
+
+	error = handler->node_is_active(pw, node, &match);
+	if (error != CSS_OK){
+		goto failed;
+	} else if (match) {
+		state->node_data->flags |= CSS_NODE_FLAGS_PSEUDO_CLASS_ACTIVE;
+	}
+
+	error = handler->node_is_focus(pw, node, &match);
+	if (error != CSS_OK){
+		goto failed;
+	} else if (match) {
+		state->node_data->flags |= CSS_NODE_FLAGS_PSEUDO_CLASS_FOCUS;
 	}
 
 	return CSS_OK;
@@ -2534,6 +2585,7 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 {
 	bool is_root = false;
 	css_error error = CSS_OK;
+	css_node_flags flags = CSS_NODE_FLAGS_TAINT_PSEUDO_CLASS;
 
 	switch (detail->type) {
 	case CSS_SELECTOR_ELEMENT:
@@ -2674,18 +2726,23 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 		} else if (detail->qname.name == ctx->link) {
 			error = state->handler->node_is_link(state->pw,
 					node, match);
+			flags = CSS_NODE_FLAGS_NONE;
 		} else if (detail->qname.name == ctx->visited) {
 			error = state->handler->node_is_visited(state->pw,
 					node, match);
+			flags = CSS_NODE_FLAGS_NONE;
 		} else if (detail->qname.name == ctx->hover) {
 			error = state->handler->node_is_hover(state->pw,
 					node, match);
+			flags = CSS_NODE_FLAGS_NONE;
 		} else if (detail->qname.name == ctx->active) {
 			error = state->handler->node_is_active(state->pw,
 					node, match);
+			flags = CSS_NODE_FLAGS_NONE;
 		} else if (detail->qname.name == ctx->focus) {
 			error = state->handler->node_is_focus(state->pw,
 					node, match);
+			flags = CSS_NODE_FLAGS_NONE;
 		} else if (detail->qname.name == ctx->target) {
 			error = state->handler->node_is_target(state->pw,
 					node, match);
@@ -2704,7 +2761,7 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 		} else {
 			*match = false;
 		}
-		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_PSEUDO_CLASS);
+		add_node_flags(node, state, flags);
 		break;
 	case CSS_SELECTOR_PSEUDO_ELEMENT:
 		*match = true;
