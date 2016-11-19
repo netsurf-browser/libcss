@@ -30,7 +30,6 @@
 
 /* Define this to enable verbose messages when attempting to share styles */
 #undef DEBUG_STYLE_SHARING
-#define DEBUG_STYLE_SHARING
 
 /**
  * Container for stylesheet selection info
