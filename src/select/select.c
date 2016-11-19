@@ -15,6 +15,7 @@
 #include "bytecode/bytecode.h"
 #include "bytecode/opcodes.h"
 #include "stylesheet.h"
+#include "select/arena.h"
 #include "select/computed.h"
 #include "select/dispatch.h"
 #include "select/hash.h"
@@ -26,6 +27,9 @@
 
 /* Define this to enable verbose messages when matching selector chains */
 #undef DEBUG_CHAIN_MATCHING
+
+/* Define this to enable verbose messages when attempting to share styles */
+#undef DEBUG_STYLE_SHARING
 
 /**
  * Container for stylesheet selection info
@@ -74,6 +78,9 @@ struct css_select_ctx {
 	lwc_string *first_letter;
 	lwc_string *before;
 	lwc_string *after;
+
+	/* Interned default style */
+	css_computed_style *default_style;
 };
 
 /**
@@ -150,15 +157,50 @@ static void dump_chain(const css_selector *selector);
 #endif
 
 
+static css_error css__create_node_data(struct css_node_data **node_data)
+{
+	struct css_node_data *nd;
+
+	nd = calloc(sizeof(struct css_node_data), 1);
+	if (nd == NULL) {
+		return CSS_NOMEM;
+	}
+
+	*node_data = nd;
+
+	return CSS_OK;
+}
+
+static void css__destroy_node_data(struct css_node_data *node_data)
+{
+	int i;
+
+	assert(node_data != NULL);
+
+	if (node_data->bloom != NULL) {
+		free(node_data->bloom);
+	}
+
+	for (i = 0; i < CSS_PSEUDO_ELEMENT_COUNT; i++) {
+		if (node_data->partial.styles[i] != NULL) {
+			css_computed_style_destroy(
+					node_data->partial.styles[i]);
+		}
+	}
+
+	free(node_data);
+}
+
+
 /* Exported function documented in public select.h header. */
 css_error css_libcss_node_data_handler(css_select_handler *handler,
 		css_node_data_action action, void *pw, void *node,
 		void *clone_node, void *libcss_node_data)
 {
-	css_bloom *bloom = libcss_node_data;
-	css_bloom *clone_bloom = NULL;
+	struct css_node_data *node_data = libcss_node_data;
 	css_error error;
-	unsigned int i;
+
+	UNUSED(clone_node);
 
 	if (handler == NULL || libcss_node_data == NULL ||
 	    handler->handler_version != CSS_SELECT_HANDLER_VERSION_1) {
@@ -167,7 +209,7 @@ css_error css_libcss_node_data_handler(css_select_handler *handler,
 
 	switch (action) {
 	case CSS_NODE_DELETED:
-		free(bloom);
+		css__destroy_node_data(node_data);
 		break;
 
 	case CSS_NODE_MODIFIED:
@@ -176,9 +218,9 @@ css_error css_libcss_node_data_handler(css_select_handler *handler,
 			return CSS_BADPARM;
 		}
 
-		free(bloom);
+		css__destroy_node_data(node_data);
 
-		/* Don't bother rebuilding bloom here, it can be done
+		/* Don't bother rebuilding node_data, it can be done
 		 * when the node is selected for.  Just ensure the
 		 * client drops its reference to the libcss_node_data. */
 		error = handler->set_libcss_node_data(pw, node, NULL);
@@ -188,25 +230,10 @@ css_error css_libcss_node_data_handler(css_select_handler *handler,
 		break;
 
 	case CSS_NODE_CLONED:
-		if (node == NULL || clone_node == NULL) {
-			return CSS_BADPARM;
-		}
-
-		clone_bloom = malloc(sizeof(css_bloom) * CSS_BLOOM_SIZE);
-		if (clone_bloom == NULL) {
-			return CSS_NOMEM;
-		}
-
-		for (i = 0; i < CSS_BLOOM_SIZE; i++) {
-			clone_bloom[i] = bloom[i];
-		}
-
-		error = handler->set_libcss_node_data(pw, clone_node,
-				clone_bloom);
-		if (error != CSS_OK) {
-			free(clone_bloom);
-			return error;
-		}
+		/* TODO: is it worth cloning libcss data?  We only store
+		 *       data on the nodes as an optimisation, which is
+		 *       unlikely to be valid for most cloning cases.
+		 */
 		break;
 
 	default:
@@ -257,6 +284,9 @@ css_error css_select_ctx_destroy(css_select_ctx *ctx)
 		return CSS_BADPARM;
 
 	destroy_strings(ctx);
+
+	if (ctx->default_style != NULL)
+		css_computed_style_destroy(ctx->default_style);
 
 	if (ctx->sheets != NULL)
 		free(ctx->sheets);
@@ -406,12 +436,700 @@ css_error css_select_ctx_get_sheet(css_select_ctx *ctx, uint32_t index,
 	return CSS_OK;
 }
 
+
+/**
+ * Create a default style on the selection context
+ *
+ * \param ctx		Context to create default style in
+ * \param handler	Dispatch table of handler functions
+ * \param pw		Client-specific private data for handler functions
+ * \return CSS_OK on success, appropriate error otherwise
+ */
+static css_error css__select_ctx_create_default_style(css_select_ctx *ctx,
+		css_select_handler *handler, void *pw)
+{
+	css_computed_style *style;
+	css_error error;
+
+	/* Need to construct the default style */
+	error = css__computed_style_create(&style);
+	if (error != CSS_OK)
+		return error;
+
+	error = css__computed_style_initialise(style, handler, pw);
+	if (error != CSS_OK) {
+		css_computed_style_destroy(style);
+		return error;
+	}
+
+	/* Neither create nor initialise intern the style, so intern it now */
+	error = css__arena_intern_style(&style);
+	if (error != CSS_OK)
+		return error;
+
+	/* Store it on the ctx */
+	ctx->default_style = style;
+
+	return CSS_OK;
+}
+
+
+/**
+ * Get a default style, e.g. for an implied element's anonamous box
+ *
+ * \param ctx		Selection context (used to avoid recreating default)
+ * \param handler	Dispatch table of handler functions
+ * \param pw		Client-specific private data for handler functions
+ * \param style		Pointer to location to receive default style
+ * \return CSS_OK on success, appropriate error otherwise.
+ */
+css_error css_select_default_style(css_select_ctx *ctx,
+		css_select_handler *handler, void *pw,
+		css_computed_style **style)
+{
+	css_error error;
+
+	if (ctx == NULL || style == NULL || handler == NULL ||
+			handler->handler_version !=
+					CSS_SELECT_HANDLER_VERSION_1)
+		return CSS_BADPARM;
+
+	/* Ensure the ctx has a default style */
+	if (ctx->default_style == NULL) {
+		error = css__select_ctx_create_default_style(ctx, handler, pw);
+		if (error != CSS_OK) {
+			return error;
+		}
+	}
+
+	/* Pass a ref back to the client */
+	*style = css__computed_style_ref(ctx->default_style);
+	return CSS_OK;
+}
+
+
+/**
+ * Get a bloom filter for the parent node
+ *
+ * \param parent	Parent node to get bloom filter for
+ * \param handler	Dispatch table of handler functions
+ * \param pw		Client-specific private data for handler functions
+ * \param parent_bloom	Updated to parent bloom to use.
+ *                    	Note: if there's no parent, the caller must free
+ *                      the returned parent bloom, since it has no node to
+ *                      own it.
+ * \return CSS_OK on success, appropriate error otherwise.
+ */
+static css_error css__get_parent_bloom(void *parent,
+		css_select_handler *handler, void *pw,
+		css_bloom **parent_bloom)
+{
+	struct css_node_data *node_data = NULL;
+	css_bloom *bloom = NULL;
+	css_error error;
+
+	/* Get parent node's bloom filter */
+	if (parent != NULL) {
+		/* Get parent bloom filter */
+		struct css_node_data *node_data;
+
+		/* Hideous casting to avoid warnings on all platforms
+		 * we build for. */
+		error = handler->get_libcss_node_data(pw, parent,
+				(void **) (void *) &node_data);
+		if (error != CSS_OK) {
+			return error;
+		}
+		if (node_data != NULL) {
+			bloom = node_data->bloom;
+		}
+	}
+
+	if (bloom == NULL) {
+		uint32_t i;
+		/* Need to create parent bloom */
+
+		if (parent != NULL) {
+			/* TODO:
+			 * Build & set the parent node's bloom properly.
+			 * This will speed up the case where DOM change
+			 * has caused bloom to get deleted.  For now we
+			 * fall back to a fully satruated bloom filter,
+			 * which is slower but perfectly valid.
+			 */
+			bloom = malloc(sizeof(css_bloom) * CSS_BLOOM_SIZE);
+			if (bloom == NULL) {
+				return CSS_NOMEM;
+			}
+
+			for (i = 0; i < CSS_BLOOM_SIZE; i++) {
+				bloom[i] = ~0;
+			}
+
+			if (node_data == NULL) {
+				error = css__create_node_data(&node_data);
+				if (error != CSS_OK) {
+					free(bloom);
+					return error;
+				}
+				node_data->bloom = bloom;
+
+				/* Set parent node bloom filter */
+				error = handler->set_libcss_node_data(pw,
+						parent, node_data);
+				if (error != CSS_OK) {
+					css__destroy_node_data(node_data);
+					return error;
+				}
+			}
+		} else {
+			/* No ancestors; empty bloom filter */
+			/* The parent bloom is owned by the parent node's
+			 * node data.  However, for the root node, there is
+			 * no parent node to own the bloom filter.
+			 * As such, we just use a pointer to static storage
+			 * so calling code doesn't need to worry about
+			 * whether the returned parent bloom is owned
+			 * by something or not.
+			 * Note, parent bloom is only read from, and not
+			 * written to. */
+			static css_bloom empty_bloom[CSS_BLOOM_SIZE];
+			bloom = empty_bloom;
+		}
+	}
+
+	*parent_bloom = bloom;
+	return CSS_OK;
+}
+
+static css_error css__create_node_bloom(
+		css_bloom **node_bloom, css_select_state *state)
+{
+	css_error error;
+	css_bloom *bloom;
+	lwc_hash hash;
+
+	*node_bloom = NULL;
+
+	/* Create the node's bloom */
+	bloom = calloc(sizeof(css_bloom), CSS_BLOOM_SIZE);
+	if (bloom == NULL) {
+		return CSS_NOMEM;
+	}
+
+	/* Add node name to bloom */
+	if (lwc_string_caseless_hash_value(state->element.name,
+			&hash) != lwc_error_ok) {
+		error = CSS_NOMEM;
+		goto cleanup;
+	}
+	css_bloom_add_hash(bloom, hash);
+
+	/* Add id name to bloom */
+	if (state->id != NULL) {
+		if (lwc_string_caseless_hash_value(state->id,
+				&hash) != lwc_error_ok) {
+			error = CSS_NOMEM;
+			goto cleanup;
+		}
+		css_bloom_add_hash(bloom, hash);
+	}
+
+	/* Add class names to bloom */
+	if (state->classes != NULL) {
+		for (uint32_t i = 0; i < state->n_classes; i++) {
+			lwc_string *s = state->classes[i];
+			if (lwc_string_caseless_hash_value(s,
+					&hash) != lwc_error_ok) {
+				error = CSS_NOMEM;
+				goto cleanup;
+			}
+			css_bloom_add_hash(bloom, hash);
+		}
+	}
+
+	/* Merge parent bloom into node bloom */
+	css_bloom_merge(state->node_data->bloom, bloom);
+	*node_bloom = bloom;
+
+	return CSS_OK;
+
+cleanup:
+	free(bloom);
+
+	return error;
+}
+
+/**
+ * Set a node's data
+ *
+ * \param node     Node to set node data for
+ * \param state    Selection state for node
+ * \param handler  Dispatch table of handler functions
+ * \param pw       Client-specific private data for handler functions
+ * \return CSS_OK on success, appropriate error otherwise.
+ */
+static css_error css__set_node_data(void *node, css_select_state *state,
+		css_select_handler *handler, void *pw)
+{
+	int i;
+	css_error error;
+	css_bloom *bloom;
+	css_select_results *results;
+
+	struct css_node_data *node_data = state->node_data;
+
+	/* Set node bloom filter */
+	error = css__create_node_bloom(&bloom, state);
+	if (error != CSS_OK) {
+		return error;
+	}
+	node_data->bloom = bloom;
+
+	/* Set selection results */
+	results = state->results;
+	for (i = 0; i < CSS_PSEUDO_ELEMENT_COUNT; i++) {
+		node_data->partial.styles[i] =
+				css__computed_style_ref(results->styles[i]);
+	}
+
+	error = handler->set_libcss_node_data(pw, node, node_data);
+	if (error != CSS_OK) {
+		css__destroy_node_data(node_data);
+		state->node_data = NULL;
+		return error;
+	}
+
+	state->node_data = NULL;
+
+	return CSS_OK;
+}
+
+
+/** The releationship of a share candidate node to the selection node. */
+enum share_candidate_type {
+	CANDIDATE_SIBLING,
+	CANDIDATE_COUSIN,
+};
+
+
+/**
+ * Get node_data for candidate node if we can reuse its style.
+ *
+ * \param[in]  state                 The selection state for current node.
+ * \param[in]  share_candidate_node  The node to test id and classes of.
+ * \param[in]  type                  The candidate's relation to selection node.
+ * \param[out] sharable_node_data    Returns node_data or NULL.
+ * \return CSS_OK on success, appropriate error otherwise.
+ */
+static css_error css_select_style__get_sharable_node_data_for_candidate(
+		css_select_state *state,
+		void *share_candidate_node,
+		enum share_candidate_type type,
+		struct css_node_data **sharable_node_data)
+{
+	css_error error;
+	lwc_string *share_candidate_id;
+	uint32_t share_candidate_n_classes;
+	lwc_string **share_candidate_classes;
+	struct css_node_data *node_data;
+
+	UNUSED(type);
+
+	*sharable_node_data = NULL;
+
+	/* We get the candidate node data first, as if it has none, we can't
+	 * share its data anyway.
+	 * Hideous casting to avoid warnings on all platforms we build for. */
+	error = state->handler->get_libcss_node_data(state->pw,
+			share_candidate_node, (void **) (void *) &node_data);
+	if (error != CSS_OK || node_data == NULL) {
+#ifdef DEBUG_STYLE_SHARING
+		printf("      \t%s\tno share: no candidate node data\n",
+				lwc_string_data(state->element.name));
+#endif
+		return error;
+	}
+
+	/* If one node has hints and other doesn't then can't share */
+	if ((node_data->flags & CSS_NODE_FLAGS_HAS_HINTS) !=
+			(state->node_data->flags & CSS_NODE_FLAGS_HAS_HINTS)) {
+#ifdef DEBUG_STYLE_SHARING
+		printf("      \t%s\tno share: have hints mismatch\n",
+				lwc_string_data(state->element.name));
+#endif
+		return CSS_OK;
+	}
+
+	/* If the node and candidate node had different pseudo classes, we
+	 * can't share. */
+	if ((node_data->flags & CSS_NODE_FLAGS__PSEUDO_CLASSES_MASK) !=
+			(state->node_data->flags &
+					CSS_NODE_FLAGS__PSEUDO_CLASSES_MASK)) {
+#ifdef DEBUG_STYLE_SHARING
+		printf("      \t%s\tno share: different pseudo classes\n",
+				lwc_string_data(state->element.name));
+#endif
+		return CSS_OK;
+
+	}
+
+	/* If the node was affected by attribute or pseudo class rules,
+	 * it's not a candidate for sharing */
+	if (node_data->flags & (
+			CSS_NODE_FLAGS_TAINT_PSEUDO_CLASS |
+			CSS_NODE_FLAGS_TAINT_ATTRIBUTE |
+			CSS_NODE_FLAGS_TAINT_SIBLING)) {
+#ifdef DEBUG_STYLE_SHARING
+		printf("      \t%s\tno share: candidate flags: %s%s%s\n",
+				lwc_string_data(state->element.name),
+				(node_data->flags &
+					CSS_NODE_FLAGS_TAINT_PSEUDO_CLASS) ?
+						"PSEUDOCLASS" : "",
+				(node_data->flags &
+					CSS_NODE_FLAGS_TAINT_ATTRIBUTE) ?
+						" ATTRIBUTE" : "",
+				(node_data->flags &
+					CSS_NODE_FLAGS_TAINT_SIBLING) ?
+						" SIBLING" : "");
+#endif
+		return CSS_OK;
+	}
+
+	/* Check candidate ID doesn't prevent sharing */
+	error = state->handler->node_id(state->pw,
+			share_candidate_node,
+			&share_candidate_id);
+	if (error != CSS_OK) {
+		return error;
+
+	} else if (share_candidate_id != NULL) {
+		lwc_string_unref(share_candidate_id);
+#ifdef DEBUG_STYLE_SHARING
+		printf("      \t%s\tno share: candidate id\n",
+				lwc_string_data(state->element.name));
+#endif
+		return CSS_OK;
+	}
+
+	/* Check candidate classes don't prevent sharing */
+	error = state->handler->node_classes(state->pw,
+			share_candidate_node,
+			&share_candidate_classes,
+			&share_candidate_n_classes);
+	if (error != CSS_OK) {
+		return error;
+	}
+
+	if (state->n_classes != share_candidate_n_classes) {
+#ifdef DEBUG_STYLE_SHARING
+		printf("      \t%s\tno share: class count mismatch\n",
+				lwc_string_data(state->element.name));
+#endif
+		goto cleanup;
+	}
+
+	/* TODO: no need to care about the order, but it's simpler to
+	 *       have an ordered match, and authors are more likely to be
+	 *       consistent than  not. */
+	for (uint32_t i = 0; i < share_candidate_n_classes; i++) {
+		bool match;
+		if (lwc_string_caseless_isequal(
+				state->classes[i],
+				share_candidate_classes[i],
+				&match) == lwc_error_ok &&
+				match == false) {
+#ifdef DEBUG_STYLE_SHARING
+			printf("      \t%s\tno share: class mismatch\n",
+					lwc_string_data(state->element.name));
+#endif
+			goto cleanup;
+		}
+	}
+
+	if (node_data->flags & CSS_NODE_FLAGS_HAS_HINTS) {
+		/* TODO: check hints match.  For now, just prevent sharing */
+#ifdef DEBUG_STYLE_SHARING
+		printf("      \t%s\tno share: hints\n",
+				lwc_string_data(state->element.name));
+#endif
+		goto cleanup;
+	}
+
+	*sharable_node_data = node_data;
+
+cleanup:
+	if (share_candidate_classes != NULL) {
+		for (uint32_t i = 0; i < share_candidate_n_classes; i++) {
+			lwc_string_unref(share_candidate_classes[i]);
+		}
+	}
+
+	return CSS_OK;
+}
+
+
+/**
+ * Get previous named cousin node.
+ *
+ * \param[in]  state       The selection state for current node.
+ * \param[in]  node        The node to get the cousin of.
+ * \param[out] cousin_out  Returns a cousin node or NULL.
+ * \return CSS_OK on success or appropriate error otherwise.
+ */
+static css_error css_select_style__get_named_cousin(
+		css_select_state *state, void *node,
+		void **cousin_out)
+{
+	/* TODO:
+	 *
+	 * Consider cousin nodes; Go to parent's previous sibling's last child.
+	 * The parent and the parent's sibling must be "similar".
+	 */
+	UNUSED(state);
+	UNUSED(node);
+
+	*cousin_out = NULL;
+
+	return CSS_OK;
+}
+
+
+/**
+ * Get node_data for any node that we can reuse the style for.
+ *
+ * This is an optimisation to needing to perform selection for a node,
+ * by sharing the style for a previous node.
+ *
+ * \param[in]  node                Node we're selecting for.
+ * \param[in]  state               The current selection state.
+ * \param[out] sharable_node_data  Returns node_data or NULL.
+ * \return CSS_OK on success or appropriate error otherwise.
+ */
+static css_error css_select_style__get_sharable_node_data(
+		void *node, css_select_state *state,
+		struct css_node_data **sharable_node_data)
+{
+	css_error error;
+	enum share_candidate_type type = CANDIDATE_SIBLING;
+
+	*sharable_node_data = NULL;
+
+	/* TODO: move this test to caller? */
+	if (state->id != NULL) {
+		/* If the node has an ID can't share another node's style. */
+		/* TODO: Consider whether this ID exists in the ID hash tables.
+		 *       (If not, the ID cannot affect the node's style.)
+		 *
+		 *       Call css__selector_hash_find_by_id, for each sheet,
+		 *       and if we get a non-NULL "matched" then return.
+		 *
+		 *       Check overhead is worth cost. */
+#ifdef DEBUG_STYLE_SHARING
+printf("      \t%s\tno share: node id (%s)\n", lwc_string_data(state->element.name), lwc_string_data(state->id));
+#endif
+		return CSS_OK;
+	}
+
+	while (true) {
+		void *share_candidate_node;
+
+		/* Get previous sibling with same element name */
+		error = state->handler->named_generic_sibling_node(state->pw,
+				node, &state->element, &share_candidate_node);
+		if (error != CSS_OK) {
+			return error;
+		} else {
+			if (share_candidate_node == NULL) {
+				error = css_select_style__get_named_cousin(
+						state, node,
+						&share_candidate_node);
+				if (error != CSS_OK) {
+					return error;
+				} else {
+					if (share_candidate_node == NULL) {
+						break;
+					}
+				}
+				type = CANDIDATE_COUSIN;
+			}
+		}
+
+		/* Check whether we can share the candidate node's
+		 * style.  We already know the element names match,
+		 * check that candidate node's ID and class won't
+		 * prevent sharing. */
+		error = css_select_style__get_sharable_node_data_for_candidate(
+				state, share_candidate_node,
+				type, sharable_node_data);
+		if (error != CSS_OK) {
+			return error;
+		} else {
+			if (sharable_node_data == NULL) {
+				/* Can't share with this; look for another */
+				continue;
+			} else {
+				break;
+			}
+		}
+	}
+
+	return CSS_OK;
+}
+
+
+/**
+ * Finalise a selection state, releasing any resources it owns
+ *
+ * \param[in] state  The selection state to finalise.
+ */
+static void css_select__finalise_selection_state(
+		css_select_state *state)
+{
+	if (state->results != NULL) {
+		css_select_results_destroy(state->results);
+	}
+
+	if (state->node_data != NULL) {
+		css__destroy_node_data(state->node_data);
+	}
+
+	if (state->classes != NULL) {
+		for (uint32_t i = 0; i < state->n_classes; i++) {
+			lwc_string_unref(state->classes[i]);
+		}
+	}
+
+	if (state->id != NULL) {
+		lwc_string_unref(state->id);
+	}
+
+	if (state->element.ns != NULL) {
+		lwc_string_unref(state->element.ns);
+	}
+
+	if (state->element.name != NULL){
+		lwc_string_unref(state->element.name);
+	}
+}
+
+
+/**
+ * Initialise a selection state.
+ *
+ * \param[in]  state    The selection state to initialise
+ * \param[in]  node     The node we are selecting for.
+ * \param[in]  parent   The node's parent node, or NULL.
+ * \param[in]  media    The media type we're selecting for.
+ * \param[in]  handler  The client selection callback table.
+ * \param[in]  pw       The client private data, passsed out to callbacks.
+ * \return CSS_OK or appropriate error otherwise.
+ */
+static css_error css_select__initialise_selection_state(
+		css_select_state *state,
+		void *node,
+		void *parent,
+		uint64_t media,
+		css_select_handler *handler,
+		void *pw)
+{
+	css_error error;
+	bool match;
+
+	/* Set up the selection state */
+	memset(state, 0, sizeof(*state));
+	state->node = node;
+	state->media = media;
+	state->handler = handler;
+	state->pw = pw;
+	state->next_reject = state->reject_cache +
+			(N_ELEMENTS(state->reject_cache) - 1);
+
+	/* Allocate the result set */
+	state->results = calloc(1, sizeof(css_select_results));
+	if (state->results == NULL) {
+		return CSS_NOMEM;
+	}
+
+	error = css__create_node_data(&state->node_data);
+	if (error != CSS_OK) {
+		goto failed;
+	}
+
+	error = css__get_parent_bloom(parent, handler, pw,
+			&state->node_data->bloom);
+	if (error != CSS_OK) {
+		goto failed;
+	}
+
+	/* Get node's name */
+	error = handler->node_name(pw, node, &state->element);
+	if (error != CSS_OK){
+		goto failed;
+	}
+
+	/* Get node's ID, if any */
+	error = handler->node_id(pw, node, &state->id);
+	if (error != CSS_OK){
+		goto failed;
+	}
+
+	/* Get node's classes, if any */
+	error = handler->node_classes(pw, node,
+			&state->classes, &state->n_classes);
+	if (error != CSS_OK){
+		goto failed;
+	}
+
+	/* Node pseudo classes */
+	error = handler->node_is_link(pw, node, &match);
+	if (error != CSS_OK){
+		goto failed;
+	} else if (match) {
+		state->node_data->flags |= CSS_NODE_FLAGS_PSEUDO_CLASS_LINK;
+	}
+
+	error = handler->node_is_visited(pw, node, &match);
+	if (error != CSS_OK){
+		goto failed;
+	} else if (match) {
+		state->node_data->flags |= CSS_NODE_FLAGS_PSEUDO_CLASS_VISITED;
+	}
+
+	error = handler->node_is_hover(pw, node, &match);
+	if (error != CSS_OK){
+		goto failed;
+	} else if (match) {
+		state->node_data->flags |= CSS_NODE_FLAGS_PSEUDO_CLASS_HOVER;
+	}
+
+	error = handler->node_is_active(pw, node, &match);
+	if (error != CSS_OK){
+		goto failed;
+	} else if (match) {
+		state->node_data->flags |= CSS_NODE_FLAGS_PSEUDO_CLASS_ACTIVE;
+	}
+
+	error = handler->node_is_focus(pw, node, &match);
+	if (error != CSS_OK){
+		goto failed;
+	} else if (match) {
+		state->node_data->flags |= CSS_NODE_FLAGS_PSEUDO_CLASS_FOCUS;
+	}
+
+	return CSS_OK;
+
+failed:
+	css_select__finalise_selection_state(state);
+	return error;
+}
+
+
 /**
  * Select a style for the given node
  *
  * \param ctx             Selection context to use
  * \param node            Node to select style for
- * \param bloom           Node's bloom filter filled with ancestor tag,id,class
  * \param media           Currently active media types
  * \param inline_style    Corresponding inline style for node, or NULL
  * \param handler         Dispatch table of handler functions
@@ -436,122 +1154,65 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	uint32_t i, j, nhints;
 	css_error error;
 	css_select_state state;
-	void *parent = NULL;
 	css_hint *hints = NULL;
-	css_bloom *bloom = NULL;
-	css_bloom *parent_bloom = NULL;
-	lwc_hash hash;
+	void *parent = NULL;
+	struct css_node_data *share;
 
 	if (ctx == NULL || node == NULL || result == NULL || handler == NULL ||
 	    handler->handler_version != CSS_SELECT_HANDLER_VERSION_1)
 		return CSS_BADPARM;
 
-	/* Set up the selection state */
-	memset(&state, 0, sizeof(css_select_state));
-	state.node = node;
-	state.media = media;
-	state.handler = handler;
-	state.pw = pw;
-	state.next_reject = state.reject_cache +
-			(N_ELEMENTS(state.reject_cache) - 1);
-
-	/* Allocate the result set */
-	state.results = malloc(sizeof(css_select_results));
-	if (state.results == NULL)
-		return CSS_NOMEM;
-
-	for (i = 0; i < CSS_PSEUDO_ELEMENT_COUNT; i++)
-		state.results->styles[i] = NULL;
-
-	/* Base element style is guaranteed to exist */
-	error = css_computed_style_create(
-			&state.results->styles[CSS_PSEUDO_ELEMENT_NONE]);
-	if (error != CSS_OK) {
-		free(state.results);
-		return error;
-	}
-
-	/* Create the node's bloom */
-	bloom = calloc(sizeof(css_bloom), CSS_BLOOM_SIZE);
-	if (bloom == NULL) {
-		error = CSS_NOMEM;
-		goto cleanup;
-	}
-
 	error = handler->parent_node(pw, node, &parent);
 	if (error != CSS_OK)
-		goto cleanup;
+		return error;
 
-	/* Get parent node's bloom filter */
-	if (parent != NULL) {
-		/* Get parent bloom filter */
-		/*   Hideous casting to avoid warnings on all platforms
-		 *   we build for. */
-		error = handler->get_libcss_node_data(pw, parent,
-				(void **) (void *) &state.bloom);
-		if (error != CSS_OK)
-			goto cleanup;
-		/* TODO:
-		 * If state.bloom == NULL, build & set parent node's bloom,
-		 * and use it as state.bloom.  This will speed up the case
-		 * where DOM change has caused bloom to get deleted.
-		 * For now we fall back to a fully satruated bloom filter,
-		 * which is slower but perfectly valid.
-		 */
-	}
-
-	if (state.bloom == NULL) {
-		/* Need to create parent bloom */
-		parent_bloom = malloc(sizeof(css_bloom) * CSS_BLOOM_SIZE);
-		if (parent_bloom == NULL) {
-			error = CSS_NOMEM;
-			goto cleanup;
-		}
-		if (parent != NULL) {
-			/* Have to make up fully saturated bloom filter */
-			for (i = 0; i < CSS_BLOOM_SIZE; i++) {
-				parent_bloom[i] = ~0;
-			}
-		} else {
-			/* Empty bloom filter */
-			for (i = 0; i < CSS_BLOOM_SIZE; i++) {
-				parent_bloom[i] = 0;
-			}
-		}
-
-		state.bloom = parent_bloom;
-	}
-
-	/* Get node's name */
-	error = handler->node_name(pw, node, &state.element);
+	error = css_select__initialise_selection_state(
+			&state, node, parent, media, handler, pw);
 	if (error != CSS_OK)
-		goto cleanup;
+		return error;
 
-	/* Get node's ID, if any */
-	error = handler->node_id(pw, node, &state.id);
-	if (error != CSS_OK)
-		goto cleanup;
-
-	/* Get node's classes, if any */
-	error = handler->node_classes(pw, node,
-			&state.classes, &state.n_classes);
-	if (error != CSS_OK)
-		goto cleanup;
-
-	/* Apply presentational hints */
+	/* Fetch presentational hints */
 	error = handler->node_presentational_hint(pw, node, &nhints, &hints);
 	if (error != CSS_OK)
 		goto cleanup;
 	if (nhints > 0) {
+		state.node_data->flags |= CSS_NODE_FLAGS_HAS_HINTS;
+	}
+
+	/* Check if we can share another node's style */
+	error = css_select_style__get_sharable_node_data(node, &state, &share);
+	if (error != CSS_OK) {
+		goto cleanup;
+	} else if (share != NULL) {
+		css_computed_style **styles = share->partial.styles;
+		for (i = 0; i < CSS_PSEUDO_ELEMENT_COUNT; i++) {
+			state.results->styles[i] =
+					css__computed_style_ref(styles[i]);
+		}
+#ifdef DEBUG_STYLE_SHARING
+		printf("style:\t%s\tSHARED!\n",
+				lwc_string_data(state.element.name));
+#endif
+		goto complete;
+	}
+#ifdef DEBUG_STYLE_SHARING
+	printf("style:\t%s\tSELECTED\n", lwc_string_data(state.element.name));
+#endif
+
+	/* Not sharing; need to select.
+	 * Base element style is guaranteed to exist
+	 */
+	error = css__computed_style_create(
+			&state.results->styles[CSS_PSEUDO_ELEMENT_NONE]);
+	if (error != CSS_OK) {
+		goto cleanup;
+	}
+
+	/* Apply any hints */
+	if (nhints > 0) {
 		/* Ensure that the appropriate computed style exists */
 		struct css_computed_style *computed_style =
 				state.results->styles[CSS_PSEUDO_ELEMENT_NONE];
-		if (computed_style == NULL) {
-			error = css_computed_style_create(&computed_style);
-			if (error != CSS_OK)
-				goto cleanup;
-		}
-		state.results->styles[CSS_PSEUDO_ELEMENT_NONE] = computed_style;
 		state.computed = computed_style;
 
 		for (i = 0; i < nhints; i++) {
@@ -659,78 +1320,33 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 			goto cleanup;
 	}
 
-	/* Add node name to bloom */
+	/* Intern the partial computed styles */
+	for (j = CSS_PSEUDO_ELEMENT_NONE; j < CSS_PSEUDO_ELEMENT_COUNT; j++) {
+		/* Skip non-existent pseudo elements */
+		if (state.results->styles[j] == NULL)
+			continue;
 
-	if (lwc_string_caseless_hash_value(state.element.name,
-			&hash) != lwc_error_ok) {
-		error = CSS_NOMEM;
-		goto cleanup;
-	}
-	css_bloom_add_hash(bloom, hash);
-
-	/* Add id name to bloom */
-	if (state.id != NULL) {
-		if (lwc_string_caseless_hash_value(state.id,
-				&hash) != lwc_error_ok) {
-			error = CSS_NOMEM;
+		error = css__arena_intern_style(&state.results->styles[j]);
+		if (error != CSS_OK) {
 			goto cleanup;
 		}
-		css_bloom_add_hash(bloom, hash);
 	}
 
-	/* Add class names to bloom */
-	if (state.classes != NULL) {
-		for (i = 0; i < state.n_classes; i++) {
-			lwc_string *s = state.classes[i];
-			if (lwc_string_caseless_hash_value(s,
-					&hash) != lwc_error_ok) {
-				error = CSS_NOMEM;
-				goto cleanup;
-			}
-			css_bloom_add_hash(bloom, hash);
-		}
-	}
-
-	/* Merge parent bloom into node bloom */
-	css_bloom_merge(state.bloom, bloom);
-
-	/* Set node bloom filter */
-	error = handler->set_libcss_node_data(pw, node, bloom);
-	if (error != CSS_OK)
+complete:
+	error = css__set_node_data(node, &state, handler, pw);
+	if (error != CSS_OK) {
 		goto cleanup;
+	}
 
-	bloom = NULL;
-
+	/* Steal the results from the selection state, so they don't get
+	 * freed when the selection state is finalised */
 	*result = state.results;
+	state.results = NULL;
+
 	error = CSS_OK;
 
 cleanup:
-	/* Only clean up the results if there's an error. 
-	 * If there is no error, we're going to pass ownership of 
-	 * the results to the client */
-	if (error != CSS_OK && state.results != NULL) {
-		css_select_results_destroy(state.results);
-	}
-
-	if (parent_bloom != NULL) {
-		free(parent_bloom);
-	}
-
-	if (bloom != NULL) {
-		free(bloom);
-	}
-
-	if (state.classes != NULL) {
-		for (i = 0; i < state.n_classes; i++)
-			lwc_string_unref(state.classes[i]);
-	}
-
-	if (state.id != NULL)
-		lwc_string_unref(state.id);
-
-	if (state.element.ns != NULL)
-		lwc_string_unref(state.element.ns);
-	lwc_string_unref(state.element.name);
+	css_select__finalise_selection_state(&state);
 
 	return error;
 }
@@ -1172,7 +1788,7 @@ css_error set_initial(css_select_state *state,
 		case GROUP_NORMAL:
 			break;
 		case GROUP_UNCOMMON:
-			if (state->computed->uncommon == NULL)
+			if (state->computed->i.uncommon == NULL)
 				return CSS_OK;
 			break;
 		case GROUP_PAGE:
@@ -1180,7 +1796,7 @@ css_error set_initial(css_select_state *state,
 				return CSS_OK;
 			break;
 		case GROUP_AURAL:
-			if (state->computed->aural == NULL)
+			if (state->computed->i.aural == NULL)
 				return CSS_OK;
 			break;
 		}
@@ -1493,7 +2109,7 @@ css_error match_selectors_in_sheet(css_select_ctx *ctx,
 
 	/* Set up general selector chain requirments */
 	req.media = state->media;
-	req.node_bloom = state->bloom;
+	req.node_bloom = state->node_data->bloom;
 	req.uni = ctx->universal;
 
 	/* Find hash chain that applies to current node */
@@ -1708,7 +2324,7 @@ css_error match_selector_chain(css_select_ctx *ctx,
 
 	/* Ensure that the appropriate computed style exists */
 	if (state->results->styles[pseudo] == NULL) {
-		error = css_computed_style_create(
+		error = css__computed_style_create(
 				&state->results->styles[pseudo]); 
 		if (error != CSS_OK)
 			return error;
@@ -1751,6 +2367,10 @@ css_error match_named_combinator(css_select_ctx *ctx, css_combinator type,
 					n, &selector->data.qname, &n);
 			if (error != CSS_OK)
 				return error;
+			if (node == state->node) {
+				state->node_data->flags |=
+						CSS_NODE_FLAGS_TAINT_SIBLING;
+			}
 			break;
 		case CSS_COMBINATOR_GENERIC_SIBLING:
 			error = state->handler->named_generic_sibling_node(
@@ -1758,6 +2378,10 @@ css_error match_named_combinator(css_select_ctx *ctx, css_combinator type,
 					&n);
 			if (error != CSS_OK)
 				return error;
+			if (node == state->node) {
+				state->node_data->flags |=
+						CSS_NODE_FLAGS_TAINT_SIBLING;
+			}
 		case CSS_COMBINATOR_NONE:
 			break;
 		}
@@ -1785,6 +2409,18 @@ css_error match_named_combinator(css_select_ctx *ctx, css_combinator type,
 	*next_node = n;
 
 	return CSS_OK;
+}
+
+static inline void add_node_flags(const void *node,
+		const css_select_state *state, css_node_flags flags)
+{
+	/* If the node in question is the node we're selecting for then its
+	 * style has been tainted by particular rules that affect whether the
+	 * node's style can be shared.  We don't care whether the rule matched
+	 * or not, just that such a rule has been considered. */
+	if (node == state->node) {
+		state->node_data->flags |= flags;
+	}
 }
 
 css_error match_universal_combinator(css_select_ctx *ctx, css_combinator type,
@@ -1846,6 +2482,8 @@ css_error match_universal_combinator(css_select_ctx *ctx, css_combinator type,
 			error = state->handler->sibling_node(state->pw, n, &n);
 			if (error != CSS_OK)
 				return error;
+			add_node_flags(node, state,
+					CSS_NODE_FLAGS_TAINT_SIBLING);
 			break;
 		case CSS_COMBINATOR_NONE:
 			break;
@@ -1946,6 +2584,7 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 {
 	bool is_root = false;
 	css_error error = CSS_OK;
+	css_node_flags flags = CSS_NODE_FLAGS_TAINT_PSEUDO_CLASS;
 
 	switch (detail->type) {
 	case CSS_SELECTOR_ELEMENT:
@@ -2086,18 +2725,23 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 		} else if (detail->qname.name == ctx->link) {
 			error = state->handler->node_is_link(state->pw,
 					node, match);
+			flags = CSS_NODE_FLAGS_NONE;
 		} else if (detail->qname.name == ctx->visited) {
 			error = state->handler->node_is_visited(state->pw,
 					node, match);
+			flags = CSS_NODE_FLAGS_NONE;
 		} else if (detail->qname.name == ctx->hover) {
 			error = state->handler->node_is_hover(state->pw,
 					node, match);
+			flags = CSS_NODE_FLAGS_NONE;
 		} else if (detail->qname.name == ctx->active) {
 			error = state->handler->node_is_active(state->pw,
 					node, match);
+			flags = CSS_NODE_FLAGS_NONE;
 		} else if (detail->qname.name == ctx->focus) {
 			error = state->handler->node_is_focus(state->pw,
 					node, match);
+			flags = CSS_NODE_FLAGS_NONE;
 		} else if (detail->qname.name == ctx->target) {
 			error = state->handler->node_is_target(state->pw,
 					node, match);
@@ -2113,8 +2757,10 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 		} else if (detail->qname.name == ctx->checked) {
 			error = state->handler->node_is_checked(state->pw,
 					node, match);
-		} else
+		} else {
 			*match = false;
+		}
+		add_node_flags(node, state, flags);
 		break;
 	case CSS_SELECTOR_PSEUDO_ELEMENT:
 		*match = true;
@@ -2133,36 +2779,43 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 	case CSS_SELECTOR_ATTRIBUTE:
 		error = state->handler->node_has_attribute(state->pw, node,
 				&detail->qname, match);
+		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_EQUAL:
 		error = state->handler->node_has_attribute_equal(state->pw, 
 				node, &detail->qname, detail->value.string, 
 				match);
+		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_DASHMATCH:
 		error = state->handler->node_has_attribute_dashmatch(state->pw,
 				node, &detail->qname, detail->value.string,
 				match);
+		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_INCLUDES:
 		error = state->handler->node_has_attribute_includes(state->pw, 
 				node, &detail->qname, detail->value.string,
 				match);
+		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_PREFIX:
 		error = state->handler->node_has_attribute_prefix(state->pw,
 				node, &detail->qname, detail->value.string,
 				match);
+		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_SUFFIX:
 		error = state->handler->node_has_attribute_suffix(state->pw,
 				node, &detail->qname, detail->value.string,
 				match);
+		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_SUBSTRING:
 		error = state->handler->node_has_attribute_substring(state->pw,
 				node, &detail->qname, detail->value.string,
 				match);
+		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	}
 

@@ -13,7 +13,7 @@
 
 
 
-typedef struct css_computed_uncommon {
+struct css_computed_uncommon_i {
 /*
  * border_spacing		  1 + 2(4)	  2(4)
  * break_before			  4		  0
@@ -99,13 +99,20 @@ typedef struct css_computed_uncommon {
 	css_color column_rule_color;
 	css_fixed column_rule_width;
 	css_fixed column_width;
+};
+
+typedef struct css_computed_uncommon {
+	struct css_computed_uncommon_i i;
 
 	css_computed_counter *counter_increment;
 	css_computed_counter *counter_reset;
 
-	lwc_string **cursor;
-
 	css_computed_content_item *content;
+
+	lwc_string **cursor;
+	struct css_computed_uncommon *next;
+	uint32_t count;
+	uint32_t bin;
 } css_computed_uncommon;
 
 typedef struct css_computed_page {
@@ -122,7 +129,7 @@ typedef struct css_computed_page {
 	int32_t orphans;
 } css_computed_page;
     
-struct css_computed_style {
+struct css_computed_style_i {
 /*
  * background_attachment	  2
  * background_repeat		  3
@@ -302,14 +309,50 @@ struct css_computed_style {
 
 	int32_t z_index;
 
+	css_computed_uncommon *uncommon;/**< Uncommon properties */
+	void *aural;			/**< Aural properties */
+};
+
+struct css_computed_style {
+	struct css_computed_style_i i;
+
 	lwc_string **font_family;
 
 	lwc_string **quotes;
-
-	css_computed_uncommon *uncommon;/**< Uncommon properties */
-	void *aural;			/**< Aural properties */
 	css_computed_page *page;	/**< Page properties */
+	struct css_computed_style *next;
+	uint32_t count;
+	uint32_t bin;
 };
+
+
+/**
+ * Take a new reference to a computed style
+ *
+ * \param style  The style to take a new reference to.
+ * \return The new computed style reference
+ */
+static inline css_computed_style * css__computed_style_ref(
+		css_computed_style *style)
+{
+	if (style == NULL)
+		return NULL;
+
+	if (style->i.uncommon != NULL) {
+		style->i.uncommon->count++;
+	}
+
+	style->count++;
+	return style;
+}
+
+css_error css__computed_style_create(css_computed_style **result);
+
+css_error css__computed_style_initialise(css_computed_style *style,
+		struct css_select_handler *handler, void *pw);
+
+
+css_error css__computed_uncommon_destroy(css_computed_uncommon *uncommon);
 
 css_error css__compute_absolute_values(const css_computed_style *parent,
 		css_computed_style *style,

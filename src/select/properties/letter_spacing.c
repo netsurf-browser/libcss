@@ -41,10 +41,10 @@ css_error css__compose_letter_spacing(const css_computed_style *parent,
 	css_unit unit = CSS_UNIT_PX;
 	uint8_t type = get_letter_spacing(child, &length, &unit);
 
-	if ((child->uncommon == NULL && parent->uncommon != NULL) || 
+	if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
 			type == CSS_LETTER_SPACING_INHERIT ||
-			(child->uncommon != NULL && result != child)) {
-		if ((child->uncommon == NULL && parent->uncommon != NULL) || 
+			(child->i.uncommon != NULL && result != child)) {
+		if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
 				type == CSS_LETTER_SPACING_INHERIT) {
 			type = get_letter_spacing(parent, &length, &unit);
 		}

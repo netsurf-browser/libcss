@@ -49,6 +49,7 @@ css_error css__cascade_content(uint32_t opv, css_style *style,
 				}
 
 				content = temp;
+				memset(content + n_contents, 0, sizeof(css_computed_content_item));
 
 				switch (v & 0xff) {
 				case CONTENT_COUNTER:
@@ -206,13 +207,13 @@ css_error css__compose_content(const css_computed_style *parent,
 	const css_computed_content_item *items = NULL;
 	uint8_t type = get_content(child, &items);
 
-	if ((child->uncommon == NULL && parent->uncommon != NULL) ||
+	if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
 			type == CSS_CONTENT_INHERIT ||
-			(child->uncommon != NULL && result != child)) {
+			(child->i.uncommon != NULL && result != child)) {
 		size_t n_items = 0;
 		css_computed_content_item *copy = NULL;
 
-		if ((child->uncommon == NULL && parent->uncommon != NULL) ||
+		if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
 				type == CSS_CONTENT_INHERIT) {
 			type = get_content(parent, &items);
 		}

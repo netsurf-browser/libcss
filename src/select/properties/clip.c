@@ -102,10 +102,10 @@ css_error css__compose_clip(const css_computed_style *parent,
 			false, false, false, false };
 	uint8_t type = get_clip(child, &rect);
 
-	if ((child->uncommon == NULL && parent->uncommon != NULL) || 
+	if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
 			type == CSS_CLIP_INHERIT ||
-			(child->uncommon != NULL && result != child)) {
-		if ((child->uncommon == NULL && parent->uncommon != NULL) || 
+			(child->i.uncommon != NULL && result != child)) {
+		if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
 				type == CSS_CLIP_INHERIT) {
 			type = get_clip(parent, &rect);
 		}

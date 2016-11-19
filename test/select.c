@@ -769,11 +769,14 @@ static void run_test_select_tree(css_select_ctx *select,
 			&select_handler, ctx, &sr) == CSS_OK);
 
 	if (node->parent != NULL) {
+		css_computed_style *composed;
 		assert(css_computed_style_compose(
 				node->parent->sr->styles[ctx->pseudo_element],
 				sr->styles[ctx->pseudo_element],
 				compute_font_size, NULL,
-				sr->styles[ctx->pseudo_element]) == CSS_OK);
+				&composed) == CSS_OK);
+		css_computed_style_destroy(sr->styles[ctx->pseudo_element]);
+		sr->styles[ctx->pseudo_element] = composed;
 	}
 
 	node->sr = sr;
@@ -1671,6 +1674,18 @@ static css_error set_libcss_node_data(void *pw, void *n,
 	UNUSED(pw);
 
 	node->libcss_node_data = libcss_node_data;
+
+	return CSS_OK;
+}
+
+static css_error get_libcss_node_data(void *pw, void *n,
+		void **libcss_node_data)
+{
+	node *node = n;
+	UNUSED(pw);
+
+	/* Pass any node data back to libcss */
+	*libcss_node_data = node->libcss_node_data;
 
 	return CSS_OK;
 }

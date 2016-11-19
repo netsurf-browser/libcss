@@ -7,6 +7,7 @@
 
 #include <string.h>
 
+#include "select/arena.h"
 #include "select/computed.h"
 #include "select/dispatch.h"
 #include "select/propget.h"
@@ -64,7 +65,7 @@ static css_error compute_absolute_length_pair(css_computed_style *style,
  *         CSS_NOMEM on memory exhaustion,
  *         CSS_BADPARM on bad parameters.
  */
-css_error css_computed_style_create(css_computed_style **result)
+css_error css__computed_style_create(css_computed_style **result)
 {
 	css_computed_style *s;
 
@@ -75,59 +76,68 @@ css_error css_computed_style_create(css_computed_style **result)
 	if (s == NULL)
 		return CSS_NOMEM;
 
+	s->bin = UINT32_MAX;
 	*result = s;
 
 	return CSS_OK;
 }
 
 /**
- * Destroy a computed style
+ * Destroy an uncommon computed style section
  *
  * \param style  Style to destroy
  * \return CSS_OK on success, appropriate error otherwise
  */
-css_error css_computed_style_destroy(css_computed_style *style)
+css_error css__computed_uncommon_destroy(css_computed_uncommon *uncommon)
 {
-	if (style == NULL)
+	if (uncommon == NULL)
 		return CSS_BADPARM;
 
-	if (style->uncommon != NULL) {
-		if (style->uncommon->counter_increment != NULL) {
+	if (uncommon->count > 1) {
+		uncommon->count--;
+		return CSS_OK;
+
+	} else if (uncommon->count == 1) {
+		css__arena_remove_uncommon_style(uncommon);
+	}
+
+	if (uncommon != NULL) {
+		if (uncommon->counter_increment != NULL) {
 			css_computed_counter *c;
 
-			for (c = style->uncommon->counter_increment; 
+			for (c = uncommon->counter_increment;
 					c->name != NULL; c++) {
 				lwc_string_unref(c->name);
 			}
 
-			free(style->uncommon->counter_increment);
+			free(uncommon->counter_increment);
 		}
 
-		if (style->uncommon->counter_reset != NULL) {
+		if (uncommon->counter_reset != NULL) {
 			css_computed_counter *c;
 
-			for (c = style->uncommon->counter_reset; 
+			for (c = uncommon->counter_reset;
 					c->name != NULL; c++) {
 				lwc_string_unref(c->name);
 			}
 
-			free(style->uncommon->counter_reset);
+			free(uncommon->counter_reset);
 		}
-	
-		if (style->uncommon->cursor != NULL) {
+
+		if (uncommon->cursor != NULL) {
 			lwc_string **s;
 
-			for (s = style->uncommon->cursor; *s != NULL; s++) {
+			for (s = uncommon->cursor; *s != NULL; s++) {
 				lwc_string_unref(*s);
 			}
 
-			free(style->uncommon->cursor);
+			free(uncommon->cursor);
 		}
 
-		if (style->uncommon->content != NULL) {
+		if (uncommon->content != NULL) {
 			css_computed_content_item *c;
 
-			for (c = style->uncommon->content; 
+			for (c = uncommon->content;
 					c->type != CSS_COMPUTED_CONTENT_NONE;
 					c++) {
 				switch (c->type) {
@@ -152,18 +162,42 @@ css_error css_computed_style_destroy(css_computed_style *style)
 				}
 			}
 
-			free(style->uncommon->content);
+			free(uncommon->content);
 		}
 
-		free(style->uncommon);
+		free(uncommon);
+	}
+
+	return CSS_OK;
+}
+
+/**
+ * Destroy a computed style
+ *
+ * \param style  Style to destroy
+ * \return CSS_OK on success, appropriate error otherwise
+ */
+css_error css_computed_style_destroy(css_computed_style *style)
+{
+	if (style == NULL)
+		return CSS_BADPARM;
+
+	css__computed_uncommon_destroy(style->i.uncommon);
+
+	if (style->count > 1) {
+		style->count--;
+		return CSS_OK;
+
+	} else if (style->count == 1) {
+		css__arena_remove_style(style);
 	}
 
 	if (style->page != NULL) {
 		free(style->page);
 	}
 
-	if (style->aural != NULL) {
-		free(style->aural);
+	if (style->i.aural != NULL) {
+		free(style->i.aural);
 	}
 
 	if (style->font_family != NULL) {
@@ -186,11 +220,11 @@ css_error css_computed_style_destroy(css_computed_style *style)
 		free(style->quotes);
 	}
 
-	if (style->list_style_image != NULL)
-		lwc_string_unref(style->list_style_image);
+	if (style->i.list_style_image != NULL)
+		lwc_string_unref(style->i.list_style_image);
 
-	if (style->background_image != NULL)
-		lwc_string_unref(style->background_image);
+	if (style->i.background_image != NULL)
+		lwc_string_unref(style->i.background_image);
 
 	free(style);
 
@@ -205,7 +239,7 @@ css_error css_computed_style_destroy(css_computed_style *style)
  * \param pw       Client-specific private data for handler functions
  * \return CSS_OK on success.
  */
-css_error css_computed_style_initialise(css_computed_style *style,
+css_error css__computed_style_initialise(css_computed_style *style,
 		css_select_handler *handler, void *pw)
 {
 	css_select_state state;
@@ -243,47 +277,70 @@ css_error css_computed_style_initialise(css_computed_style *style,
  * \param child              Child style
  * \param compute_font_size  Function to compute an absolute font size
  * \param pw                 Client data for compute_font_size
- * \param result             Pointer to style to compose into
+ * \param result             Updated to point to new composed style
+ *                           Ownership passed to client.
  * \return CSS_OK on success, appropriate error otherwise.
  *
  * \pre \a parent is a fully composed style (thus has no inherited properties)
- *
- * \note \a child and \a result may point at the same object
  */
-css_error css_computed_style_compose(const css_computed_style *parent,
-		const css_computed_style *child,
+css_error css_computed_style_compose(
+		const css_computed_style *restrict parent,
+		const css_computed_style *restrict child,
 		css_error (*compute_font_size)(void *pw,
 			const css_hint *parent, css_hint *size),
 		void *pw,
-		css_computed_style *result)
+		css_computed_style **restrict result)
 {
-	css_error error = CSS_OK;
+	css_computed_style *composed;
+	css_error error;
 	size_t i;
+
+	/* TODO:
+	 *   Make this function take a composition context, to allow us
+	 *   to avoid the churn of unnecesaraly allocating and freeing
+	 *   the memory to compose styles into.
+	 */
+	error = css__computed_style_create(&composed);
+	if (error != CSS_OK) {
+		return error;
+	}
 
 	/* Iterate through the properties */
 	for (i = 0; i < CSS_N_PROPERTIES; i++) {
-		/* Skip any in extension blocks if the block does not exist */	
-		if (prop_dispatch[i].group == GROUP_UNCOMMON &&
-				parent->uncommon == NULL && 
-				child->uncommon == NULL)
-			continue;
-
-		if (prop_dispatch[i].group == GROUP_PAGE &&
-				parent->page == NULL && child->page == NULL)
-			continue;
-
-		if (prop_dispatch[i].group == GROUP_AURAL &&
-				parent->aural == NULL && child->aural == NULL)
-			continue;
+		/* Skip any in extension blocks if the block does not exist */
+		switch(prop_dispatch[i].group) {
+		case GROUP_NORMAL:
+			break;
+		case GROUP_UNCOMMON:
+			if (parent->i.uncommon == NULL &&
+					child->i.uncommon == NULL)
+				continue;
+			break;
+		case GROUP_PAGE:
+			if (parent->page == NULL && child->page == NULL)
+				continue;
+			break;
+		case GROUP_AURAL:
+			if (parent->i.aural == NULL && child->i.aural == NULL)
+				continue;
+			break;
+		}
 
 		/* Compose the property */
-		error = prop_dispatch[i].compose(parent, child, result);
+		error = prop_dispatch[i].compose(parent, child, composed);
 		if (error != CSS_OK)
 			break;
 	}
 
 	/* Finally, compute absolute values for everything */
-	return css__compute_absolute_values(parent, result, compute_font_size, pw);
+	error = css__compute_absolute_values(parent, composed,
+			compute_font_size, pw);
+	if (error != CSS_OK) {
+		return error;
+	}
+
+	*result = composed;
+	return css__arena_intern_style(result);
 }
 
 /******************************************************************************
@@ -444,7 +501,7 @@ uint8_t css_computed_top(const css_computed_style *style,
 			*unit = CSS_UNIT_PX;
 		} else if (top == CSS_TOP_AUTO) {
 			/* Top is auto => -bottom */
-			*length = -style->bottom;
+			*length = -style->i.bottom;
 			*unit = (css_unit) (bottom >> 2);
 		}
 
@@ -474,7 +531,7 @@ uint8_t css_computed_right(const css_computed_style *style,
 			*unit = CSS_UNIT_PX;
 		} else if (right == CSS_RIGHT_AUTO) {
 			/* Right is auto => -left */
-			*length = -style->left;
+			*length = -style->i.left;
 			*unit = (css_unit) (left >> 2);
 		} else {
 			/** \todo Consider containing block's direction 
@@ -508,7 +565,7 @@ uint8_t css_computed_bottom(const css_computed_style *style,
 		} else if (bottom == CSS_BOTTOM_AUTO ||
 				(top & 0x3) != CSS_TOP_AUTO) {
 			/* Bottom is auto or top is not auto => -top */
-			*length = -style->top;
+			*length = -style->i.top;
 			*unit = (css_unit) (top >> 2);
 		}
 
@@ -538,7 +595,7 @@ uint8_t css_computed_left(const css_computed_style *style,
 			*unit = CSS_UNIT_PX;
 		} else if (left == CSS_LEFT_AUTO) {
 			/* Left is auto => -right */
-			*length = -style->right;
+			*length = -style->i.right;
 			*unit = (css_unit) (right >> 2);
 		} else {
 			/** \todo Consider containing block's direction 
@@ -1144,7 +1201,7 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 		return error;
 
 	/* Uncommon properties */
-	if (style->uncommon != NULL) {
+	if (style->i.uncommon != NULL) {
 		/* Fix up border-spacing */
 		error = compute_absolute_length_pair(style,
 				&ex_size.data.length,

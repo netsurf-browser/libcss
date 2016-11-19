@@ -76,19 +76,16 @@ typedef struct css_computed_content_item {
 	} data;
 } css_computed_content_item;
 
-css_error css_computed_style_create(css_computed_style **result);
 css_error css_computed_style_destroy(css_computed_style *style);
 
-css_error css_computed_style_initialise(css_computed_style *style,
-		struct css_select_handler *handler, void *pw);
-
-css_error css_computed_style_compose(const css_computed_style *parent,
-		const css_computed_style *child,
+css_error css_computed_style_compose(
+		const css_computed_style *restrict parent,
+		const css_computed_style *restrict child,
 		css_error (*compute_font_size)(void *pw,
 				const struct css_hint *parent,
 				struct css_hint *size),
 		void *pw,
-		css_computed_style *result);
+		css_computed_style **restrict result);
 
 /******************************************************************************
  * Property accessors below here                                              *
