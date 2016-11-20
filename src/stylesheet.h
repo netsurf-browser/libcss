@@ -20,6 +20,7 @@
 
 #include "bytecode/bytecode.h"
 #include "parse/parse.h"
+#include "parse/mq.h"
 #include "select/hash.h"
 
 typedef struct css_rule css_rule;
@@ -132,7 +133,7 @@ typedef struct css_rule_selector {
 typedef struct css_rule_media {
 	css_rule base;
 
-	uint64_t media;
+	css_mq_query *media;
 
 	css_rule *first_child;
 	css_rule *last_child;
@@ -155,7 +156,7 @@ typedef struct css_rule_import {
 	css_rule base;
 
 	lwc_string *url;
-	uint64_t media;
+	css_mq_query *media;
 
 	css_stylesheet *sheet;
 } css_rule_import;
@@ -268,10 +269,10 @@ css_error css__stylesheet_rule_set_charset(css_stylesheet *sheet,
 		css_rule *rule, lwc_string *charset);
 
 css_error css__stylesheet_rule_set_nascent_import(css_stylesheet *sheet,
-		css_rule *rule, lwc_string *url, uint64_t media);
+		css_rule *rule, lwc_string *url, css_mq_query *media);
 
 css_error css__stylesheet_rule_set_media(css_stylesheet *sheet,
-		css_rule *rule, uint64_t media);
+		css_rule *rule, css_mq_query *media);
 
 css_error css__stylesheet_rule_set_page_selector(css_stylesheet *sheet,
 		css_rule *rule, css_selector *sel);

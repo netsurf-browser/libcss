@@ -377,8 +377,6 @@ css_error css_stylesheet_data_done(css_stylesheet *sheet)
  * \param parent  Parent stylesheet
  * \param url	  Pointer to object to be populated with details of URL of
  *		  imported stylesheet (potentially relative)
- * \param media	  Pointer to location to receive applicable media types for
- *		  imported sheet,
  * \return CSS_OK on success,
  *	   CSS_INVALID if there are no pending imports remaining
  *
@@ -396,11 +394,11 @@ css_error css_stylesheet_data_done(css_stylesheet *sheet)
  * register an empty stylesheet with the parent in its place.
  */
 css_error css_stylesheet_next_pending_import(css_stylesheet *parent,
-		lwc_string **url, uint64_t *media)
+		lwc_string **url)
 {
 	const css_rule *r;
 
-	if (parent == NULL || url == NULL || media == NULL)
+	if (parent == NULL || url == NULL)
 		return CSS_BADPARM;
 
 	for (r = parent->rule_list; r != NULL; r = r->next) {
@@ -413,7 +411,6 @@ css_error css_stylesheet_next_pending_import(css_stylesheet *parent,
 
 		if (r->type == CSS_RULE_IMPORT && i->sheet == NULL) {
 			*url = lwc_string_ref(i->url);
-			*media = i->media;
 
 			return CSS_OK;
 		}
@@ -1326,7 +1323,7 @@ css_error css__stylesheet_rule_set_charset(css_stylesheet *sheet,
  */
 css_error css__stylesheet_rule_set_nascent_import(css_stylesheet *sheet,
 		css_rule *rule, lwc_string *url,
-		uint64_t media)
+		css_mq_query *media)
 {
 	css_rule_import *r = (css_rule_import *) rule;
 
@@ -1338,7 +1335,7 @@ css_error css__stylesheet_rule_set_nascent_import(css_stylesheet *sheet,
 
 	/* Set the rule's sheet field */
 	r->url = lwc_string_ref(url);
-	r->media = media;
+	r->media = css__mq_query_ref(media);
 
 	return CSS_OK;
 }
@@ -1352,7 +1349,7 @@ css_error css__stylesheet_rule_set_nascent_import(css_stylesheet *sheet,
  * \return CSS_OK on success, appropriate error otherwise
  */
 css_error css__stylesheet_rule_set_media(css_stylesheet *sheet,
-		css_rule *rule, uint64_t media)
+		css_rule *rule, css_mq_query *media)
 {
 	css_rule_media *r = (css_rule_media *) rule;
 
@@ -1363,7 +1360,7 @@ css_error css__stylesheet_rule_set_media(css_stylesheet *sheet,
 	assert(rule->type == CSS_RULE_MEDIA);
 
 	/* Set the rule's media */
-	r->media = media;
+	r->media = css__mq_query_ref(media);
 
 	return CSS_OK;
 }
