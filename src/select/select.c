@@ -964,14 +964,15 @@ printf("      \t%s\tno share: node id (%s)\n", lwc_string_data(state->element.na
 				type, sharable_node_data);
 		if (error != CSS_OK) {
 			return error;
-		} else {
-			if (sharable_node_data == NULL) {
-				/* Can't share with this; look for another */
-				continue;
-			} else {
-				break;
-			}
 		}
+
+		if (*sharable_node_data != NULL) {
+			/* Found style date we can share */
+			break;
+		}
+
+		/* Can't share with this; look for another */
+		node = share_candidate_node;
 	}
 
 	return CSS_OK;
