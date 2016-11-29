@@ -775,13 +775,14 @@ static css_error css_select_style__get_sharable_node_data_for_candidate(
 	}
 
 	/* If the node was affected by attribute or pseudo class rules,
-	 * it's not a candidate for sharing */
+	 * or had an inline style, it's not a candidate for sharing */
 	if (node_data->flags & (
 			CSS_NODE_FLAGS_TAINT_PSEUDO_CLASS |
 			CSS_NODE_FLAGS_TAINT_ATTRIBUTE |
-			CSS_NODE_FLAGS_TAINT_SIBLING)) {
+			CSS_NODE_FLAGS_TAINT_SIBLING |
+			CSS_NODE_FLAGS_HAS_INLINE_STYLE)) {
 #ifdef DEBUG_STYLE_SHARING
-		printf("      \t%s\tno share: candidate flags: %s%s%s\n",
+		printf("      \t%s\tno share: candidate flags: %s%s%s%s\n",
 				lwc_string_data(state->element.name),
 				(node_data->flags &
 					CSS_NODE_FLAGS_TAINT_PSEUDO_CLASS) ?
@@ -791,7 +792,10 @@ static css_error css_select_style__get_sharable_node_data_for_candidate(
 						" ATTRIBUTE" : "",
 				(node_data->flags &
 					CSS_NODE_FLAGS_TAINT_SIBLING) ?
-						" SIBLING" : "");
+						" SIBLING" : "",
+				(node_data->flags &
+					CSS_NODE_FLAGS_HAS_INLINE_STYLE) ?
+						" INLINE_STYLE" : "");
 #endif
 		return CSS_OK;
 	}
@@ -927,6 +931,12 @@ static css_error css_select_style__get_sharable_node_data(
 		 *       Check overhead is worth cost. */
 #ifdef DEBUG_STYLE_SHARING
 printf("      \t%s\tno share: node id (%s)\n", lwc_string_data(state->element.name), lwc_string_data(state->id));
+#endif
+		return CSS_OK;
+	}
+	if (state->node_data->flags & CSS_NODE_FLAGS_HAS_INLINE_STYLE) {
+#ifdef DEBUG_STYLE_SHARING
+printf("      \t%s\tno share: inline style\n");
 #endif
 		return CSS_OK;
 	}
@@ -1178,6 +1188,10 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		goto cleanup;
 	if (nhints > 0) {
 		state.node_data->flags |= CSS_NODE_FLAGS_HAS_HINTS;
+	}
+
+	if (inline_style != NULL) {
+		state.node_data->flags |= CSS_NODE_FLAGS_HAS_INLINE_STYLE;
 	}
 
 	/* Check if we can share another node's style */
