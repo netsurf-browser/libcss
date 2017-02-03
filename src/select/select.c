@@ -1942,7 +1942,6 @@ static css_error _select_font_face_from_rule(
 			
 			new_faces = realloc(faces->font_faces, new_size);
 			if (new_faces == NULL) {
-				faces->count = 0;
 				return CSS_NOMEM;
 			}
 			faces->font_faces = new_faces;
