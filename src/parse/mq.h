@@ -93,8 +93,6 @@ css_error css__mq_parse_media_list(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		css_mq_query **media);
 
-/** \todo is this necessary? */
-css_mq_query *css__mq_query_ref(css_mq_query *media);
-css_mq_query *css__mq_query_unref(css_mq_query *media);
+css_mq_query *css__mq_query_destroy(css_mq_query *media);
 
 #endif

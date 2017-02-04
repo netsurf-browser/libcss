@@ -416,8 +416,7 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 			lwc_string *url;
 			css_mq_query *media = NULL;
 
-			/* any0 = (STRING | URI) ws
-			 *	  (media query)? */
+			/* any0 = (STRING | URI) ws (media query)? */
 			const css_token *uri =
 				parserutils_vector_iterate(vector, &ctx);
 			if (uri == NULL || (uri->type != CSS_TOKEN_STRING &&
@@ -435,7 +434,7 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 			error = css__stylesheet_rule_create(c->sheet,
 					CSS_RULE_IMPORT, &rule);
 			if (error != CSS_OK) {
-				css__mq_query_unref(media);
+				css__mq_query_destroy(media);
 				return error;
 			}
 
@@ -444,8 +443,8 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 					c->sheet->url,
 					uri->idata, &url);
 			if (error != CSS_OK) {
-				css__mq_query_unref(media);
 				css__stylesheet_rule_destroy(c->sheet, rule);
+				css__mq_query_destroy(media);
 				return error;
 			}
 
@@ -454,8 +453,8 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 					rule, url, media);
 			if (error != CSS_OK) {
 				lwc_string_unref(url);
-				css__mq_query_unref(media);
 				css__stylesheet_rule_destroy(c->sheet, rule);
+				css__mq_query_destroy(media);
 				return error;
 			}
 
@@ -465,16 +464,14 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 						c->sheet, url);
 				if (error != CSS_OK) {
 					lwc_string_unref(url);
-					css__mq_query_unref(media);
 					css__stylesheet_rule_destroy(c->sheet,
 							rule);
 					return error;
 				}
 			}
 
-			/* No longer care about url or media */
+			/* No longer care about url */
 			lwc_string_unref(url);
-			css__mq_query_unref(media);
 
 			/* Add rule to sheet */
 			error = css__stylesheet_add_rule(c->sheet, rule, NULL);
@@ -542,25 +539,22 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 		error = css__stylesheet_rule_create(c->sheet,
 				CSS_RULE_MEDIA, &rule);
 		if (error != CSS_OK) {
-			css__mq_query_unref(media);
+			css__mq_query_destroy(media);
 			return error;
 		}
 
 		error = css__stylesheet_rule_set_media(c->sheet, rule, media);
 		if (error != CSS_OK) {
 			css__stylesheet_rule_destroy(c->sheet, rule);
-			css__mq_query_unref(media);
+			css__mq_query_destroy(media);
 			return error;
 		}
 
 		error = css__stylesheet_add_rule(c->sheet, rule, NULL);
 		if (error != CSS_OK) {
 			css__stylesheet_rule_destroy(c->sheet, rule);
-			css__mq_query_unref(media);
 			return error;
 		}
-
-		css__mq_query_unref(media);
 
 		/* Rule is now owned by the sheet,
 		 * so no need to destroy it */

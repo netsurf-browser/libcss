@@ -12,6 +12,7 @@
 #include "stylesheet.h"
 #include "bytecode/bytecode.h"
 #include "parse/language.h"
+#include "parse/mq.h"
 #include "utils/parserutilserror.h"
 #include "utils/utils.h"
 #include "select/dispatch.h"
@@ -1151,6 +1152,9 @@ css_error css__stylesheet_rule_destroy(css_stylesheet *sheet, css_rule *rule)
 		css_rule_import *import = (css_rule_import *) rule;
 
 		lwc_string_unref(import->url);
+		if (import->media != NULL) {
+			css__mq_query_destroy(import->media);
+		}
 
 		/* Do not destroy imported sheet: it is owned by the client */
 	}
@@ -1159,6 +1163,10 @@ css_error css__stylesheet_rule_destroy(css_stylesheet *sheet, css_rule *rule)
 	{
 		css_rule_media *media = (css_rule_media *) rule;
 		css_rule *c, *d;
+
+		if (media->media != NULL) {
+			css__mq_query_destroy(media->media);
+		}
 
 		for (c = media->first_child; c != NULL; c = d) {
 			d = c->next;
@@ -1335,7 +1343,7 @@ css_error css__stylesheet_rule_set_nascent_import(css_stylesheet *sheet,
 
 	/* Set the rule's sheet field */
 	r->url = lwc_string_ref(url);
-	r->media = css__mq_query_ref(media);
+	r->media = media;
 
 	return CSS_OK;
 }
@@ -1360,7 +1368,7 @@ css_error css__stylesheet_rule_set_media(css_stylesheet *sheet,
 	assert(rule->type == CSS_RULE_MEDIA);
 
 	/* Set the rule's media */
-	r->media = css__mq_query_ref(media);
+	r->media = media;
 
 	return CSS_OK;
 }
