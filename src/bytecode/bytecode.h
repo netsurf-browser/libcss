@@ -52,6 +52,7 @@ typedef enum unit {
 	UNIT_DEG  = (1 << 9) + 0,
 	UNIT_GRAD = (1 << 9) + 1,
 	UNIT_RAD  = (1 << 9) + 2,
+	UNIT_TURN = (1 << 9) + 3,
 
 	UNIT_TIME = (1 << 10),
 	UNIT_MS   = (1 << 10) + 0,
@@ -59,7 +60,12 @@ typedef enum unit {
 
 	UNIT_FREQ = (1 << 11),
 	UNIT_HZ   = (1 << 11) + 0,
-	UNIT_KHZ  = (1 << 11) + 1
+	UNIT_KHZ  = (1 << 11) + 1,
+
+	UNIT_RESOLUTION = (1 << 12),
+	UNIT_DPI  = (1 << 12) + 0,
+	UNIT_DPCM = (1 << 12) + 1,
+	UNIT_DPPX = (1 << 12) + 2,
 } unit;
 
 typedef uint32_t colour;

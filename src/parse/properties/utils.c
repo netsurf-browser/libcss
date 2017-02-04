@@ -1007,6 +1007,12 @@ css_error css__parse_unit_keyword(const char *ptr, size_t len, uint32_t *unit)
 	if (len == 4) {
 		if (strncasecmp(ptr, "grad", 4) == 0)
 			*unit = UNIT_GRAD;
+		else if (strncasecmp(ptr, "turn", 4) == 0)
+			*unit = UNIT_TURN;
+		else if (strncasecmp(ptr, "dppx", 4) == 0)
+			*unit = UNIT_DPPX;
+		else if (strncasecmp(ptr, "dpcm", 4) == 0)
+			*unit = UNIT_DPCM;
 		else if (strncasecmp(ptr, "vmin", 4) == 0)
 			*unit = UNIT_VMIN;
 		else if (strncasecmp(ptr, "vmax", 4) == 0)
@@ -1026,6 +1032,8 @@ css_error css__parse_unit_keyword(const char *ptr, size_t len, uint32_t *unit)
 			*unit = UNIT_REM;
 		else if (strncasecmp(ptr, "rlh", 3) == 0)
 			*unit = UNIT_RLH;
+		else if (strncasecmp(ptr, "dpi", 3) == 0)
+			*unit = UNIT_DPI;
 		else
 			return CSS_INVALID;
 	} else if (len == 2) {
