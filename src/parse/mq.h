@@ -22,7 +22,7 @@ typedef struct {
 		css_fixed num_or_ratio; /* Where ratio is the result of a/b */
 		struct {
 			css_fixed len;
-			css_unit unit;
+			uint32_t unit;
 		} dim;
 		lwc_string *ident;
 	} data;
@@ -31,8 +31,8 @@ typedef struct {
 /*
  * "name : value" is encoded as "name = value"
  * "name" is encoded by setting the operator to "bool"
- * "name op value" is encoded verbatim (with op2 set to "unused")
- * "value op name" inverts the operator to encode (i.e < becomes >=) (and sets op2 to "unused")
+ * "value op name" is encoded verbatim (with op2 set to "unused")
+ * "name op value" inverts the operator to encode (i.e < becomes >=) (and sets op2 to "unused")
  * "value op name op value" is encoded using op2 and value2
  */
 typedef enum {
