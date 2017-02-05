@@ -73,20 +73,18 @@ struct css_mq_cond_or_feature {
 		CSS_MQ_COND
 	} type;
 	union {
-		css_mq_cond cond;
-		css_mq_feature feat;
+		css_mq_cond *cond;
+		css_mq_feature *feat;
 	} data;
 };
 
 typedef struct css_mq_query {
 	struct css_mq_query *next;
 
-	uint32_t negate_type : 1, /* set if "not type" */
-		 cond_op     : 1; /* clear if "and", set if "or" */
+	uint32_t negate_type : 1; /* set if "not type" */
 	lwc_string *type; /* or NULL */
 
-	uint32_t nconds;
-	css_mq_cond **conds;
+	css_mq_cond *cond;
 } css_mq_query;
 
 css_error css__mq_parse_media_list(css_language *c,

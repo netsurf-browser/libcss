@@ -333,6 +333,8 @@ static css_error mq_parse_media_feature(css_language *c,
 
 	/* ( already consumed */
 
+	consumeWhitespace(vector, ctx);
+
 	name_or_value = parserutils_vector_iterate(vector, ctx);
 	if (name_or_value == NULL)
 		return CSS_INVALID;
@@ -423,41 +425,358 @@ static css_error mq_parse_media_feature(css_language *c,
 	return CSS_OK;
 }
 
-static css_error mq_parse_media_in_parens()
+static css_error mq_parse_general_enclosed(css_language *c,
+		const parserutils_vector *vector, int *ctx)
 {
+	/* <general-enclosed> = [ <function-token> <any-value> ) ]
+	 *                    | ( <ident> <any-value> )
+	 */
+
+	/* TODO: implement */
+
+	return CSS_OK;
+}
+
+static css_error mq_parse_media_in_parens(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_mq_cond_or_feature **cond_or_feature)
+{
+	const css_token *token;
+	bool match;
+	int old_ctx;
+	cond_or_feature *result = NULL;
+	css_error error = CSS_OK;
+
 	/* <media-in-parens> = ( <media-condition> ) | <media-feature> | <general-enclosed>
-	 * <general-enclosed> = [ <function-token> <any-value> ) ] | ( <ident> <any-value> )
 	 */
 
 	//LPAREN -> condition-or-feature
 	//	  "not" or LPAREN -> condition
 	//	  IDENT | NUMBER | DIMENSION | RATIO -> feature
 
+	token = parserutils_vector_iterate(vector, ctx);
+	if (token == NULL || tokenIsChar(token, '(') == false) {
+		return CSS_INVALID;
+	}
+
+	consumeWhitespace(vector, ctx);
+
+	token = parserutils_vector_peek(vector, *ctx);
+	if (token == NULL) {
+		return CSS_INVALID;
+	}
+
+	old_ctx = *ctx;
+
+	if (tokenIsChar(token, '(') || (token->type == CSS_TOKEN_IDENT &&
+			lwc_string_caseless_isequal(token->idata,
+				c->strings[NOT], &match) == lwc_error_ok &&
+			match)) {
+		css_mq_cond *cond;
+		error = mq_parse_condition(c, vector, ctx, true, &cond);
+		if (error == CSS_OK) {
+			token = parserutils_vector_iterate(vector, ctx);
+			if (tokenIsChar(token, ')') == false) {
+				return CSS_INVALID;
+			}
+
+			result = malloc(sizeof(*result));
+			if (result == NULL) {
+				/* TODO: clean up cond */
+				return CSS_NOMEM;
+			}
+			memset(result, 0, sizeof(*result));
+			result->type = CSS_MQ_COND;
+			result->data.cond = cond;
+			*cond_or_feature = result;
+			return CSS_OK;
+		}
+	} else if (token->type == CSS_TOKEN_IDENT ||
+			token->type == CSS_TOKEN_NUMBER ||
+			token->type == CSS_TOKEN_DIMENSION) {
+		css_mq_feature *feature;
+		error = mq_parse_media_feature(c, vector, ctx, &feature);
+		if (error == CSS_OK) {
+			result = malloc(sizeof(*result));
+			if (result == NULL) {
+				/* TODO: clean up feature */
+				return CSS_NOMEM;
+			}
+			memset(result, 0, sizeof(*result));
+			result->type = CSS_MQ_FEATURE;
+			result->data.feat = feature;
+			*cond_or_feature = result;
+			return CSS_OK;
+		}
+	}
+
+	*ctx = old_ctx;
+	error = mq_parse_general_enclosed(c, vector, ctx);
+
+	return error;
 }
 
-static css_error mq_parse_condition()
+static css_error mq_parse_condition(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		bool permit_or, css_mq_cond **cond)
 {
+	const css_token *token;
+	bool match;
+	int op = 0; /* Will be AND | OR once we've had one */
+	css_mq_cond_or_feature *cond_or_feature, **parts;
+	css_mq_cond *result;
+	css_error error;
+
 	/* <media-condition> = <media-not> | <media-in-parens> [ <media-and>* | <media-or>* ]
 	 * <media-condition-without-or> = <media-not> | <media-in-parens> <media-and>*
 	 * <media-not> = not <media-in-parens>
 	 * <media-and> = and <media-in-parens>
 	 * <media-or> = or <media-in-parens>
 	 */
+
+	token = parserutils_vector_peek(vector, *ctx);
+	if (token == NULL || tokenIsChar(token, '(') == false ||
+			token->type != CSS_TOKEN_IDENT ||
+			lwc_string_caseless_isequal(token->idata,
+				c->strings[NOT], &match) != lwc_error_ok ||
+			match == false) {
+		return CSS_INVALID;
+	}
+
+	result = malloc(sizeof(*result));
+	if (result == NULL) {
+		return CSS_NOMEM;
+	}
+	memset(result, 0, sizeof(*result));
+	result->parts = malloc(sizeof(*result->parts));
+	if (result->parts == NULL) {
+		free(result);
+		return CSS_NOMEM;
+	}
+	memset(result->parts, 0, sizeof(*result->parts));
+
+	if (tokenIsChar(token, '(') == false) {
+		/* Must be "not" */
+		parserutils_vector_iterate(vector, ctx);
+		consumeWhitespace(vector, ctx);
+
+		error = mq_parse_media_in_parens(c, vector, ctx, &cond_or_feature);
+		if (error != CSS_OK) {
+			free(result->parts);
+			free(result);
+			return CSS_INVALID;
+		}
+
+		result->negate = 1;
+		result->parts->nparts = 1;
+		result->parts->parts = malloc(sizeof(*result->parts->parts));
+		if (result->parts->parts == NULL) {
+			/* TODO: clean up cond_or_feature */
+			free(result->parts);
+			free(result);
+			return CSS_NOMEM;
+		}
+		result->parts->parts[0] = cond_or_feature;
+
+		*cond = result;
+
+		return CSS_OK;
+	}
+
+	/* FOLLOW(media-condition) := RPAREN | COMMA | EOF */
+	while (token != NULL && tokenIsChar(token, ')') == false &&
+			tokenIsChar(token, ',') == false) {
+		error = mq_parse_media_in_parens(c, vector, ctx, &cond_or_feature);
+		if (error != CSS_OK) {
+			/* TODO: clean up result->parts->parts */
+			free(result->parts);
+			free(result);
+			return CSS_INVALID;
+		}
+
+		parts = realloc(result->parts->parts,
+				(result->parts->nparts+1)*sizeof(*result->parts->parts));
+		if (parts == NULL) {
+			/* TODO: clean up result->parts->parts */
+			free(result->parts);
+			free(result);
+			return CSS_NOMEM;
+		}
+		parts[result->parts->nparts] = cond_or_feature;
+		result->parts->parts = parts;
+		result->parts->nparts++;
+
+		consumeWhitespace(vector, token);
+
+		token = parserutils_vector_peek(vector, *ctx);
+		if (token != NULL && tokenIsChar(token, ')') == false &&
+				tokenIsChar(token, ',') == false) {
+			if (token->type != CSS_TOKEN_IDENT) {
+				/* TODO: clean up result->parts->parts */
+				free(result->parts);
+				free(result);
+				return CSS_INVALID;
+			} else if (lwc_string_caseless_isequal(token->idata,
+					c->strings[AND], &match) == lwc_error_ok &&
+					match) {
+				if (op != 0 && op != AND) {
+					/* TODO: clean up result->parts->parts */
+					free(result->parts);
+					free(result);
+					return CSS_INVALID;
+				}
+				op = AND;
+			} else if (lwc_string_caseless_isequal(token->idata,
+						c->strings[OR], &match) == lwc_error_ok &&
+					match) {
+				if (permit_or == false || (op != 0 && op != OR)) {
+					/* TODO: clean up result->parts->parts */
+					free(result->parts);
+					free(result);
+					return CSS_INVALID;
+				}
+				op = OR;
+			} else {
+				/* Neither AND nor OR */
+				/* TODO: clean up result->parts->parts */
+				free(result->parts);
+				free(result);
+				return CSS_INVALID;
+			}
+
+			parserutils_vector_iterate(vector, ctx);
+			consumeWhitespace(vector, ctx);
+		}
+	}
+
+	if (op == OR) {
+		result->op = 1;
+	}
+
+	*cond = result;
+
+	return CSS_OK;
+}
+
+static css_error mq_parse_media_query(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_mq_query **query)
+{
+	const css_token *token;
+	bool match, is_condition = false;
+	css_mq_query *result;
+	css_error error;
+
+	/* <media-query> = <media-condition>
+	 *               | [ not | only ]? <media-type> [ and <media-condition-without-or> ]?
+	 * <media-type> = <ident> (except "not", "and", "or", "only")
+	 */
+
+	// LPAREN -> media-condition
+	//    not LPAREN -> media-condition
+
+	consumeWhitespace(vector, ctx);
+
+	token = parserutils_vector_peek(vector, *ctx);
+	if (tokenIsChar(token, '(')) {
+		is_condition = true;
+	} else if (token->type == CSS_TOKEN_IDENT &&
+			lwc_string_caseless_isequal(token->idata,
+				c->strings[NOT], &match) == lwc_error_ok &&
+				match) {
+		int old_ctx = *ctx;
+
+		parserutils_vector_iterate(vector, ctx);
+		consumeWhitespace(vector, ctx);
+
+		token = parserutils_vector_peek(vector, *ctx);
+		if (tokenIsChar(token, '(')) {
+			is_condition = true;
+		}
+
+		*ctx = old_ctx;
+	}
+
+	result = malloc(sizeof(*result));
+	if (result == NULL) {
+		return CSS_NOMEM;
+	}
+	memset(result, 0, sizeof(*result));
+
+	if (is_condition) {
+		/* media-condition */
+		error = mq_parse_condition(c, vector, ctx, true, &result->cond);
+		if (error != CSS_OK) {
+			free(result);
+			return error;
+		}
+
+		*query = result;
+		return CSS_OK;
+	}
+
+	token = parserutils_vector_iterate(vector, ctx);
+	if (token == NULL || token->type != CSS_TOKEN_IDENT) {
+		free(result);
+		return CSS_INVALID;
+	}
+
+	if (lwc_string_caseless_isequal(token->idata,
+			c->strings[NOT], &match) == lwc_error_ok &&
+			match) {
+		result->negate_type = 1;
+		consumeWhitespace(vector, ctx);
+		token = parserutils_vector_iterate(vector, ctx);
+	} else if (lwc_string_caseless_isequal(token->idata,
+			c->strings[ONLY], &match) == lwc_error_ok &&
+			match) {
+		consumeWhitespace(vector, ctx);
+		token = parserutils_vector_iterate(vector, ctx);
+	}
+
+	if (token == NULL || token->type != CSS_TOKEN_IDENT) {
+		free(result);
+		return CSS_INVALID;
+	}
+
+	result->type = lwc_string_ref(token->idata);
+
+	consumeWhitespace(vector, ctx);
+
+	token = parserutils_vector_iterate(vector, ctx);
+	if (token != NULL) {
+		if (token->type != CSS_TOKEN_IDENT ||
+				lwc_string_caseless_isequal(token->idata,
+					c->strings[AND], &match) != lwc_error_ok ||
+				match == false) {
+			lwc_string_unref(result->type);
+			free(result);
+			return CSS_INVALID;
+		}
+
+		consumeWhitespace(vector, ctx);
+
+		error = mq_parse_condition(c, vector, ctx, false, &result->cond);
+		if (error != CSS_OK) {
+			lwc_string_unref(result->type);
+			free(result);
+			return error;
+		}
+	}
+
+	*query = result;
+	return CSS_OK;
 }
 
 css_error css__mq_parse_media_list(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		css_mq_query **media)
 {
-	css_mq_query *ret = NULL;
+	css_mq_query *result = NULL, *last;
 	const css_token *token;
+	css_error error;
 
-	/* <media-query-list> = <media-query> [ COMMA <media-query> ]*
-	 * <media-query> = <media-condition>
-	 *               | [ not | only ]? <media-type> [ and <media-condition-without-or> ]?
-	 * <media-type> = <ident> (except "not", "and", "or", "only")
-	 *
-	 */
+	/* <media-query-list> = <media-query> [ COMMA <media-query> ]* */
 
 	/* if {[(, push }]) to stack
 	 * if func, push ) to stack
@@ -466,78 +785,32 @@ css_error css__mq_parse_media_list(css_language *c,
 	 * if comma, consume, and start again from the next input token
 	 */
 
-	UNUSED(c);
-
-	token = parserutils_vector_iterate(vector, ctx);
-
+	token = parserutils_vector_peek(vector, *ctx);
 	while (token != NULL) {
-		if (token->type != CSS_TOKEN_IDENT)
-			return CSS_INVALID;
+		css_mq_query *query;
 
-#if 0
-		if (lwc_string_caseless_isequal(token->idata, c->strings[AURAL], 
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_AURAL;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[BRAILLE], 
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_BRAILLE;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[EMBOSSED], 
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_EMBOSSED;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[HANDHELD], 
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_HANDHELD;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[PRINT], 
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_PRINT;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[PROJECTION], 
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_PROJECTION;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[SCREEN], 
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_SCREEN;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[SPEECH], 
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_SPEECH;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[TTY], 
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_TTY;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[TV], 
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_TV;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[ALL], 
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_ALL;
-		} else
-			return CSS_INVALID;
-#endif
+		error = mq_parse_media_query(c, vector, ctx, &query);
+		if (error != CSS_OK) {
+			/* TODO: error recovery (see above) */
+		} else {
+			if (result == NULL) {
+				result = last = query;
+			} else {
+				last->next = query;
+				last = query;
+			}
+		}
+
 		consumeWhitespace(vector, ctx);
 
 		token = parserutils_vector_iterate(vector, ctx);
-		if (token != NULL && tokenIsChar(token, ',') == false)
-			return CSS_INVALID;
-
-		consumeWhitespace(vector, ctx);
+		if (token != NULL && tokenIsChar(token, ',') == false) {
+			/* Give up */
+			break;
+		}
 	}
 
-#if 0
-	/* If, after parsing the media list, we still have no media, 
-	 * then it must be ALL. */
-	if (ret == 0)
-		ret = CSS_MEDIA_ALL;
-#endif
-
-	*media = ret;
+	*media = result;
 
 	return CSS_OK;
 }
