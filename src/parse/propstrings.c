@@ -439,6 +439,9 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	{ "column-reverse", SLEN("column-reverse") },
 	{ "wrap", SLEN("wrap") },
 	{ "wrap-reverse", SLEN("wrap-reverse") },
+	{ "and", SLEN("and") },
+	{ "or", SLEN("or") },
+	{ "only", SLEN("only") },
 
 	{ "aliceblue", SLEN("aliceblue") },
 	{ "antiquewhite", SLEN("antiquewhite") },
