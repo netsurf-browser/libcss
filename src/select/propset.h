@@ -1361,6 +1361,24 @@ static inline css_error set_background_attachment(
 #undef BACKGROUND_ATTACHMENT_SHIFT
 #undef BACKGROUND_ATTACHMENT_INDEX
 
+#define BOX_SIZING_INDEX 34
+#define BOX_SIZING_SHIFT 0
+#define BOX_SIZING_MASK  0x3
+static inline css_error set_box_sizing(
+		css_computed_style *style, uint8_t type)
+{
+	uint8_t *bits = &style->i.bits[BOX_SIZING_INDEX];
+
+	/* 2bits: type */
+	*bits = (*bits & ~BOX_SIZING_MASK) |
+			((type & 0x3) << BOX_SIZING_SHIFT);
+
+	return CSS_OK;
+}
+#undef BOX_SIZING_MASK
+#undef BOX_SIZING_SHIFT
+#undef BOX_SIZING_INDEX
+
 #define BORDER_COLLAPSE_INDEX 13
 #define BORDER_COLLAPSE_SHIFT 0
 #define BORDER_COLLAPSE_MASK  0x3

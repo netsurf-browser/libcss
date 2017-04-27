@@ -1268,6 +1268,23 @@ static inline uint8_t get_background_attachment(
 #undef BACKGROUND_ATTACHMENT_SHIFT
 #undef BACKGROUND_ATTACHMENT_INDEX
 
+#define BOX_SIZING_INDEX 34
+#define BOX_SIZING_SHIFT 0
+#define BOX_SIZING_MASK  0x3
+static inline uint8_t get_box_sizing(
+		const css_computed_style *style)
+{
+	uint8_t bits = style->i.bits[BOX_SIZING_INDEX];
+	bits &= BOX_SIZING_MASK;
+	bits >>= BOX_SIZING_SHIFT;
+
+	/* 2bits: type */
+	return bits;
+}
+#undef BOX_SIZING_MASK
+#undef BOX_SIZING_SHIFT
+#undef BOX_SIZING_INDEX
+
 #define BORDER_COLLAPSE_INDEX 13
 #define BORDER_COLLAPSE_SHIFT 0
 #define BORDER_COLLAPSE_MASK  0x3
