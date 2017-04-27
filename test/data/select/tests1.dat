@@ -26,6 +26,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -129,6 +130,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -236,6 +238,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -344,6 +347,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -452,6 +456,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -560,6 +565,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -658,6 +664,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -757,6 +764,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -856,6 +864,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -954,6 +963,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -1057,6 +1067,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -1160,6 +1171,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -1264,6 +1276,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -1371,6 +1384,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -1477,6 +1491,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -1589,6 +1604,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -1701,6 +1717,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -1813,6 +1830,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -1929,6 +1947,7 @@ border-right-width: 2px
 border-bottom-width: 4px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -2044,6 +2063,7 @@ border-right-width: 2em
 border-bottom-width: 4px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -2157,6 +2177,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -2269,6 +2290,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -2381,6 +2403,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -2493,6 +2516,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -2605,6 +2629,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -2717,6 +2742,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -2829,6 +2855,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -2941,6 +2968,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -3053,6 +3081,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -3165,6 +3194,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -3277,6 +3307,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -3389,6 +3420,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -3501,6 +3533,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -3613,6 +3646,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -3725,6 +3759,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -3837,6 +3872,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -3949,6 +3985,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -4061,6 +4098,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -4173,6 +4211,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -4285,6 +4324,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -4397,6 +4437,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -4502,6 +4543,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -4607,6 +4649,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -4712,6 +4755,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -4814,6 +4858,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: auto
 break-before: auto
 break-inside: auto
@@ -4917,6 +4962,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: avoid
 break-before: column
 break-inside: auto
@@ -5020,6 +5066,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: avoid-page
 break-before: always
 break-inside: auto
@@ -5123,6 +5170,7 @@ border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
 bottom: auto
+box-sizing: content-box
 break-after: avoid-page
 break-before: always
 break-inside: avoid
@@ -5195,3 +5243,203 @@ writing-mode: horizontal-tb
 z-index: auto
 #reset
 
+#tree
+| div*
+#ua
+div { box-sizing: inherit; }
+#user
+#errors
+#expected
+background-attachment: scroll
+background-color: #00000000
+background-image: none
+background-position: 0% 0%
+background-repeat: repeat
+border-collapse: separate
+border-spacing: 0px 0px
+border-top-color: #ff000000
+border-right-color: #ff000000
+border-bottom-color: #ff000000
+border-left-color: #ff000000
+border-top-style: none
+border-right-style: none
+border-bottom-style: none
+border-left-style: none
+border-top-width: 2px
+border-right-width: 2px
+border-bottom-width: 2px
+border-left-width: 2px
+bottom: auto
+box-sizing: content-box
+break-after: auto
+break-before: auto
+break-inside: auto
+caption-side: top
+clear: none
+clip: auto
+color: #ff000000
+column-count: auto
+column-fill: balance
+column-gap: normal
+column-rule-color: #ff000000
+column-rule-style: none
+column-rule-width: 2px
+column-span: none
+column-width: auto
+content: normal
+counter-increment: none
+counter-reset: none
+cursor: auto
+direction: ltr
+display: inline
+empty-cells: show
+float: none
+font-family: sans-serif
+font-size: 12pt
+font-style: normal
+font-variant: normal
+font-weight: normal
+height: auto
+left: auto
+letter-spacing: normal
+line-height: normal
+list-style-image: none
+list-style-position: outside
+list-style-type: disc
+margin-top: 0px
+margin-right: 0px
+margin-bottom: 0px
+margin-left: 0px
+max-height: none
+max-width: none
+min-height: 0px
+min-width: 0px
+opacity: 1.000
+outline-color: invert
+outline-style: none
+outline-width: 2px
+overflow-x: visible
+overflow-y: visible
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+position: static
+quotes: none
+right: auto
+table-layout: auto
+text-align: default
+text-decoration: none
+text-indent: 0px
+text-transform: none
+top: auto
+unicode-bidi: normal
+vertical-align: baseline
+visibility: visible
+white-space: normal
+width: auto
+word-spacing: normal
+writing-mode: horizontal-tb
+z-index: auto
+#reset
+
+#tree
+| div*
+#ua
+div { box-sizing: inherit; }
+#user
+div { box-sizing: border-box; }
+#errors
+#expected
+background-attachment: scroll
+background-color: #00000000
+background-image: none
+background-position: 0% 0%
+background-repeat: repeat
+border-collapse: separate
+border-spacing: 0px 0px
+border-top-color: #ff000000
+border-right-color: #ff000000
+border-bottom-color: #ff000000
+border-left-color: #ff000000
+border-top-style: none
+border-right-style: none
+border-bottom-style: none
+border-left-style: none
+border-top-width: 2px
+border-right-width: 2px
+border-bottom-width: 2px
+border-left-width: 2px
+bottom: auto
+box-sizing: border-box
+break-after: auto
+break-before: auto
+break-inside: auto
+caption-side: top
+clear: none
+clip: auto
+color: #ff000000
+column-count: auto
+column-fill: balance
+column-gap: normal
+column-rule-color: #ff000000
+column-rule-style: none
+column-rule-width: 2px
+column-span: none
+column-width: auto
+content: normal
+counter-increment: none
+counter-reset: none
+cursor: auto
+direction: ltr
+display: inline
+empty-cells: show
+float: none
+font-family: sans-serif
+font-size: 12pt
+font-style: normal
+font-variant: normal
+font-weight: normal
+height: auto
+left: auto
+letter-spacing: normal
+line-height: normal
+list-style-image: none
+list-style-position: outside
+list-style-type: disc
+margin-top: 0px
+margin-right: 0px
+margin-bottom: 0px
+margin-left: 0px
+max-height: none
+max-width: none
+min-height: 0px
+min-width: 0px
+opacity: 1.000
+outline-color: invert
+outline-style: none
+outline-width: 2px
+overflow-x: visible
+overflow-y: visible
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+position: static
+quotes: none
+right: auto
+table-layout: auto
+text-align: default
+text-decoration: none
+text-indent: 0px
+text-transform: none
+top: auto
+unicode-bidi: normal
+vertical-align: baseline
+visibility: visible
+white-space: normal
+width: auto
+word-spacing: normal
+writing-mode: horizontal-tb
+z-index: auto
+#reset

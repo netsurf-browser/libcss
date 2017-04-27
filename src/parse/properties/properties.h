@@ -112,6 +112,9 @@ css_error css__parse_border_width(css_language *c,
 css_error css__parse_bottom(css_language *c,
 		const parserutils_vector *vector, int *ctx, 
 		css_style *result);
+css_error css__parse_box_sizing(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
 css_error css__parse_break_after(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		css_style *result);

@@ -478,6 +478,7 @@ static const char *opcode_names[] = {
 	"column-width",
 	"writing-mode",
 	"overflow-y",
+	"box-sizing",
 };
 
 static void dump_css_fixed(css_fixed f, char **ptr)
@@ -973,6 +974,16 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					ADVANCE(sizeof(unit));
 					dump_unit(val, unit, ptr);
 				}
+					break;
+				}
+				break;
+			case CSS_PROP_BOX_SIZING:
+				switch (value) {
+				case BOX_SIZING_CONTENT_BOX:
+					*ptr += sprintf(*ptr, "content-box");
+					break;
+				case BOX_SIZING_BORDER_BOX:
+					*ptr += sprintf(*ptr, "border-box");
 					break;
 				}
 				break;

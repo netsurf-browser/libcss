@@ -632,6 +632,11 @@ uint8_t css_computed_border_left_color(const css_computed_style *style,
 	return get_border_left_color(style, color);
 }
 
+uint8_t css_computed_box_sizing(const css_computed_style *style)
+{
+	return get_box_sizing(style);
+}
+
 uint8_t css_computed_height(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {

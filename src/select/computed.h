@@ -159,8 +159,9 @@ struct css_computed_style_i {
  * unicode_bidi			  2
  * visibility			  2
  * white_space			  3
+ * box_sizing			  2
  *				---
- *				 84 bits
+ *				 86 bits
  *
  * Colours are 32bits of AARRGGBB
  * Dimensions are encoded as a fixed point value + 4 bits of unit data
@@ -250,7 +251,7 @@ struct css_computed_style_i {
  * 21 mmmmmccc	min-width           | clear
  * 22 tttttxxx	padding-top         | overflow-x
  * 23 rrrrrppp	padding-right       | position
- * 24 bbbbbo..	padding-bottom      | opacity               | <unused>
+ * 24 bbbbboss	padding-bottom      | opacity               | box-sizing
  * 25 lllllttt	padding-left        | text-transform
  * 26 tttttwww	text-indent         | white-space
  * 27 bbbbbbbb	background-position

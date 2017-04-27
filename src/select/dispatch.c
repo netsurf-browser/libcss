@@ -582,5 +582,10 @@ struct prop_table prop_dispatch[CSS_N_PROPERTIES] = {
 		PROPERTY_FUNCS(overflow_y),
 		0,
 		GROUP_NORMAL
+	},
+	{
+		PROPERTY_FUNCS(box_sizing),
+		0,
+		GROUP_NORMAL
 	}
 };

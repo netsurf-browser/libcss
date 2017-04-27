@@ -103,6 +103,11 @@ enum op_bottom {
 	BOTTOM_AUTO			= 0x0000
 };
 
+enum op_box_sizing {
+	BOX_SIZING_CONTENT_BOX		= 0x0000,
+	BOX_SIZING_BORDER_BOX		= 0x0001
+};
+
 enum op_break_after {
 	BREAK_AFTER_AUTO		= 0x0000,
 	BREAK_AFTER_ALWAYS		= 0x0001,

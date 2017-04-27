@@ -715,6 +715,27 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	ptr += wrote;
 	*len -= wrote;
 
+	/* box-sizing */
+	val = css_computed_box_sizing(style);
+	switch (val) {
+	case CSS_BOX_SIZING_INHERIT:
+		wrote = snprintf(ptr, *len, "box-sizing: inherit\n");
+		break;
+	case CSS_BOX_SIZING_CONTENT_BOX:
+		wrote = snprintf(ptr, *len, "box-sizing: content-box\n");
+		break;
+	case CSS_BOX_SIZING_BORDER_BOX:
+		wrote = snprintf(ptr, *len, "box-sizing: border-box\n");
+		break;
+	default:
+		wrote = 0;
+		printf("DISASTER!\n");
+		assert(0);
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
 	/* break-after */
 	val = css_computed_break_after(style);
 	switch (val) {
