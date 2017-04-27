@@ -148,3 +148,36 @@
 |  cursor: url('foo.png'), url('bar.gif'), pointer
 #reset
 
+#data
+* { box-sizing: border-box; }
+#errors
+#expected
+| *
+|  box-sizing: border-box
+#reset
+
+#data
+* { box-sizing: content-box; }
+#errors
+#expected
+| *
+|  box-sizing: content-box
+#reset
+
+#data
+* { box-sizing: inherit; }
+#errors
+#expected
+| *
+|  box-sizing: inherit
+#reset
+
+#data
+* { box-sizing: border-box; max-width: 2em }
+#errors
+#expected
+| *
+|  box-sizing: border-box
+|  max-width: 2em
+#reset
+
