@@ -112,6 +112,7 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	{ "border-top-width", SLEN("border-top-width") },
 	{ "border-width", SLEN("border-width") },
 	{ "bottom", SLEN("bottom") },
+	{ "box-sizing", SLEN("box-sizing") },
 	{ "break-after", SLEN("break-after") },
 	{ "break-before", SLEN("break-before") },
 	{ "break-inside", SLEN("break-inside") },
@@ -412,6 +413,8 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	{ "horizontal-tb", SLEN("horizontal-tb") },
 	{ "vertical-rl", SLEN("vertical-rl") },
 	{ "vertical-lr", SLEN("vertical-lr") },
+	{ "content-box", SLEN("content-box") },
+	{ "border-box", SLEN("border-box") },
 
 	{ "aliceblue", SLEN("aliceblue") },
 	{ "antiquewhite", SLEN("antiquewhite") },

@@ -42,6 +42,7 @@ const css_prop_handler property_handlers[LAST_PROP + 1 - FIRST_PROP] =
 	css__parse_border_top_width,
 	css__parse_border_width,
 	css__parse_bottom,
+	css__parse_box_sizing,
 	css__parse_break_after,
 	css__parse_break_before,
 	css__parse_break_inside,

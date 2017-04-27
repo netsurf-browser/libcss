@@ -1249,5 +1249,11 @@ Opcodes
 		3     => auto,
 		other => Reserved for future expansion.
 
-71-3ff - Reserved for future expansion.
+71 - box-sizing
+	<value> (14bits) :
+		0     => content-box,
+		1     => border-box,
+		other => Reserved for future expansion.
+
+72-3ff - Reserved for future expansion.
 

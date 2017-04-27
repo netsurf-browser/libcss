@@ -127,6 +127,7 @@ enum css_properties_e {
 	CSS_PROP_COLUMN_WIDTH			= 0x06e,
 	CSS_PROP_WRITING_MODE			= 0x06f,
 	CSS_PROP_OVERFLOW_Y			= 0x070,
+	CSS_PROP_BOX_SIZING			= 0x071,
 
 	CSS_N_PROPERTIES
 };
@@ -207,6 +208,12 @@ enum css_bottom_e {
 	CSS_BOTTOM_INHERIT			= 0x0,
 	CSS_BOTTOM_SET				= 0x1,
 	CSS_BOTTOM_AUTO				= 0x2
+};
+
+enum css_box_sizing_e {
+	CSS_BOX_SIZING_INHERIT			= 0x0,
+	CSS_BOX_SIZING_CONTENT_BOX		= 0x1,
+	CSS_BOX_SIZING_BORDER_BOX		= 0x2
 };
 
 enum css_break_after_e {

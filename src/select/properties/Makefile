@@ -21,6 +21,7 @@ border_top_color.c \
 border_top_style.c \
 border_top_width.c \
 bottom.c \
+box_sizing.c \
 break_after.c \
 break_before.c \
 break_inside.c \
