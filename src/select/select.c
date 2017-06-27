@@ -388,10 +388,10 @@ css_error css_select_ctx_remove_sheet(css_select_ctx *ctx,
 	if (index == ctx->n_sheets)
 		return CSS_INVALID;
 
+	ctx->n_sheets--;
+
 	memmove(&ctx->sheets[index], &ctx->sheets[index + 1],
 			(ctx->n_sheets - index) * sizeof(css_select_sheet));
-
-	ctx->n_sheets--;
 
 	return CSS_OK;
 
