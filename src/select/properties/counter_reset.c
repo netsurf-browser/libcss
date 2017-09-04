@@ -14,14 +14,14 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_counter_reset(uint32_t opv, css_style *style, 
+css_error css__cascade_counter_reset(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	return css__cascade_counter_increment_reset(opv, style, state,
 			set_counter_reset);
 }
 
-css_error css__set_counter_reset_from_hint(const css_hint *hint, 
+css_error css__set_counter_reset_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
 	css_computed_counter *item;
@@ -72,12 +72,12 @@ css_error css__compose_counter_reset(const css_computed_style *parent,
 			for (i = items; i->name != NULL; i++)
 				n_items++;
 
-			copy = malloc((n_items + 1) * 
+			copy = malloc((n_items + 1) *
 					sizeof(css_computed_counter));
 			if (copy == NULL)
 				return CSS_NOMEM;
 
-			memcpy(copy, items, (n_items + 1) * 
+			memcpy(copy, items, (n_items + 1) *
 					sizeof(css_computed_counter));
 		}
 

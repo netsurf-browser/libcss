@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 			size_t read = fread(buf, 1, CHUNK_SIZE, fp);
 			assert(read == CHUNK_SIZE);
 
-			error = css_stylesheet_append_data(sheet, buf, 
+			error = css_stylesheet_append_data(sheet, buf,
 					CHUNK_SIZE);
 			assert(error == CSS_OK || error == CSS_NEEDDATA);
 
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 				css_stylesheet *import;
 				char *buf = malloc(lwc_string_length(url) + 1);
 
-				memcpy(buf, lwc_string_data(url), 
+				memcpy(buf, lwc_string_data(url),
 						lwc_string_length(url));
 				buf[lwc_string_length(url)] = '\0';
 
@@ -118,7 +118,7 @@ int main(int argc, char **argv)
 				assert(css_stylesheet_create(&params,
 					&import) == CSS_OK);
 
-				assert(css_stylesheet_data_done(import) == 
+				assert(css_stylesheet_data_done(import) ==
 					CSS_OK);
 
 				assert(css_stylesheet_register_import(sheet,
@@ -154,7 +154,7 @@ int main(int argc, char **argv)
 	}
 
 	printf("PASS\n");
-        
+
 	return 0;
 }
 

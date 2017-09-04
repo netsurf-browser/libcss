@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_padding_right(uint32_t opv, css_style *style, 
+css_error css__cascade_padding_right(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	return css__cascade_length(opv, style, state, set_padding_right);
@@ -29,7 +29,7 @@ css_error css__set_padding_right_from_hint(const css_hint *hint,
 
 css_error css__initial_padding_right(css_select_state *state)
 {
-	return set_padding_right(state->computed, CSS_PADDING_SET, 
+	return set_padding_right(state->computed, CSS_PADDING_SET,
 			0, CSS_UNIT_PX);
 }
 

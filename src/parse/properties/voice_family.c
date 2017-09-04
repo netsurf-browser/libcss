@@ -83,8 +83,8 @@ static css_code_t voice_family_value(css_language *c, const css_token *token, bo
  * Post condition: \a *ctx is updated with the next token to process
  *		 If the input is invalid, then \a *ctx remains unchanged.
  */
-css_error css__parse_voice_family(css_language *c, 
-		const parserutils_vector *vector, int *ctx, 
+css_error css__parse_voice_family(css_language *c,
+		const parserutils_vector *vector, int *ctx,
 		css_style *result)
 {
 	int orig_ctx = *ctx;
@@ -93,7 +93,7 @@ css_error css__parse_voice_family(css_language *c,
 	bool match;
 
 	/* [ IDENT+ | STRING ] [ ',' [ IDENT+ | STRING ] ]* | IDENT(inherit)
-	 * 
+	 *
 	 * In the case of IDENT+, any whitespace between tokens is collapsed to
 	 * a single space
 	 */

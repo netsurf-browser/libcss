@@ -27,8 +27,8 @@
  * Post condition: \a *ctx is updated with the next token to process
  *		   If the input is invalid, then \a *ctx remains unchanged.
  */
-css_error css__parse_background_position(css_language *c, 
-		const parserutils_vector *vector, int *ctx, 
+css_error css__parse_background_position(css_language *c,
+		const parserutils_vector *vector, int *ctx,
 		css_style *result)
 {
 	int orig_ctx = *ctx;
@@ -65,35 +65,35 @@ css_error css__parse_background_position(css_language *c,
 			if (token->type == CSS_TOKEN_IDENT) {
 				if ((lwc_string_caseless_isequal(
 						token->idata, c->strings[LEFT],
-						&match) == lwc_error_ok && 
+						&match) == lwc_error_ok &&
 						match)) {
-					value[i] = 
+					value[i] =
 						BACKGROUND_POSITION_HORZ_LEFT;
 				} else if ((lwc_string_caseless_isequal(
 						token->idata, c->strings[RIGHT],
-						&match) == lwc_error_ok && 
+						&match) == lwc_error_ok &&
 						match)) {
-					value[i] = 
+					value[i] =
 						BACKGROUND_POSITION_HORZ_RIGHT;
 				} else if ((lwc_string_caseless_isequal(
 						token->idata, c->strings[TOP],
-						&match) == lwc_error_ok && 
+						&match) == lwc_error_ok &&
 						match)) {
 					value[i] = BACKGROUND_POSITION_VERT_TOP;
 				} else if ((lwc_string_caseless_isequal(
-						token->idata, 
+						token->idata,
 						c->strings[BOTTOM],
-						&match) == lwc_error_ok && 
+						&match) == lwc_error_ok &&
 						match)) {
-					value[i] = 
+					value[i] =
 						BACKGROUND_POSITION_VERT_BOTTOM;
 				} else if ((lwc_string_caseless_isequal(
-						token->idata, 
+						token->idata,
 						c->strings[CENTER],
-						&match) == lwc_error_ok && 
+						&match) == lwc_error_ok &&
 						match)) {
 					/* We'll fix this up later */
-					value[i] = 
+					value[i] =
 						BACKGROUND_POSITION_VERT_CENTER;
 				} else if (i == 1) {
 					/* Second pass, so ignore this one */
@@ -108,15 +108,15 @@ css_error css__parse_background_position(css_language *c,
 			} else if (token->type == CSS_TOKEN_DIMENSION ||
 					token->type == CSS_TOKEN_NUMBER ||
 					token->type == CSS_TOKEN_PERCENTAGE) {
-				error = css__parse_unit_specifier(c, vector, ctx, 
+				error = css__parse_unit_specifier(c, vector, ctx,
 						UNIT_PX, &length[i], &unit[i]);
 				if (error != CSS_OK) {
 					*ctx = orig_ctx;
 					return error;
 				}
 
-				if (unit[i] & UNIT_ANGLE || 
-						unit[i] & UNIT_TIME || 
+				if (unit[i] & UNIT_ANGLE ||
+						unit[i] & UNIT_TIME ||
 						unit[i] & UNIT_FREQ) {
 					*ctx = orig_ctx;
 					return CSS_INVALID;
@@ -163,7 +163,7 @@ css_error css__parse_background_position(css_language *c,
 				value[1] != BACKGROUND_POSITION_VERT_SET) {
 			/* Two keywords. Verify the axes differ */
 			if (((value[0] & 0xf) != 0 && (value[1] & 0xf) != 0) ||
-					((value[0] & 0xf0) != 0 && 
+					((value[0] & 0xf0) != 0 &&
 						(value[1] & 0xf0) != 0)) {
 				*ctx = orig_ctx;
 				return CSS_INVALID;
@@ -175,7 +175,7 @@ css_error css__parse_background_position(css_language *c,
 
 			/* Verify the axes differ */
 			if (((value[0] & 0xf) != 0 && (value[1] & 0xf) != 0) ||
-					((value[0] & 0xf0) != 0 && 
+					((value[0] & 0xf0) != 0 &&
 						(value[1] & 0xf0) != 0)) {
 				*ctx = orig_ctx;
 				return CSS_INVALID;
@@ -183,9 +183,9 @@ css_error css__parse_background_position(css_language *c,
 		}
 	}
 
-	error = css__stylesheet_style_appendOPV(result, 
-					       CSS_PROP_BACKGROUND_POSITION, 
-					       flags, 
+	error = css__stylesheet_style_appendOPV(result,
+					       CSS_PROP_BACKGROUND_POSITION,
+					       flags,
 					       value[0] | value[1]);
 	if (error != CSS_OK) {
 		*ctx = orig_ctx;

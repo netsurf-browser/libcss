@@ -73,7 +73,7 @@ css_error css__parse_opacity(css_language *c,
 
 	if (error != CSS_OK)
 		*ctx = orig_ctx;
-	
+
 	return error;
 }
 

@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_text_indent(uint32_t opv, css_style *style, 
+css_error css__cascade_text_indent(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	return css__cascade_length(opv, style, state, set_text_indent);
@@ -29,7 +29,7 @@ css_error css__set_text_indent_from_hint(const css_hint *hint,
 
 css_error css__initial_text_indent(css_select_state *state)
 {
-	return set_text_indent(state->computed, CSS_TEXT_INDENT_SET, 
+	return set_text_indent(state->computed, CSS_TEXT_INDENT_SET,
 			0, CSS_UNIT_PX);
 }
 

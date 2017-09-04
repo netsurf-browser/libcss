@@ -27,8 +27,8 @@
  * Post condition: \a *ctx is updated with the next token to process
  *		   If the input is invalid, then \a *ctx remains unchanged.
  */
-css_error css__parse_elevation(css_language *c, 
-		const parserutils_vector *vector, int *ctx, 
+css_error css__parse_elevation(css_language *c,
+		const parserutils_vector *vector, int *ctx,
 		css_style *result)
 {
 	int orig_ctx = *ctx;

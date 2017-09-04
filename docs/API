@@ -182,12 +182,12 @@ The arguments are as follows:
 |   directly; instead it gets information about it through the functions given
 |   in the handler argument, described below. Usually this will be a node in a
 |   document tree.
-| 
+|
 + uint64_t media
 |   The media that the style should apply to. The computed style will only
 |   consider stylesheets or @media blocks that include this media. See the CSS
 |   specification for more details.
-| 
+|
 + const css_stylesheet *inline_style
 |
 + css_select_handler *handler
@@ -213,7 +213,7 @@ following in common:
 
  * the last one or two arguments are pointers that must be updated with the
    required information
- 
+
  * the return value is a css_error and should be CSS_OK if everything worked and
    an error code otherwise
 

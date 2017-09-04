@@ -27,8 +27,8 @@
  * Post condition: \a *ctx is updated with the next token to process
  *		   If the input is invalid, then \a *ctx remains unchanged.
  */
-css_error css__parse_font_weight(css_language *c, 
-		const parserutils_vector *vector, int *ctx, 
+css_error css__parse_font_weight(css_language *c,
+		const parserutils_vector *vector, int *ctx,
 		css_style *result)
 {
 	int orig_ctx = *ctx;
@@ -38,7 +38,7 @@ css_error css__parse_font_weight(css_language *c,
 	uint16_t value = 0;
 	bool match;
 
-	/* NUMBER (100, 200, 300, 400, 500, 600, 700, 800, 900) | 
+	/* NUMBER (100, 200, 300, 400, 500, 600, 700, 800, 900) |
 	 * IDENT (normal, bold, bolder, lighter, inherit) */
 	token = parserutils_vector_iterate(vector, ctx);
 	if (token == NULL || (token->type != CSS_TOKEN_IDENT &&
@@ -53,7 +53,7 @@ css_error css__parse_font_weight(css_language *c,
 		flags |= FLAG_INHERIT;
 	} else if (token->type == CSS_TOKEN_NUMBER) {
 		size_t consumed = 0;
-		css_fixed num = css__number_from_lwc_string(token->idata, 
+		css_fixed num = css__number_from_lwc_string(token->idata,
 				true, &consumed);
 		/* Invalid if there are trailing characters */
 		if (consumed != lwc_string_length(token->idata)) {
@@ -98,9 +98,9 @@ css_error css__parse_font_weight(css_language *c,
 					       CSS_PROP_FONT_WEIGHT,
 					       flags,
 					       value);
-	if (error != CSS_OK) 
+	if (error != CSS_OK)
 		*ctx = orig_ctx;
-	
+
 
 	return error;
 }

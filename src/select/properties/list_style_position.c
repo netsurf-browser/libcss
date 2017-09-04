@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_list_style_position(uint32_t opv, css_style *style, 
+css_error css__cascade_list_style_position(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = CSS_LIST_STYLE_POSITION_INHERIT;
@@ -48,7 +48,7 @@ css_error css__set_list_style_position_from_hint(const css_hint *hint,
 
 css_error css__initial_list_style_position(css_select_state *state)
 {
-	return set_list_style_position(state->computed, 
+	return set_list_style_position(state->computed,
 			CSS_LIST_STYLE_POSITION_OUTSIDE);
 }
 

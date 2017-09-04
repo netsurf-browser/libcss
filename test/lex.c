@@ -25,42 +25,42 @@ static void printToken(const css_token *token)
 
 	switch (token->type) {
 	case CSS_TOKEN_IDENT:
-		printf("IDENT(%.*s)", 
+		printf("IDENT(%.*s)",
 				(int) token->data.len, token->data.data);
 		break;
 	case CSS_TOKEN_ATKEYWORD:
-		printf("ATKEYWORD(%.*s)", 
+		printf("ATKEYWORD(%.*s)",
 				(int) token->data.len, token->data.data);
 		break;
 	case CSS_TOKEN_STRING:
-		printf("STRING(%.*s)", 
+		printf("STRING(%.*s)",
 				(int) token->data.len, token->data.data);
 		break;
 	case CSS_TOKEN_INVALID_STRING:
-		printf("INVALID(%.*s)", 
+		printf("INVALID(%.*s)",
 				(int) token->data.len, token->data.data);
 		break;
 	case CSS_TOKEN_HASH:
-		printf("HASH(%.*s)", 
+		printf("HASH(%.*s)",
 				(int) token->data.len, token->data.data);
 		break;
 	case CSS_TOKEN_NUMBER:
-		printf("NUMBER(%.*s)", 
+		printf("NUMBER(%.*s)",
 				(int) token->data.len, token->data.data);
 		break;
 	case CSS_TOKEN_PERCENTAGE:
-		printf("PERCENTAGE(%.*s)", 
+		printf("PERCENTAGE(%.*s)",
 				(int) token->data.len, token->data.data);
 		break;
 	case CSS_TOKEN_DIMENSION:
-		printf("DIMENSION(%.*s)", 
+		printf("DIMENSION(%.*s)",
 				(int) token->data.len, token->data.data);
 		break;
 	case CSS_TOKEN_URI:
 		printf("URI(%.*s)", (int) token->data.len, token->data.data);
 		break;
 	case CSS_TOKEN_UNICODE_RANGE:
-		printf("UNICODE-RANGE(%.*s)", 
+		printf("UNICODE-RANGE(%.*s)",
 				(int) token->data.len, token->data.data);
 		break;
 	case CSS_TOKEN_CDO:
@@ -76,7 +76,7 @@ static void printToken(const css_token *token)
 		printf("COMMENT(%.*s)", (int) token->data.len, token->data.data);
 		break;
 	case CSS_TOKEN_FUNCTION:
-		printf("FUNCTION(%.*s)", 
+		printf("FUNCTION(%.*s)",
 				(int) token->data.len, token->data.data);
 		break;
 	case CSS_TOKEN_INCLUDES:
@@ -128,11 +128,11 @@ int main(int argc, char **argv)
 	}
 
 	for (i = 0; i < ITERATIONS; i++) {
-		assert(parserutils_inputstream_create("UTF-8", 
-			CSS_CHARSET_DICTATED,css__charset_extract, 
+		assert(parserutils_inputstream_create("UTF-8",
+			CSS_CHARSET_DICTATED,css__charset_extract,
 			&stream) == PARSERUTILS_OK);
 
-		assert(css__lexer_create(stream, &lexer) == 
+		assert(css__lexer_create(stream, &lexer) ==
 			CSS_OK);
 
 		fp = fopen(argv[1], "rb");
@@ -154,7 +154,7 @@ int main(int argc, char **argv)
 
 			len -= CHUNK_SIZE;
 
-			while ((error = css__lexer_get_token(lexer, &tok)) == 
+			while ((error = css__lexer_get_token(lexer, &tok)) ==
 					CSS_OK) {
 				printToken(tok);
 
@@ -175,7 +175,7 @@ int main(int argc, char **argv)
 
 		fclose(fp);
 
-		assert(parserutils_inputstream_append(stream, NULL, 0) == 
+		assert(parserutils_inputstream_append(stream, NULL, 0) ==
 				PARSERUTILS_OK);
 
 		while ((error = css__lexer_get_token(lexer, &tok)) == CSS_OK) {

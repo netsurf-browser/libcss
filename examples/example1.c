@@ -43,8 +43,8 @@ static css_error named_generic_sibling_node(void *pw, void *node,
 		void **sibling);
 static css_error parent_node(void *pw, void *node, void **parent);
 static css_error sibling_node(void *pw, void *node, void **sibling);
-static css_error node_has_name(void *pw, void *node, 
-		const css_qname *qname, 
+static css_error node_has_name(void *pw, void *node,
+		const css_qname *qname,
 		bool *match);
 static css_error node_has_class(void *pw, void *node,
 		lwc_string *name,
@@ -299,9 +299,9 @@ css_error node_name(void *pw, void *n, css_qname *qname)
 	lwc_string *node = n;
 
 	UNUSED(pw);
-	
+
 	qname->name = lwc_string_ref(node);
-	
+
 	return CSS_OK;
 }
 
@@ -691,17 +691,17 @@ css_error compute_font_size(void *pw, const css_hint *parent, css_hint *size)
 		size->data.length = sizes[size->status - 1];
 	} else if (size->status == CSS_FONT_SIZE_LARGER) {
 		/** \todo Step within table, if appropriate */
-		size->data.length.value = 
+		size->data.length.value =
 				FMUL(parent_size->value, FLTTOFIX(1.2));
 		size->data.length.unit = parent_size->unit;
 	} else if (size->status == CSS_FONT_SIZE_SMALLER) {
 		/** \todo Step within table, if appropriate */
-		size->data.length.value = 
+		size->data.length.value =
 				FMUL(parent_size->value, FLTTOFIX(1.2));
 		size->data.length.unit = parent_size->unit;
 	} else if (size->data.length.unit == CSS_UNIT_EM ||
 			size->data.length.unit == CSS_UNIT_EX) {
-		size->data.length.value = 
+		size->data.length.value =
 			FMUL(size->data.length.value, parent_size->value);
 
 		if (size->data.length.unit == CSS_UNIT_EX) {

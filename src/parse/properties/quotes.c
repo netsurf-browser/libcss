@@ -69,39 +69,39 @@ css_error css__parse_quotes(css_language *c,
 			uint32_t open_snumber;
 			uint32_t close_snumber;
 
-			error = css__stylesheet_string_add(c->sheet, 
-					lwc_string_ref(token->idata), 
+			error = css__stylesheet_string_add(c->sheet,
+					lwc_string_ref(token->idata),
 					&open_snumber);
-			if (error != CSS_OK) 
+			if (error != CSS_OK)
 				break;
 
 			consumeWhitespace(vector, ctx);
 
 			token = parserutils_vector_iterate(vector, ctx);
-			if ((token == NULL) || 
+			if ((token == NULL) ||
 			    (token->type != CSS_TOKEN_STRING)) {
 				error = CSS_INVALID;
 				break;
 			}
 
-			error = css__stylesheet_string_add(c->sheet, 
-					lwc_string_ref(token->idata), 
+			error = css__stylesheet_string_add(c->sheet,
+					lwc_string_ref(token->idata),
 					&close_snumber);
-			if (error != CSS_OK) 
+			if (error != CSS_OK)
 				break;
 
 			consumeWhitespace(vector, ctx);
 
 			error = CSS_FIRST_APPEND(QUOTES_STRING);
-			if (error != CSS_OK) 
+			if (error != CSS_OK)
 				break;
 
 			error = css__stylesheet_style_append(result, open_snumber);
-			if (error != CSS_OK) 
+			if (error != CSS_OK)
 				break;
 
 			error = css__stylesheet_style_append(result, close_snumber);
-			if (error != CSS_OK) 
+			if (error != CSS_OK)
 				break;
 
 			first = false;
@@ -115,7 +115,7 @@ css_error css__parse_quotes(css_language *c,
 		if (error == CSS_OK) {
 			/* AddTerminator */
 			error = css__stylesheet_style_append(result, QUOTES_NONE);
-		} 
+		}
 	} else {
 		error = CSS_INVALID;
 	}

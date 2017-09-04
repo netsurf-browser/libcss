@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_font_style(uint32_t opv, css_style *style, 
+css_error css__cascade_font_style(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = CSS_FONT_STYLE_INHERIT;
@@ -63,7 +63,7 @@ css_error css__compose_font_style(const css_computed_style *parent,
 	if (type == CSS_FONT_STYLE_INHERIT) {
 		type= get_font_style(parent);
 	}
-	
+
 	return set_font_style(result, type);
 }
 

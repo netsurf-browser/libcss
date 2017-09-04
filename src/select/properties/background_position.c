@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_background_position(uint32_t opv, css_style *style, 
+css_error css__cascade_background_position(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = CSS_BACKGROUND_POSITION_INHERIT;
@@ -81,18 +81,18 @@ css_error css__cascade_background_position(uint32_t opv, css_style *style,
 	return CSS_OK;
 }
 
-css_error css__set_background_position_from_hint(const css_hint *hint, 
+css_error css__set_background_position_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
-	return set_background_position(style, hint->status, 
+	return set_background_position(style, hint->status,
 		hint->data.position.h.value, hint->data.position.h.unit,
 		hint->data.position.v.value, hint->data.position.v.unit);
 }
 
 css_error css__initial_background_position(css_select_state *state)
 {
-	return set_background_position(state->computed, 
-			CSS_BACKGROUND_POSITION_SET, 
+	return set_background_position(state->computed,
+			CSS_BACKGROUND_POSITION_SET,
 			0, CSS_UNIT_PCT, 0, CSS_UNIT_PCT);
 }
 
@@ -102,7 +102,7 @@ css_error css__compose_background_position(const css_computed_style *parent,
 {
 	css_fixed hlength = 0, vlength = 0;
 	css_unit hunit = CSS_UNIT_PX, vunit = CSS_UNIT_PX;
-	uint8_t type = get_background_position(child, &hlength, &hunit, 
+	uint8_t type = get_background_position(child, &hlength, &hunit,
 			&vlength, &vunit);
 
 	if (type == CSS_BACKGROUND_POSITION_INHERIT) {

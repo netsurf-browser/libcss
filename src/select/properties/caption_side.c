@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_caption_side(uint32_t opv, css_style *style, 
+css_error css__cascade_caption_side(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = CSS_CAPTION_SIDE_INHERIT;
@@ -40,7 +40,7 @@ css_error css__cascade_caption_side(uint32_t opv, css_style *style,
 	return CSS_OK;
 }
 
-css_error css__set_caption_side_from_hint(const css_hint *hint, 
+css_error css__set_caption_side_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
 	return set_caption_side(style, hint->status);
@@ -60,7 +60,7 @@ css_error css__compose_caption_side(const css_computed_style *parent,
 	if (type == CSS_CAPTION_SIDE_INHERIT) {
 		type = get_caption_side(parent);
 	}
-	
+
 	return set_caption_side(result, type);
 }
 

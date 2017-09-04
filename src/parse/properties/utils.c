@@ -136,28 +136,28 @@ css_error css__parse_border_side(css_language *c,
 
 	/* Firstly, handle inherit */
 	token = parserutils_vector_peek(vector, *ctx);
-	if (token == NULL) 
+	if (token == NULL)
 		return CSS_INVALID;
-		
+
 	if (is_css_inherit(c, token)) {
 		error = css_stylesheet_style_inherit(result, CSS_PROP_BORDER_TOP_COLOR + side);
-		if (error != CSS_OK) 
+		if (error != CSS_OK)
 			return error;
 
 		error = css_stylesheet_style_inherit(result, CSS_PROP_BORDER_TOP_STYLE + side);
-		if (error != CSS_OK) 
-			return error;		
+		if (error != CSS_OK)
+			return error;
 
 		error = css_stylesheet_style_inherit(result, CSS_PROP_BORDER_TOP_WIDTH + side);
-		if (error == CSS_OK) 
+		if (error == CSS_OK)
 			parserutils_vector_iterate(vector, ctx);
 
 		return error;
-	} 
+	}
 
 	/* allocate styles */
 	error = css__stylesheet_style_create(c->sheet, &color_style);
-	if (error != CSS_OK) 
+	if (error != CSS_OK)
 		return error;
 
 	error = css__stylesheet_style_create(c->sheet, &style_style);
@@ -188,19 +188,19 @@ css_error css__parse_border_side(css_language *c,
 		/* Try each property parser in turn, but only if we
 		 * haven't already got a value for this property.
 		 */
-		if ((color) && 
-		    (error = css__parse_border_side_color(c, vector, ctx, 
+		if ((color) &&
+		    (error = css__parse_border_side_color(c, vector, ctx,
 			     color_style, CSS_PROP_BORDER_TOP_COLOR + side)) == CSS_OK) {
 			color = false;
-		} else if ((style) && 
+		} else if ((style) &&
 			   (error = css__parse_border_side_style(c, vector, ctx,
 				    style_style, CSS_PROP_BORDER_TOP_STYLE + side)) == CSS_OK) {
 			style = false;
-		} else if ((width) && 
+		} else if ((width) &&
 			   (error = css__parse_border_side_width(c, vector, ctx,
 				    width_style, CSS_PROP_BORDER_TOP_WIDTH + side)) == CSS_OK) {
 			width = false;
-		} 
+		}
 
 		if (error == CSS_OK) {
 			consumeWhitespace(vector, ctx);
@@ -214,7 +214,7 @@ css_error css__parse_border_side(css_language *c,
 
 	if (style) {
 		error = css__stylesheet_style_appendOPV(style_style,
-				CSS_PROP_BORDER_TOP_STYLE + side, 0, 
+				CSS_PROP_BORDER_TOP_STYLE + side, 0,
 				BORDER_STYLE_NONE);
 		if (error != CSS_OK)
 			goto css__parse_border_side_cleanup;
@@ -295,7 +295,7 @@ static void HSL_to_RGB(css_fixed hue, css_fixed sat, css_fixed lit, uint8_t *r, 
 	/* Compute min(r,g,b) */
 	min_rgb = FSUB(FMUL(lit, INTTOFIX(2)), max_rgb);
 
-	/* We know that the value of at least one of the components is 
+	/* We know that the value of at least one of the components is
 	 * max(r,g,b) and that the value of at least one of the other
 	 * components is min(r,g,b).
 	 *
@@ -370,7 +370,7 @@ css_error css__parse_colour_specifier(css_language *c,
 
 	consumeWhitespace(vector, ctx);
 
-	/* IDENT(<colour name>) | 
+	/* IDENT(<colour name>) |
 	 * HASH(rgb | rrggbb) |
 	 * FUNCTION(rgb) [ [ NUMBER | PERCENTAGE ] ',' ] {3} ')'
 	 * FUNCTION(rgba) [ [ NUMBER | PERCENTAGE ] ',' ] {4} ')'
@@ -539,8 +539,8 @@ css_error css__parse_colour_specifier(css_language *c,
 			css_fixed hue, sat, lit;
 			int32_t alpha = 255;
 
-			/* hue is a number without a unit representing an 
-			 * angle (0-360) degrees  
+			/* hue is a number without a unit representing an
+			 * angle (0-360) degrees
 			 */
 			consumeWhitespace(vector, ctx);
 
@@ -615,7 +615,7 @@ css_error css__parse_colour_specifier(css_language *c,
 
 				if (!tokenIsChar(token, ','))
 					goto invalid;
-			
+
 				consumeWhitespace(vector, ctx);
 
 				token = parserutils_vector_iterate(vector, ctx);
@@ -625,7 +625,7 @@ css_error css__parse_colour_specifier(css_language *c,
 				alpha = css__number_from_lwc_string(token->idata, false, &consumed);
 				if (consumed != lwc_string_length(token->idata))
 					goto invalid; /* failed to consume the whole string as a number */
-				
+
 				alpha = FIXTOINT(FMUL(alpha, F_255));
 
 				consumeWhitespace(vector, ctx);
@@ -1074,11 +1074,11 @@ css_error css__ident_list_or_string_to_string(css_language *c,
 		lwc_string **result)
 {
 	const css_token *token;
-	
+
 	token = parserutils_vector_peek(vector, *ctx);
 	if (token == NULL)
 		return CSS_INVALID;
-	
+
 	if (token->type == CSS_TOKEN_STRING) {
 		token = parserutils_vector_iterate(vector, ctx);
 		*result = lwc_string_ref(token->idata);
@@ -1087,7 +1087,7 @@ css_error css__ident_list_or_string_to_string(css_language *c,
 		return css__ident_list_to_string(c, vector, ctx, reserved,
 				result);
 	}
-	
+
 	return CSS_INVALID;
 }
 
@@ -1126,7 +1126,7 @@ css_error css__ident_list_to_string(css_language *c,
 	/* We know this token exists, and is an IDENT */
 	token = parserutils_vector_iterate(vector, ctx);
 
-	/* Consume all subsequent IDENT or S tokens */	
+	/* Consume all subsequent IDENT or S tokens */
 	while (token != NULL && (token->type == CSS_TOKEN_IDENT ||
 			token->type == CSS_TOKEN_S)) {
 		if (token->type == CSS_TOKEN_IDENT) {
@@ -1136,12 +1136,12 @@ css_error css__ident_list_to_string(css_language *c,
 				goto cleanup;
 			}
 
-			perror = parserutils_buffer_append(buffer, 
-					(const uint8_t *) lwc_string_data(token->idata), 
+			perror = parserutils_buffer_append(buffer,
+					(const uint8_t *) lwc_string_data(token->idata),
 					lwc_string_length(token->idata));
 		} else {
 			/* S */
-			perror = parserutils_buffer_append(buffer, 
+			perror = parserutils_buffer_append(buffer,
 					(const uint8_t *) " ", 1);
 		}
 
@@ -1232,7 +1232,7 @@ css_error css__comma_list_to_style(css_language *c,
 				if (error != CSS_OK)
 					goto cleanup;
 
-				error = css__stylesheet_style_append(result, 
+				error = css__stylesheet_style_append(result,
 						value);
 				if (error != CSS_OK)
 					goto cleanup;
@@ -1251,7 +1251,7 @@ css_error css__comma_list_to_style(css_language *c,
 			css_code_t value = get_value(c, token, first);
 			uint32_t snumber;
 
-			error = css__stylesheet_string_add(c->sheet, 
+			error = css__stylesheet_string_add(c->sheet,
 					lwc_string_ref(token->idata), &snumber);
 			if (error != CSS_OK)
 				goto cleanup;

@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_color(uint32_t opv, css_style *style, 
+css_error css__cascade_color(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	bool inherit = isInherit(opv);
@@ -39,7 +39,7 @@ css_error css__cascade_color(uint32_t opv, css_style *style,
 		}
 	}
 
-	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state, 
+	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
 			inherit)) {
 		return set_color(state->computed, value, color);
 	}
@@ -47,7 +47,7 @@ css_error css__cascade_color(uint32_t opv, css_style *style,
 	return CSS_OK;
 }
 
-css_error css__set_color_from_hint(const css_hint *hint, 
+css_error css__set_color_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
 	return set_color(style, hint->status, hint->data.color);
@@ -58,7 +58,7 @@ css_error css__initial_color(css_select_state *state)
 	css_hint hint;
 	css_error error;
 
-	error = state->handler->ua_default_for_property(state->pw, 
+	error = state->handler->ua_default_for_property(state->pw,
 			CSS_PROP_COLOR, &hint);
 	if (error != CSS_OK)
 		return error;

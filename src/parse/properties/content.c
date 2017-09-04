@@ -127,15 +127,15 @@ css_error css__parse_content(css_language *c,
 
 				error = c->sheet->resolve(c->sheet->resolve_pw,
 							  c->sheet->url,
-							  token->idata, 
+							  token->idata,
 							  &uri);
 				if (error != CSS_OK) {
 					*ctx = orig_ctx;
 					return error;
 				}
 
-				error = css__stylesheet_string_add(c->sheet, 
-								  uri, 
+				error = css__stylesheet_string_add(c->sheet,
+								  uri,
 								  &uri_snumber);
 				if (error != CSS_OK) {
 					*ctx = orig_ctx;

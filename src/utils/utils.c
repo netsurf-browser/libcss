@@ -10,7 +10,7 @@
 css_fixed css__number_from_lwc_string(lwc_string *string,
 		bool int_only, size_t *consumed)
 {
-	if (string == NULL || lwc_string_length(string) == 0 || 
+	if (string == NULL || lwc_string_length(string) == 0 ||
 			consumed == NULL)
 		return 0;
 
@@ -77,7 +77,7 @@ css_fixed css__number_from_string(const uint8_t *data, size_t len,
 	}
 
 	/* And fracpart, again, assuming base 10 */
-	if (int_only == false && len > 1 && ptr[0] == '.' && 
+	if (int_only == false && len > 1 && ptr[0] == '.' &&
 			('0' <= ptr[1] && ptr[1] <= '9')) {
 		ptr++;
 		len--;

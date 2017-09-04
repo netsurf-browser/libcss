@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_max_height(uint32_t opv, css_style *style, 
+css_error css__cascade_max_height(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	return css__cascade_length_none(opv, style, state, set_max_height);
@@ -29,7 +29,7 @@ css_error css__set_max_height_from_hint(const css_hint *hint,
 
 css_error css__initial_max_height(css_select_state *state)
 {
-	return set_max_height(state->computed, CSS_MAX_HEIGHT_NONE, 
+	return set_max_height(state->computed, CSS_MAX_HEIGHT_NONE,
 			0, CSS_UNIT_PX);
 }
 

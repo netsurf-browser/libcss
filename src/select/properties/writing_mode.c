@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_writing_mode(uint32_t opv, css_style *style, 
+css_error css__cascade_writing_mode(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	bool inherit = isInherit(opv);
@@ -35,7 +35,7 @@ css_error css__cascade_writing_mode(uint32_t opv, css_style *style,
 		}
 	}
 
-	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state, 
+	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
 			inherit)) {
 		return set_writing_mode(state->computed, writing_mode);
 	}
@@ -43,7 +43,7 @@ css_error css__cascade_writing_mode(uint32_t opv, css_style *style,
 	return CSS_OK;
 }
 
-css_error css__set_writing_mode_from_hint(const css_hint *hint, 
+css_error css__set_writing_mode_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
 	return set_writing_mode(style, hint->status);

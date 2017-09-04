@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_widows(uint32_t opv, css_style *style, 
+css_error css__cascade_widows(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	return css__cascade_number(opv, style, state, set_widows);
@@ -37,11 +37,11 @@ css_error css__compose_widows(const css_computed_style *parent,
 {
 	int32_t count = 0;
 	uint8_t type = get_widows(child, &count);
-	
+
 	if (type == CSS_WIDOWS_INHERIT) {
 		type = get_widows(parent, &count);
 	}
-	
+
 	return set_widows(result, type, count);
 }
 

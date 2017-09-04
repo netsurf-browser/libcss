@@ -56,9 +56,9 @@ css_error css__parse_border(css_language *c,
 
 	*ctx = orig_ctx;
 	error = css__parse_border_side(c, vector, ctx, result, BORDER_SIDE_LEFT);
-	if (error != CSS_OK) 
+	if (error != CSS_OK)
 		*ctx = orig_ctx;
-	
+
 	return error;
-		
+
 }

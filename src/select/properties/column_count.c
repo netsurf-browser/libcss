@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_column_count(uint32_t opv, css_style *style, 
+css_error css__cascade_column_count(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = CSS_COLUMN_COUNT_INHERIT;
@@ -22,7 +22,7 @@ css_error css__cascade_column_count(uint32_t opv, css_style *style,
 
 	if (isInherit(opv) == false) {
 		switch (getValue(opv)) {
-		case COLUMN_COUNT_SET: 
+		case COLUMN_COUNT_SET:
 			value = CSS_COLUMN_COUNT_SET;
 			count = *((css_fixed *) style->bytecode);
 			advance_bytecode(style, sizeof(count));

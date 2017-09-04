@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_white_space(uint32_t opv, css_style *style, 
+css_error css__cascade_white_space(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = CSS_WHITE_SPACE_INHERIT;
@@ -60,7 +60,7 @@ css_error css__initial_white_space(css_select_state *state)
 	return set_white_space(state->computed, CSS_WHITE_SPACE_NORMAL);
 }
 
-css_error css__compose_white_space(const css_computed_style *parent,	
+css_error css__compose_white_space(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {

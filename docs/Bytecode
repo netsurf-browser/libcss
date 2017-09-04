@@ -30,7 +30,7 @@ assigned to the fractional part.
 Strings are stored as a 32bit index into a table of interned string pointers.
 The table is found in the stylesheet object.
 
-CSS dimensions are stored as two 32bit values: <length, units>. 
+CSS dimensions are stored as two 32bit values: <length, units>.
 Length is a 32bit numeric value (as described above) and unit is as follows:
 
 	bit 8 clear => length unit
@@ -160,7 +160,7 @@ Opcodes
 04 - background-position
 	<value> (14bits) :
 		bits 8-13: MBZ
-		bits 0-7 : 
+		bits 0-7 :
 			bit 7: set => percentage or length unit follows
 					bits 4-6: MBZ
 			       clear => keywords:
@@ -251,7 +251,7 @@ Opcodes
 14 - bottom
 	<value> (14bits) :
 		bits 8-13: MBZ
-		bits 0-7: 
+		bits 0-7:
 			bit 7 set => length/percentage follows
 				bits 0-6: MBZ
 			bit 7 clear => keywords:
@@ -275,7 +275,7 @@ Opcodes
 17 - clip
 	<value> (14bits) :
 		bits 8-13: MBZ
-		bits 0-7: 
+		bits 0-7:
 			bit 7 set => shape follows
 				bits 0-2: 000   => rect,
 						   bit 3 => top auto
@@ -284,19 +284,19 @@ Opcodes
 						   bit 6 => left auto
 					  other => rffe.
 						   bits 3-6: MBZ.
-				
+
 			bit 7 clear => keywords:
 				bits 0-6: 0000000 => auto,
 					  other   => rffe.
 
 	If the value is rect(top, right, bottom, left), then bits 3-6 encode
-	which of <top>, <right>, <bottom>, <left> is set to auto. The 
+	which of <top>, <right>, <bottom>, <left> is set to auto. The
 	subsequent parameter list is then 4 - <auto_side> entries long.
-	Each entry is a dimension. Entries are always ordered top, right, 
+	Each entry is a dimension. Entries are always ordered top, right,
 	bottom, left.
 
 	For example,
-		clip: rect(10px, auto, auto, 10px) 
+		clip: rect(10px, auto, auto, 10px)
 	would produce the following bytecode:
 
 	<02c00017> <00002800> <00000000> <00002800> <00000000>
@@ -304,7 +304,7 @@ Opcodes
 18 - color
 	<value> (14bits) :
 		bits 8-13: MBZ
-		bits 0-7: 
+		bits 0-7:
 			bit 7: set => colour follows.
 					bits 0-6: MBZ.
 			       clear => keywords:
@@ -341,8 +341,8 @@ Opcodes
 	declares the type of the next item. The list is terminated by a
 	word with all bits set to zero (the encoding for "normal").
 
-	For example, 
-		content: open-quote url('http://example.com/') 
+	For example,
+		content: open-quote url('http://example.com/')
 			 " : " attr(name) " " counter(x) "." counters(y, ".")
 			 close-quote;"
 	would result in the following bytecode:
@@ -351,9 +351,9 @@ Opcodes
 	<00000081> <ptr to "http://example.com">
 	<00000080> <ptr to " : ">
 	<00000084> <ptr to "name">
-	<00000080> <ptr to " "> 
+	<00000080> <ptr to " ">
 	<00000382> <ptr to "x">
-	<00000080> <ptr to "."> 
+	<00000080> <ptr to ".">
 	<00000383> <ptr to "y"> <ptr to ".">
 	<00000003> <00000000>
 
@@ -368,8 +368,8 @@ Opcodes
 				bits 0-6: 0000000 => none,
 					  other   => rffe.
 
-	If the value is not "none", or "inherit", then there is a parameter 
-	list. Each item is preceded by a <value> word which declares the type 
+	If the value is not "none", or "inherit", then there is a parameter
+	list. Each item is preceded by a <value> word which declares the type
 	of the next item. The list is terminated by a word with all bits set to
 	zero (the encoding for "none").
 
@@ -384,8 +384,8 @@ Opcodes
 				bits 0-6: 0000000 => none,
 					  other   => rffe.
 
-	If the value is not "none", or "inherit", then there is a parameter 
-	list. Each item is preceded by a <value> word which declares the type 
+	If the value is not "none", or "inherit", then there is a parameter
+	list. Each item is preceded by a <value> word which declares the type
 	of the next item. The list is terminated by a word with all bits set to
 	zero (the encoding for "none").
 
@@ -435,7 +435,7 @@ Opcodes
 					  0010000 => progress,
 					  other   => rffe.
 
-	If the value indicates that a uri is present, then there is a 
+	If the value indicates that a uri is present, then there is a
 	parameter list. Each item is preceded by a <value> word which declares
 	the type of the next item. The list is terminated by a word with
 	bit 7 clear.
@@ -499,7 +499,7 @@ Opcodes
 		bits 0-7 :
 			bit 7 set => data follows
 				bits 1-6: MBZ
-				bit  0  : clear => string, 
+				bit  0  : clear => string,
 					  set => ident list (as string)
 			bit 7 clear => keywords:
 				bits 0-6: 0000000 => Reserved.
@@ -510,8 +510,8 @@ Opcodes
 					  0000101 => monospace,
 					  other   => rffe.
 
-	In all cases, there is a parameter list. Each item is preceded by a 
-	<value> word which declares the type of the next item. The list is 
+	In all cases, there is a parameter list. Each item is preceded by a
+	<value> word which declares the type of the next item. The list is
 	terminated by a word with all bits clear.
 
 25 - font-size
@@ -855,7 +855,7 @@ Opcodes
 				bits 0-6: 0000000 => none,
 					  other   => rffe.
 
-	If the value indicates that strings are present, then there is a 
+	If the value indicates that strings are present, then there is a
 	parameter list. Each item is preceded by a <value> word which declares
 	the type of the next item. The list is terminated by a word with
 	all bits clear (the encoding for "none").
@@ -954,7 +954,7 @@ Opcodes
 			otherwise:
 				bits 4-7: MBZ
 				bit 3: set => blink, clear => no blink
-				bit 2: set => line-through, 
+				bit 2: set => line-through,
 				       clear => no line-through
 				bit 1: set => overline, clear => no overline
 				bit 0: set => underline, clear => no underline
@@ -1023,7 +1023,7 @@ Opcodes
 		bits 0-7 :
 			bit 7 set => data follows
 				bits 1-6: MBZ
-				bit  0  : clear => string, 
+				bit  0  : clear => string,
 					  set => ident list (as string)
 			bit 7 clear => keywords:
 				bits 0-6: 0000000 => Reserved.
@@ -1032,10 +1032,10 @@ Opcodes
 					  0000011 => child,
 					  other   => rffe.
 
-	In all cases, there is a parameter list. Each item is preceded by a 
-	<value> word which declares the type of the next item. The list is 
+	In all cases, there is a parameter list. Each item is preceded by a
+	<value> word which declares the type of the next item. The list is
 	terminated by a word with all bits clear.
-	
+
 5d - volume
 	<value> (14bits) :
 		bits 8-13: MBZ

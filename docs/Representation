@@ -78,7 +78,7 @@ struct stylesheet {
 	uint32_t rule_count;			/**< Number of rules in sheet */
 	struct rule *rule_list;			/**< List of rules in sheet */
 
-	bool disabled;				/**< Whether this sheet is 
+	bool disabled;				/**< Whether this sheet is
 						 * disabled */
 
 	char *url;				/**< URL of this sheet */

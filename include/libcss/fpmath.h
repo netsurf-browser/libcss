@@ -22,66 +22,66 @@ extern "C"
 /* type for fixed point numbers */
 typedef int32_t css_fixed;
 
-static inline css_fixed 
+static inline css_fixed
 css_add_fixed(const css_fixed x, const css_fixed y) {
 	int32_t ux = x;
 	int32_t uy = y;
 	int32_t res = ux + uy;
-	
+
 	/* Calculate overflowed result. (Don't change the sign bit of ux) */
 	ux = (ux >> 31) + INT_MAX;
-	
+
 	/* Force compiler to use cmovns instruction */
 	if ((int32_t) ((ux ^ uy) | ~(uy ^ res)) >= 0) {
 		res = ux;
 	}
-		
+
 	return res;
 }
 
-static inline css_fixed 
+static inline css_fixed
 css_subtract_fixed(const css_fixed x, const css_fixed y) {
 	int32_t ux = x;
 	int32_t uy = y;
 	int32_t res = ux - uy;
-	
+
 	ux = (ux >> 31) + INT_MAX;
-	
+
 	/* Force compiler to use cmovns instruction */
 	if ((int32_t)((ux ^ uy) & (ux ^ res)) < 0) {
 		res = ux;
 	}
-		
+
 	return res;
 }
 
-static inline css_fixed 
+static inline css_fixed
 css_divide_fixed(const css_fixed x, const css_fixed y) {
 	int64_t xx = ((int64_t)x << CSS_RADIX_POINT) / y;
-	
+
 	if (xx < INT_MIN)
 		xx = INT_MIN;
 
 	if (xx > INT_MAX)
 		xx = INT_MAX;
-	
+
 	return xx;
 }
 
-static inline css_fixed 
+static inline css_fixed
 css_multiply_fixed(const css_fixed x, const css_fixed y) {
 	int64_t xx = ((int64_t)x * (int64_t)y) >> CSS_RADIX_POINT;
-	
+
 	if (xx < INT_MIN)
 		xx = INT_MIN;
 
 	if (xx > INT_MAX)
 		xx = INT_MAX;
-	
+
 	return xx;
 }
 
-static inline css_fixed 
+static inline css_fixed
 css_int_to_fixed(const int a) {
 	int64_t xx = ((int64_t) a) << CSS_RADIX_POINT;
 
@@ -90,11 +90,11 @@ css_int_to_fixed(const int a) {
 
 	if (xx > INT_MAX)
 		xx = INT_MAX;
-	
+
 	return xx;
 }
 
-static inline css_fixed 
+static inline css_fixed
 css_float_to_fixed(const float a) {
 	float xx = a * (float) (1 << CSS_RADIX_POINT);
 
@@ -103,7 +103,7 @@ css_float_to_fixed(const float a) {
 
 	if (xx > INT_MAX)
 		xx = INT_MAX;
-	
+
 	return (css_fixed) xx;
 }
 

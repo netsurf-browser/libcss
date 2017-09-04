@@ -27,8 +27,8 @@
  * Post condition: \a *ctx is updated with the next token to process
  *		   If the input is invalid, then \a *ctx remains unchanged.
  */
-css_error css__parse_border_spacing(css_language *c, 
-		const parserutils_vector *vector, int *ctx, 
+css_error css__parse_border_spacing(css_language *c,
+		const parserutils_vector *vector, int *ctx,
 		css_style *result)
 {
 	int orig_ctx = *ctx;
@@ -65,7 +65,7 @@ css_error css__parse_border_spacing(css_language *c,
 			return error;
 		}
 
-		if (unit[0] & UNIT_ANGLE || unit[0] & UNIT_TIME || 
+		if (unit[0] & UNIT_ANGLE || unit[0] & UNIT_TIME ||
 				unit[0] & UNIT_FREQ || unit[0] & UNIT_PCT) {
 			*ctx = orig_ctx;
 			return CSS_INVALID;
@@ -78,16 +78,16 @@ css_error css__parse_border_spacing(css_language *c,
 		token = parserutils_vector_peek(vector, *ctx);
 		if (token != NULL) {
 			/* Attempt second length, ignoring errors.
-			 * The core !important parser will ensure 
+			 * The core !important parser will ensure
 			 * any remaining junk is thrown out.
 			 * Ctx will be preserved on error, as usual
 			 */
 			error = css__parse_unit_specifier(c, vector, ctx, UNIT_PX,
 					&length[1], &unit[1]);
 			if (error == CSS_OK) {
-				if (unit[1] & UNIT_ANGLE || 
+				if (unit[1] & UNIT_ANGLE ||
 						unit[1] & UNIT_TIME ||
-						unit[1] & UNIT_FREQ || 
+						unit[1] & UNIT_FREQ ||
 						unit[1] & UNIT_PCT) {
 					*ctx = orig_ctx;
 					return CSS_INVALID;
@@ -119,11 +119,11 @@ css_error css__parse_border_spacing(css_language *c,
 			return error;
 		}
 
-		error = css__stylesheet_style_vappend(result, 
-						     4, 
-						     length[0], 
-						     unit[0], 
-						     length[1], 
+		error = css__stylesheet_style_vappend(result,
+						     4,
+						     length[0],
+						     unit[0],
+						     length[1],
 						     unit[1]);
 
 	}

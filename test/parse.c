@@ -29,7 +29,7 @@ static const char *event_names[] = {
 };
 #endif
 
-static css_error event_handler(css_parser_event type, 
+static css_error event_handler(css_parser_event type,
 		const parserutils_vector *tokens, void *pw)
 {
 #if !DUMP_EVENTS
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 
 		params.event_handler.handler = event_handler;
 		params.event_handler.pw = NULL;
-		assert(css__parser_setopt(parser, CSS_PARSER_EVENT_HANDLER, 
+		assert(css__parser_setopt(parser, CSS_PARSER_EVENT_HANDLER,
 				&params) == CSS_OK);
 
 		fp = fopen(argv[1], "rb");
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 	}
 
 	printf("PASS\n");
-        
+
 	return 0;
 }
 

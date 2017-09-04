@@ -65,7 +65,7 @@ typedef struct line_ctx {
 	uint64_t media;
 	uint32_t pseudo_element;
 	node *target;
-	
+
 	lwc_string *attr_class;
 	lwc_string *attr_id;
 } line_ctx;
@@ -78,7 +78,7 @@ static void css__parse_tree(line_ctx *ctx, const char *data, size_t len);
 static void css__parse_tree_data(line_ctx *ctx, const char *data, size_t len);
 static void css__parse_sheet(line_ctx *ctx, const char *data, size_t len);
 static void css__parse_media_list(const char **data, size_t *len, uint64_t *media);
-static void css__parse_pseudo_list(const char **data, size_t *len, 
+static void css__parse_pseudo_list(const char **data, size_t *len,
 		uint32_t *element);
 static void css__parse_expected(line_ctx *ctx, const char *data, size_t len);
 static void run_test(line_ctx *ctx, const char *exp, size_t explen);
@@ -104,8 +104,8 @@ static css_error named_generic_sibling_node(void *pw, void *node,
 		void **sibling);
 static css_error parent_node(void *pw, void *node, void **parent);
 static css_error sibling_node(void *pw, void *node, void **sibling);
-static css_error node_has_name(void *pw, void *node, 
-		const css_qname *qname, 
+static css_error node_has_name(void *pw, void *node,
+		const css_qname *qname,
 		bool *match);
 static css_error node_has_class(void *pw, void *node,
 		lwc_string *name,
@@ -226,7 +226,7 @@ static void
 printing_lwc_iterator(lwc_string *str, void *pw)
 {
 	UNUSED(pw);
-	
+
 	printf(" DICT: %*s\n", (int)(lwc_string_length(str)), lwc_string_data(str));
 	fail_because_lwc_leaked = true;
 }
@@ -234,7 +234,7 @@ printing_lwc_iterator(lwc_string *str, void *pw)
 int main(int argc, char **argv)
 {
 	line_ctx ctx;
-	
+
 	if (argc != 2) {
 		printf("Usage: %s <filename>\n", argv[0]);
 		return 1;
@@ -245,22 +245,22 @@ int main(int argc, char **argv)
 
 	lwc_intern_string("class", SLEN("class"), &ctx.attr_class);
 	lwc_intern_string("id", SLEN("id"), &ctx.attr_id);
-	
+
 	assert(css__parse_testfile(argv[1], handle_line, &ctx) == true);
-	
+
 	/* and run final test */
 	if (ctx.tree != NULL)
 		run_test(&ctx, ctx.exp, ctx.expused);
 
 	free(ctx.exp);
-	
+
 	lwc_string_unref(ctx.attr_class);
 	lwc_string_unref(ctx.attr_id);
-	
+
 	lwc_iterate_strings(printing_lwc_iterator, NULL);
-	
+
 	assert(fail_because_lwc_leaked == false);
-	
+
 	printf("PASS\n");
 	return 0;
 }
@@ -289,7 +289,7 @@ bool handle_line(const char *data, size_t datalen, void *pw)
 		} else if (ctx->insheet) {
 			if (strncasecmp(data+1, "errors", 6) == 0) {
 				assert(css_stylesheet_data_done(
-					ctx->sheets[ctx->n_sheets - 1].sheet) 
+					ctx->sheets[ctx->n_sheets - 1].sheet)
 					== CSS_OK);
 
 				ctx->intree = false;
@@ -306,10 +306,10 @@ bool handle_line(const char *data, size_t datalen, void *pw)
 				css__parse_sheet(ctx, data + 1, datalen - 1);
 			} else {
 				error = css_stylesheet_append_data(
-					ctx->sheets[ctx->n_sheets - 1].sheet, 
-					(const uint8_t *) data, 
+					ctx->sheets[ctx->n_sheets - 1].sheet,
+					(const uint8_t *) data,
 					datalen);
-				assert(error == CSS_OK || 
+				assert(error == CSS_OK ||
 						error == CSS_NEEDDATA);
 			}
 		} else if (ctx->inerrors) {
@@ -344,7 +344,7 @@ bool handle_line(const char *data, size_t datalen, void *pw)
 			css__parse_tree_data(ctx, data + 1, datalen - 1);
 		} else if (ctx->insheet) {
 			error = css_stylesheet_append_data(
-					ctx->sheets[ctx->n_sheets - 1].sheet, 
+					ctx->sheets[ctx->n_sheets - 1].sheet,
 					(const uint8_t *) data, datalen);
 			assert(error == CSS_OK || error == CSS_NEEDDATA);
 		} else if (ctx->inexp) {
@@ -397,7 +397,7 @@ void css__parse_tree_data(line_ctx *ctx, const char *data, size_t len)
 	bool target = false;
 
 	/* ' '{depth+1} [ <element> '*'? | <attr> ]
-	 * 
+	 *
 	 * <element> ::= [^=*[:space:]]+
 	 * <attr>    ::= [^=*[:space:]]+ '=' [^[:space:]]*
 	 */
@@ -440,7 +440,7 @@ void css__parse_tree_data(line_ctx *ctx, const char *data, size_t len)
 		assert(n != NULL);
 
 		memset(n, 0, sizeof(node));
-		
+
 		lwc_intern_string(name, namelen, &n->name);
 
 		/* Insert it into tree */
@@ -488,7 +488,7 @@ void css__parse_tree_data(line_ctx *ctx, const char *data, size_t len)
 		n->attrs = temp;
 
 		attr = &n->attrs[n->n_attrs];
-		
+
 		lwc_intern_string(name, namelen, &attr->name);
 		lwc_intern_string(value, valuelen, &attr->value);
 
@@ -566,7 +566,7 @@ void css__parse_sheet(line_ctx *ctx, const char *data, size_t len)
 	assert(css_stylesheet_create(&params, &sheet) == CSS_OK);
 
 	/* Extend array of sheets and append new sheet to it */
-	temp = realloc(ctx->sheets, 
+	temp = realloc(ctx->sheets,
 			(ctx->n_sheets + 1) * sizeof(sheet_ctx));
 	assert(temp != NULL);
 
@@ -594,7 +594,7 @@ void css__parse_media_list(const char **data, size_t *len, uint64_t *media)
 		while (isspace(*p) == false && *p != ',')
 			p++;
 
-		if (p - start == 10 && 
+		if (p - start == 10 &&
 				strncasecmp(start, "projection", 10) == 0)
 			result |= CSS_MEDIA_PROJECTION;
 		else if (p - start == 8 &&
@@ -765,7 +765,7 @@ static void run_test_select_tree(css_select_ctx *select,
 	css_select_results *sr;
 	struct node *n = NULL;
 
-	assert(css_select_style(select, node, ctx->media, NULL, 
+	assert(css_select_style(select, node, ctx->media, NULL,
 			&select_handler, ctx, &sr) == CSS_OK);
 
 	if (node->parent != NULL) {
@@ -812,7 +812,7 @@ void run_test(line_ctx *ctx, const char *exp, size_t explen)
 	assert(css_select_ctx_create(&select) == CSS_OK);
 
 	for (i = 0; i < ctx->n_sheets; i++) {
-		assert(css_select_ctx_append_sheet(select, 
+		assert(css_select_ctx_append_sheet(select,
 				ctx->sheets[i].sheet, ctx->sheets[i].origin,
 				ctx->sheets[i].media) == CSS_OK);
 	}
@@ -826,7 +826,7 @@ void run_test(line_ctx *ctx, const char *exp, size_t explen)
 
 	if (8192 - buflen != explen || memcmp(buf, exp, explen) != 0) {
 		size_t len = 8192 - buflen < explen ? 8192 - buflen : explen;
-		printf("Expected (%u):\n%.*s\n", 
+		printf("Expected (%u):\n%.*s\n",
 				(int) explen, (int) explen, exp);
 		printf("Result (%u):\n%.*s\n", (int) (8192 - buflen),
 			(int) (8192 - buflen), buf);
@@ -868,7 +868,7 @@ void destroy_tree(node *root)
 	}
 
 	css_select_results_destroy(root->sr);
-	
+
 	for (i = 0; i < root->n_attrs; ++i) {
 		lwc_string_unref(root->attrs[i].name);
 		lwc_string_unref(root->attrs[i].value);
@@ -897,9 +897,9 @@ css_error node_name(void *pw, void *n, css_qname *qname)
 	node *node = n;
 
 	UNUSED(pw);
-	
+
 	qname->name = lwc_string_ref(node->name);
-	
+
 	return CSS_OK;
 }
 
@@ -930,7 +930,7 @@ css_error node_id(void *pw, void *n,
 	for (i = 0; i < node->n_attrs; i++) {
 		bool amatch = false;
 		assert(lwc_string_caseless_isequal(
-				node->attrs[i].name, lc->attr_id, &amatch) == 
+				node->attrs[i].name, lc->attr_id, &amatch) ==
 				lwc_error_ok);
 		if (amatch == true)
 			break;
@@ -954,7 +954,7 @@ css_error named_ancestor_node(void *pw, void *n,
 	for (node = node->parent; node != NULL; node = node->parent) {
 		bool match = false;
 		assert(lwc_string_caseless_isequal(
-				qname->name, node->name, 
+				qname->name, node->name,
 				&match) == lwc_error_ok);
 		if (match == true)
 			break;
@@ -976,7 +976,7 @@ css_error named_parent_node(void *pw, void *n,
 	if (node->parent != NULL) {
 		bool match = false;
 		assert(lwc_string_caseless_isequal(
-				qname->name, node->parent->name, &match) == 
+				qname->name, node->parent->name, &match) ==
 				lwc_error_ok);
 		if (match == true)
 			*parent = (void *) node->parent;
@@ -996,7 +996,7 @@ css_error named_sibling_node(void *pw, void *n,
 	if (node->prev != NULL) {
 		bool match = false;
 		assert(lwc_string_caseless_isequal(
-				qname->name, node->prev->name, &match) == 
+				qname->name, node->prev->name, &match) ==
 				lwc_error_ok);
 		if (match == true)
 			*sibling = (void *) node->prev;
@@ -1015,7 +1015,7 @@ css_error named_generic_sibling_node(void *pw, void *n,
 	for (node = node->prev; node != NULL; node = node->prev) {
 		bool match = false;
 		assert(lwc_string_caseless_isequal(
-				qname->name, node->name, 
+				qname->name, node->name,
 				&match) == lwc_error_ok);
 		if (match == true)
 			break;
@@ -1059,7 +1059,7 @@ css_error node_has_name(void *pw, void *n,
 			lwc_string_data(qname->name)[0] == '*')
 		*match = true;
 	else
-		assert(lwc_string_caseless_isequal(node->name, 
+		assert(lwc_string_caseless_isequal(node->name,
 			qname->name, match) == lwc_error_ok);
 
 	return CSS_OK;
@@ -1076,7 +1076,7 @@ css_error node_has_class(void *pw, void *n,
 	for (i = 0; i < node->n_attrs; i++) {
 		bool amatch = false;
 		assert(lwc_string_caseless_isequal(
-				node->attrs[i].name, ctx->attr_class, 
+				node->attrs[i].name, ctx->attr_class,
 				&amatch) == lwc_error_ok);
 		if (amatch == true)
 			break;
@@ -1102,7 +1102,7 @@ css_error node_has_id(void *pw, void *n,
 	for (i = 0; i < node->n_attrs; i++) {
 		bool amatch = false;
 		assert(lwc_string_caseless_isequal(
-				node->attrs[i].name, ctx->attr_id, &amatch) == 
+				node->attrs[i].name, ctx->attr_id, &amatch) ==
 				lwc_error_ok);
 		if (amatch == true)
 			break;
@@ -1124,11 +1124,11 @@ css_error node_has_attribute(void *pw, void *n,
 	node *node = n;
 	uint32_t i;
 	UNUSED(pw);
-	
+
 	*match = false;
 	for (i = 0; i < node->n_attrs; i++) {
 		assert(lwc_string_caseless_isequal(
-				node->attrs[i].name, qname->name, match) == 
+				node->attrs[i].name, qname->name, match) ==
 				lwc_error_ok);
 		if (*match == true)
 			break;
@@ -1147,21 +1147,21 @@ css_error node_has_attribute_equal(void *pw, void *n,
 	UNUSED(pw);
 
 	*match = false;
-	
+
 	for (i = 0; i < node->n_attrs; i++) {
 		assert(lwc_string_caseless_isequal(
-				node->attrs[i].name, qname->name, match) == 
+				node->attrs[i].name, qname->name, match) ==
 				lwc_error_ok);
 		if (*match == true)
 			break;
 	}
-	
+
 	if (*match == true) {
 		assert(lwc_string_caseless_isequal(
-				node->attrs[i].name, value, match) == 
+				node->attrs[i].name, value, match) ==
 				lwc_error_ok);
 	}
-	
+
 	return CSS_OK;
 }
 
@@ -1176,10 +1176,10 @@ css_error node_has_attribute_includes(void *pw, void *n,
 	UNUSED(pw);
 
 	*match = false;
-	
+
 	for (i = 0; i < node->n_attrs; i++) {
 		assert(lwc_string_caseless_isequal(
-				node->attrs[i].name, qname->name, match) == 
+				node->attrs[i].name, qname->name, match) ==
 				lwc_error_ok);
 		if (*match == true)
 			break;
@@ -1188,14 +1188,14 @@ css_error node_has_attribute_includes(void *pw, void *n,
 	if (*match == true) {
 		const char *p;
 		const char *start = lwc_string_data(node->attrs[i].value);
-		const char *end = start + 
+		const char *end = start +
 				lwc_string_length(node->attrs[i].value);
-		
+
 		*match = false;
-		
+
 		for (p = start; p < end; p++) {
 			if (*p == ' ') {
-				if ((size_t) (p - start) == vlen && 
+				if ((size_t) (p - start) == vlen &&
 						strncasecmp(start,
 							lwc_string_data(value),
 							vlen) == 0) {
@@ -1222,10 +1222,10 @@ css_error node_has_attribute_dashmatch(void *pw, void *n,
 	UNUSED(pw);
 
 	*match = false;
-	
+
 	for (i = 0; i < node->n_attrs; i++) {
 		assert(lwc_string_caseless_isequal(
-				node->attrs[i].name, qname->name, match) == 
+				node->attrs[i].name, qname->name, match) ==
 				lwc_error_ok);
 		if (*match == true)
 			break;
@@ -1234,16 +1234,16 @@ css_error node_has_attribute_dashmatch(void *pw, void *n,
 	if (*match == true) {
 		const char *p;
 		const char *start = lwc_string_data(node->attrs[i].value);
-		const char *end = start + 
+		const char *end = start +
 				lwc_string_length(node->attrs[i].value);
-		
+
 		*match = false;
-		
+
 		for (p = start; p < end; p++) {
 			if (*p == '-') {
-				if ((size_t) (p - start) == vlen && 
+				if ((size_t) (p - start) == vlen &&
 						strncasecmp(start,
-							lwc_string_data(value), 
+							lwc_string_data(value),
 							vlen) == 0) {
 					*match = true;
 					break;
@@ -1267,15 +1267,15 @@ css_error node_has_attribute_prefix(void *pw, void *n,
 	UNUSED(pw);
 
 	*match = false;
-	
+
 	for (i = 0; i < node->n_attrs; i++) {
 		assert(lwc_string_caseless_isequal(
-				node->attrs[i].name, qname->name, match) == 
+				node->attrs[i].name, qname->name, match) ==
 				lwc_error_ok);
 		if (*match == true)
 			break;
 	}
-	
+
 	if (*match == true) {
 		size_t len = lwc_string_length(node->attrs[i].value);
 		const char *data = lwc_string_data(node->attrs[i].value);
@@ -1288,7 +1288,7 @@ css_error node_has_attribute_prefix(void *pw, void *n,
 		else
 			*match = (strncasecmp(data, vdata, vlen) == 0);
 	}
-	
+
 	return CSS_OK;
 }
 
@@ -1302,15 +1302,15 @@ css_error node_has_attribute_suffix(void *pw, void *n,
 	UNUSED(pw);
 
 	*match = false;
-	
+
 	for (i = 0; i < node->n_attrs; i++) {
 		assert(lwc_string_caseless_isequal(
-				node->attrs[i].name, qname->name, match) == 
+				node->attrs[i].name, qname->name, match) ==
 				lwc_error_ok);
 		if (*match == true)
 			break;
 	}
-	
+
 	if (*match == true) {
 		size_t len = lwc_string_length(node->attrs[i].value);
 		const char *data = lwc_string_data(node->attrs[i].value);
@@ -1323,7 +1323,7 @@ css_error node_has_attribute_suffix(void *pw, void *n,
 		if (len < vlen)
 			*match = false;
 		else {
-			*match = (strncasecmp(data + suffix_start, 
+			*match = (strncasecmp(data + suffix_start,
 					vdata, vlen) == 0);
 		}
 	}
@@ -1341,15 +1341,15 @@ css_error node_has_attribute_substring(void *pw, void *n,
 	UNUSED(pw);
 
 	*match = false;
-	
+
 	for (i = 0; i < node->n_attrs; i++) {
 		assert(lwc_string_caseless_isequal(
-				node->attrs[i].name, qname->name, match) == 
+				node->attrs[i].name, qname->name, match) ==
 				lwc_error_ok);
 		if (*match == true)
 			break;
 	}
-	
+
 	if (*match == true) {
 		size_t len = lwc_string_length(node->attrs[i].value);
 		const char *data = lwc_string_data(node->attrs[i].value);
@@ -1637,17 +1637,17 @@ css_error compute_font_size(void *pw, const css_hint *parent, css_hint *size)
 		size->data.length = sizes[size->status - 1];
 	} else if (size->status == CSS_FONT_SIZE_LARGER) {
 		/** \todo Step within table, if appropriate */
-		size->data.length.value = 
+		size->data.length.value =
 				FMUL(parent_size->value, FLTTOFIX(1.2));
 		size->data.length.unit = parent_size->unit;
 	} else if (size->status == CSS_FONT_SIZE_SMALLER) {
 		/** \todo Step within table, if appropriate */
-		size->data.length.value = 
+		size->data.length.value =
 				FMUL(parent_size->value, FLTTOFIX(1.2));
 		size->data.length.unit = parent_size->unit;
 	} else if (size->data.length.unit == CSS_UNIT_EM ||
 			size->data.length.unit == CSS_UNIT_EX) {
-		size->data.length.value = 
+		size->data.length.value =
 			FMUL(size->data.length.value, parent_size->value);
 
 		if (size->data.length.unit == CSS_UNIT_EX) {

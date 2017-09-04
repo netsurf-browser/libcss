@@ -26,8 +26,8 @@
  * Post condition: \a *ctx is updated with the next token to process
  *                 If the input is invalid, then \a *ctx remains unchanged.
  */
-css_error css__parse_cursor(css_language *c, 
-		const parserutils_vector *vector, int *ctx, 
+css_error css__parse_cursor(css_language *c,
+		const parserutils_vector *vector, int *ctx,
 		css_style *result)
 {
 	int orig_ctx = *ctx;
@@ -37,11 +37,11 @@ css_error css__parse_cursor(css_language *c,
 
 	/* [ (URI ',')* IDENT(auto, crosshair, default, pointer, move, e-resize,
 	 *              ne-resize, nw-resize, n-resize, se-resize, sw-resize,
-	 *              s-resize, w-resize, text, wait, help, progress) ] 
-	 * | IDENT(inherit) 
+	 *              s-resize, w-resize, text, wait, help, progress) ]
+	 * | IDENT(inherit)
 	 */
 	token = parserutils_vector_iterate(vector, ctx);
-	if ((token == NULL) || 
+	if ((token == NULL) ||
 	    (token->type != CSS_TOKEN_IDENT &&
 	     token->type != CSS_TOKEN_URI)) {
 		*ctx = orig_ctx;
@@ -75,8 +75,8 @@ css_error css__parse_cursor(css_language *c,
 				return error;
 			}
 
-			error = css__stylesheet_string_add(c->sheet, 
-							  uri, 
+			error = css__stylesheet_string_add(c->sheet,
+							  uri,
 							  &uri_snumber);
 			if (error != CSS_OK) {
 				*ctx = orig_ctx;

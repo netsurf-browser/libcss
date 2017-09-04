@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_margin_left(uint32_t opv, css_style *style, 
+css_error css__cascade_margin_left(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	return css__cascade_length_auto(opv, style, state, set_margin_left);

@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_font_size(uint32_t opv, css_style *style, 
+css_error css__cascade_font_size(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = CSS_FONT_SIZE_INHERIT;
@@ -23,7 +23,7 @@ css_error css__cascade_font_size(uint32_t opv, css_style *style,
 
 	if (isInherit(opv) == false) {
 		switch (getValue(opv)) {
-		case FONT_SIZE_DIMENSION: 
+		case FONT_SIZE_DIMENSION:
 			value = CSS_FONT_SIZE_DIMENSION;
 
 			size = *((css_fixed *) style->bytecode);
@@ -75,13 +75,13 @@ css_error css__cascade_font_size(uint32_t opv, css_style *style,
 css_error css__set_font_size_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
-	return set_font_size(style, hint->status, 
+	return set_font_size(style, hint->status,
 			hint->data.length.value, hint->data.length.unit);
 }
 
 css_error css__initial_font_size(css_select_state *state)
 {
-	return set_font_size(state->computed, CSS_FONT_SIZE_MEDIUM, 
+	return set_font_size(state->computed, CSS_FONT_SIZE_MEDIUM,
 			0, CSS_UNIT_PX);
 }
 

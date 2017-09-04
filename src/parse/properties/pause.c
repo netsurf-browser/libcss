@@ -62,7 +62,7 @@ css_error css__parse_pause(css_language *c,
 				error = CSS_INVALID;
 			} else {
 				error = css__parse_pause_after(c, vector, ctx, result);
-				if (error == CSS_OK) { 
+				if (error == CSS_OK) {
 					/* second token parsed */
 					if (is_css_inherit(c, first_token)) {
 						/* valid second token after inherit */

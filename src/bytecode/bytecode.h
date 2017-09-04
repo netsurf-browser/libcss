@@ -14,7 +14,7 @@
 #include <libcss/types.h>
 #include <libcss/properties.h>
 
-typedef uint32_t css_code_t; 
+typedef uint32_t css_code_t;
 
 typedef enum css_properties_e opcode_t;
 

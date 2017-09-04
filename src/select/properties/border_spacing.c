@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_border_spacing(uint32_t opv, css_style *style, 
+css_error css__cascade_border_spacing(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = CSS_BORDER_SPACING_INHERIT;
@@ -48,7 +48,7 @@ css_error css__cascade_border_spacing(uint32_t opv, css_style *style,
 	return CSS_OK;
 }
 
-css_error css__set_border_spacing_from_hint(const css_hint *hint, 
+css_error css__set_border_spacing_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
 	return set_border_spacing(style, hint->status,
@@ -68,7 +68,7 @@ css_error css__compose_border_spacing(const css_computed_style *parent,
 {
 	css_fixed hlength = 0, vlength = 0;
 	css_unit hunit = CSS_UNIT_PX, vunit = CSS_UNIT_PX;
-	uint8_t type = get_border_spacing(child, &hlength, &hunit, 
+	uint8_t type = get_border_spacing(child, &hlength, &hunit,
 			&vlength, &vunit);
 
 	if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
@@ -76,11 +76,11 @@ css_error css__compose_border_spacing(const css_computed_style *parent,
 			(child->i.uncommon != NULL && result != child)) {
 		if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
 				type == CSS_BORDER_SPACING_INHERIT) {
-			type = get_border_spacing(parent, 
+			type = get_border_spacing(parent,
 					&hlength, &hunit, &vlength, &vunit);
 		}
 
-		return set_border_spacing(result, type, hlength, hunit, 
+		return set_border_spacing(result, type, hlength, hunit,
 				vlength, vunit);
 	}
 

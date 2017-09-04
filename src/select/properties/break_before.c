@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_break_before(uint32_t opv, css_style *style, 
+css_error css__cascade_break_before(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	return css__cascade_break_after_before_inside(opv, style, state,

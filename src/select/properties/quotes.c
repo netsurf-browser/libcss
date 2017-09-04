@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_quotes(uint32_t opv, css_style *style, 
+css_error css__cascade_quotes(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = CSS_QUOTES_INHERIT;
@@ -40,7 +40,7 @@ css_error css__cascade_quotes(uint32_t opv, css_style *style,
 					&close);
 			advance_bytecode(style, sizeof(css_code_t));
 
-			temp = realloc(quotes, 
+			temp = realloc(quotes,
 					(n_quotes + 2) * sizeof(lwc_string *));
 			if (temp == NULL) {
 				if (quotes != NULL) {
@@ -96,7 +96,7 @@ css_error css__set_quotes_from_hint(const css_hint *hint,
 {
 	lwc_string **item;
 	css_error error;
-		
+
 	error = set_quotes(style, hint->status, hint->data.strings);
 
 	for (item = hint->data.strings;
@@ -149,7 +149,7 @@ css_error css__compose_quotes(const css_computed_style *parent,
 			if (copy == NULL)
 				return CSS_NOMEM;
 
-			memcpy(copy, quotes, (n_quotes + 1) * 
+			memcpy(copy, quotes, (n_quotes + 1) *
 					sizeof(lwc_string *));
 		}
 

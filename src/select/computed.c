@@ -25,7 +25,7 @@ static css_error compute_absolute_border_width(css_computed_style *style,
 		const css_hint_length *ex_size);
 static css_error compute_absolute_border_side_width(css_computed_style *style,
 		const css_hint_length *ex_size,
-		uint8_t (*get)(const css_computed_style *style, 
+		uint8_t (*get)(const css_computed_style *style,
 				css_fixed *len, css_unit *unit),
 		css_error (*set)(css_computed_style *style, uint8_t type,
 				css_fixed len, css_unit unit));
@@ -43,13 +43,13 @@ static css_error compute_absolute_vertical_align(css_computed_style *style,
 		const css_hint_length *ex_size);
 static css_error compute_absolute_length(css_computed_style *style,
 		const css_hint_length *ex_size,
-		uint8_t (*get)(const css_computed_style *style, 
+		uint8_t (*get)(const css_computed_style *style,
 				css_fixed *len, css_unit *unit),
 		css_error (*set)(css_computed_style *style, uint8_t type,
 				css_fixed len, css_unit unit));
 static css_error compute_absolute_length_pair(css_computed_style *style,
 		const css_hint_length *ex_size,
-		uint8_t (*get)(const css_computed_style *style, 
+		uint8_t (*get)(const css_computed_style *style,
 				css_fixed *len1, css_unit *unit1,
 				css_fixed *len2, css_unit *unit2),
 		css_error (*set)(css_computed_style *style, uint8_t type,
@@ -534,7 +534,7 @@ uint8_t css_computed_right(const css_computed_style *style,
 			*length = -style->i.left;
 			*unit = (css_unit) (left >> 2);
 		} else {
-			/** \todo Consider containing block's direction 
+			/** \todo Consider containing block's direction
 			 * if overconstrained */
 		}
 
@@ -598,7 +598,7 @@ uint8_t css_computed_left(const css_computed_style *style,
 			*length = -style->i.right;
 			*unit = (css_unit) (right >> 2);
 		} else {
-			/** \todo Consider containing block's direction 
+			/** \todo Consider containing block's direction
 			 * if overconstrained */
 		}
 
@@ -921,7 +921,7 @@ uint8_t css_computed_display(const css_computed_style *style,
 	if (display == CSS_DISPLAY_NONE)
 		return display; /* 1. */
 
-	if ((position == CSS_POSITION_ABSOLUTE || 
+	if ((position == CSS_POSITION_ABSOLUTE ||
 			position == CSS_POSITION_FIXED) /* 2. */ ||
 			css_computed_float(style) != CSS_FLOAT_NONE /* 3. */ ||
 			root /* 4. */) {
@@ -1031,12 +1031,12 @@ uint8_t css_computed_page_break_after(const css_computed_style *style)
 {
 	return get_page_break_after(style);
 }
- 
+
 uint8_t css_computed_page_break_before(const css_computed_style *style)
 {
 	return get_page_break_before(style);
 }
-    
+
 uint8_t css_computed_page_break_inside(const css_computed_style *style)
 {
 	return get_page_break_inside(style);
@@ -1070,7 +1070,7 @@ uint8_t css_computed_widows(const css_computed_style *style,
  */
 css_error css__compute_absolute_values(const css_computed_style *parent,
 		css_computed_style *style,
-		css_error (*compute_font_size)(void *pw, 
+		css_error (*compute_font_size)(void *pw,
 			const css_hint *parent, css_hint *size),
 		void *pw)
 {
@@ -1079,13 +1079,13 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 
 	/* Ensure font-size is absolute */
 	if (parent != NULL) {
-		psize.status = get_font_size(parent, 
-				&psize.data.length.value, 
+		psize.status = get_font_size(parent,
+				&psize.data.length.value,
 				&psize.data.length.unit);
 	}
 
-	size.status = get_font_size(style, 
-			&size.data.length.value, 
+	size.status = get_font_size(style,
+			&size.data.length.value,
 			&size.data.length.unit);
 
 	error = compute_font_size(pw, parent != NULL ? &psize : NULL, &size);
@@ -1093,7 +1093,7 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 		return error;
 
 	error = set_font_size(style, size.status,
-			size.data.length.value, 
+			size.data.length.value,
 			size.data.length.unit);
 	if (error != CSS_OK)
 		return error;
@@ -1108,14 +1108,14 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 
 	/* Convert ex size into ems */
 	if (size.data.length.value != 0)
-		ex_size.data.length.value = FDIV(ex_size.data.length.value, 
+		ex_size.data.length.value = FDIV(ex_size.data.length.value,
 					size.data.length.value);
 	else
 		ex_size.data.length.value = 0;
 	ex_size.data.length.unit = CSS_UNIT_EM;
 
 	/* Fix up background-position */
-	error = compute_absolute_length_pair(style, &ex_size.data.length, 
+	error = compute_absolute_length_pair(style, &ex_size.data.length,
 			get_background_position,
 			set_background_position);
 	if (error != CSS_OK)
@@ -1223,7 +1223,7 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 		/* Fix up letter-spacing */
 		error = compute_absolute_length(style,
 				&ex_size.data.length,
-				get_letter_spacing, 
+				get_letter_spacing,
 				set_letter_spacing);
 		if (error != CSS_OK)
 			return error;
@@ -1236,9 +1236,9 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 			return error;
 
 		/* Fix up outline-width */
-		error = compute_absolute_border_side_width(style, 
-				&ex_size.data.length, 
-				get_outline_width, 
+		error = compute_absolute_border_side_width(style,
+				&ex_size.data.length,
+				get_outline_width,
 				set_outline_width);
 		if (error != CSS_OK)
 			return error;
@@ -1246,7 +1246,7 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 		/* Fix up word-spacing */
 		error = compute_absolute_length(style,
 				&ex_size.data.length,
-				get_word_spacing, 
+				get_word_spacing,
 				set_word_spacing);
 		if (error != CSS_OK)
 			return error;
@@ -1313,7 +1313,7 @@ css_error compute_absolute_color(css_computed_style *style,
 }
 
 /**
- * Compute border colours, replacing any set to currentColor with 
+ * Compute border colours, replacing any set to currentColor with
  * the computed value of color.
  *
  * \param style  The style to process
@@ -1327,28 +1327,28 @@ css_error compute_border_colors(css_computed_style *style)
 	css_computed_color(style, &color);
 
 	if (get_border_top_color(style, &bcol) == CSS_BORDER_COLOR_CURRENT_COLOR) {
-		error = set_border_top_color(style, 
+		error = set_border_top_color(style,
 				CSS_BORDER_COLOR_COLOR, color);
 		if (error != CSS_OK)
 			return error;
 	}
 
 	if (get_border_right_color(style, &bcol) == CSS_BORDER_COLOR_CURRENT_COLOR) {
-		error = set_border_right_color(style, 
+		error = set_border_right_color(style,
 				CSS_BORDER_COLOR_COLOR, color);
 		if (error != CSS_OK)
 			return error;
 	}
 
 	if (get_border_bottom_color(style, &bcol) == CSS_BORDER_COLOR_CURRENT_COLOR) {
-		error = set_border_bottom_color(style, 
+		error = set_border_bottom_color(style,
 				CSS_BORDER_COLOR_COLOR, color);
 		if (error != CSS_OK)
 			return error;
 	}
 
 	if (get_border_left_color(style, &bcol) == CSS_BORDER_COLOR_CURRENT_COLOR) {
-		error = set_border_left_color(style, 
+		error = set_border_left_color(style,
 				CSS_BORDER_COLOR_COLOR, color);
 		if (error != CSS_OK)
 			return error;
@@ -1370,25 +1370,25 @@ css_error compute_absolute_border_width(css_computed_style *style,
 	css_error error;
 
 	error = compute_absolute_border_side_width(style, ex_size,
-			get_border_top_width, 
+			get_border_top_width,
 			set_border_top_width);
 	if (error != CSS_OK)
 		return error;
 
 	error = compute_absolute_border_side_width(style, ex_size,
-			get_border_right_width, 
+			get_border_right_width,
 			set_border_right_width);
 	if (error != CSS_OK)
 		return error;
 
 	error = compute_absolute_border_side_width(style, ex_size,
-			get_border_bottom_width, 
+			get_border_bottom_width,
 			set_border_bottom_width);
 	if (error != CSS_OK)
 		return error;
 
 	error = compute_absolute_border_side_width(style, ex_size,
-			get_border_left_width, 
+			get_border_left_width,
 			set_border_left_width);
 	if (error != CSS_OK)
 		return error;
@@ -1407,7 +1407,7 @@ css_error compute_absolute_border_width(css_computed_style *style,
  */
 css_error compute_absolute_border_side_width(css_computed_style *style,
 		const css_hint_length *ex_size,
-		uint8_t (*get)(const css_computed_style *style, 
+		uint8_t (*get)(const css_computed_style *style,
 				css_fixed *len, css_unit *unit),
 		css_error (*set)(css_computed_style *style, uint8_t type,
 				css_fixed len, css_unit unit))
@@ -1588,7 +1588,7 @@ css_error compute_absolute_margins(css_computed_style *style,
 			get_margin_left, set_margin_left);
 	if (error != CSS_OK)
 		return error;
-	
+
 	return CSS_OK;
 }
 
@@ -1623,7 +1623,7 @@ css_error compute_absolute_padding(css_computed_style *style,
 			get_padding_left, set_padding_left);
 	if (error != CSS_OK)
 		return error;
-	
+
 	return CSS_OK;
 }
 
@@ -1669,7 +1669,7 @@ css_error compute_absolute_vertical_align(css_computed_style *style,
  */
 css_error compute_absolute_length(css_computed_style *style,
 		const css_hint_length *ex_size,
-		uint8_t (*get)(const css_computed_style *style, 
+		uint8_t (*get)(const css_computed_style *style,
 				css_fixed *len, css_unit *unit),
 		css_error (*set)(css_computed_style *style, uint8_t type,
 				css_fixed len, css_unit unit))
@@ -1702,7 +1702,7 @@ css_error compute_absolute_length(css_computed_style *style,
  */
 css_error compute_absolute_length_pair(css_computed_style *style,
 		const css_hint_length *ex_size,
-		uint8_t (*get)(const css_computed_style *style, 
+		uint8_t (*get)(const css_computed_style *style,
 				css_fixed *len1, css_unit *unit1,
 				css_fixed *len2, css_unit *unit2),
 		css_error (*set)(css_computed_style *style, uint8_t type,

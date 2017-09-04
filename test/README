@@ -21,14 +21,14 @@ basis.
 Testcase output
 ---------------
 
-Testcases may output anything at all to stdout. The final line of the 
-output must begin with either PASS or FAIL (case sensitive), indicating 
+Testcases may output anything at all to stdout. The final line of the
+output must begin with either PASS or FAIL (case sensitive), indicating
 the success status of the test.
 
 Test Index
 ----------
 
-In the test sources directory, is a file, named INDEX, which provides an 
+In the test sources directory, is a file, named INDEX, which provides an
 index of all available test binaries. Any new test applications should be
 added to this index as they are created.
 
@@ -49,20 +49,20 @@ The test index file format is as follows:
 	non-newline  = VCHAR / WSP
 	non-reserved = VCHAR / SP
 
-Each entry contains a mandatory binary name and description followed by 
-an optional data directory specifier. The data directory specifier is 
-used to state the name of the directory containing data files for the 
-test name. This directory will be searched for within the "data" 
-directory in the source tree. 
+Each entry contains a mandatory binary name and description followed by
+an optional data directory specifier. The data directory specifier is
+used to state the name of the directory containing data files for the
+test name. This directory will be searched for within the "data"
+directory in the source tree.
 
 If a data directory is specified, the test binary will be invoked for
-each data file listed within the data directory INDEX, passing the 
+each data file listed within the data directory INDEX, passing the
 filename as the second parameter (<data_file>, above).
 
 Data Index
 ----------
 
-Each test data directory contains a file, named INDEX, which provides an 
+Each test data directory contains a file, named INDEX, which provides an
 index of all available test data files.
 
 The data index file format is as follows:

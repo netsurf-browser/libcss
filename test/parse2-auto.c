@@ -31,7 +31,7 @@ typedef struct line_ctx {
 
 static bool handle_line(const char *data, size_t datalen, void *pw);
 static void css__parse_expected(line_ctx *ctx, const char *data, size_t len);
-static void run_test(const uint8_t *data, size_t len, 
+static void run_test(const uint8_t *data, size_t len,
 		const char *exp, size_t explen);
 
 static css_error resolve_url(void *pw,
@@ -52,7 +52,7 @@ static void
 printing_lwc_iterator(lwc_string *str, void *pw)
 {
 	UNUSED(pw);
-	
+
 	printf(" DICT: %*s\n", (int)(lwc_string_length(str)), lwc_string_data(str));
 	fail_because_lwc_leaked = true;
 }
@@ -60,7 +60,7 @@ printing_lwc_iterator(lwc_string *str, void *pw)
 int main(int argc, char **argv)
 {
 	line_ctx ctx;
-	
+
 	if (argc != 2) {
 		printf("Usage: %s <filename>\n", argv[0]);
 		return 1;
@@ -96,9 +96,9 @@ int main(int argc, char **argv)
 	free(ctx.exp);
 
 	lwc_iterate_strings(printing_lwc_iterator, NULL);
-	
+
 	assert(fail_because_lwc_leaked == false);
-	
+
 	printf("PASS\n");
 
 	return 0;
@@ -112,7 +112,7 @@ bool handle_line(const char *data, size_t datalen, void *pw)
 		if (ctx->inexp) {
 			/* This marks end of testcase, so run it */
 
-			run_test(ctx->buf, ctx->bufused, 
+			run_test(ctx->buf, ctx->bufused,
 					ctx->exp, ctx->expused);
 
 			ctx->buf[0] = '\0';
@@ -125,7 +125,7 @@ bool handle_line(const char *data, size_t datalen, void *pw)
 			ctx->indata = false;
 			ctx->inerrors = true;
 			ctx->inexp = false;
-		} else if (ctx->inerrors && 
+		} else if (ctx->inerrors &&
 				strncasecmp(data+1, "expected", 8) == 0) {
 			ctx->indata = false;
 			ctx->inerrors = false;
@@ -188,7 +188,7 @@ void run_test(const uint8_t *data, size_t len, const char *exp, size_t explen)
 		assert(0 && "No memory for result data");
 	}
 	buflen = 2 * explen;
-	
+
 	params.params_version = CSS_STYLESHEET_PARAMS_VERSION_1;
 	params.level = CSS_LEVEL_21;
 	params.charset = "UTF-8";
@@ -220,7 +220,7 @@ void run_test(const uint8_t *data, size_t len, const char *exp, size_t explen)
 	dump_sheet(sheet, buf, &buflen);
 
 	if (2 * explen - buflen != explen || memcmp(buf, exp, explen) != 0) {
-		printf("Expected (%u):\n%.*s\n", 
+		printf("Expected (%u):\n%.*s\n",
 				(int) explen, (int) explen, exp);
 		printf("Result (%u):\n%.*s\n", (int) (2 * explen - buflen),
 			(int) (2 * explen - buflen), buf);

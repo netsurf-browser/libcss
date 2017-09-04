@@ -14,13 +14,13 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_background_color(uint32_t opv, css_style *style, 
+css_error css__cascade_background_color(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	return css__cascade_bg_border_color(opv, style, state, set_background_color);
 }
 
-css_error css__set_background_color_from_hint(const css_hint *hint, 
+css_error css__set_background_color_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
 	return set_background_color(style, hint->status, hint->data.color);
@@ -28,7 +28,7 @@ css_error css__set_background_color_from_hint(const css_hint *hint,
 
 css_error css__initial_background_color(css_select_state *state)
 {
-	return set_background_color(state->computed, 
+	return set_background_color(state->computed,
 			CSS_BACKGROUND_COLOR_COLOR, 0);
 }
 

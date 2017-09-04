@@ -14,16 +14,16 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_bottom(uint32_t opv, css_style *style, 
+css_error css__cascade_bottom(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	return css__cascade_length_auto(opv, style, state, set_bottom);
 }
 
-css_error css__set_bottom_from_hint(const css_hint *hint, 
+css_error css__set_bottom_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
-	return set_bottom(style, hint->status, 
+	return set_bottom(style, hint->status,
 			hint->data.length.value, hint->data.length.unit);
 }
 

@@ -84,7 +84,7 @@ static inline bool tokenIsChar(const css_token *token, uint8_t c)
 {
 	bool result = false;
 
-	if (token != NULL && token->type == CSS_TOKEN_CHAR && 
+	if (token != NULL && token->type == CSS_TOKEN_CHAR &&
 	                lwc_string_length(token->idata) == 1) {
 		char d = lwc_string_data(token->idata)[0];
 

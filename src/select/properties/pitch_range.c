@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_pitch_range(uint32_t opv, css_style *style, 
+css_error css__cascade_pitch_range(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	/** \todo pitch-range */

@@ -10,7 +10,7 @@
 
 #include "parse/language.h"
 
-static inline bool is_css_inherit(css_language *c, const css_token *token) 
+static inline bool is_css_inherit(css_language *c, const css_token *token)
 {
 	bool match;
 	return ((token->type == CSS_TOKEN_IDENT) &&
@@ -168,7 +168,7 @@ css_error css__parse_colour_specifier(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		uint16_t *value, uint32_t *result);
 
-css_error css__parse_named_colour(css_language *c, lwc_string *data, 
+css_error css__parse_named_colour(css_language *c, lwc_string *data,
 		uint32_t *result);
 
 css_error css__parse_hash_colour(lwc_string *data, uint32_t *result);
@@ -178,7 +178,7 @@ css_error css__parse_unit_specifier(css_language *c,
 		uint32_t default_unit,
 		css_fixed *length, uint32_t *unit);
 
-css_error css__parse_unit_keyword(const char *ptr, size_t len, 
+css_error css__parse_unit_keyword(const char *ptr, size_t len,
 		uint32_t *unit);
 
 css_error css__ident_list_or_string_to_string(css_language *c,
@@ -195,7 +195,7 @@ css_error css__comma_list_to_style(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		bool (*reserved)(css_language *c, const css_token *ident),
 		css_code_t (*get_value)(css_language *c,
-				const css_token *token, 
+				const css_token *token,
 				bool first),
 		css_style *result);
 

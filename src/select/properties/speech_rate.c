@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_speech_rate(uint32_t opv, css_style *style, 
+css_error css__cascade_speech_rate(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	css_fixed rate = 0;

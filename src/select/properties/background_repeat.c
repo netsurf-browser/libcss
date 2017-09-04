@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_background_repeat(uint32_t opv, css_style *style, 
+css_error css__cascade_background_repeat(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = CSS_BACKGROUND_REPEAT_INHERIT;
@@ -46,7 +46,7 @@ css_error css__cascade_background_repeat(uint32_t opv, css_style *style,
 	return CSS_OK;
 }
 
-css_error css__set_background_repeat_from_hint(const css_hint *hint, 
+css_error css__set_background_repeat_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
 	return set_background_repeat(style, hint->status);
@@ -54,7 +54,7 @@ css_error css__set_background_repeat_from_hint(const css_hint *hint,
 
 css_error css__initial_background_repeat(css_select_state *state)
 {
-	return set_background_repeat(state->computed, 
+	return set_background_repeat(state->computed,
 			CSS_BACKGROUND_REPEAT_REPEAT);
 }
 

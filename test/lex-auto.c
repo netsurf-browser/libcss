@@ -39,7 +39,7 @@ static bool handle_line(const char *data, size_t datalen, void *pw);
 static void css__parse_expected(line_ctx *ctx, const char *data, size_t len);
 static const char *string_from_type(css_token_type type);
 static css_token_type string_to_type(const char *data, size_t len);
-static void run_test(const uint8_t *data, size_t len, 
+static void run_test(const uint8_t *data, size_t len,
 		exp_entry *exp, size_t explen);
 
 int main(int argc, char **argv)
@@ -92,7 +92,7 @@ bool handle_line(const char *data, size_t datalen, void *pw)
 		if (ctx->inexp) {
 			/* This marks end of testcase, so run it */
 
-			run_test(ctx->buf, ctx->bufused, 
+			run_test(ctx->buf, ctx->bufused,
 					ctx->exp, ctx->expused);
 
 			ctx->buf[0] = '\0';
@@ -141,7 +141,7 @@ void css__parse_expected(line_ctx *ctx, const char *data, size_t len)
 	if (ctx->expused == ctx->explen) {
 		size_t num = ctx->explen == 0 ? 4 : ctx->explen;
 
-		exp_entry *temp = realloc(ctx->exp, 
+		exp_entry *temp = realloc(ctx->exp,
 				num * 2 * sizeof(exp_entry));
 		if (temp == NULL) {
 			assert(0 && "No memory for expected tokens");
@@ -188,7 +188,7 @@ void css__parse_expected(line_ctx *ctx, const char *data, size_t len)
 					ctx->exp[ctx->expused].textLen] = c;
 			ctx->exp[ctx->expused].textLen++;
 
-			assert(ctx->exp[ctx->expused].textLen < 
+			assert(ctx->exp[ctx->expused].textLen <
 					EXP_ENTRY_TEXT_LEN);
 		}
 	}
@@ -201,7 +201,7 @@ const char *string_from_type(css_token_type type)
 	{
 		"IDENT", "ATKEYWORD", "HASH", "FUNCTION", "STRING", "INVALID",
 		"URI", "UNICODE-RANGE", "CHAR", "NUMBER", "PERCENTAGE",
-		"DIMENSION", "last_intern", "CDO", "CDC", "S", "COMMENT", 
+		"DIMENSION", "last_intern", "CDO", "CDC", "S", "COMMENT",
 		"INCLUDES", "DASHMATCH", "PREFIXMATCH", "SUFFIXMATCH",
 		"SUBSTRINGMATCH", "EOF"
 	};
@@ -271,10 +271,10 @@ void run_test(const uint8_t *data, size_t len, exp_entry *exp, size_t explen)
 
 	assert(css__lexer_create(input, &lexer) == CSS_OK);
 
-	assert(parserutils_inputstream_append(input, data, len) == 
+	assert(parserutils_inputstream_append(input, data, len) ==
 			PARSERUTILS_OK);
 
-	assert(parserutils_inputstream_append(input, NULL, 0) == 
+	assert(parserutils_inputstream_append(input, NULL, 0) ==
 			PARSERUTILS_OK);
 
 	e = 0;
@@ -283,7 +283,7 @@ void run_test(const uint8_t *data, size_t len, exp_entry *exp, size_t explen)
 	while ((error = css__lexer_get_token(lexer, &tok)) == CSS_OK) {
 		if (tok->type != exp[e].type) {
 			printf("%d: Got token %s, Expected %s [%d, %d]\n",
-				testnum, string_from_type(tok->type), 
+				testnum, string_from_type(tok->type),
 				string_from_type(exp[e].type),
 				tok->line, tok->col);
 			assert(0 && "Types differ");
@@ -292,15 +292,15 @@ void run_test(const uint8_t *data, size_t len, exp_entry *exp, size_t explen)
 		if (exp[e].hasText) {
 			if (tok->data.len != exp[e].textLen) {
 				printf("%d: Got length %d, Expected %d\n",
-					testnum, (int) tok->data.len, 
+					testnum, (int) tok->data.len,
 					(int) exp[e].textLen);
 				assert(0 && "Text lengths differ");
 			}
 
-			if (strncmp((char *) tok->data.data, exp[e].text, 
+			if (strncmp((char *) tok->data.data, exp[e].text,
 					tok->data.len) != 0) {
 				printf("%d: Got data '%.*s', Expected '%.*s'\n",
-					testnum, 
+					testnum,
 					(int) tok->data.len, tok->data.data,
 					(int) exp[e].textLen, exp[e].text);
 				assert(0 && "Text differs");

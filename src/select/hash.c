@@ -43,7 +43,7 @@ static hash_entry empty_slot;
 
 static inline lwc_string *_class_name(const css_selector *selector);
 static inline lwc_string *_id_name(const css_selector *selector);
-static css_error _insert_into_chain(css_selector_hash *ctx, hash_entry *head, 
+static css_error _insert_into_chain(css_selector_hash *ctx, hash_entry *head,
 		const css_selector *selector);
 static css_error _remove_from_chain(css_selector_hash *ctx, hash_entry *head,
 		const css_selector *selector);
@@ -183,7 +183,7 @@ css_error css__selector_hash_create(css_selector_hash **hash)
 
 	/* Universal chain head already initiliased by calloc of `h`. */
 
-	h->hash_size = sizeof(css_selector_hash) + 
+	h->hash_size = sizeof(css_selector_hash) +
 			DEFAULT_SLOTS * sizeof(hash_entry) +
 			DEFAULT_SLOTS * sizeof(hash_entry) +
 			DEFAULT_SLOTS * sizeof(hash_entry);
@@ -810,7 +810,7 @@ static void print_chain_bloom_details(css_bloom bloom[CSS_BLOOM_SIZE])
  * \return CSS_OK    on success,
  *         CSS_NOMEM on memory exhaustion.
  */
-css_error _insert_into_chain(css_selector_hash *ctx, hash_entry *head, 
+css_error _insert_into_chain(css_selector_hash *ctx, hash_entry *head,
 		const css_selector *selector)
 {
 	if (head->sel == NULL) {
@@ -836,7 +836,7 @@ css_error _insert_into_chain(css_selector_hash *ctx, hash_entry *head,
 
 			/* Sort by ascending rule index */
 			if (search->sel->specificity == selector->specificity &&
-					search->sel->rule->index > 
+					search->sel->rule->index >
 					selector->rule->index)
 				break;
 

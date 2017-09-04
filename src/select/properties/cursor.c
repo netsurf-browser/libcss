@@ -14,9 +14,9 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_cursor(uint32_t opv, css_style *style, 
+css_error css__cascade_cursor(uint32_t opv, css_style *style,
 		css_select_state *state)
-{	
+{
 	uint16_t value = CSS_CURSOR_INHERIT;
 	lwc_string **uris = NULL;
 	uint32_t n_uris = 0;
@@ -33,7 +33,7 @@ css_error css__cascade_cursor(uint32_t opv, css_style *style,
 					&uri);
 			advance_bytecode(style, sizeof(css_code_t));
 
-			temp = realloc(uris, 
+			temp = realloc(uris,
 					(n_uris + 1) * sizeof(lwc_string *));
 			if (temp == NULL) {
 				if (uris != NULL) {
@@ -111,7 +111,7 @@ css_error css__cascade_cursor(uint32_t opv, css_style *style,
 	if (n_uris > 0) {
 		lwc_string **temp;
 
-		temp = realloc(uris, 
+		temp = realloc(uris,
 				(n_uris + 1) * sizeof(lwc_string *));
 		if (temp == NULL) {
 			free(uris);
@@ -148,7 +148,7 @@ css_error css__set_cursor_from_hint(const css_hint *hint,
 
 	error = set_cursor(style, hint->status, hint->data.strings);
 
-	for (item = hint->data.strings; 
+	for (item = hint->data.strings;
 			item != NULL && (*item) != NULL; item++) {
 		lwc_string_unref(*item);
 	}
@@ -189,12 +189,12 @@ css_error css__compose_cursor(const css_computed_style *parent,
 			for (i = urls; (*i) != NULL; i++)
 				n_urls++;
 
-			copy = malloc((n_urls + 1) * 
+			copy = malloc((n_urls + 1) *
 					sizeof(lwc_string *));
 			if (copy == NULL)
 				return CSS_NOMEM;
 
-			memcpy(copy, urls, (n_urls + 1) * 
+			memcpy(copy, urls, (n_urls + 1) *
 					sizeof(lwc_string *));
 		}
 

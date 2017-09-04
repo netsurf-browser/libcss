@@ -14,7 +14,7 @@
 
 /**
  * Convert a ParserUtils error into a LibCSS error
- * 
+ *
  * \param error  The ParserUtils error to convert
  * \return The corresponding LibCSS error
  */

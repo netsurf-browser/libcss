@@ -46,7 +46,7 @@ css_error css__cascade_azimuth(uint32_t opv, css_style *style,
 
 	unit = css__to_css_unit(unit);
 
-	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state, 
+	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
 			isInherit(opv))) {
 		/** \todo set computed azimuth */
 	}
@@ -54,7 +54,7 @@ css_error css__cascade_azimuth(uint32_t opv, css_style *style,
 	return CSS_OK;
 }
 
-css_error css__set_azimuth_from_hint(const css_hint *hint, 
+css_error css__set_azimuth_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
 	UNUSED(hint);

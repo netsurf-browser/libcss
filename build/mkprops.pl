@@ -24,7 +24,7 @@ EOF
 foreach my $prop (@PROPS) {
 print <<EOF
 static css_error parse_$prop(css_css21 *c,
-		const parserutils_vector *vector, int *ctx, 
+		const parserutils_vector *vector, int *ctx,
 		css_style **result);
 EOF
 }
@@ -34,8 +34,8 @@ print <<EOF
 /**
  * Type of property handler function
  */
-typedef css_error (*css_prop_handler)(css_css21 *c, 
-		const parserutils_vector *vector, int *ctx, 
+typedef css_error (*css_prop_handler)(css_css21 *c,
+		const parserutils_vector *vector, int *ctx,
 		css_style **result);
 
 /**
@@ -55,8 +55,8 @@ print "};\n";
 foreach my $prop (@PROPS) {
 print <<EOF
 
-css_error parse_$prop(css_css21 *c, 
-		const parserutils_vector *vector, int *ctx, 
+css_error parse_$prop(css_css21 *c,
+		const parserutils_vector *vector, int *ctx,
 		css_style **result)
 {
 	UNUSED(c);

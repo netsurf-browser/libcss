@@ -27,8 +27,8 @@
  * Post condition: \a *ctx is updated with the next token to process
  *		   If the input is invalid, then \a *ctx remains unchanged.
  */
-css_error css__parse_cue(css_language *c, 
-		const parserutils_vector *vector, int *ctx, 
+css_error css__parse_cue(css_language *c,
+		const parserutils_vector *vector, int *ctx,
 		css_style *result)
 {
 	int orig_ctx = *ctx;
@@ -47,7 +47,7 @@ css_error css__parse_cue(css_language *c,
 	error = css__parse_cue_before(c, vector, ctx, result);
 	if (error == CSS_OK) {
 		/* first token parsed */
-		
+
 		consumeWhitespace(vector, ctx);
 
 		token = parserutils_vector_peek(vector, *ctx);
@@ -62,7 +62,7 @@ css_error css__parse_cue(css_language *c,
 				error = CSS_INVALID;
 			} else {
 				error = css__parse_cue_after(c, vector, ctx, result);
-				if (error == CSS_OK) { 
+				if (error == CSS_OK) {
 					/* second token parsed */
 					if (is_css_inherit(c, first_token)) {
 						/* valid second token after inherit */

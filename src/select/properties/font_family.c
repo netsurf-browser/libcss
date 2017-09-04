@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_font_family(uint32_t opv, css_style *style, 
+css_error css__cascade_font_family(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = CSS_FONT_FAMILY_INHERIT;
@@ -31,8 +31,8 @@ css_error css__cascade_font_family(uint32_t opv, css_style *style,
 			switch (v) {
 			case FONT_FAMILY_STRING:
 			case FONT_FAMILY_IDENT_LIST:
-				css__stylesheet_string_get(style->sheet, 
-					*((css_code_t *) style->bytecode), 
+				css__stylesheet_string_get(style->sheet,
+					*((css_code_t *) style->bytecode),
 					&font);
 				advance_bytecode(style, sizeof(css_code_t));
 				break;
@@ -63,7 +63,7 @@ css_error css__cascade_font_family(uint32_t opv, css_style *style,
 			 * first generic-family are ignored. */
 			/** \todo Do this at bytecode generation time? */
 			if (value == CSS_FONT_FAMILY_INHERIT && font != NULL) {
-				temp = realloc(fonts, 
+				temp = realloc(fonts,
 					(n_fonts + 1) * sizeof(lwc_string *));
 				if (temp == NULL) {
 					if (fonts != NULL) {
@@ -97,25 +97,25 @@ css_error css__cascade_font_family(uint32_t opv, css_style *style,
 		fonts = temp;
 
 		fonts[n_fonts] = NULL;
-		
+
 		if (value == CSS_FONT_FAMILY_INHERIT) {
 			/* The stylesheet doesn't specify a generic family,
 			 * but it has specified named fonts.
 			 * Fall back to the user agent's default family.
-			 * We don't want to inherit, because that will 
+			 * We don't want to inherit, because that will
 			 * incorrectly overwrite the named fonts list too.
 			 */
 			css_hint hint;
 			css_error error;
-			
+
 			error = state->handler->ua_default_for_property(
 					state->pw, CSS_PROP_FONT_FAMILY, &hint);
 			if (error == CSS_OK) {
 				lwc_string **item;
 
 				value = hint.status;
-		
-				for (item = hint.data.strings; 
+
+				for (item = hint.data.strings;
 						item != NULL && (*item) != NULL;
 						item++) {
 					lwc_string_unref(*item);
@@ -158,7 +158,7 @@ css_error css__set_font_family_from_hint(const css_hint *hint,
 
 	error = set_font_family(style, hint->status, hint->data.strings);
 
-	for (item = hint->data.strings; 
+	for (item = hint->data.strings;
 			item != NULL && (*item) != NULL; item++) {
 		lwc_string_unref(*item);
 	}
@@ -207,7 +207,7 @@ css_error css__compose_font_family(const css_computed_style *parent,
 			if (copy == NULL)
 				return CSS_NOMEM;
 
-			memcpy(copy, names, (n_names + 1) * 
+			memcpy(copy, names, (n_names + 1) *
 					sizeof(lwc_string *));
 		}
 

@@ -14,13 +14,13 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_border_bottom_style(uint32_t opv, css_style *style, 
+css_error css__cascade_border_bottom_style(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	return css__cascade_border_style(opv, style, state, set_border_bottom_style);
 }
 
-css_error css__set_border_bottom_style_from_hint(const css_hint *hint, 
+css_error css__set_border_bottom_style_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
 	return set_border_bottom_style(style, hint->status);

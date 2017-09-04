@@ -39,33 +39,33 @@ css_error css__stylesheet_string_add(css_stylesheet *sheet, lwc_string *string, 
 	uint32_t new_string_number; /* The string number count */
 
 	/* search for the string in the existing vector */
-	for (new_string_number = 0; 
+	for (new_string_number = 0;
 	     new_string_number < sheet->string_vector_c;
 	     new_string_number++) {
 		lwc_error res;
 		bool isequal;
-		res = lwc_string_isequal(string, 
-					 sheet->string_vector[new_string_number], 
+		res = lwc_string_isequal(string,
+					 sheet->string_vector[new_string_number],
 					 &isequal);
 
 		if (res != lwc_error_ok) {
-			lwc_string_unref(string);			
+			lwc_string_unref(string);
 			return css_error_from_lwc_error(res);
 		}
 
 		if (isequal) {
-			lwc_string_unref(string);			
+			lwc_string_unref(string);
 			*string_number = (new_string_number + 1);
 			return CSS_OK;
 		}
-		 
+
 	}
 
 	/* string does not exist in current vector, add a new one */
 
 	if (sheet->string_vector_c >= sheet->string_vector_l) {
 		/* additional storage must be allocated to deal with
-		 * this request. 
+		 * this request.
 		 */
 		lwc_string **new_vector;
 		uint32_t new_vector_len;
@@ -75,7 +75,7 @@ css_error css__stylesheet_string_add(css_stylesheet *sheet, lwc_string *string, 
 				new_vector_len * sizeof(lwc_string *));
 
 		if (new_vector == NULL) {
-			lwc_string_unref(string);			
+			lwc_string_unref(string);
 			return CSS_NOMEM;
 		}
 		sheet->string_vector = new_vector;
@@ -128,7 +128,7 @@ css_error css_stylesheet_create(const css_stylesheet_params *params,
 	css_error error;
 	css_stylesheet *sheet;
 
-	if (params == NULL || params->params_version != 
+	if (params == NULL || params->params_version !=
 				CSS_STYLESHEET_PARAMS_VERSION_1 ||
 			params->url == NULL || params->resolve == NULL ||
 			stylesheet == NULL)
@@ -143,11 +143,11 @@ css_error css_stylesheet_create(const css_stylesheet_params *params,
 		free(sheet);
 		return error;
 	}
-	
+
 	sheet->inline_style = params->inline_style;
 
 	if (params->inline_style) {
-		error = css__parser_create_for_inline_style(params->charset, 
+		error = css__parser_create_for_inline_style(params->charset,
 				(params->charset != NULL) ?
 				CSS_CHARSET_DICTATED : CSS_CHARSET_DEFAULT,
 				&sheet->parser);
@@ -255,12 +255,12 @@ css_error css_stylesheet_destroy(css_stylesheet *sheet)
 
 	if (sheet == NULL)
 		return CSS_BADPARM;
-	
+
 	if (sheet->title != NULL)
 		free(sheet->title);
 
 	free(sheet->url);
-        
+
 	for (r = sheet->rule_list; r != NULL; r = s) {
 		s = r->next;
 
@@ -286,14 +286,14 @@ css_error css_stylesheet_destroy(css_stylesheet *sheet)
 
 	/* destroy string vector */
 	for (index = 0; index < sheet->string_vector_c; index++) {
-		lwc_string_unref(sheet->string_vector[index]);		
+		lwc_string_unref(sheet->string_vector[index]);
 	}
 
 	if (sheet->string_vector != NULL)
 		free(sheet->string_vector);
 
 	css__propstrings_unref();
-	
+
 	free(sheet);
 
 	return CSS_OK;
@@ -348,7 +348,7 @@ css_error css_stylesheet_data_done(css_stylesheet *sheet)
 
 	sheet->parser_frontend = NULL;
 	sheet->parser = NULL;
-	
+
 	/* If we have a cached style, drop it as we're done parsing. */
 	if (sheet->cached_style != NULL) {
 		css__stylesheet_style_destroy(sheet->cached_style);
@@ -375,7 +375,7 @@ css_error css_stylesheet_data_done(css_stylesheet *sheet)
  * Retrieve the next pending import for the parent stylesheet
  *
  * \param parent  Parent stylesheet
- * \param url	  Pointer to object to be populated with details of URL of 
+ * \param url	  Pointer to object to be populated with details of URL of
  *		  imported stylesheet (potentially relative)
  * \param media	  Pointer to location to receive applicable media types for
  *		  imported sheet,
@@ -427,7 +427,7 @@ css_error css_stylesheet_next_pending_import(css_stylesheet *parent,
  *
  * \param parent  Parent stylesheet
  * \param import  Imported sheet
- * \return CSS_OK on success, 
+ * \return CSS_OK on success,
  *	   CSS_INVALID if there are no outstanding imports,
  *	   appropriate error otherwise.
  *
@@ -612,7 +612,7 @@ css_error css_stylesheet_size(css_stylesheet *sheet, size_t *size)
 
 		bytes += hash_size;
 	}
-	
+
 	*size = bytes;
 
 	return CSS_OK;
@@ -643,13 +643,13 @@ css_error css__stylesheet_style_create(css_stylesheet *sheet, css_style **style)
 
 	if (sheet == NULL)
 		return CSS_BADPARM;
-	
+
 	if (sheet->cached_style != NULL) {
 		*style = sheet->cached_style;
 		sheet->cached_style = NULL;
 		return CSS_OK;
 	}
-	
+
 	s = malloc(sizeof(css_style));
 	if (s == NULL)
 		return CSS_NOMEM;
@@ -658,7 +658,7 @@ css_error css__stylesheet_style_create(css_stylesheet *sheet, css_style **style)
 
 	if (s->bytecode == NULL) {
 		free(s); /* do not leak */
-	
+
 		return CSS_NOMEM;
 	}
 	s->allocated = CSS_STYLE_DEFAULT_SIZE;
@@ -679,7 +679,7 @@ css_error css__stylesheet_merge_style(css_style *target, css_style *style)
 		return CSS_BADPARM;
 
 	newcode_len = target->used + style->used ;
-	
+
 	if (newcode_len > target->allocated) {
 		newcode_len += CSS_STYLE_DEFAULT_SIZE - 1;
 		newcode_len &= ~(CSS_STYLE_DEFAULT_SIZE - 1);
@@ -702,7 +702,7 @@ css_error css__stylesheet_merge_style(css_style *target, css_style *style)
 
 }
 
-/** append one or more css code entries to a style */ 
+/** append one or more css code entries to a style */
 css_error css__stylesheet_style_vappend(css_style *style, uint32_t style_count, ...)
 {
 	va_list ap;
@@ -721,7 +721,7 @@ css_error css__stylesheet_style_vappend(css_style *style, uint32_t style_count, 
 	return error;
 }
 
-/** append a css code entry to a style */ 
+/** append a css code entry to a style */
 css_error css__stylesheet_style_append(css_style *style, css_code_t css_code)
 {
 	if (style == NULL)
@@ -755,7 +755,7 @@ css_error css__stylesheet_style_append(css_style *style, css_code_t css_code)
 css_error css__stylesheet_style_destroy(css_style *style)
 {
 	css_stylesheet *sheet;
-	
+
 	if (style == NULL)
 		return CSS_BADPARM;
 
@@ -773,7 +773,7 @@ css_error css__stylesheet_style_destroy(css_style *style)
 		free(style->bytecode);
 		free(style);
 	}
-	
+
 	return CSS_OK;
 }
 
@@ -792,7 +792,7 @@ css_error css__stylesheet_selector_create(css_stylesheet *sheet,
 {
 	css_selector *sel;
 
-	if (sheet == NULL || qname == NULL || qname->name == NULL || 
+	if (sheet == NULL || qname == NULL || qname->name == NULL ||
 			selector == NULL)
 		return CSS_BADPARM;
 
@@ -815,7 +815,7 @@ css_error css__stylesheet_selector_create(css_stylesheet *sheet,
 		sel->specificity = CSS_SPECIFICITY_A;
 	} else {
 		/* Initial specificity -- 1 for an element, 0 for universal */
-		if (lwc_string_length(qname->name) != 1 || 
+		if (lwc_string_length(qname->name) != 1 ||
 				lwc_string_data(qname->name)[0] != '*')
 			sel->specificity = CSS_SPECIFICITY_D;
 		else
@@ -857,8 +857,8 @@ css_error css__stylesheet_selector_destroy(css_stylesheet *sheet,
 				lwc_string_unref(detail->qname.ns);
 			lwc_string_unref(detail->qname.name);
 
-			if (detail->value_type == 
-					CSS_SELECTOR_DETAIL_VALUE_STRING && 
+			if (detail->value_type ==
+					CSS_SELECTOR_DETAIL_VALUE_STRING &&
 					detail->value.string != NULL) {
 				lwc_string_unref(detail->value.string);
 			}
@@ -868,16 +868,16 @@ css_error css__stylesheet_selector_destroy(css_stylesheet *sheet,
 			else
 				detail = NULL;
 		}
-		
+
 		free(c);
 	}
-	
+
 	for (detail = &selector->data; detail;) {
 		if (detail->qname.ns != NULL)
 			lwc_string_unref(detail->qname.ns);
 		lwc_string_unref(detail->qname.name);
 
-		if (detail->value_type == CSS_SELECTOR_DETAIL_VALUE_STRING && 
+		if (detail->value_type == CSS_SELECTOR_DETAIL_VALUE_STRING &&
 				detail->value.string != NULL) {
 			lwc_string_unref(detail->value.string);
 		}
@@ -887,8 +887,8 @@ css_error css__stylesheet_selector_destroy(css_stylesheet *sheet,
 		else
 			detail = NULL;
 	}
-		     
-	
+
+
 	/* Destroy this selector */
 	free(selector);
 
@@ -908,16 +908,16 @@ css_error css__stylesheet_selector_destroy(css_stylesheet *sheet,
  * \return CSS_OK on success,
  *	   CSS_BADPARM on bad parameters
  *
- * \note No strings are referenced at this point: they will be 
+ * \note No strings are referenced at this point: they will be
  *       referenced when appending the detail to a selector.
  */
 css_error css__stylesheet_selector_detail_init(css_stylesheet *sheet,
-		css_selector_type type, css_qname *qname, 
-		css_selector_detail_value value, 
+		css_selector_type type, css_qname *qname,
+		css_selector_detail_value value,
 		css_selector_detail_value_type value_type,
 		bool negate, css_selector_detail *detail)
 {
-	if (sheet == NULL || qname == NULL || qname->name == NULL || 
+	if (sheet == NULL || qname == NULL || qname->name == NULL ||
 			detail == NULL)
 		return CSS_BADPARM;
 
@@ -947,11 +947,11 @@ css_error css__stylesheet_selector_append_specific(css_stylesheet *sheet,
 	css_selector_detail *d;
 	size_t num_details = 0;
 
-	if (sheet == NULL || parent == NULL || 
+	if (sheet == NULL || parent == NULL ||
 			*parent == NULL || detail == NULL)
 		return CSS_BADPARM;
 
-	/** \todo this may want optimising -- counting blocks is O(n) 
+	/** \todo this may want optimising -- counting blocks is O(n)
 	 * In practice, however, n isn't likely to be large, so may be fine
 	 */
 
@@ -969,7 +969,7 @@ css_error css__stylesheet_selector_append_specific(css_stylesheet *sheet,
 	*(d = &(&temp->data)[num_details + 1]) = *detail;
 	/* Flag that there's another block */
 	(&temp->data)[num_details].next = 1;
-	
+
 	/* Ref the strings */
 	if (detail->qname.ns != NULL)
 		d->qname.ns = lwc_string_ref(detail->qname.ns);
@@ -977,7 +977,7 @@ css_error css__stylesheet_selector_append_specific(css_stylesheet *sheet,
 	if (detail->value_type == CSS_SELECTOR_DETAIL_VALUE_STRING &&
 			detail->value.string != NULL)
 		d->value.string = lwc_string_ref(detail->value.string);
-	
+
 	(*parent) = temp;
 
 	/* Update parent's specificity */
@@ -1014,7 +1014,7 @@ css_error css__stylesheet_selector_append_specific(css_stylesheet *sheet,
  * \param b	 The second operand
  * \return CSS_OK on success, appropriate error otherwise.
  *
- * For example, given A + B, the combinator field of B would point at A, 
+ * For example, given A + B, the combinator field of B would point at A,
  * with a combinator type of CSS_COMBINATOR_SIBLING. Thus, given B, we can
  * find its combinator. It is not possible to find B given A.
  */
@@ -1115,7 +1115,7 @@ css_error css__stylesheet_rule_destroy(css_stylesheet *sheet, css_rule *rule)
 		return CSS_BADPARM;
 
 	/* Must be detached from parent/siblings */
-	assert(rule->parent == NULL && rule->next == NULL && 
+	assert(rule->parent == NULL && rule->next == NULL &&
 			rule->prev == NULL);
 
 	/* Destroy type-specific contents */
@@ -1152,9 +1152,9 @@ css_error css__stylesheet_rule_destroy(css_stylesheet *sheet, css_rule *rule)
 	case CSS_RULE_IMPORT:
 	{
 		css_rule_import *import = (css_rule_import *) rule;
-		
+
 		lwc_string_unref(import->url);
-		
+
 		/* Do not destroy imported sheet: it is owned by the client */
 	}
 		break;
@@ -1212,7 +1212,7 @@ css_error css__stylesheet_rule_destroy(css_stylesheet *sheet, css_rule *rule)
  * \param selector  The selector to add
  * \return CSS_OK on success, appropriate error otherwise
  */
-css_error css__stylesheet_rule_add_selector(css_stylesheet *sheet, 
+css_error css__stylesheet_rule_add_selector(css_stylesheet *sheet,
 		css_rule *rule, css_selector *selector)
 {
 	css_rule_selector *r = (css_rule_selector *) rule;
@@ -1236,7 +1236,7 @@ css_error css__stylesheet_rule_add_selector(css_stylesheet *sheet,
 
 	/* Set selector's rule field */
 	selector->rule = rule;
-	
+
 	return CSS_OK;
 }
 
@@ -1310,7 +1310,7 @@ css_error css__stylesheet_rule_set_charset(css_stylesheet *sheet,
 
 	/* Set rule's encoding field */
 	r->encoding = lwc_string_ref(charset);
-	
+
 	return CSS_OK;
 }
 
@@ -1325,7 +1325,7 @@ css_error css__stylesheet_rule_set_charset(css_stylesheet *sheet,
  * \return CSS_OK on success, appropriate error otherwise
  */
 css_error css__stylesheet_rule_set_nascent_import(css_stylesheet *sheet,
-		css_rule *rule, lwc_string *url, 
+		css_rule *rule, lwc_string *url,
 		uint64_t media)
 {
 	css_rule_import *r = (css_rule_import *) rule;
@@ -1505,9 +1505,9 @@ css_error css__stylesheet_remove_rule(css_stylesheet *sheet, css_rule *rule)
 	rule->prev = NULL;
 	rule->next = NULL;
 
-	/**\ todo renumber subsequent rules? may not be necessary, as there's 
-	 * only an expectation that rules which occur later in the stylesheet 
-	 * have a higher index than those that appear earlier. There's no 
+	/**\ todo renumber subsequent rules? may not be necessary, as there's
+	 * only an expectation that rules which occur later in the stylesheet
+	 * have a higher index than those that appear earlier. There's no
 	 * guarantee that the number space is continuous. */
 
 	/** \todo needs to trigger some event announcing styles have changed */
@@ -1556,7 +1556,7 @@ css_error _add_selectors(css_stylesheet *sheet, css_rule *rule)
 					css__selector_hash_remove(
 							sheet->selectors, sel);
 				}
-				
+
 				return error;
 			}
 		}
@@ -1705,7 +1705,7 @@ size_t _rule_size(const css_rule *r)
 				d++;
 			}
 
-			s = s->combinator;	
+			s = s->combinator;
 		}
 
 		if (rp->style != NULL)

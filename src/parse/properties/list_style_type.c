@@ -27,8 +27,8 @@
  * Post condition: \a *ctx is updated with the next token to process
  *		   If the input is invalid, then \a *ctx remains unchanged.
  */
-css_error css__parse_list_style_type(css_language *c, 
-		const parserutils_vector *vector, int *ctx, 
+css_error css__parse_list_style_type(css_language *c,
+		const parserutils_vector *vector, int *ctx,
 		css_style *result)
 {
 	int orig_ctx = *ctx;
@@ -63,8 +63,8 @@ css_error css__parse_list_style_type(css_language *c,
 
 	error = css__stylesheet_style_appendOPV(result, CSS_PROP_LIST_STYLE_TYPE, flags, value);
 
-	if (error != CSS_OK) 
+	if (error != CSS_OK)
 		*ctx = orig_ctx;
-	
+
 	return error;
 }

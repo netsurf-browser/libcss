@@ -27,7 +27,7 @@ struct css_font_face {
 	lwc_string *font_family;
 	css_font_face_src *srcs;
 	uint32_t n_srcs;
-	
+
 	/*
 	 * Bit allocations:
 	 *

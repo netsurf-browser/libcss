@@ -118,38 +118,38 @@ typedef struct css_select_rule_source {
 
 
 static css_error set_hint(css_select_state *state, css_hint *hint);
-static css_error set_initial(css_select_state *state, 
+static css_error set_initial(css_select_state *state,
 		uint32_t prop, css_pseudo_element pseudo,
 		void *parent);
 
 static css_error intern_strings(css_select_ctx *ctx);
 static void destroy_strings(css_select_ctx *ctx);
 
-static css_error select_from_sheet(css_select_ctx *ctx, 
+static css_error select_from_sheet(css_select_ctx *ctx,
 		const css_stylesheet *sheet, css_origin origin,
 		css_select_state *state);
-static css_error match_selectors_in_sheet(css_select_ctx *ctx, 
+static css_error match_selectors_in_sheet(css_select_ctx *ctx,
 		const css_stylesheet *sheet, css_select_state *state);
-static css_error match_selector_chain(css_select_ctx *ctx, 
+static css_error match_selector_chain(css_select_ctx *ctx,
 		const css_selector *selector, css_select_state *state);
-static css_error match_named_combinator(css_select_ctx *ctx, 
-		css_combinator type, const css_selector *selector, 
+static css_error match_named_combinator(css_select_ctx *ctx,
+		css_combinator type, const css_selector *selector,
 		css_select_state *state, void *node, void **next_node);
-static css_error match_universal_combinator(css_select_ctx *ctx, 
-		css_combinator type, const css_selector *selector, 
+static css_error match_universal_combinator(css_select_ctx *ctx,
+		css_combinator type, const css_selector *selector,
 		css_select_state *state, void *node, bool may_optimise,
 		bool *rejected_by_cache, void **next_node);
-static css_error match_details(css_select_ctx *ctx, void *node, 
-		const css_selector_detail *detail, css_select_state *state, 
+static css_error match_details(css_select_ctx *ctx, void *node,
+		const css_selector_detail *detail, css_select_state *state,
 		bool *match, css_pseudo_element *pseudo_element);
-static css_error match_detail(css_select_ctx *ctx, void *node, 
-		const css_selector_detail *detail, css_select_state *state, 
+static css_error match_detail(css_select_ctx *ctx, void *node,
+		const css_selector_detail *detail, css_select_state *state,
 		bool *match, css_pseudo_element *pseudo_element);
 static css_error cascade_style(const css_style *style, css_select_state *state);
 
 static css_error select_font_faces_from_sheet(
-		const css_stylesheet *sheet, 
-		css_origin origin, 
+		const css_stylesheet *sheet,
+		css_origin origin,
 		css_select_font_faces_state *state);
 
 #ifdef DEBUG_CHAIN_MATCHING
@@ -305,7 +305,7 @@ css_error css_select_ctx_destroy(css_select_ctx *ctx)
  * \param media   Media types to which the sheet applies
  * \return CSS_OK on success, appropriate error otherwise
  */
-css_error css_select_ctx_append_sheet(css_select_ctx *ctx, 
+css_error css_select_ctx_append_sheet(css_select_ctx *ctx,
 		const css_stylesheet *sheet, css_origin origin,
 		uint64_t media)
 {
@@ -318,7 +318,7 @@ css_error css_select_ctx_append_sheet(css_select_ctx *ctx,
 
 /**
  * Insert a stylesheet into a selection context
- * 
+ *
  * \param ctx    The context to insert into
  * \param sheet  Sheet to insert
  * \param index  Index in context to insert sheet
@@ -344,7 +344,7 @@ css_error css_select_ctx_insert_sheet(css_select_ctx *ctx,
 	if (index > ctx->n_sheets)
 		return CSS_INVALID;
 
-	temp = realloc(ctx->sheets, 
+	temp = realloc(ctx->sheets,
 			(ctx->n_sheets + 1) * sizeof(css_select_sheet));
 	if (temp == NULL)
 		return CSS_NOMEM;
@@ -1245,7 +1245,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 
 		if ((s.media & media) != 0 &&
 				s.sheet->disabled == false) {
-			error = select_from_sheet(ctx, s.sheet, 
+			error = select_from_sheet(ctx, s.sheet,
 					s.origin, &state);
 			if (error != CSS_OK)
 				goto cleanup;
@@ -1254,12 +1254,12 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 
 	/* Consider any inline style for the node */
 	if (inline_style != NULL) {
-		css_rule_selector *sel = 
+		css_rule_selector *sel =
 				(css_rule_selector *) inline_style->rule_list;
 
 		/* Sanity check style */
 		if (inline_style->rule_count != 1 ||
-			inline_style->rule_list->type != CSS_RULE_SELECTOR || 
+			inline_style->rule_list->type != CSS_RULE_SELECTOR ||
 				inline_style->rule_list->items != 0) {
 			error = CSS_INVALID;
 			goto cleanup;
@@ -1284,16 +1284,16 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	state.current_pseudo = CSS_PSEUDO_ELEMENT_NONE;
 	state.computed = state.results->styles[CSS_PSEUDO_ELEMENT_NONE];
 	for (i = 0; i < CSS_N_PROPERTIES; i++) {
-		const prop_state *prop = 
+		const prop_state *prop =
 				&state.props[i][CSS_PSEUDO_ELEMENT_NONE];
 
-		/* If the property is still unset or it's set to inherit 
-		 * and we're the root element, then set it to its initial 
+		/* If the property is still unset or it's set to inherit
+		 * and we're the root element, then set it to its initial
 		 * value. */
-		if (prop->set == false || 
-				(parent == NULL && 
+		if (prop->set == false ||
+				(parent == NULL &&
 				prop->inherit == true)) {
-			error = set_initial(&state, i, 
+			error = set_initial(&state, i,
 					CSS_PSEUDO_ELEMENT_NONE, parent);
 			if (error != CSS_OK)
 				goto cleanup;
@@ -1312,7 +1312,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		for (i = 0; i < CSS_N_PROPERTIES; i++) {
 			const prop_state *prop = &state.props[i][j];
 
-			/* If the property is still unset then set it 
+			/* If the property is still unset then set it
 			 * to its initial value. */
 			if (prop->set == false) {
 				error = set_initial(&state, i, j, parent);
@@ -1323,8 +1323,8 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	}
 
 	/* If this is the root element, then we must ensure that all
-	 * length values are absolute, display and float are correctly 
-	 * computed, and the default border-{top,right,bottom,left}-color 
+	 * length values are absolute, display and float are correctly
+	 * computed, and the default border-{top,right,bottom,left}-color
 	 * is set to the computed value of color. */
 	if (parent == NULL) {
 		/* Only compute absolute values for the base element */
@@ -1406,20 +1406,20 @@ css_error css_select_font_faces(css_select_ctx *ctx,
 	css_error error;
 	css_select_font_faces_state state;
 	uint32_t n_font_faces;
-	
+
 	if (ctx == NULL || font_family == NULL || result == NULL)
 		return CSS_BADPARM;
 
 	memset(&state, 0, sizeof(css_select_font_faces_state));
 	state.font_family = font_family;
 	state.media = media;
-	
+
 	/* Iterate through the top-level stylesheets, selecting font-faces
 	 * from those which apply to our current media requirements and
 	 * are not disabled */
 	for (i = 0; i < ctx->n_sheets; i++) {
 		const css_select_sheet s = ctx->sheets[i];
-		
+
 		if ((s.media & media) != 0 &&
 				s.sheet->disabled == false) {
 			error = select_font_faces_from_sheet(s.sheet,
@@ -1428,23 +1428,23 @@ css_error css_select_font_faces(css_select_ctx *ctx,
 				goto cleanup;
 		}
 	}
-	
-	n_font_faces = state.ua_font_faces.count + 
+
+	n_font_faces = state.ua_font_faces.count +
 			state.user_font_faces.count +
 			state.author_font_faces.count;
-				
-	
+
+
 	if (n_font_faces > 0) {
 		/* We found some matching faces.  Make a results structure with
 		 * the font faces in priority order. */
 		css_select_font_faces_results *results;
-		
+
 		results = malloc(sizeof(css_select_font_faces_results));
 		if (results == NULL) {
 			error = CSS_NOMEM;
 			goto cleanup;
 		}
-		
+
 		results->font_faces = malloc(
 				n_font_faces * sizeof(css_font_face *));
 		if (results->font_faces == NULL) {
@@ -1454,47 +1454,47 @@ css_error css_select_font_faces(css_select_ctx *ctx,
 		}
 
 		results->n_font_faces = n_font_faces;
-		
+
 		i = 0;
 		if (state.ua_font_faces.count != 0) {
-			memcpy(results->font_faces, 
+			memcpy(results->font_faces,
 					state.ua_font_faces.font_faces,
-					sizeof(css_font_face *) * 
+					sizeof(css_font_face *) *
 						state.ua_font_faces.count);
-			
+
 			i += state.ua_font_faces.count;
 		}
-				
+
 		if (state.user_font_faces.count != 0) {
-			memcpy(results->font_faces + i, 
+			memcpy(results->font_faces + i,
 					state.user_font_faces.font_faces,
-					sizeof(css_font_face *) * 
+					sizeof(css_font_face *) *
 						state.user_font_faces.count);
 			i += state.user_font_faces.count;
 		}
-		
+
 		if (state.author_font_faces.count != 0) {
-			memcpy(results->font_faces + i, 
+			memcpy(results->font_faces + i,
 					state.author_font_faces.font_faces,
-					sizeof(css_font_face *) * 
+					sizeof(css_font_face *) *
 						state.author_font_faces.count);
 		}
 
 		*result = results;
 	}
-	
+
 	error = CSS_OK;
-	
+
 cleanup:
-	if (state.ua_font_faces.count != 0) 
+	if (state.ua_font_faces.count != 0)
 		free(state.ua_font_faces.font_faces);
 
-	if (state.user_font_faces.count != 0) 
+	if (state.user_font_faces.count != 0)
 		free(state.user_font_faces.font_faces);
-	
-	if (state.author_font_faces.count != 0) 
+
+	if (state.author_font_faces.count != 0)
 		free(state.author_font_faces.font_faces);
-	
+
 	return error;
 }
 
@@ -1509,15 +1509,15 @@ css_error css_select_font_faces_results_destroy(
 {
 	if (results == NULL)
 		return CSS_BADPARM;
-	
+
 	if (results->font_faces != NULL) {
 		/* Don't destroy the individual css_font_faces, they're owned
 		   by their respective sheets */
 		free(results->font_faces);
 	}
-	
+
 	free(results);
-	
+
 	return CSS_OK;
 }
 
@@ -1536,37 +1536,37 @@ css_error intern_strings(css_select_ctx *ctx)
 
 	/* Pseudo classes */
 	error = lwc_intern_string(
-			"first-child", SLEN("first-child"), 
+			"first-child", SLEN("first-child"),
 			&ctx->first_child);
 	if (error != lwc_error_ok)
 		return css_error_from_lwc_error(error);
 
 	error = lwc_intern_string(
-			"link", SLEN("link"), 
+			"link", SLEN("link"),
 			&ctx->link);
 	if (error != lwc_error_ok)
 		return css_error_from_lwc_error(error);
 
 	error = lwc_intern_string(
-			"visited", SLEN("visited"), 
+			"visited", SLEN("visited"),
 			&ctx->visited);
 	if (error != lwc_error_ok)
 		return css_error_from_lwc_error(error);
 
 	error = lwc_intern_string(
-			"hover", SLEN("hover"), 
+			"hover", SLEN("hover"),
 			&ctx->hover);
 	if (error != lwc_error_ok)
 		return css_error_from_lwc_error(error);
 
 	error = lwc_intern_string(
-			"active", SLEN("active"), 
+			"active", SLEN("active"),
 			&ctx->active);
 	if (error != lwc_error_ok)
 		return css_error_from_lwc_error(error);
 
 	error = lwc_intern_string(
-			"focus", SLEN("focus"), 
+			"focus", SLEN("focus"),
 			&ctx->focus);
 	if (error != lwc_error_ok)
 		return css_error_from_lwc_error(error);
@@ -1669,7 +1669,7 @@ css_error intern_strings(css_select_ctx *ctx)
 
 	/* Pseudo elements */
 	error = lwc_intern_string(
-			"first-line", SLEN("first-line"), 
+			"first-line", SLEN("first-line"),
 			&ctx->first_line);
 	if (error != lwc_error_ok)
 		return css_error_from_lwc_error(error);
@@ -1681,13 +1681,13 @@ css_error intern_strings(css_select_ctx *ctx)
 		return css_error_from_lwc_error(error);
 
 	error = lwc_intern_string(
-			"before", SLEN("before"), 
+			"before", SLEN("before"),
 			&ctx->before);
 	if (error != lwc_error_ok)
 		return css_error_from_lwc_error(error);
 
 	error = lwc_intern_string(
-			"after", SLEN("after"), 
+			"after", SLEN("after"),
 			&ctx->after);
 	if (error != lwc_error_ok)
 		return css_error_from_lwc_error(error);
@@ -1774,29 +1774,29 @@ css_error set_hint(css_select_state *state, css_hint *hint)
 	return CSS_OK;
 }
 
-css_error set_initial(css_select_state *state, 
+css_error set_initial(css_select_state *state,
 		uint32_t prop, css_pseudo_element pseudo,
 		void *parent)
 {
 	css_error error;
 
-	/* Do nothing if this property is inherited (the default state 
+	/* Do nothing if this property is inherited (the default state
 	 * of a clean computed style is for everything to be set to inherit)
 	 *
-	 * If the node is tree root and we're dealing with the base element, 
+	 * If the node is tree root and we're dealing with the base element,
 	 * everything should be defaulted.
 	 */
-	if (prop_dispatch[prop].inherited == false || 
+	if (prop_dispatch[prop].inherited == false ||
 			(pseudo == CSS_PSEUDO_ELEMENT_NONE && parent == NULL)) {
 		enum prop_group group = prop_dispatch[prop].group;
 
-		/* Remaining properties are neither inherited nor 
-		 * already set. Thus, we set them to their initial 
-		 * values here. Except, however, if the property in 
-		 * question resides in one of the extension blocks and 
-		 * the extension block has yet to be allocated. In that 
-		 * case, we do nothing and leave it to the property 
-		 * accessors to return the initial values for the 
+		/* Remaining properties are neither inherited nor
+		 * already set. Thus, we set them to their initial
+		 * values here. Except, however, if the property in
+		 * question resides in one of the extension blocks and
+		 * the extension block has yet to be allocated. In that
+		 * case, we do nothing and leave it to the property
+		 * accessors to return the initial values for the
 		 * property.
 		 */
 		switch (group) {
@@ -1825,7 +1825,7 @@ css_error set_initial(css_select_state *state,
 
 #define IMPORT_STACK_SIZE 256
 
-css_error select_from_sheet(css_select_ctx *ctx, const css_stylesheet *sheet, 
+css_error select_from_sheet(css_select_ctx *ctx, const css_stylesheet *sheet,
 		css_origin origin, css_select_state *state)
 {
 	const css_stylesheet *s = sheet;
@@ -1842,7 +1842,7 @@ css_error select_from_sheet(css_select_ctx *ctx, const css_stylesheet *sheet,
 
 		if (rule != NULL && rule->type == CSS_RULE_IMPORT) {
 			/* Current rule is an import */
-			const css_rule_import *import = 
+			const css_rule_import *import =
 					(const css_rule_import *) rule;
 
 			if (import->sheet != NULL &&
@@ -1893,7 +1893,7 @@ static inline bool _rule_applies_to_media(const css_rule *rule, uint64_t media)
 	while (ancestor != NULL) {
 		const css_rule_media *m = (const css_rule_media *) ancestor;
 
-		if (ancestor->type == CSS_RULE_MEDIA && 
+		if (ancestor->type == CSS_RULE_MEDIA &&
 				(m->media & media) == 0) {
 			applies = false;
 			break;
@@ -1917,7 +1917,7 @@ static css_error _select_font_face_from_rule(
 
 		if (lwc_string_isequal(
 				rule->font_face->font_family,
-				state->font_family, 
+				state->font_family,
 				&correct_family) == lwc_error_ok &&
 				correct_family) {
 			css_select_font_faces_list *faces = NULL;
@@ -1936,16 +1936,16 @@ static css_error _select_font_face_from_rule(
 					faces = &state->author_font_faces;
 					break;
 			}
-			
-			index = faces->count++;			
+
+			index = faces->count++;
 			new_size = faces->count * sizeof(css_font_face *);
-			
+
 			new_faces = realloc(faces->font_faces, new_size);
 			if (new_faces == NULL) {
 				return CSS_NOMEM;
 			}
 			faces->font_faces = new_faces;
-			
+
 			faces->font_faces[index] = rule->font_face;
 		}
 	}
@@ -1954,35 +1954,35 @@ static css_error _select_font_face_from_rule(
 }
 
 static css_error select_font_faces_from_sheet(
-		const css_stylesheet *sheet, 
-		css_origin origin, 
+		const css_stylesheet *sheet,
+		css_origin origin,
 		css_select_font_faces_state *state)
 {
 	const css_stylesheet *s = sheet;
 	const css_rule *rule = s->rule_list;
 	uint32_t sp = 0;
 	const css_rule *import_stack[IMPORT_STACK_SIZE];
-	
+
 	do {
 		/* Find first non-charset rule, if we're at the list head */
 		if (rule == s->rule_list) {
 			while (rule != NULL && rule->type == CSS_RULE_CHARSET)
 				rule = rule->next;
 		}
-		
+
 		if (rule != NULL && rule->type == CSS_RULE_IMPORT) {
 			/* Current rule is an import */
-			const css_rule_import *import = 
+			const css_rule_import *import =
 					(const css_rule_import *) rule;
-			
+
 			if (import->sheet != NULL &&
 					(import->media & state->media) != 0) {
 				/* It's applicable, so process it */
 				if (sp >= IMPORT_STACK_SIZE)
 					return CSS_NOMEM;
-				
+
 				import_stack[sp++] = rule;
-				
+
 				s = import->sheet;
 				rule = s->rule_list;
 			} else {
@@ -1991,15 +1991,15 @@ static css_error select_font_faces_from_sheet(
 			}
 		} else if (rule != NULL && rule->type == CSS_RULE_FONT_FACE) {
 			css_error error;
-			
+
 			error = _select_font_face_from_rule(
 					(const css_rule_font_face *) rule,
 					origin,
 					state);
-			
+
 			if (error != CSS_OK)
 				return error;
-			
+
 			rule = rule->next;
 		} else if (rule == NULL) {
 			/* Find next sheet to process */
@@ -2014,7 +2014,7 @@ static css_error select_font_faces_from_sheet(
 			rule = rule->next;
 		}
 	} while (s != NULL);
-	
+
 	return CSS_OK;
 }
 
@@ -2039,7 +2039,7 @@ static inline bool _selectors_pending(const css_selector **node,
 	return pending;
 }
 
-static inline bool _selector_less_specific(const css_selector *ref, 
+static inline bool _selector_less_specific(const css_selector *ref,
 		const css_selector *cand)
 {
 	bool result = true;
@@ -2103,7 +2103,7 @@ static const css_selector *_selector_next(const css_selector **node,
 	return ret;
 }
 
-css_error match_selectors_in_sheet(css_select_ctx *ctx, 
+css_error match_selectors_in_sheet(css_select_ctx *ctx,
 		const css_stylesheet *sheet, css_select_state *state)
 {
 	static const css_selector *empty_selector = NULL;
@@ -2128,7 +2128,7 @@ css_error match_selectors_in_sheet(css_select_ctx *ctx,
 
 	/* Find hash chain that applies to current node */
 	req.qname = state->element;
-	error = css__selector_hash_find(sheet->selectors, 
+	error = css__selector_hash_find(sheet->selectors,
 			&req, &node_iterator,
 			&node_selectors);
 	if (error != CSS_OK)
@@ -2155,7 +2155,7 @@ css_error match_selectors_in_sheet(css_select_ctx *ctx,
 	if (state->id != NULL) {
 		/* Find hash chain for node ID */
 		req.id = state->id;
-		error = css__selector_hash_find_by_id(sheet->selectors, 
+		error = css__selector_hash_find_by_id(sheet->selectors,
 				&req, &id_iterator, &id_selectors);
 		if (error != CSS_OK)
 			goto cleanup;
@@ -2168,7 +2168,7 @@ css_error match_selectors_in_sheet(css_select_ctx *ctx,
 		goto cleanup;
 
 	/* Process matching selectors, if any */
-	while (_selectors_pending(node_selectors, id_selectors, 
+	while (_selectors_pending(node_selectors, id_selectors,
 			class_selectors, n_classes, univ_selectors)) {
 		const css_selector *selector;
 
@@ -2190,7 +2190,7 @@ css_error match_selectors_in_sheet(css_select_ctx *ctx,
 		if (error != CSS_OK)
 			goto cleanup;
 
-		/* Advance to next selector in whichever chain we extracted 
+		/* Advance to next selector in whichever chain we extracted
 		 * the processed selector from. */
 		switch (src.source) {
 		case CSS_SELECT_RULE_SRC_ELEMENT:
@@ -2227,7 +2227,7 @@ cleanup:
 	return error;
 }
 
-static void update_reject_cache(css_select_state *state, 
+static void update_reject_cache(css_select_state *state,
 		css_combinator comb, const css_selector *s)
 {
 	const css_selector_detail *detail = &s->data;
@@ -2250,7 +2250,7 @@ static void update_reject_cache(css_select_state *state,
 	state->next_reject--;
 }
 
-css_error match_selector_chain(css_select_ctx *ctx, 
+css_error match_selector_chain(css_select_ctx *ctx,
 		const css_selector *selector, css_select_state *state)
 {
 	const css_selector *s = selector;
@@ -2267,11 +2267,11 @@ css_error match_selector_chain(css_select_ctx *ctx,
 	fprintf(stderr, "\n");
 #endif
 
-	/* Match the details of the first selector in the chain. 
+	/* Match the details of the first selector in the chain.
 	 *
 	 * Note that pseudo elements will only appear as details of
 	 * the first selector in the chain, as the parser will reject
-	 * any selector chains containing pseudo elements anywhere 
+	 * any selector chains containing pseudo elements anywhere
 	 * else.
 	 */
 	error = match_details(ctx, node, detail, state, &match, &pseudo);
@@ -2288,14 +2288,14 @@ css_error match_selector_chain(css_select_ctx *ctx,
 
 		/* Consider any combinator on this selector */
 		if (s->data.comb != CSS_COMBINATOR_NONE &&
-				s->combinator->data.qname.name != 
+				s->combinator->data.qname.name !=
 					ctx->universal) {
 			/* Named combinator */
-			may_optimise &= 
-				(s->data.comb == CSS_COMBINATOR_ANCESTOR || 
+			may_optimise &=
+				(s->data.comb == CSS_COMBINATOR_ANCESTOR ||
 				 s->data.comb == CSS_COMBINATOR_PARENT);
 
-			error = match_named_combinator(ctx, s->data.comb, 
+			error = match_named_combinator(ctx, s->data.comb,
 					s->combinator, state, node, &next_node);
 			if (error != CSS_OK)
 				return error;
@@ -2305,12 +2305,12 @@ css_error match_selector_chain(css_select_ctx *ctx,
 				return CSS_OK;
 		} else if (s->data.comb != CSS_COMBINATOR_NONE) {
 			/* Universal combinator */
-			may_optimise &= 
-				(s->data.comb == CSS_COMBINATOR_ANCESTOR || 
+			may_optimise &=
+				(s->data.comb == CSS_COMBINATOR_ANCESTOR ||
 				 s->data.comb == CSS_COMBINATOR_PARENT);
 
-			error = match_universal_combinator(ctx, s->data.comb, 
-					s->combinator, state, node, 
+			error = match_universal_combinator(ctx, s->data.comb,
+					s->combinator, state, node,
 					may_optimise, &rejected_by_cache,
 					&next_node);
 			if (error != CSS_OK)
@@ -2339,7 +2339,7 @@ css_error match_selector_chain(css_select_ctx *ctx,
 	/* Ensure that the appropriate computed style exists */
 	if (state->results->styles[pseudo] == NULL) {
 		error = css__computed_style_create(
-				&state->results->styles[pseudo]); 
+				&state->results->styles[pseudo]);
 		if (error != CSS_OK)
 			return error;
 	}
@@ -2347,12 +2347,12 @@ css_error match_selector_chain(css_select_ctx *ctx,
 	state->current_pseudo = pseudo;
 	state->computed = state->results->styles[pseudo];
 
-	return cascade_style(((css_rule_selector *) selector->rule)->style, 
+	return cascade_style(((css_rule_selector *) selector->rule)->style,
 			state);
 }
 
 css_error match_named_combinator(css_select_ctx *ctx, css_combinator type,
-		const css_selector *selector, css_select_state *state, 
+		const css_selector *selector, css_select_state *state,
 		void *node, void **next_node)
 {
 	const css_selector_detail *detail = &selector->data;
@@ -2365,19 +2365,19 @@ css_error match_named_combinator(css_select_ctx *ctx, css_combinator type,
 		/* Find candidate node */
 		switch (type) {
 		case CSS_COMBINATOR_ANCESTOR:
-			error = state->handler->named_ancestor_node(state->pw, 
+			error = state->handler->named_ancestor_node(state->pw,
 					n, &selector->data.qname, &n);
 			if (error != CSS_OK)
 				return error;
 			break;
 		case CSS_COMBINATOR_PARENT:
-			error = state->handler->named_parent_node(state->pw, 
+			error = state->handler->named_parent_node(state->pw,
 					n, &selector->data.qname, &n);
 			if (error != CSS_OK)
 				return error;
 			break;
 		case CSS_COMBINATOR_SIBLING:
-			error = state->handler->named_sibling_node(state->pw, 
+			error = state->handler->named_sibling_node(state->pw,
 					n, &selector->data.qname, &n);
 			if (error != CSS_OK)
 				return error;
@@ -2402,7 +2402,7 @@ css_error match_named_combinator(css_select_ctx *ctx, css_combinator type,
 
 		if (n != NULL) {
 			/* Match its details */
-			error = match_details(ctx, n, detail, state, 
+			error = match_details(ctx, n, detail, state,
 					&match, NULL);
 			if (error != CSS_OK)
 				return error;
@@ -2411,8 +2411,8 @@ css_error match_named_combinator(css_select_ctx *ctx, css_combinator type,
 			if (match == true)
 				break;
 
-			/* For parent and sibling selectors, only adjacent 
-			 * nodes are valid. Thus, if we failed to match, 
+			/* For parent and sibling selectors, only adjacent
+			 * nodes are valid. Thus, if we failed to match,
 			 * give up. */
 			if (type == CSS_COMBINATOR_PARENT ||
 					type == CSS_COMBINATOR_SIBLING)
@@ -2453,10 +2453,10 @@ css_error match_universal_combinator(css_select_ctx *ctx, css_combinator type,
 	*rejected_by_cache = false;
 
 	/* Consult reject cache first */
-	if (may_optimise && (type == CSS_COMBINATOR_ANCESTOR || 
-			     type == CSS_COMBINATOR_PARENT) && 
+	if (may_optimise && (type == CSS_COMBINATOR_ANCESTOR ||
+			     type == CSS_COMBINATOR_PARENT) &&
 			next_detail != NULL &&
-			(next_detail->type == CSS_SELECTOR_CLASS || 
+			(next_detail->type == CSS_SELECTOR_CLASS ||
 			 next_detail->type == CSS_SELECTOR_ID)) {
 		reject_item *reject = state->next_reject + 1;
 		reject_item *last = state->reject_cache +
@@ -2466,8 +2466,8 @@ css_error match_universal_combinator(css_select_ctx *ctx, css_combinator type,
 		while (reject <= last) {
 			/* Perform pessimistic matching (may hurt quirks) */
 			if (reject->type == next_detail->type &&
-					lwc_string_isequal(reject->value, 
-						next_detail->qname.name, 
+					lwc_string_isequal(reject->value,
+						next_detail->qname.name,
 						&match) == lwc_error_ok &&
 				 	match) {
 				/* Found it: can't match */
@@ -2505,7 +2505,7 @@ css_error match_universal_combinator(css_select_ctx *ctx, css_combinator type,
 
 		if (n != NULL) {
 			/* Match its details */
-			error = match_details(ctx, n, detail, state, 
+			error = match_details(ctx, n, detail, state,
 					&match, NULL);
 			if (error != CSS_OK)
 				return error;
@@ -2528,8 +2528,8 @@ css_error match_universal_combinator(css_select_ctx *ctx, css_combinator type,
 	return CSS_OK;
 }
 
-css_error match_details(css_select_ctx *ctx, void *node, 
-		const css_selector_detail *detail, css_select_state *state, 
+css_error match_details(css_select_ctx *ctx, void *node,
+		const css_selector_detail *detail, css_select_state *state,
 		bool *match, css_pseudo_element *pseudo_element)
 {
 	css_error error;
@@ -2547,10 +2547,10 @@ css_error match_details(css_select_ctx *ctx, void *node,
 	 * selector, then we must match) */
 	*match = true;
 
-	/** \todo Some details are easier to test than others (e.g. dashmatch 
-	 * actually requires looking at data rather than simply comparing 
-	 * pointers). Should we consider sorting the detail list such that the 
-	 * simpler details come first (and thus the expensive match routines 
+	/** \todo Some details are easier to test than others (e.g. dashmatch
+	 * actually requires looking at data rather than simply comparing
+	 * pointers). Should we consider sorting the detail list such that the
+	 * simpler details come first (and thus the expensive match routines
 	 * can be avoided unless absolutely necessary)? */
 
 	while (detail != NULL) {
@@ -2592,8 +2592,8 @@ static inline bool match_nth(int32_t a, int32_t b, int32_t count)
 	}
 }
 
-css_error match_detail(css_select_ctx *ctx, void *node, 
-		const css_selector_detail *detail, css_select_state *state, 
+css_error match_detail(css_select_ctx *ctx, void *node,
+		const css_selector_detail *detail, css_select_state *state,
 		bool *match, css_pseudo_element *pseudo_element)
 {
 	bool is_root = false;
@@ -2623,19 +2623,19 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 		if (error != CSS_OK)
 			return error;
 
-		if (is_root == false && 
+		if (is_root == false &&
 				detail->qname.name == ctx->first_child) {
 			int32_t num_before = 0;
 
-			error = state->handler->node_count_siblings(state->pw, 
+			error = state->handler->node_count_siblings(state->pw,
 					node, false, false, &num_before);
 			if (error == CSS_OK)
 				*match = (num_before == 0);
-		} else if (is_root == false && 
+		} else if (is_root == false &&
 				detail->qname.name == ctx->nth_child) {
 			int32_t num_before = 0;
 
-			error = state->handler->node_count_siblings(state->pw, 
+			error = state->handler->node_count_siblings(state->pw,
 					node, false, false, &num_before);
 			if (error == CSS_OK) {
 				int32_t a = detail->value.nth.a;
@@ -2643,11 +2643,11 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 
 				*match = match_nth(a, b, num_before + 1);
 			}
-		} else if (is_root == false && 
+		} else if (is_root == false &&
 				detail->qname.name == ctx->nth_last_child) {
 			int32_t num_after = 0;
 
-			error = state->handler->node_count_siblings(state->pw, 
+			error = state->handler->node_count_siblings(state->pw,
 					node, false, true, &num_after);
 			if (error == CSS_OK) {
 				int32_t a = detail->value.nth.a;
@@ -2655,11 +2655,11 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 
 				*match = match_nth(a, b, num_after + 1);
 			}
-		} else if (is_root == false && 
+		} else if (is_root == false &&
 				detail->qname.name == ctx->nth_of_type) {
 			int32_t num_before = 0;
 
-			error = state->handler->node_count_siblings(state->pw, 
+			error = state->handler->node_count_siblings(state->pw,
 					node, true, false, &num_before);
 			if (error == CSS_OK) {
 				int32_t a = detail->value.nth.a;
@@ -2667,11 +2667,11 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 
 				*match = match_nth(a, b, num_before + 1);
 			}
-		} else if (is_root == false && 
+		} else if (is_root == false &&
 				detail->qname.name == ctx->nth_last_of_type) {
 			int32_t num_after = 0;
 
-			error = state->handler->node_count_siblings(state->pw, 
+			error = state->handler->node_count_siblings(state->pw,
 					node, true, true, &num_after);
 			if (error == CSS_OK) {
 				int32_t a = detail->value.nth.a;
@@ -2691,7 +2691,7 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 				detail->qname.name == ctx->first_of_type) {
 			int32_t num_before = 0;
 
-			error = state->handler->node_count_siblings(state->pw, 
+			error = state->handler->node_count_siblings(state->pw,
 					node, true, false, &num_before);
 			if (error == CSS_OK)
 				*match = (num_before == 0);
@@ -2699,36 +2699,36 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 				detail->qname.name == ctx->last_of_type) {
 			int32_t num_after = 0;
 
-			error = state->handler->node_count_siblings(state->pw, 
+			error = state->handler->node_count_siblings(state->pw,
 					node, true, true, &num_after);
 			if (error == CSS_OK)
 				*match = (num_after == 0);
-		} else if (is_root == false && 
+		} else if (is_root == false &&
 				detail->qname.name == ctx->only_child) {
 			int32_t num_before = 0, num_after = 0;
 
-			error = state->handler->node_count_siblings(state->pw, 
+			error = state->handler->node_count_siblings(state->pw,
 					node, false, false, &num_before);
 			if (error == CSS_OK) {
 				error = state->handler->node_count_siblings(
 						state->pw, node, false, true,
 						&num_after);
 				if (error == CSS_OK)
-					*match = (num_before == 0) && 
+					*match = (num_before == 0) &&
 							(num_after == 0);
 			}
-		} else if (is_root == false && 
+		} else if (is_root == false &&
 				detail->qname.name == ctx->only_of_type) {
 			int32_t num_before = 0, num_after = 0;
 
-			error = state->handler->node_count_siblings(state->pw, 
+			error = state->handler->node_count_siblings(state->pw,
 					node, true, false, &num_before);
 			if (error == CSS_OK) {
 				error = state->handler->node_count_siblings(
 						state->pw, node, true, true,
 						&num_after);
 				if (error == CSS_OK)
-					*match = (num_before == 0) && 
+					*match = (num_before == 0) &&
 							(num_after == 0);
 			}
 		} else if (detail->qname.name == ctx->root) {
@@ -2796,8 +2796,8 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_EQUAL:
-		error = state->handler->node_has_attribute_equal(state->pw, 
-				node, &detail->qname, detail->value.string, 
+		error = state->handler->node_has_attribute_equal(state->pw,
+				node, &detail->qname, detail->value.string,
 				match);
 		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
@@ -2808,7 +2808,7 @@ css_error match_detail(css_select_ctx *ctx, void *node,
 		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
 		break;
 	case CSS_SELECTOR_ATTRIBUTE_INCLUDES:
-		error = state->handler->node_has_attribute_includes(state->pw, 
+		error = state->handler->node_has_attribute_includes(state->pw,
 				node, &detail->qname, detail->value.string,
 				match);
 		add_node_flags(node, state, CSS_NODE_FLAGS_TAINT_ATTRIBUTE);
@@ -2868,7 +2868,7 @@ bool css__outranks_existing(uint16_t op, bool important, css_select_state *state
 	bool outranks = false;
 
 	/* Sorting on origin & importance gives the following:
-	 * 
+	 *
 	 *           | UA, - | UA, i | USER, - | USER, i | AUTHOR, - | AUTHOR, i
 	 *           |----------------------------------------------------------
 	 * UA    , - |   S       S       Y          Y         Y           Y
@@ -2878,8 +2878,8 @@ bool css__outranks_existing(uint16_t op, bool important, css_select_state *state
 	 * AUTHOR, - |   -       -       -          Y         S           Y
 	 * AUTHOR, i |   -       -       -          Y         -           S
 	 *
-	 * Where the columns represent the origin/importance of the property 
-	 * being considered and the rows represent the origin/importance of 
+	 * Where the columns represent the origin/importance of the property
+	 * being considered and the rows represent the origin/importance of
 	 * the existing property.
 	 *
 	 * - means that the existing property must be preserved
@@ -2893,12 +2893,12 @@ bool css__outranks_existing(uint16_t op, bool important, css_select_state *state
 	 * the specificities are the same because:
 	 *
 	 * a) We process stylesheets in order
-	 * b) The selector hash chains within a sheet are ordered such that 
+	 * b) The selector hash chains within a sheet are ordered such that
 	 *    more specific rules come after less specific ones and, when
 	 *    specificities are identical, rules defined later occur after
 	 *    those defined earlier.
 	 *
-	 * Therefore, where we consider specificity, below, the property 
+	 * Therefore, where we consider specificity, below, the property
 	 * currently being considered will always be applied if its specificity
 	 * is greater than or equal to that of the existing property.
 	 */
@@ -2912,15 +2912,15 @@ bool css__outranks_existing(uint16_t op, bool important, css_select_state *state
 
 		if (existing->origin < state->current_origin) {
 			/* New origin has more weight than existing one.
-			 * Thus, new property wins, except when the existing 
+			 * Thus, new property wins, except when the existing
 			 * one is USER, i. */
 			if (existing->important == 0 ||
 					existing->origin != CSS_ORIGIN_USER) {
 				outranks = true;
 			}
 		} else if (existing->origin == state->current_origin) {
-			/* Origins are identical, consider importance, except 
-			 * for UA stylesheets, when specificity is always 
+			/* Origins are identical, consider importance, except
+			 * for UA stylesheets, when specificity is always
 			 * considered (as importance is meaningless) */
 			if (existing->origin == CSS_ORIGIN_UA) {
 				if (state->current_specificity >=
@@ -2984,7 +2984,7 @@ void dump_chain(const css_selector *selector)
 	do {
 		switch (detail->type) {
 		case CSS_SELECTOR_ELEMENT:
-			if (lwc_string_length(detail->name) == 1 && 
+			if (lwc_string_length(detail->name) == 1 &&
 				lwc_string_data(detail->name)[0] == '*' &&
 					detail->next == 1) {
 				break;

@@ -32,15 +32,15 @@ Compilation
 Verification
 ------------
 
-  To verify that the parser is working, it is necessary to specify a 
+  To verify that the parser is working, it is necessary to specify a
   different makefile target than that used for normal compilation, thus:
-  
+
   		$ make test
 
 API documentation
 -----------------
 
-  Currently, there is none. However, the code is well commented and the 
-  public API may be found in the "include" directory. The testcase sources 
+  Currently, there is none. However, the code is well commented and the
+  public API may be found in the "include" directory. The testcase sources
   may also be of use in working out how to use it.
 

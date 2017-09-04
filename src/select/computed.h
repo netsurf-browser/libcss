@@ -124,11 +124,11 @@ typedef struct css_computed_page {
  *  2 ......wo	widows  | orphans
  */
 	uint8_t bits[2];
-	
+
 	int32_t widows;
 	int32_t orphans;
 } css_computed_page;
-    
+
 struct css_computed_style_i {
 /*
  * background_attachment	  2
@@ -205,7 +205,7 @@ struct css_computed_style_i {
  * 				---		---
  *				181 bits	140 + 2sizeof(ptr) bytes
  *
- * Encode font family as an array of string objects, terminated with a 
+ * Encode font family as an array of string objects, terminated with a
  * blank entry.
  *
  * font_family			  3		  sizeof(ptr)
@@ -357,7 +357,7 @@ css_error css__computed_uncommon_destroy(css_computed_uncommon *uncommon);
 
 css_error css__compute_absolute_values(const css_computed_style *parent,
 		css_computed_style *style,
-		css_error (*compute_font_size)(void *pw, 
+		css_error (*compute_font_size)(void *pw,
 			const css_hint *parent, css_hint *size),
 		void *pw);
 

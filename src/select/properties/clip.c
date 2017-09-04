@@ -14,11 +14,11 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_clip(uint32_t opv, css_style *style, 
+css_error css__cascade_clip(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = CSS_CLIP_INHERIT;
-	css_computed_clip_rect rect = { 0, 0, 0, 0, 
+	css_computed_clip_rect rect = { 0, 0, 0, 0,
 			CSS_UNIT_PX, CSS_UNIT_PX, CSS_UNIT_PX, CSS_UNIT_PX,
 			false, false, false, false };
 
@@ -78,7 +78,7 @@ css_error css__cascade_clip(uint32_t opv, css_style *style,
 	return CSS_OK;
 }
 
-css_error css__set_clip_from_hint(const css_hint *hint, 
+css_error css__set_clip_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
 	return set_clip(style, hint->status, hint->data.clip);
@@ -86,7 +86,7 @@ css_error css__set_clip_from_hint(const css_hint *hint,
 
 css_error css__initial_clip(css_select_state *state)
 {
-	css_computed_clip_rect rect = { 0, 0, 0, 0, 
+	css_computed_clip_rect rect = { 0, 0, 0, 0,
 			CSS_UNIT_PX, CSS_UNIT_PX, CSS_UNIT_PX, CSS_UNIT_PX,
 			false, false, false, false };
 
@@ -97,7 +97,7 @@ css_error css__compose_clip(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
-	css_computed_clip_rect rect = { 0, 0, 0, 0, 
+	css_computed_clip_rect rect = { 0, 0, 0, 0,
 			CSS_UNIT_PX, CSS_UNIT_PX, CSS_UNIT_PX, CSS_UNIT_PX,
 			false, false, false, false };
 	uint8_t type = get_clip(child, &rect);

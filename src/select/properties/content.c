@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_content(uint32_t opv, css_style *style, 
+css_error css__cascade_content(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = CSS_CONTENT_INHERIT;
@@ -30,14 +30,14 @@ css_error css__cascade_content(uint32_t opv, css_style *style,
 			value = CSS_CONTENT_NONE;
 		} else {
 			value = CSS_CONTENT_SET;
-			
+
 			while (v != CONTENT_NORMAL) {
 				lwc_string *he;
 				css_computed_content_item *temp;
 
 				css__stylesheet_string_get(style->sheet,
 					*((css_code_t *) style->bytecode), &he);
-				
+
 				temp = realloc(content,
 						(n_contents + 1) *
 						sizeof(css_computed_content_item));
@@ -63,7 +63,7 @@ css_error css__cascade_content(uint32_t opv, css_style *style,
 				case CONTENT_COUNTERS:
 				{
 					lwc_string *sep;
-	
+
 					advance_bytecode(style, sizeof(css_code_t));
 
 					css__stylesheet_string_get(style->sheet, *((css_code_t *) style->bytecode), &sep);
@@ -155,7 +155,7 @@ css_error css__cascade_content(uint32_t opv, css_style *style,
 	return CSS_OK;
 }
 
-css_error css__set_content_from_hint(const css_hint *hint, 
+css_error css__set_content_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
 	css_computed_content_item *item;
@@ -221,16 +221,16 @@ css_error css__compose_content(const css_computed_style *parent,
 		if (type == CSS_CONTENT_SET) {
 			const css_computed_content_item *i;
 
-			for (i = items; i->type != CSS_COMPUTED_CONTENT_NONE; 
+			for (i = items; i->type != CSS_COMPUTED_CONTENT_NONE;
 					i++)
 				n_items++;
 
-			copy = malloc((n_items + 1) * 
+			copy = malloc((n_items + 1) *
 					sizeof(css_computed_content_item));
 			if (copy == NULL)
 				return CSS_NOMEM;
 
-			memcpy(copy, items, (n_items + 1) * 
+			memcpy(copy, items, (n_items + 1) *
 					sizeof(css_computed_content_item));
 		}
 

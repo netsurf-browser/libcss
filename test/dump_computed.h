@@ -194,7 +194,7 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
                 wrote = snprintf(ptr, *len, "background-image: inherit\n");
 	} else if (val == CSS_BACKGROUND_IMAGE_IMAGE && url != NULL) {
 		wrote = snprintf(ptr, *len, "background-image: url('%.*s')\n",
-				(int) lwc_string_length(url), 
+				(int) lwc_string_length(url),
 				lwc_string_data(url));
 	} else if (val == CSS_BACKGROUND_IMAGE_NONE) {
 		wrote = snprintf(ptr, *len, "background-image: none\n");
@@ -1176,7 +1176,7 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 
 			switch (content->type) {
 			case CSS_COMPUTED_CONTENT_STRING:
-				wrote += snprintf(ptr + wrote, 
+				wrote += snprintf(ptr + wrote,
 						*len - wrote,
 						"\"%.*s\"",
 						(int) lwc_string_length(
@@ -1185,7 +1185,7 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 						content->data.string));
 				break;
 			case CSS_COMPUTED_CONTENT_URI:
-				wrote += snprintf(ptr + wrote, 
+				wrote += snprintf(ptr + wrote,
 						*len - wrote,
 						"uri(\"%.*s\")",
 						(int) lwc_string_length(
@@ -1194,7 +1194,7 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 						content->data.uri));
 				break;
 			case CSS_COMPUTED_CONTENT_COUNTER:
-				wrote += snprintf(ptr + wrote, 
+				wrote += snprintf(ptr + wrote,
 						*len - wrote,
 						"counter(%.*s)",
 						(int) lwc_string_length(
@@ -1203,7 +1203,7 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 						content->data.counter.name));
 				break;
 			case CSS_COMPUTED_CONTENT_COUNTERS:
-				wrote += snprintf(ptr + wrote, 
+				wrote += snprintf(ptr + wrote,
 						*len - wrote,
 						"counters(%.*s, "
 							"\"%.*s\")",
@@ -1217,7 +1217,7 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 						content->data.counters.sep));
 				break;
 			case CSS_COMPUTED_CONTENT_ATTR:
-				wrote += snprintf(ptr + wrote, 
+				wrote += snprintf(ptr + wrote,
 						*len - wrote,
 						"attr(%.*s)",
 						(int) lwc_string_length(
@@ -1834,7 +1834,7 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
                 wrote = snprintf(ptr, *len, "list-style-image: inherit\n");
 	} else if (url != NULL) {
 		wrote = snprintf(ptr, *len, "list-style-image: url('%.*s')\n",
-				(int) lwc_string_length(url), 
+				(int) lwc_string_length(url),
 				lwc_string_data(url));
 	} else if (val == CSS_LIST_STYLE_IMAGE_NONE) {
 		wrote = snprintf(ptr, *len, "list-style-image: none\n");
@@ -1882,7 +1882,7 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 		wrote = snprintf(ptr, *len, "list-style-type: decimal\n");
 		break;
 	case CSS_LIST_STYLE_TYPE_DECIMAL_LEADING_ZERO:
-		wrote = snprintf(ptr, *len, 
+		wrote = snprintf(ptr, *len,
 				"list-style-type: decimal-leading-zero\n");
 		break;
 	case CSS_LIST_STYLE_TYPE_LOWER_ROMAN:

@@ -47,12 +47,12 @@ typedef struct line_ctx {
 
 static bool handle_line(const char *data, size_t datalen, void *pw);
 static void css__parse_expected(line_ctx *ctx, const char *data, size_t len);
-static void run_test(const uint8_t *data, size_t len, 
+static void run_test(const uint8_t *data, size_t len,
 		exp_entry *exp, size_t explen);
 static bool validate_rule_selector(css_rule_selector *s, exp_entry *e);
-static void validate_rule_charset(css_rule_charset *s, exp_entry *e, 
+static void validate_rule_charset(css_rule_charset *s, exp_entry *e,
 		int testnum);
-static void validate_rule_import(css_rule_import *s, exp_entry *e, 
+static void validate_rule_import(css_rule_import *s, exp_entry *e,
 		int testnum);
 
 static void dump_selector_list(css_selector *list, char **ptr);
@@ -78,7 +78,7 @@ static void
 printing_lwc_iterator(lwc_string *str, void *pw)
 {
 	UNUSED(pw);
-	
+
 	printf(" DICT: %*s\n", (int)(lwc_string_length(str)), lwc_string_data(str));
 	fail_because_lwc_leaked = true;
 }
@@ -140,9 +140,9 @@ int main(int argc, char **argv)
 	free(ctx.exp);
 
 	lwc_iterate_strings(printing_lwc_iterator, NULL);
-	
+
 	assert(fail_because_lwc_leaked == false);
-	
+
 	printf("PASS\n");
 
 	return 0;
@@ -156,7 +156,7 @@ bool handle_line(const char *data, size_t datalen, void *pw)
 		if (ctx->inexp) {
 			/* This marks end of testcase, so run it */
 
-			run_test(ctx->buf, ctx->bufused, 
+			run_test(ctx->buf, ctx->bufused,
 					ctx->exp, ctx->expused);
 
 			ctx->buf[0] = '\0';
@@ -169,7 +169,7 @@ bool handle_line(const char *data, size_t datalen, void *pw)
 			ctx->indata = false;
 			ctx->inerrors = true;
 			ctx->inexp = false;
-		} else if (ctx->inerrors && 
+		} else if (ctx->inerrors &&
 				strncasecmp(data+1, "expected", 8) == 0) {
 			ctx->indata = false;
 			ctx->inerrors = false;
@@ -212,7 +212,7 @@ void css__parse_expected(line_ctx *ctx, const char *data, size_t len)
 	if (ctx->inrule == false) {
 		char *name;
 		int type;
-		
+
 start_rule:
 		type = strtol(data + 1, &name, 10);
 
@@ -223,7 +223,7 @@ start_rule:
 		if (ctx->expused == ctx->explen) {
 			size_t num = ctx->explen == 0 ? 4 : ctx->explen;
 
-			exp_entry *temp = realloc(ctx->exp, 
+			exp_entry *temp = realloc(ctx->exp,
 					num * 2 * sizeof(exp_entry));
 			if (temp == NULL) {
 				assert(0 && "No memory for expected rules");
@@ -234,9 +234,9 @@ start_rule:
 		}
 
 		ctx->exp[ctx->expused].type = type;
-		memcpy(ctx->exp[ctx->expused].name, name, 
+		memcpy(ctx->exp[ctx->expused].name, name,
 				min(len - (name - data), MAX_RULE_NAME_LEN));
-		ctx->exp[ctx->expused].name[min(len - (name - data), 
+		ctx->exp[ctx->expused].name[min(len - (name - data),
 				MAX_RULE_NAME_LEN - 1)] = '\0';
 		ctx->exp[ctx->expused].bclen = 0;
 		ctx->exp[ctx->expused].bcused = 0;
@@ -246,7 +246,7 @@ start_rule:
 		ctx->exp[ctx->expused].stringtab =  NULL;
 
 		ctx->expused++;
-		
+
 		ctx->inrule = true;
 	} else {
 		char *next = (char *) data + 1;
@@ -266,7 +266,7 @@ start_rule:
 				break;
 
 			if (rule->bcused >= rule->bclen) {
-				size_t num = rule->bcused == 0 ? 4 : 
+				size_t num = rule->bcused == 0 ? 4 :
 						rule->bcused;
 
 				uint8_t *temp = realloc(rule->bytecode,
@@ -295,10 +295,10 @@ start_rule:
 							rule->stused;
 
 					struct stentry *temp = realloc(
-						rule->stringtab, 
+						rule->stringtab,
 						num * 2 * sizeof(struct stentry));
 					if (temp == NULL) {
-						assert(0 && 
+						assert(0 &&
 						"No memory for string table");
 					}
 
@@ -306,11 +306,11 @@ start_rule:
 					rule->stlen = num * 2;
 				}
 
-				rule->stringtab[rule->stused].off = 
+				rule->stringtab[rule->stused].off =
 						rule->bcused;
 				rule->stringtab[rule->stused].string =
 						malloc(next - str);
-				assert(rule->stringtab[rule->stused].string != 
+				assert(rule->stringtab[rule->stused].string !=
 						NULL);
 				memcpy(rule->stringtab[rule->stused].string,
 						str, next - str - 1);
@@ -324,7 +324,7 @@ start_rule:
 				uint32_t val = strtoul(next, &next, 16);
 
 				/* Append to bytecode */
-				memcpy(rule->bytecode + rule->bcused, 
+				memcpy(rule->bytecode + rule->bcused,
 						&val, sizeof(val));
 				rule->bcused += sizeof(val);
 			}
@@ -405,7 +405,7 @@ void run_test(const uint8_t *data, size_t len, exp_entry *exp, size_t explen)
 			css_stylesheet *import;
 			char *buf = malloc(lwc_string_length(url) + 1);
 
-			memcpy(buf, lwc_string_data(url), 
+			memcpy(buf, lwc_string_data(url),
 					lwc_string_length(url));
 			buf[lwc_string_length(url)] = '\0';
 
@@ -437,7 +437,7 @@ void run_test(const uint8_t *data, size_t len, exp_entry *exp, size_t explen)
 
 	for (rule = sheet->rule_list; rule != NULL; rule = rule->next, e++) {
 		if (rule->type != exp[e].type) {
-			printf("%d: Got type %d. Expected %d\n", 
+			printf("%d: Got type %d. Expected %d\n",
 				testnum, rule->type, exp[e].type);
 			assert(0 && "Types differ");
 		}
@@ -535,28 +535,28 @@ bool validate_rule_selector(css_rule_selector *s, exp_entry *e)
 
 				css__stylesheet_string_get(s->style->sheet, (s->style->bytecode[i / sizeof(css_code_t)]), &p);
 
-				if (lwc_string_length(p) != 
+				if (lwc_string_length(p) !=
 					strlen(e->stringtab[j].string) ||
-					memcmp(lwc_string_data(p), 
+					memcmp(lwc_string_data(p),
 						e->stringtab[j].string,
 						lwc_string_length(p)) != 0) {
 					printf("FAIL Strings differ\n"
 					       "    Got string '%.*s'. "
 					       "Expected '%s'\n",
-						(int) lwc_string_length(p), 
-						lwc_string_data(p), 
+						(int) lwc_string_length(p),
+						lwc_string_data(p),
 						e->stringtab[j].string);
 					return true;
 				}
 
 				i += sizeof (css_code_t) - 1;
-			} else if (((uint8_t *) s->style->bytecode)[i] != 
+			} else if (((uint8_t *) s->style->bytecode)[i] !=
 					e->bytecode[i]) {
 				printf("FAIL Bytecode differs\n"
 				       "    Bytecode differs at %u\n	",
 					(int) i);
 				while (i < e->bcused) {
-					printf("%.2x ", 
+					printf("%.2x ",
 						((uint8_t *) s->style->bytecode)[i]);
 					i++;
 				}
@@ -588,7 +588,7 @@ void validate_rule_import(css_rule_import *s, exp_entry *e, int testnum)
 	if (strncmp(lwc_string_data(s->url), e->name,
 		    lwc_string_length(s->url)) != 0) {
 		printf("%d: Got URL '%.*s'. Expected '%s'\n",
-			testnum, (int) lwc_string_length(s->url), 
+			testnum, (int) lwc_string_length(s->url),
 			lwc_string_data(s->url),
 		e->name);
 		assert(0 && "Mismatched URLs");
@@ -648,7 +648,7 @@ void dump_selector_detail(css_selector_detail *detail, char **ptr)
 
 	switch (detail->type) {
 	case CSS_SELECTOR_ELEMENT:
-                if (lwc_string_length(detail->qname.name) == 1 && 
+                if (lwc_string_length(detail->qname.name) == 1 &&
                     lwc_string_data(detail->qname.name)[0] == '*' &&
 				detail->next == 0) {
 			dump_string(detail->qname.name, ptr);
@@ -778,6 +778,6 @@ void dump_selector_detail(css_selector_detail *detail, char **ptr)
 
 void dump_string(lwc_string *string, char **ptr)
 {
-	*ptr += sprintf(*ptr, "%.*s", (int) lwc_string_length(string), 
+	*ptr += sprintf(*ptr, "%.*s", (int) lwc_string_length(string),
 			lwc_string_data(string));
 }

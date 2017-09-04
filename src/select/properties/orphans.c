@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_orphans(uint32_t opv, css_style *style, 
+css_error css__cascade_orphans(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	return css__cascade_number(opv, style, state, set_orphans);
@@ -37,11 +37,11 @@ css_error css__compose_orphans(const css_computed_style *parent,
 {
 	int32_t count = 0;
 	uint8_t type = get_orphans(child, &count);
-	
+
 	if (type == CSS_ORPHANS_INHERIT) {
 		type = get_orphans(parent, &count);
 	}
-	
+
 	return set_orphans(result, type, count);
 }
 

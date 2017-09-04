@@ -54,13 +54,13 @@ Differences from the CSS3 Syntax module specification
 2) escape follows CSS2.1. CSS3 defines it as:
    escape ::= unicode | '\' [#x20-#x7E#x80-#xD7FF#xE000-#xFFFD#x10000-#x10FFFF]
 3) urlchar omits ' and ):
-   a) If ' is permitted verbatim then, as stringchar inherits from urlchar, 
-      single quoted strings may contain verbatim single quotes. This is 
+   a) If ' is permitted verbatim then, as stringchar inherits from urlchar,
+      single quoted strings may contain verbatim single quotes. This is
       clearly nonsense.
    b) If ) is permitted verbatim then it becomes impossible to determine the
       true end of URI. Thus, for sanity's sake, it's omitted here.
-4) stringchar explicitly includes ). See 3(b) for why it won't inherit it 
+4) stringchar explicitly includes ). See 3(b) for why it won't inherit it
    from urlchar as the spec implies.
-5) BOM ::= #xFEFF is omitted. It is assumed that any leading BOM will be 
+5) BOM ::= #xFEFF is omitted. It is assumed that any leading BOM will be
    stripped from the document before lexing occurs.
 

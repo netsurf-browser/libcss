@@ -44,29 +44,29 @@ css_error css__parse_list_style(css_language *c,
 
 	/* Firstly, handle inherit */
 	token = parserutils_vector_peek(vector, *ctx);
-	if (token == NULL) 
+	if (token == NULL)
 		return CSS_INVALID;
-		
+
 	if (is_css_inherit(c, token)) {
 		error = css_stylesheet_style_inherit(result, CSS_PROP_LIST_STYLE_IMAGE);
-		if (error != CSS_OK) 
+		if (error != CSS_OK)
 			return error;
 
 		error = css_stylesheet_style_inherit(result, CSS_PROP_LIST_STYLE_POSITION);
-		if (error != CSS_OK) 
-			return error;		
+		if (error != CSS_OK)
+			return error;
 
 		error = css_stylesheet_style_inherit(result, CSS_PROP_LIST_STYLE_TYPE);
 
-		if (error == CSS_OK) 
+		if (error == CSS_OK)
 			parserutils_vector_iterate(vector, ctx);
 
 		return error;
-	} 
+	}
 
 	/* allocate styles */
 	error = css__stylesheet_style_create(c->sheet, &image_style);
-	if (error != CSS_OK) 
+	if (error != CSS_OK)
 		return error;
 
 	error = css__stylesheet_style_create(c->sheet, &position_style);
@@ -94,15 +94,15 @@ css_error css__parse_list_style(css_language *c,
 			goto css__parse_list_style_cleanup;
 		}
 
-		if ((type) && 
+		if ((type) &&
 		    (error = css__parse_list_style_type(c, vector,
 				ctx, type_style)) == CSS_OK) {
 			type = false;
-		} else if ((position) && 
-			   (error = css__parse_list_style_position(c, vector, 
+		} else if ((position) &&
+			   (error = css__parse_list_style_position(c, vector,
 				ctx, position_style)) == CSS_OK) {
 			position = false;
-		} else if ((image) && 
+		} else if ((image) &&
 			   (error = css__parse_list_style_image(c, vector, ctx,
 				image_style)) == CSS_OK) {
 			image = false;
@@ -121,19 +121,19 @@ css_error css__parse_list_style(css_language *c,
 
 	/* defaults */
 	if (image) {
-		error = css__stylesheet_style_appendOPV(image_style, 
+		error = css__stylesheet_style_appendOPV(image_style,
 			       CSS_PROP_LIST_STYLE_IMAGE,
 				0, LIST_STYLE_IMAGE_NONE);
 	}
 
 	if (position) {
-		error = css__stylesheet_style_appendOPV(position_style, 
+		error = css__stylesheet_style_appendOPV(position_style,
 			       CSS_PROP_LIST_STYLE_POSITION,
 				0, LIST_STYLE_POSITION_OUTSIDE);
 	}
 
 	if (type) {
-		error = css__stylesheet_style_appendOPV(type_style, 
+		error = css__stylesheet_style_appendOPV(type_style,
 			       CSS_PROP_LIST_STYLE_TYPE,
 				0, LIST_STYLE_TYPE_DISC);
 	}

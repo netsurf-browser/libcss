@@ -100,9 +100,9 @@ void css__make_style_important(css_style *style)
 			case CSS_PROP_BORDER_LEFT_COLOR:
 			case CSS_PROP_BACKGROUND_COLOR:
 			case CSS_PROP_COLUMN_RULE_COLOR:
-				assert(BACKGROUND_COLOR_SET == 
+				assert(BACKGROUND_COLOR_SET ==
 				       (enum op_background_color)BORDER_COLOR_SET);
-				assert(BACKGROUND_COLOR_SET == 
+				assert(BACKGROUND_COLOR_SET ==
 				       (enum op_background_color)COLUMN_RULE_COLOR_SET);
 
 				if (value == BACKGROUND_COLOR_SET)
@@ -113,14 +113,14 @@ void css__make_style_important(css_style *style)
 			case CSS_PROP_CUE_AFTER:
 			case CSS_PROP_CUE_BEFORE:
 			case CSS_PROP_LIST_STYLE_IMAGE:
-				assert(BACKGROUND_IMAGE_URI == 
+				assert(BACKGROUND_IMAGE_URI ==
 				       (enum op_background_image)CUE_AFTER_URI);
-				assert(BACKGROUND_IMAGE_URI == 
+				assert(BACKGROUND_IMAGE_URI ==
 				       (enum op_background_image)CUE_BEFORE_URI);
 				assert(BACKGROUND_IMAGE_URI ==
 				       (enum op_background_image)LIST_STYLE_IMAGE_URI);
 
-				if (value == BACKGROUND_IMAGE_URI) 
+				if (value == BACKGROUND_IMAGE_URI)
 					offset++; /* string table entry */
 				break;
 
@@ -143,7 +143,7 @@ void css__make_style_important(css_style *style)
 			case CSS_PROP_BORDER_LEFT_WIDTH:
 			case CSS_PROP_OUTLINE_WIDTH:
 			case CSS_PROP_COLUMN_RULE_WIDTH:
-				assert(BORDER_WIDTH_SET == 
+				assert(BORDER_WIDTH_SET ==
 				       (enum op_border_width)OUTLINE_WIDTH_SET);
 				assert(BORDER_WIDTH_SET ==
 				       (enum op_border_width)COLUMN_RULE_WIDTH_SET);
@@ -173,7 +173,7 @@ void css__make_style_important(css_style *style)
 				assert(BOTTOM_SET == (enum op_bottom)COLUMN_WIDTH_SET);
 				assert(BOTTOM_SET == (enum op_bottom)COLUMN_GAP_SET);
 
-				if (value == BOTTOM_SET) 
+				if (value == BOTTOM_SET)
 					offset += 2; /* length + units */
 				break;
 
@@ -233,7 +233,7 @@ void css__make_style_important(css_style *style)
 
 			case CSS_PROP_COUNTER_INCREMENT:
 			case CSS_PROP_COUNTER_RESET:
-				assert(COUNTER_INCREMENT_NONE == 
+				assert(COUNTER_INCREMENT_NONE ==
 				       (enum op_counter_increment)COUNTER_RESET_NONE);
 
 				while (value != COUNTER_INCREMENT_NONE) {
@@ -273,13 +273,13 @@ void css__make_style_important(css_style *style)
 				break;
 
 			case CSS_PROP_FONT_SIZE:
-				if (value == FONT_SIZE_DIMENSION) 
+				if (value == FONT_SIZE_DIMENSION)
 					offset += 2; /* length + units */
 				break;
 
 			case CSS_PROP_LETTER_SPACING:
 			case CSS_PROP_WORD_SPACING:
-				assert(LETTER_SPACING_SET == 
+				assert(LETTER_SPACING_SET ==
 				       (enum op_letter_spacing)WORD_SPACING_SET);
 
 				if (value == LETTER_SPACING_SET)
@@ -300,7 +300,7 @@ void css__make_style_important(css_style *style)
 
 			case CSS_PROP_MAX_HEIGHT:
 			case CSS_PROP_MAX_WIDTH:
-				assert(MAX_HEIGHT_SET == 
+				assert(MAX_HEIGHT_SET ==
 				       (enum op_max_height)MAX_WIDTH_SET);
 
 				if (value == MAX_HEIGHT_SET)
@@ -370,7 +370,7 @@ void css__make_style_important(css_style *style)
 				break;
 
 			case CSS_PROP_SPEECH_RATE:
-				if (value == SPEECH_RATE_SET) 
+				if (value == SPEECH_RATE_SET)
 					offset++; /* rate */
 				break;
 

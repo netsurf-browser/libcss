@@ -27,8 +27,8 @@
  * Post condition: \a *ctx is updated with the next token to process
  *                 If the input is invalid, then \a *ctx remains unchanged.
  */
-css_error css__parse_clip(css_language *c, 
-		const parserutils_vector *vector, int *ctx, 
+css_error css__parse_clip(css_language *c,
+		const parserutils_vector *vector, int *ctx,
 		css_style *result)
 {
 	int orig_ctx = *ctx;
@@ -39,7 +39,7 @@ css_error css__parse_clip(css_language *c,
 	uint32_t unit[4] = { 0 };
 	bool match;
 
-	/* FUNCTION(rect) [ [ IDENT(auto) | length ] CHAR(,)? ]{3} 
+	/* FUNCTION(rect) [ [ IDENT(auto) | length ] CHAR(,)? ]{3}
 	 *                [ IDENT(auto) | length ] CHAR{)} |
 	 * IDENT(auto, inherit) */
 	token = parserutils_vector_iterate(vector, ctx);
@@ -81,11 +81,11 @@ css_error css__parse_clip(css_language *c,
 			}
 
 			if (token->type == CSS_TOKEN_IDENT) {
-				/* Slightly magical way of generating the auto 
+				/* Slightly magical way of generating the auto
 				 * values. These are bits 3-6 of the value. */
 				if ((lwc_string_caseless_isequal(
 						token->idata, c->strings[AUTO],
-						&match) == lwc_error_ok && 
+						&match) == lwc_error_ok &&
 						match))
 					value |= 1 << (i + 3);
 				else {
@@ -95,16 +95,16 @@ css_error css__parse_clip(css_language *c,
 
 				parserutils_vector_iterate(vector, ctx);
 			} else {
-				error = css__parse_unit_specifier(c, vector, ctx, 
-						UNIT_PX, 
-						&length[num_lengths], 
+				error = css__parse_unit_specifier(c, vector, ctx,
+						UNIT_PX,
+						&length[num_lengths],
 						&unit[num_lengths]);
 				if (error != CSS_OK) {
 					*ctx = orig_ctx;
 					return error;
 				}
 
-				if (unit[num_lengths] & UNIT_ANGLE || 
+				if (unit[num_lengths] & UNIT_ANGLE ||
 						unit[num_lengths] & UNIT_TIME ||
 						unit[num_lengths] & UNIT_FREQ ||
 						unit[num_lengths] & UNIT_PCT) {
@@ -150,11 +150,11 @@ css_error css__parse_clip(css_language *c,
 		}
 
 		for (i = 0; i < num_lengths; i++) {
-			error = css__stylesheet_style_vappend(result, 
-							     2, 
-							     length[i], 
+			error = css__stylesheet_style_vappend(result,
+							     2,
+							     length[i],
 							     unit[i]);
-			if (error != CSS_OK) 
+			if (error != CSS_OK)
 				break;
 		}
 

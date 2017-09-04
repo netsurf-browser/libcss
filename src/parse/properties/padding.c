@@ -41,28 +41,28 @@ css_error css__parse_padding(css_language *c,
 
 	/* Firstly, handle inherit */
 	token = parserutils_vector_peek(vector, *ctx);
-	if (token == NULL) 
+	if (token == NULL)
 		return CSS_INVALID;
-		
+
 	if (is_css_inherit(c, token)) {
 		error = css_stylesheet_style_inherit(result, CSS_PROP_PADDING_TOP);
-		if (error != CSS_OK) 
+		if (error != CSS_OK)
 			return error;
 
 		error = css_stylesheet_style_inherit(result, CSS_PROP_PADDING_RIGHT);
-		if (error != CSS_OK) 
-			return error;		
+		if (error != CSS_OK)
+			return error;
 
 		error = css_stylesheet_style_inherit(result, CSS_PROP_PADDING_BOTTOM);
-		if (error != CSS_OK) 
+		if (error != CSS_OK)
 			return error;
 
 		error = css_stylesheet_style_inherit(result, CSS_PROP_PADDING_LEFT);
-		if (error == CSS_OK) 
+		if (error == CSS_OK)
 			parserutils_vector_iterate(vector, ctx);
 
 		return error;
-	} 
+	}
 
 	/* Attempt to parse up to 4 widths */
 	do {
@@ -81,7 +81,7 @@ css_error css__parse_padding(css_language *c,
 				*ctx = orig_ctx;
 				return CSS_INVALID;
 			}
-		
+
 			if (side_length[side_count] < 0) {
 				*ctx = orig_ctx;
 				return CSS_INVALID;

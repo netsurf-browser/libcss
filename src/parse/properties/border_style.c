@@ -41,28 +41,28 @@ css_error css__parse_border_style(css_language *c,
 
 	/* Firstly, handle inherit */
 	token = parserutils_vector_peek(vector, *ctx);
-	if (token == NULL) 
+	if (token == NULL)
 		return CSS_INVALID;
-		
+
 	if (is_css_inherit(c, token)) {
 		error = css_stylesheet_style_inherit(result, CSS_PROP_BORDER_TOP_STYLE);
-		if (error != CSS_OK) 
+		if (error != CSS_OK)
 			return error;
 
 		error = css_stylesheet_style_inherit(result, CSS_PROP_BORDER_RIGHT_STYLE);
-		if (error != CSS_OK) 
-			return error;		
+		if (error != CSS_OK)
+			return error;
 
 		error = css_stylesheet_style_inherit(result, CSS_PROP_BORDER_BOTTOM_STYLE);
-		if (error != CSS_OK) 
+		if (error != CSS_OK)
 			return error;
 
 		error = css_stylesheet_style_inherit(result, CSS_PROP_BORDER_LEFT_STYLE);
-		if (error == CSS_OK) 
+		if (error == CSS_OK)
 			parserutils_vector_iterate(vector, ctx);
 
 		return error;
-	} 
+	}
 
 	/* Attempt to parse up to 4 styles */
 	do {
@@ -73,7 +73,7 @@ css_error css__parse_border_style(css_language *c,
 			return CSS_INVALID;
 		}
 
-		if (token->type != CSS_TOKEN_IDENT) 
+		if (token->type != CSS_TOKEN_IDENT)
 			break;
 
 		if ((lwc_string_caseless_isequal(token->idata, c->strings[NONE], &match) == lwc_error_ok && match)) {
@@ -101,9 +101,9 @@ css_error css__parse_border_style(css_language *c,
 		}
 
 		side_count++;
-				
+
 		parserutils_vector_iterate(vector, ctx);
-		
+
 		consumeWhitespace(vector, ctx);
 
 		token = parserutils_vector_peek(vector, *ctx);
@@ -113,7 +113,7 @@ css_error css__parse_border_style(css_language *c,
 #define SIDE_APPEND(OP,NUM)								\
 	error = css__stylesheet_style_appendOPV(result, (OP), 0, side_val[(NUM)]);	\
 	if (error != CSS_OK)								\
-		break 
+		break
 
 	switch (side_count) {
 	case 1:

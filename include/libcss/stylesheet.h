@@ -65,12 +65,12 @@ typedef struct css_system_font {
 	enum css_font_style_e style;
 	enum css_font_variant_e variant;
 	enum css_font_weight_e weight;
-	struct {                  
-		css_fixed size;           
+	struct {
+		css_fixed size;
 		css_unit unit;
 	} size;
-	struct {                  
-		css_fixed size;           
+	struct {
+		css_fixed size;
 		css_unit unit;
 	} line_height;
 	/* Note: must be a single family name only */

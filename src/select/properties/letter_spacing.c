@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_letter_spacing(uint32_t opv, css_style *style, 
+css_error css__cascade_letter_spacing(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	return css__cascade_length_normal(opv, style, state, set_letter_spacing);
@@ -29,7 +29,7 @@ css_error css__set_letter_spacing_from_hint(const css_hint *hint,
 
 css_error css__initial_letter_spacing(css_select_state *state)
 {
-	return set_letter_spacing(state->computed, CSS_LETTER_SPACING_NORMAL, 
+	return set_letter_spacing(state->computed, CSS_LETTER_SPACING_NORMAL,
 			0, CSS_UNIT_PX);
 }
 

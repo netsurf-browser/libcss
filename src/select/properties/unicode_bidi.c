@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_unicode_bidi(uint32_t opv, css_style *style, 
+css_error css__cascade_unicode_bidi(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = CSS_UNICODE_BIDI_INHERIT;
@@ -54,7 +54,7 @@ css_error css__initial_unicode_bidi(css_select_state *state)
 	return set_unicode_bidi(state->computed, CSS_UNICODE_BIDI_NORMAL);
 }
 
-css_error css__compose_unicode_bidi(const css_computed_style *parent,	
+css_error css__compose_unicode_bidi(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {

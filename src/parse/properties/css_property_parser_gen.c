@@ -109,8 +109,8 @@ void output_header(FILE *outputf, const char *descriptor, struct keyval *parser_
 		"		const parserutils_vector *vector, int *ctx,\n"
 		"		css_style *result%s)\n"
 		"{\n",
-		descriptor, 
-		parser_id->key, 
+		descriptor,
+		parser_id->key,
 		is_generic ? " * \\param op	 Bytecode OpCode for CSS property to encode\n" : "",
 		parser_id->key,
 		is_generic ? ", enum css_properties_e op" : "");
@@ -249,7 +249,7 @@ void output_number(FILE *outputf, struct keyval *parseid, struct keyval_list *kv
 				"\t\tif (%s) {\n"
 				"\t\t\t*ctx = orig_ctx;\n"
 				"\t\t\treturn CSS_INVALID;\n"
-				"\t\t}\n\n", 
+				"\t\t}\n\n",
 				ulkv->val);
 		}
 
@@ -264,7 +264,7 @@ void output_number(FILE *outputf, struct keyval *parseid, struct keyval_list *kv
 		"\t\terror = css__stylesheet_style_append(result, num);\n"
 		"\t} else ",
 		parseid->val,
-		ckv->val);	
+		ckv->val);
 }
 
 void output_color(FILE *outputf, struct keyval *parseid, struct keyval_list *kvlist)
@@ -317,21 +317,21 @@ void output_length_unit(FILE *outputf, struct keyval *parseid, struct keyval_lis
 				"\t\tif ((%s) == false) {\n"
 				"\t\t\t*ctx = orig_ctx;\n"
 				"\t\t\treturn CSS_INVALID;\n"
-				"\t\t}\n\n", 
+				"\t\t}\n\n",
 				ulkv->val);
 		} else if (strcmp(ulkv->key, "DISALLOW") == 0) {
 			fprintf(outputf,
 				"\t\tif (%s) {\n"
 				"\t\t\t*ctx = orig_ctx;\n"
 				"\t\t\treturn CSS_INVALID;\n"
-				"\t\t}\n\n", 
+				"\t\t}\n\n",
 				ulkv->val);
 		} else if (strcmp(ulkv->key, "RANGE") == 0) {
 			fprintf(outputf,
 				"\t\tif (length %s) {\n"
 				"\t\t\t*ctx = orig_ctx;\n"
 				"\t\t\treturn CSS_INVALID;\n"
-				"\t\t}\n\n", 
+				"\t\t}\n\n",
 				ulkv->val);
 		}
 
@@ -350,9 +350,9 @@ void output_length_unit(FILE *outputf, struct keyval *parseid, struct keyval_lis
 		ckv->val);
 }
 
-void 
-output_ident_list(FILE *outputf, 
-		  struct keyval *parseid, 
+void
+output_ident_list(FILE *outputf,
+		  struct keyval *parseid,
 		  struct keyval_list *kvlist)
 {
 	struct keyval *ckv = kvlist->item[0]; /* list type : opv value */
@@ -387,7 +387,7 @@ output_ident_list(FILE *outputf,
 		"\t\t\t\t*ctx = orig_ctx;\n"
 		"\t\t\t\treturn error;\n"
 		"\t\t\t}\n\n"
-		"\t\t\terror = css__stylesheet_style_append(result, snumber);\n"	
+		"\t\t\terror = css__stylesheet_style_append(result, snumber);\n"
 		"\t\t\tif (error != CSS_OK) {\n"
 		"\t\t\t\t*ctx = orig_ctx;\n"
 		"\t\t\t\treturn error;\n"
@@ -553,13 +553,13 @@ int main(int argc, char **argv)
 				curlist = &IDENT_LIST;
 			} else if (rkv->val[0] == ')') {
 				curlist = &base;
-			} 
+			}
 		} else if (strcmp(rkv->key, "LENGTH_UNIT") == 0) {
 			if (rkv->val[0] == '(') {
 				curlist = &LENGTH_UNIT;
 			} else if (rkv->val[0] == ')') {
 				curlist = &base;
-			} 
+			}
 			only_ident = false;
 			do_token_check = false;
 		} else if (strcmp(rkv->key, "COLOR") == 0) {

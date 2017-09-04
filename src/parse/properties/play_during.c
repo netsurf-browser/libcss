@@ -27,8 +27,8 @@
  * Post condition: \a *ctx is updated with the next token to process
  *		   If the input is invalid, then \a *ctx remains unchanged.
  */
-css_error css__parse_play_during(css_language *c, 
-		const parserutils_vector *vector, int *ctx, 
+css_error css__parse_play_during(css_language *c,
+		const parserutils_vector *vector, int *ctx,
 		css_style *result)
 {
 	int orig_ctx = *ctx;
@@ -42,7 +42,7 @@ css_error css__parse_play_during(css_language *c,
 
 	/* URI [ IDENT(mix) || IDENT(repeat) ]? | IDENT(auto,none,inherit) */
 	token = parserutils_vector_iterate(vector, ctx);
-	if ((token == NULL) || 
+	if ((token == NULL) ||
 	    ((token->type != CSS_TOKEN_IDENT) &&
 	     (token->type != CSS_TOKEN_URI))) {
 		*ctx = orig_ctx;
@@ -79,8 +79,8 @@ css_error css__parse_play_during(css_language *c,
 			return error;
 		}
 
-		error = css__stylesheet_string_add(c->sheet, 
-						  uri, 
+		error = css__stylesheet_string_add(c->sheet,
+						  uri,
 						  &uri_snumber);
 		if (error != CSS_OK) {
 			*ctx = orig_ctx;
@@ -95,7 +95,7 @@ css_error css__parse_play_during(css_language *c,
 			if (token != NULL && token->type == CSS_TOKEN_IDENT) {
 				if ((lwc_string_caseless_isequal(
 						token->idata, c->strings[MIX],
-						&match) == lwc_error_ok && 
+						&match) == lwc_error_ok &&
 						match)) {
 					if ((value & PLAY_DURING_MIX) == 0)
 						value |= PLAY_DURING_MIX;
@@ -104,7 +104,7 @@ css_error css__parse_play_during(css_language *c,
 						return CSS_INVALID;
 					}
 				} else if (lwc_string_caseless_isequal(
-						token->idata, 
+						token->idata,
 						c->strings[REPEAT],
 						&match) == lwc_error_ok &&
 						match) {
@@ -130,12 +130,12 @@ css_error css__parse_play_during(css_language *c,
 		return error;
 	}
 
-	if ((flags & FLAG_INHERIT) == false && 
+	if ((flags & FLAG_INHERIT) == false &&
 	    (value & PLAY_DURING_TYPE_MASK) == PLAY_DURING_URI) {
 		error = css__stylesheet_style_append(result, uri_snumber);
 	}
 
-	if (error != CSS_OK) 
+	if (error != CSS_OK)
 		*ctx = orig_ctx;
 
 	return error;

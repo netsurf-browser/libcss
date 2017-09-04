@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_list_style_image(uint32_t opv, css_style *style, 
+css_error css__cascade_list_style_image(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	return css__cascade_uri_none(opv, style, state, set_list_style_image);
@@ -35,7 +35,7 @@ css_error css__set_list_style_image_from_hint(const css_hint *hint,
 
 css_error css__initial_list_style_image(css_select_state *state)
 {
-	return set_list_style_image(state->computed, 
+	return set_list_style_image(state->computed,
 			CSS_LIST_STYLE_IMAGE_NONE, NULL);
 }
 

@@ -13,13 +13,13 @@
 #include "testutils.h"
 
 static void dump_sheet(css_stylesheet *sheet, char *buf, size_t *len);
-static void dump_rule_selector(css_rule_selector *s, char **buf, 
+static void dump_rule_selector(css_rule_selector *s, char **buf,
 		size_t *buflen, uint32_t depth);
 static void dump_rule_charset(css_rule_charset *s, char **buf, size_t *buflen);
 static void dump_rule_import(css_rule_import *s, char **buf, size_t *buflen);
 static void dump_rule_media(css_rule_media *s, char **buf, size_t *buflen);
 static void dump_rule_page(css_rule_page *s, char **buf, size_t *buflen);
-static void dump_rule_font_face(css_rule_font_face *s, 
+static void dump_rule_font_face(css_rule_font_face *s,
 		char **buf, size_t *buflen);
 static void dump_selector_list(css_selector *list, char **ptr);
 static void dump_selector(css_selector *selector, char **ptr);
@@ -35,15 +35,15 @@ void dump_sheet(css_stylesheet *sheet, char *buf, size_t *buflen)
 	for (rule = sheet->rule_list; rule != NULL; rule = rule->next) {
 		switch (rule->type) {
 		case CSS_RULE_SELECTOR:
-			dump_rule_selector((css_rule_selector *) rule, 
+			dump_rule_selector((css_rule_selector *) rule,
 				&buf, buflen, 1);
 			break;
 		case CSS_RULE_CHARSET:
-			dump_rule_charset((css_rule_charset *) rule, 
+			dump_rule_charset((css_rule_charset *) rule,
 				&buf, buflen);
 			break;
 		case CSS_RULE_IMPORT:
-			dump_rule_import((css_rule_import *) rule, 
+			dump_rule_import((css_rule_import *) rule,
 				&buf, buflen);
 			break;
 		case CSS_RULE_MEDIA:
@@ -71,7 +71,7 @@ void dump_sheet(css_stylesheet *sheet, char *buf, size_t *buflen)
 	}
 }
 
-void dump_rule_selector(css_rule_selector *s, char **buf, size_t *buflen, 
+void dump_rule_selector(css_rule_selector *s, char **buf, size_t *buflen,
 		uint32_t depth)
 {
 	uint32_t i;
@@ -115,7 +115,7 @@ void dump_rule_import(css_rule_import *s, char **buf, size_t *buflen)
 {
 	char *ptr = *buf;
 
-	ptr += sprintf(ptr, "| @import url(\"%.*s\")", 
+	ptr += sprintf(ptr, "| @import url(\"%.*s\")",
                        (int) lwc_string_length(s->url), lwc_string_data(s->url));
 
 	/** \todo media list */
@@ -174,7 +174,7 @@ void dump_rule_font_face(css_rule_font_face *s, char **buf, size_t *buflen)
 	if (s->font_face != NULL) {
 		dump_font_face(s->font_face, &ptr);
 	}
-	
+
 	*ptr++ = '\n';
 
 	*buflen -= ptr - *buf;
@@ -233,7 +233,7 @@ void dump_selector_detail(css_selector_detail *detail, char **ptr)
 
 	switch (detail->type) {
 	case CSS_SELECTOR_ELEMENT:
-                if (lwc_string_length(detail->qname.name) == 1 && 
+                if (lwc_string_length(detail->qname.name) == 1 &&
                     lwc_string_data(detail->qname.name)[0] == '*' &&
 				detail->next == 0) {
 			dump_string(detail->qname.name, ptr);
@@ -662,7 +662,7 @@ static void dump_counter(lwc_string *name, uint32_t value,
 static void dump_counters(lwc_string *name, lwc_string *separator,
 		uint32_t value, char **ptr)
 {
-	*ptr += sprintf(*ptr, "counter(%.*s, %.*s", 
+	*ptr += sprintf(*ptr, "counter(%.*s, %.*s",
 			(int) lwc_string_length(name),
                         lwc_string_data(name),
 			(int) lwc_string_length(separator),
@@ -748,7 +748,7 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 
 		if (isInherit(opv)) {
 			*ptr += sprintf(*ptr, "inherit");
-		} else { 
+		} else {
 			value = getValue(opv);
 
 			switch (op) {
@@ -836,11 +836,11 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					break;
 				case BACKGROUND_COLOR_SET:
 				{
-					uint32_t colour = 
+					uint32_t colour =
 						*((uint32_t *) bytecode);
 					ADVANCE(sizeof(colour));
 					*ptr += sprintf(*ptr, "#%08x", colour);
-				}	
+				}
 					break;
 				}
 				break;
@@ -875,12 +875,12 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 				{
 					uint32_t snum = *((uint32_t *) bytecode);
 					lwc_string *he;
-					css__stylesheet_string_get(style->sheet, 
-								  snum, 
+					css__stylesheet_string_get(style->sheet,
+								  snum,
 								  &he);
 					ADVANCE(sizeof(snum));
-					*ptr += sprintf(*ptr, "url('%.*s')", 
-							(int) lwc_string_length(he), 
+					*ptr += sprintf(*ptr, "url('%.*s')",
+							(int) lwc_string_length(he),
 							lwc_string_data(he));
 				}
 					break;
@@ -1289,14 +1289,14 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 				}
 				break;
 			case CSS_PROP_CLIP:
-				if ((value & CLIP_SHAPE_MASK) == 
+				if ((value & CLIP_SHAPE_MASK) ==
 						CLIP_SHAPE_RECT) {
 					*ptr += sprintf(*ptr, "rect(");
 					if (value & CLIP_RECT_TOP_AUTO) {
 						*ptr += sprintf(*ptr, "auto");
 					} else {
 						uint32_t unit;
-						css_fixed val = 
+						css_fixed val =
 							*((css_fixed *) bytecode);
 						ADVANCE(sizeof(val));
 						unit = *((uint32_t *) bytecode);
@@ -1308,7 +1308,7 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 						*ptr += sprintf(*ptr, "auto");
 					} else {
 						uint32_t unit;
-						css_fixed val = 
+						css_fixed val =
 							*((css_fixed *) bytecode);
 						ADVANCE(sizeof(val));
 						unit = *((uint32_t *) bytecode);
@@ -1320,7 +1320,7 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 						*ptr += sprintf(*ptr, "auto");
 					} else {
 						uint32_t unit;
-						css_fixed val = 
+						css_fixed val =
 							*((css_fixed *) bytecode);
 						ADVANCE(sizeof(val));
 						unit = *((uint32_t *) bytecode);
@@ -1332,7 +1332,7 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 						*ptr += sprintf(*ptr, "auto");
 					} else {
 						uint32_t unit;
-						css_fixed val = 
+						css_fixed val =
 							*((css_fixed *) bytecode);
 						ADVANCE(sizeof(val));
 						unit = *((uint32_t *) bytecode);
@@ -1353,11 +1353,11 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					break;
 				case COLOR_SET:
 				{
-					uint32_t colour = 
+					uint32_t colour =
 						*((uint32_t *) bytecode);
 					ADVANCE(sizeof(colour));
 					*ptr += sprintf(*ptr, "#%08x", colour);
-				}	
+				}
 					break;
 				}
 				break;
@@ -1422,7 +1422,7 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 				}
 
 				while (value != CONTENT_NORMAL) {
-					uint32_t snum = *((uint32_t *) bytecode);					
+					uint32_t snum = *((uint32_t *) bytecode);
 					lwc_string *he;
 					const char *end = "";
 
@@ -1448,10 +1448,10 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 						break;
 
 					case CONTENT_URI:
-					case CONTENT_ATTR:	
+					case CONTENT_ATTR:
 					case CONTENT_STRING:
 						css__stylesheet_string_get(style->sheet, snum, &he);
-						if (value == CONTENT_URI) 
+						if (value == CONTENT_URI)
 							*ptr += sprintf(*ptr, "url(");
 						if (value == CONTENT_ATTR)
 							*ptr += sprintf(*ptr, "attr(");
@@ -1504,11 +1504,11 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					while (value != COUNTER_INCREMENT_NONE) {
 						css_fixed val;
 					uint32_t snum = *((uint32_t *) bytecode);					lwc_string *he;
-					css__stylesheet_string_get(style->sheet, 
-								  snum, 
+					css__stylesheet_string_get(style->sheet,
+								  snum,
 								  &he);
 						ADVANCE(sizeof(snum));
-						*ptr += sprintf(*ptr, "%.*s ", 
+						*ptr += sprintf(*ptr, "%.*s ",
                                                                 (int)lwc_string_length(he),
                                                                 lwc_string_data(he));
 						val = *((css_fixed *) bytecode);
@@ -1518,10 +1518,10 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 						value = *((uint32_t *) bytecode);
 						ADVANCE(sizeof(value));
 
-						if (value != 
+						if (value !=
 							COUNTER_INCREMENT_NONE)
-							*ptr += sprintf(*ptr, 
-									" "); 
+							*ptr += sprintf(*ptr,
+									" ");
 					}
 					break;
 				case COUNTER_INCREMENT_NONE:
@@ -1532,11 +1532,11 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 			case CSS_PROP_CURSOR:
 				while (value == CURSOR_URI) {
 					uint32_t snum = *((uint32_t *) bytecode);					lwc_string *he;
-					css__stylesheet_string_get(style->sheet, 
-								  snum, 
+					css__stylesheet_string_get(style->sheet,
+								  snum,
 								  &he);
 					ADVANCE(sizeof(snum));
-					*ptr += sprintf(*ptr, "url('%.*s'), ", 
+					*ptr += sprintf(*ptr, "url('%.*s'), ",
 							(int) lwc_string_length(he),
 							lwc_string_data(he));
 
@@ -1718,12 +1718,12 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					case FONT_FAMILY_STRING:
 					case FONT_FAMILY_IDENT_LIST:
 					{
-						uint32_t snum = *((uint32_t *) bytecode);					
+						uint32_t snum = *((uint32_t *) bytecode);
 						lwc_string *he;
 						css__stylesheet_string_get(style->sheet, snum, &he);
 						ADVANCE(sizeof(snum));
-						*ptr += sprintf(*ptr, "'%.*s'", 
-                                                                (int) lwc_string_length(he), 
+						*ptr += sprintf(*ptr, "'%.*s'",
+                                                                (int) lwc_string_length(he),
                                                                 lwc_string_data(he));
 					}
 						break;
@@ -2078,7 +2078,7 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					break;
 				case OUTLINE_COLOR_SET:
 				{
-					uint32_t colour = 
+					uint32_t colour =
 						*((uint32_t *) bytecode);
 					ADVANCE(sizeof(colour));
 					*ptr += sprintf(*ptr, "#%08x", colour);
@@ -2185,12 +2185,12 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 				switch (value) {
 				case PLAY_DURING_URI:
 				{
-					uint32_t snum = *((uint32_t *) bytecode);					
+					uint32_t snum = *((uint32_t *) bytecode);
 					lwc_string *he;
 					css__stylesheet_string_get(style->sheet, snum, &he);
 					ADVANCE(sizeof(snum));
-					*ptr += sprintf(*ptr, "'%.*s'", 
-                                                        (int) lwc_string_length(he), 
+					*ptr += sprintf(*ptr, "'%.*s'",
+                                                        (int) lwc_string_length(he),
                                                         lwc_string_data(he));
 				}
 					break;
@@ -2227,18 +2227,18 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 				switch (value) {
 				case QUOTES_STRING:
 					while (value != QUOTES_NONE) {
-						uint32_t snum = *((uint32_t *) bytecode);					
+						uint32_t snum = *((uint32_t *) bytecode);
 						lwc_string *he;
 						css__stylesheet_string_get(style->sheet, snum, &he);
 						ADVANCE(sizeof(snum));
-						*ptr += sprintf(*ptr, " '%.*s' ", 
-                                                                (int) lwc_string_length(he), 
+						*ptr += sprintf(*ptr, " '%.*s' ",
+                                                                (int) lwc_string_length(he),
                                                                 lwc_string_data(he));
 
 						css__stylesheet_string_get(style->sheet, snum, &he);
 						ADVANCE(sizeof(he));
-						*ptr += sprintf(*ptr, " '%.*s' ", 
-                                                                (int) lwc_string_length(he), 
+						*ptr += sprintf(*ptr, " '%.*s' ",
+                                                                (int) lwc_string_length(he),
                                                                 lwc_string_data(he));
 
 						value = *((uint32_t *) bytecode);
@@ -2459,11 +2459,11 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					case VOICE_FAMILY_STRING:
 					case VOICE_FAMILY_IDENT_LIST:
 					{
-						uint32_t snum = *((uint32_t *) bytecode);					
+						uint32_t snum = *((uint32_t *) bytecode);
 						lwc_string *he;
 						css__stylesheet_string_get(style->sheet, snum, &he);
 						ADVANCE(sizeof(snum));
-						*ptr += sprintf(*ptr, "'%.*s'", 
+						*ptr += sprintf(*ptr, "'%.*s'",
                                                                 (int) lwc_string_length(he),
                                                                 lwc_string_data(he));
 					}
@@ -2589,7 +2589,7 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 
 void dump_string(lwc_string *string, char **ptr)
 {
-	*ptr += sprintf(*ptr, "%.*s", 
+	*ptr += sprintf(*ptr, "%.*s",
                         (int) lwc_string_length(string),
                         lwc_string_data(string));
 }
@@ -2604,7 +2604,7 @@ void dump_font_face(css_font_face *font_face, char **ptr)
 				(int) lwc_string_length(font_face->font_family),
 				lwc_string_data(font_face->font_family));
 	}
-	
+
 	*ptr += sprintf(*ptr, "\n|  font-style: ");
 	style = css_font_face_font_style(font_face);
 	switch (style) {
@@ -2666,18 +2666,18 @@ void dump_font_face(css_font_face *font_face, char **ptr)
 		break;
 	}
 
-	
+
 	if (font_face->srcs != NULL) {
 		uint32_t i;
 		css_font_face_src *srcs = font_face->srcs;
 		for (i = 0; i < font_face->n_srcs; ++i) {
 			css_font_face_format format;
 			*ptr += sprintf(*ptr, "\n|  src: ");
-			
+
 			format = css_font_face_src_format(&srcs[i]);
-			
+
 			*ptr += sprintf(*ptr, "\n|   format: ");
-			
+
 			switch (format) {
 			case CSS_FONT_FACE_FORMAT_UNSPECIFIED:
 				*ptr += sprintf(*ptr, "unspecified");
@@ -2717,10 +2717,10 @@ void dump_font_face(css_font_face *font_face, char **ptr)
 					*ptr += sprintf(*ptr, "UNKNOWN");
 					break;
 				}
-				
+
 				*ptr += sprintf(*ptr, "(%.*s)",
 					(int) lwc_string_length(
-							srcs[i].location), 
+							srcs[i].location),
 					lwc_string_data(srcs[i].location));
 			}
 		}

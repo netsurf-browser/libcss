@@ -13,13 +13,13 @@
 #include "charset/detect.h"
 #include "utils/utils.h"
 
-static parserutils_error css_charset_read_bom_or_charset(const uint8_t *data, 
+static parserutils_error css_charset_read_bom_or_charset(const uint8_t *data,
 		size_t len, uint16_t *mibenum);
-static parserutils_error try_utf32_charset(const uint8_t *data, 
+static parserutils_error try_utf32_charset(const uint8_t *data,
 		size_t len, uint16_t *result);
-static parserutils_error try_utf16_charset(const uint8_t *data, 
+static parserutils_error try_utf16_charset(const uint8_t *data,
 		size_t len, uint16_t *result);
-static parserutils_error try_ascii_compatible_charset(const uint8_t *data, 
+static parserutils_error try_ascii_compatible_charset(const uint8_t *data,
 		size_t len, uint16_t *result);
 
 /**
@@ -60,7 +60,7 @@ parserutils_error css__charset_extract(const uint8_t *data, size_t len,
 		return PARSERUTILS_OK;
 	}
 
-	/* If we've already got a charset from the linking mechanism or 
+	/* If we've already got a charset from the linking mechanism or
 	 * referring document, then we've nothing further to do */
 	if (*source != CSS_CHARSET_DEFAULT)
 		return PARSERUTILS_OK;
@@ -84,7 +84,7 @@ parserutils_error css__charset_extract(const uint8_t *data, size_t len,
  * \param mibenum  Pointer to location to receive MIB enum
  * \return PARSERUTILS_OK on success, appropriate error otherwise
  */
-parserutils_error css_charset_read_bom_or_charset(const uint8_t *data, 
+parserutils_error css_charset_read_bom_or_charset(const uint8_t *data,
 		size_t len, uint16_t *mibenum)
 {
 	parserutils_error error;
@@ -99,30 +99,30 @@ parserutils_error css_charset_read_bom_or_charset(const uint8_t *data,
 
 
 	/* Look for BOM */
-	if (data[0] == 0x00 && data[1] == 0x00 && 
+	if (data[0] == 0x00 && data[1] == 0x00 &&
 			data[2] == 0xFE && data[3] == 0xFF) {
-		charset = parserutils_charset_mibenum_from_name("UTF-32BE", 
+		charset = parserutils_charset_mibenum_from_name("UTF-32BE",
 				SLEN("UTF-32BE"));
 	} else if (data[0] == 0xFF && data[1] == 0xFE &&
 			data[2] == 0x00 && data[3] == 0x00) {
-		charset = parserutils_charset_mibenum_from_name("UTF-32LE", 
+		charset = parserutils_charset_mibenum_from_name("UTF-32LE",
 				SLEN("UTF-32LE"));
 	} else if (data[0] == 0xFE && data[1] == 0xFF) {
-		charset = parserutils_charset_mibenum_from_name("UTF-16BE", 
+		charset = parserutils_charset_mibenum_from_name("UTF-16BE",
 				SLEN("UTF-16BE"));
 	} else if (data[0] == 0xFF && data[1] == 0xFE) {
-		charset = parserutils_charset_mibenum_from_name("UTF-16LE", 
+		charset = parserutils_charset_mibenum_from_name("UTF-16LE",
 				SLEN("UTF-16LE"));
 	} else if (data[0] == 0xEF && data[1] == 0xBB && data[2] == 0xBF) {
-		charset = parserutils_charset_mibenum_from_name("UTF-8", 
+		charset = parserutils_charset_mibenum_from_name("UTF-8",
 				SLEN("UTF-8"));
 	}
 
 	/* BOM beats @charset.
-	 * UAs differ here, but none appear to match the spec. 
-	 * The spec indicates that any @charset present in conjunction with a 
-	 * BOM, should match the BOM. In reality, it appears UAs just take the 
-	 * BOM as gospel and ignore any @charset rule. The w3c CSS validator 
+	 * UAs differ here, but none appear to match the spec.
+	 * The spec indicates that any @charset present in conjunction with a
+	 * BOM, should match the BOM. In reality, it appears UAs just take the
+	 * BOM as gospel and ignore any @charset rule. The w3c CSS validator
 	 * appears to do the same (at the least, it doesn't complain about a
 	 * mismatch).
 	 */
@@ -150,7 +150,7 @@ parserutils_error css_charset_read_bom_or_charset(const uint8_t *data,
 	return PARSERUTILS_OK;
 }
 
-static parserutils_error try_utf32_charset(const uint8_t *data, 
+static parserutils_error try_utf32_charset(const uint8_t *data,
 		size_t len, uint16_t *result)
 {
 	uint16_t charset = 0;
@@ -170,7 +170,7 @@ static parserutils_error try_utf32_charset(const uint8_t *data,
 
 		/* Look for "; at end of charset declaration */
 		for (end = start; end < data + len - 4; end += 4) {
-			uint32_t c = end[0] | (end[1] << 8) | 
+			uint32_t c = end[0] | (end[1] << 8) |
 				     (end[2] << 16) | (end[3] << 24);
 
 			/* Bail if non-ASCII */
@@ -202,7 +202,7 @@ static parserutils_error try_utf32_charset(const uint8_t *data,
 		}
 
 		/* Ensure we have something that looks like UTF-32(LE)? */
-		if ((ptr - buf == SLEN("UTF-32LE") && 
+		if ((ptr - buf == SLEN("UTF-32LE") &&
 				memcmp(buf, "UTF-32LE", ptr - buf) == 0) ||
 				(ptr - buf == SLEN("UTF-32") &&
 				memcmp(buf, "UTF-32", ptr - buf) == 0)) {
@@ -218,7 +218,7 @@ static parserutils_error try_utf32_charset(const uint8_t *data,
 
 		/* Look for "; at end of charset declaration */
 		for (end = start; end < data + len - 4; end += 4) {
-			uint32_t c = end[3] | (end[2] << 8) | 
+			uint32_t c = end[3] | (end[2] << 8) |
 				     (end[1] << 16) | (end[0] << 24);
 
 			/* Bail if non-ASCII */
@@ -250,7 +250,7 @@ static parserutils_error try_utf32_charset(const uint8_t *data,
 		}
 
 		/* Ensure we have something that looks like UTF-32(BE)? */
-		if ((ptr - buf == SLEN("UTF-32BE") && 
+		if ((ptr - buf == SLEN("UTF-32BE") &&
 				memcmp(buf, "UTF-32BE", ptr - buf) == 0) ||
 				(ptr - buf == SLEN("UTF-32") &&
 				memcmp(buf, "UTF-32", ptr - buf) == 0)) {
@@ -268,7 +268,7 @@ static parserutils_error try_utf32_charset(const uint8_t *data,
 	return PARSERUTILS_OK;
 }
 
-static parserutils_error try_utf16_charset(const uint8_t *data, 
+static parserutils_error try_utf16_charset(const uint8_t *data,
 		size_t len, uint16_t *result)
 {
 	uint16_t charset = 0;
@@ -318,7 +318,7 @@ static parserutils_error try_utf16_charset(const uint8_t *data,
 		}
 
 		/* Ensure we have something that looks like UTF-16(LE)? */
-		if ((ptr - buf == SLEN("UTF-16LE") && 
+		if ((ptr - buf == SLEN("UTF-16LE") &&
 				memcmp(buf, "UTF-16LE", ptr - buf) == 0) ||
 				(ptr - buf == SLEN("UTF-16") &&
 				memcmp(buf, "UTF-16", ptr - buf) == 0)) {
@@ -364,7 +364,7 @@ static parserutils_error try_utf16_charset(const uint8_t *data,
 		}
 
 		/* Ensure we have something that looks like UTF-16(BE)? */
-		if ((ptr - buf == SLEN("UTF-16BE") && 
+		if ((ptr - buf == SLEN("UTF-16BE") &&
 				memcmp(buf, "UTF-16BE", ptr - buf) == 0) ||
 				(ptr - buf == SLEN("UTF-16") &&
 				memcmp(buf, "UTF-16", ptr - buf) == 0)) {
@@ -399,7 +399,7 @@ parserutils_error try_ascii_compatible_charset(const uint8_t *data, size_t len,
 
 		/* Look for "; at end of charset declaration */
 		for (end = start; end < data + len; end++) {
-			if (*end == '"' && end < data + len - 1 && 
+			if (*end == '"' && end < data + len - 1 &&
 					*(end + 1) == ';')
 				break;
 		}

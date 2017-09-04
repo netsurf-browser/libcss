@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_voice_family(uint32_t opv, css_style *style, 
+css_error css__cascade_voice_family(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = 0;
@@ -55,7 +55,7 @@ css_error css__cascade_voice_family(uint32_t opv, css_style *style,
 			 * first generic-family are ignored. */
 			/** \todo Do this at bytecode generation time? */
 			if (value == 0 && voice != NULL) {
-				temp = realloc(voices, 
+				temp = realloc(voices,
 					(n_voices + 1) * sizeof(lwc_string *));
 				if (temp == NULL) {
 					if (voices != NULL) {

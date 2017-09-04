@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_border_collapse(uint32_t opv, css_style *style, 
+css_error css__cascade_border_collapse(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	uint16_t value = CSS_BORDER_COLLAPSE_INHERIT;
@@ -40,7 +40,7 @@ css_error css__cascade_border_collapse(uint32_t opv, css_style *style,
 	return CSS_OK;
 }
 
-css_error css__set_border_collapse_from_hint(const css_hint *hint, 
+css_error css__set_border_collapse_from_hint(const css_hint *hint,
 		css_computed_style *style)
 {
 	return set_border_collapse(style, hint->status);
@@ -60,7 +60,7 @@ css_error css__compose_border_collapse(const css_computed_style *parent,
 	if (type == CSS_BORDER_COLLAPSE_INHERIT) {
 		type = get_border_collapse(parent);
 	}
-	
+
 	return set_border_collapse(result, type);
 }
 

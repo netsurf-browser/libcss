@@ -15,7 +15,7 @@ extern "C"
 #endif
 
 #include <libwapcaplet/libwapcaplet.h>
-	
+
 #include <libcss/errors.h>
 #include <libcss/functypes.h>
 #include <libcss/properties.h>
@@ -32,15 +32,15 @@ typedef enum css_font_face_format {
 		/* Embedded OpenType; .eot */
 	CSS_FONT_FACE_FORMAT_SVG		= 0x08,
 		/* SVG Font; .svg, .svgz */
-	
+
 	CSS_FONT_FACE_FORMAT_UNKNOWN 		= 0x10,
 		/* Format specified, but not recognised */
-	
-	/* We don't define CSS_FONT_FACE_SRC_FORMAT_TRUETYPE as might be 
-	 * expected, because the CSS3 specification 
+
+	/* We don't define CSS_FONT_FACE_SRC_FORMAT_TRUETYPE as might be
+	 * expected, because the CSS3 specification
 	 *  (http://www.w3.org/TR/css3-fonts/, §4.3) says:
 	 *	"Given the overlap in common usage between TrueType and
-	 *	 OpenType, the format hints "truetype" and "opentype" must be 
+	 *	 OpenType, the format hints "truetype" and "opentype" must be
 	 *	 considered as synonymous"
 	 * so we compute a hint of 'truetype' to css_font_face_format_opentype.
 	 */
@@ -52,19 +52,19 @@ typedef enum css_font_face_location_type {
 	CSS_FONT_FACE_LOCATION_TYPE_URI		= 2,
 } css_font_face_location_type;
 
-	
+
 css_error css_font_face_get_font_family(
-		const css_font_face *font_face, 
+		const css_font_face *font_face,
 		lwc_string **font_family);
-		
-css_error css_font_face_count_srcs(const css_font_face *font_face, 
+
+css_error css_font_face_count_srcs(const css_font_face *font_face,
 		uint32_t *count);
 css_error css_font_face_get_src(const css_font_face *font_face, uint32_t index,
 		const css_font_face_src **src);
-	
+
 css_error css_font_face_src_get_location(const css_font_face_src *src,
 		lwc_string **location);
-	
+
 css_font_face_location_type css_font_face_src_location_type(
 		const css_font_face_src *src);
 css_font_face_format css_font_face_src_format(const css_font_face_src *src);

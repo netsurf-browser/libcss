@@ -14,7 +14,7 @@
 #include "select/properties/properties.h"
 #include "select/properties/helpers.h"
 
-css_error css__cascade_elevation(uint32_t opv, css_style *style, 
+css_error css__cascade_elevation(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
 	css_fixed val = 0;
@@ -22,7 +22,7 @@ css_error css__cascade_elevation(uint32_t opv, css_style *style,
 
 	if (isInherit(opv) == false) {
 		switch (getValue(opv)) {
-		case ELEVATION_ANGLE: 
+		case ELEVATION_ANGLE:
 			val = *((css_fixed *) style->bytecode);
 			advance_bytecode(style, sizeof(val));
 

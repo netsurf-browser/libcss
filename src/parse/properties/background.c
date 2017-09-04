@@ -49,36 +49,36 @@ css_error css__parse_background(css_language *c,
 
 	/* Firstly, handle inherit */
 	token = parserutils_vector_peek(vector, *ctx);
-	if (token == NULL) 
+	if (token == NULL)
 		return CSS_INVALID;
-		
+
 	if (is_css_inherit(c, token)) {
 		error = css_stylesheet_style_inherit(result, CSS_PROP_BACKGROUND_ATTACHMENT);
-		if (error != CSS_OK) 
+		if (error != CSS_OK)
 			return error;
 
 		error = css_stylesheet_style_inherit(result, CSS_PROP_BACKGROUND_COLOR);
-		if (error != CSS_OK) 
-			return error;		
+		if (error != CSS_OK)
+			return error;
 
 		error = css_stylesheet_style_inherit(result, CSS_PROP_BACKGROUND_IMAGE);
-		if (error != CSS_OK) 
+		if (error != CSS_OK)
 			return error;
 
 		error = css_stylesheet_style_inherit(result, CSS_PROP_BACKGROUND_POSITION);
-		if (error != CSS_OK) 
+		if (error != CSS_OK)
 			return error;
 
 		error = css_stylesheet_style_inherit(result, CSS_PROP_BACKGROUND_REPEAT);
-		if (error == CSS_OK) 
+		if (error == CSS_OK)
 			parserutils_vector_iterate(vector, ctx);
 
 		return error;
-	} 
+	}
 
 	/* allocate styles */
 	error = css__stylesheet_style_create(c->sheet, &attachment_style);
-	if (error != CSS_OK) 
+	if (error != CSS_OK)
 		return error;
 
 	error = css__stylesheet_style_create(c->sheet, &color_style);
@@ -124,24 +124,24 @@ css_error css__parse_background(css_language *c,
 		/* Try each property parser in turn, but only if we
 		 * haven't already got a value for this property.
 		 */
-		if ((attachment) && 
-		    (error = css__parse_background_attachment(c, vector, ctx, 
+		if ((attachment) &&
+		    (error = css__parse_background_attachment(c, vector, ctx,
 					    attachment_style)) == CSS_OK) {
 			attachment = false;
-		} else if ((color) && 
+		} else if ((color) &&
 			   (error = css__parse_background_color(c, vector, ctx,
 					    color_style)) == CSS_OK) {
 			color = false;
-		} else if ((image) && 
+		} else if ((image) &&
 			   (error = css__parse_background_image(c, vector, ctx,
 					    image_style)) == CSS_OK) {
 			image = false;
 		} else if ((position) &&
-			   (error = css__parse_background_position(c, vector, ctx, 
+			   (error = css__parse_background_position(c, vector, ctx,
 					position_style)) == CSS_OK) {
 			position = false;
 		} else if ((repeat) &&
-			   (error = css__parse_background_repeat(c, vector, ctx, 
+			   (error = css__parse_background_repeat(c, vector, ctx,
 					repeat_style)) == CSS_OK) {
 			repeat = false;
 		}
@@ -157,23 +157,23 @@ css_error css__parse_background(css_language *c,
 	} while (*ctx != prev_ctx && token != NULL);
 
 	if (attachment) {
-		error = css__stylesheet_style_appendOPV(attachment_style, 
-				CSS_PROP_BACKGROUND_ATTACHMENT, 0, 
+		error = css__stylesheet_style_appendOPV(attachment_style,
+				CSS_PROP_BACKGROUND_ATTACHMENT, 0,
 				BACKGROUND_ATTACHMENT_SCROLL);
 		if (error != CSS_OK)
 			goto css__parse_background_cleanup;
 	}
 
 	if (color) {
-		error = css__stylesheet_style_appendOPV(color_style, 
-				CSS_PROP_BACKGROUND_COLOR, 0, 
+		error = css__stylesheet_style_appendOPV(color_style,
+				CSS_PROP_BACKGROUND_COLOR, 0,
 				BACKGROUND_COLOR_TRANSPARENT);
 		if (error != CSS_OK)
 			goto css__parse_background_cleanup;
 	}
 
 	if (image) {
-		error = css__stylesheet_style_appendOPV(image_style, 
+		error = css__stylesheet_style_appendOPV(image_style,
 				CSS_PROP_BACKGROUND_IMAGE,
 				0, BACKGROUND_IMAGE_NONE);
 		if (error != CSS_OK)
@@ -190,7 +190,7 @@ css_error css__parse_background(css_language *c,
 	}
 
 	if (repeat) {
-		error = css__stylesheet_style_appendOPV(repeat_style, 
+		error = css__stylesheet_style_appendOPV(repeat_style,
 				CSS_PROP_BACKGROUND_REPEAT,
 				0, BACKGROUND_REPEAT_REPEAT);
 		if (error != CSS_OK)
