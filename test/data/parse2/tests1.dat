@@ -94,6 +94,14 @@
 #reset
 
 #data
+* { line-height: 3.5; }
+#errors
+#expected
+| *
+|  line-height: 3.500
+#reset
+
+#data
 * { max-height: inherit; }
 #errors
 #expected
