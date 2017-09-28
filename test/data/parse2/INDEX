@@ -20,3 +20,4 @@ outline.dat			Outline property tests
 overflow.dat			Overflow property tests
 padding.dat			Padding property tests
 multicol.dat			Multi-column layout property tests
+flexbox.dat			Flexbox properties and shorthands tests

@@ -479,6 +479,16 @@ static const char *opcode_names[] = {
 	"writing-mode",
 	"overflow-y",
 	"box-sizing",
+	"align-content",
+	"align-items",
+	"align-self",
+	"flex-basis",
+	"flex-direction",
+	"flex-grow",
+	"flex-shrink",
+	"flex-wrap",
+	"justify-content",
+	"order",
 };
 
 static void dump_css_fixed(css_fixed f, char **ptr)
@@ -752,6 +762,72 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 			value = getValue(opv);
 
 			switch (op) {
+			case CSS_PROP_ALIGN_CONTENT:
+				switch (value) {
+				case ALIGN_CONTENT_STRETCH:
+					*ptr += sprintf(*ptr, "stretch");
+					break;
+				case ALIGN_CONTENT_FLEX_START:
+					*ptr += sprintf(*ptr, "flex-start");
+					break;
+				case ALIGN_CONTENT_FLEX_END:
+					*ptr += sprintf(*ptr, "flex-end");
+					break;
+				case ALIGN_CONTENT_CENTER:
+					*ptr += sprintf(*ptr, "center");
+					break;
+				case ALIGN_CONTENT_SPACE_BETWEEN:
+					*ptr += sprintf(*ptr, "space-between");
+					break;
+				case ALIGN_CONTENT_SPACE_AROUND:
+					*ptr += sprintf(*ptr, "space-around");
+					break;
+				case ALIGN_CONTENT_SPACE_EVENLY:
+					*ptr += sprintf(*ptr, "space-evenly");
+					break;
+				}
+				break;
+			case CSS_PROP_ALIGN_ITEMS:
+				switch (value) {
+				case ALIGN_ITEMS_STRETCH:
+					*ptr += sprintf(*ptr, "stretch");
+					break;
+				case ALIGN_ITEMS_FLEX_START:
+					*ptr += sprintf(*ptr, "flex-start");
+					break;
+				case ALIGN_ITEMS_FLEX_END:
+					*ptr += sprintf(*ptr, "flex-end");
+					break;
+				case ALIGN_ITEMS_CENTER:
+					*ptr += sprintf(*ptr, "center");
+					break;
+				case ALIGN_ITEMS_BASELINE:
+					*ptr += sprintf(*ptr, "baseline");
+					break;
+				}
+				break;
+			case CSS_PROP_ALIGN_SELF:
+				switch (value) {
+				case ALIGN_SELF_STRETCH:
+					*ptr += sprintf(*ptr, "stretch");
+					break;
+				case ALIGN_SELF_FLEX_START:
+					*ptr += sprintf(*ptr, "flex-start");
+					break;
+				case ALIGN_SELF_FLEX_END:
+					*ptr += sprintf(*ptr, "flex-end");
+					break;
+				case ALIGN_SELF_CENTER:
+					*ptr += sprintf(*ptr, "center");
+					break;
+				case ALIGN_SELF_BASELINE:
+					*ptr += sprintf(*ptr, "baseline");
+					break;
+				case ALIGN_SELF_AUTO:
+					*ptr += sprintf(*ptr, "auto");
+					break;
+				}
+				break;
 			case CSS_PROP_AZIMUTH:
 				switch (value & ~AZIMUTH_BEHIND) {
 				case AZIMUTH_ANGLE:
@@ -1658,6 +1734,12 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 				case DISPLAY_NONE:
 					*ptr += sprintf(*ptr, "none");
 					break;
+				case DISPLAY_FLEX:
+					*ptr += sprintf(*ptr, "flex");
+					break;
+				case DISPLAY_INLINE_FLEX:
+					*ptr += sprintf(*ptr, "inline-flex");
+					break;
 				}
 				break;
 			case CSS_PROP_ELEVATION:
@@ -1696,6 +1778,77 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					break;
 				case EMPTY_CELLS_HIDE:
 					*ptr += sprintf(*ptr, "hide");
+					break;
+				}
+				break;
+			case CSS_PROP_FLEX_BASIS:
+				switch (value) {
+				case FLEX_BASIS_AUTO:
+					*ptr += sprintf(*ptr, "auto");
+					break;
+				case FLEX_BASIS_CONTENT:
+					*ptr += sprintf(*ptr, "content");
+					break;
+				case FLEX_BASIS_SET:
+				{
+					uint32_t unit;
+					css_fixed val = *((css_fixed *) bytecode);
+					ADVANCE(sizeof(val));
+					unit = *((uint32_t *) bytecode);
+					ADVANCE(sizeof(unit));
+					dump_unit(val, unit, ptr);
+				}
+					break;
+				}
+				break;
+			case CSS_PROP_FLEX_DIRECTION:
+				switch (value) {
+				case FLEX_DIRECTION_ROW:
+					*ptr += sprintf(*ptr, "row");
+					break;
+				case FLEX_DIRECTION_COLUMN:
+					*ptr += sprintf(*ptr, "column");
+					break;
+				case FLEX_DIRECTION_ROW_REVERSE:
+					*ptr += sprintf(*ptr, "row-reverse");
+					break;
+				case FLEX_DIRECTION_COLUMN_REVERSE:
+					*ptr += sprintf(*ptr, "column-reverse");
+					break;
+				}
+				break;
+			case CSS_PROP_FLEX_GROW:
+				switch (value) {
+				case FLEX_GROW_SET:
+				{
+					css_fixed val = *((css_fixed *) bytecode);
+					ADVANCE(sizeof(val));
+					dump_number(val, ptr);
+				}
+					break;
+				}
+				break;
+			case CSS_PROP_FLEX_SHRINK:
+				switch (value) {
+				case FLEX_SHRINK_SET:
+				{
+					css_fixed val = *((css_fixed *) bytecode);
+					ADVANCE(sizeof(val));
+					dump_number(val, ptr);
+				}
+					break;
+				}
+				break;
+			case CSS_PROP_FLEX_WRAP:
+				switch (value) {
+				case FLEX_WRAP_NOWRAP:
+					*ptr += sprintf(*ptr, "nowrap");
+					break;
+				case FLEX_WRAP_WRAP:
+					*ptr += sprintf(*ptr, "wrap");
+					break;
+				case FLEX_WRAP_WRAP_REVERSE:
+					*ptr += sprintf(*ptr, "wrap-reverse");
 					break;
 				}
 				break;
@@ -1858,6 +2011,29 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					break;
 				}
 				break;
+			case CSS_PROP_JUSTIFY_CONTENT:
+				switch (value) {
+				case JUSTIFY_CONTENT_FLEX_START:
+					*ptr += sprintf(*ptr, "flex-start");
+					break;
+				case JUSTIFY_CONTENT_FLEX_END:
+					*ptr += sprintf(*ptr, "flex-end");
+					break;
+				case JUSTIFY_CONTENT_CENTER:
+					*ptr += sprintf(*ptr, "center");
+					break;
+				case JUSTIFY_CONTENT_SPACE_BETWEEN:
+					*ptr += sprintf(*ptr, "space-between");
+					break;
+				case JUSTIFY_CONTENT_SPACE_AROUND:
+					*ptr += sprintf(*ptr, "space-around");
+					break;
+				case JUSTIFY_CONTENT_SPACE_EVENLY:
+					*ptr += sprintf(*ptr, "space-evenly");
+					break;
+				}
+				break;
+	
 			case CSS_PROP_LETTER_SPACING:
 			case CSS_PROP_WORD_SPACING:
 				assert(LETTER_SPACING_SET ==
@@ -1991,9 +2167,45 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					break;
 				}
 				break;
+			case CSS_PROP_MIN_HEIGHT:
+			case CSS_PROP_MIN_WIDTH:
+				assert(MIN_HEIGHT_SET ==
+						(enum op_min_height)
+						MIN_WIDTH_SET);
+				assert(MIN_HEIGHT_AUTO ==
+						(enum op_min_height)
+						MIN_WIDTH_AUTO);
+
+				switch (value) {
+				case MIN_HEIGHT_SET:
+				{
+					uint32_t unit;
+					css_fixed val = *((css_fixed *) bytecode);
+					ADVANCE(sizeof(val));
+					unit = *((uint32_t *) bytecode);
+					ADVANCE(sizeof(unit));
+					dump_unit(val, unit, ptr);
+				}
+					break;
+				case MIN_HEIGHT_AUTO:
+					*ptr += sprintf(*ptr, "auto");
+					break;
+				}
+				break;
 			case CSS_PROP_OPACITY:
 				switch (value) {
 				case OPACITY_SET:
+				{
+					css_fixed val = *((css_fixed *) bytecode);
+					ADVANCE(sizeof(val));
+					dump_number(val, ptr);
+				}
+					break;
+				}
+				break;
+			case CSS_PROP_ORDER:
+				switch (value) {
+				case ORDER_SET:
 				{
 					css_fixed val = *((css_fixed *) bytecode);
 					ADVANCE(sizeof(val));
@@ -2006,29 +2218,21 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 			case CSS_PROP_PADDING_RIGHT:
 			case CSS_PROP_PADDING_BOTTOM:
 			case CSS_PROP_PADDING_LEFT:
-			case CSS_PROP_MIN_HEIGHT:
-			case CSS_PROP_MIN_WIDTH:
 			case CSS_PROP_PAUSE_AFTER:
 			case CSS_PROP_PAUSE_BEFORE:
 			case CSS_PROP_TEXT_INDENT:
-				assert(MIN_HEIGHT_SET ==
-						(enum op_min_height)
-						MIN_WIDTH_SET);
-				assert(MIN_HEIGHT_SET ==
-						(enum op_min_height)
+				assert(TEXT_INDENT_SET ==
+						(enum op_text_indent)
 						PADDING_SET);
-				assert(MIN_HEIGHT_SET ==
-						(enum op_min_height)
+				assert(TEXT_INDENT_SET ==
+						(enum op_text_indent)
 						PAUSE_AFTER_SET);
-				assert(MIN_HEIGHT_SET ==
-						(enum op_min_height)
+				assert(TEXT_INDENT_SET ==
+						(enum op_text_indent)
 						PAUSE_BEFORE_SET);
-				assert(MIN_HEIGHT_SET ==
-						(enum op_min_height)
-						TEXT_INDENT_SET);
 
 				switch (value) {
-				case MIN_HEIGHT_SET:
+				case TEXT_INDENT_SET:
 				{
 					uint32_t unit;
 					css_fixed val = *((css_fixed *) bytecode);
