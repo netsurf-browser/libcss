@@ -17,7 +17,7 @@
 css_error css__cascade_min_height(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
-	return css__cascade_length(opv, style, state, set_min_height);
+	return css__cascade_length_auto(opv, style, state, set_min_height);
 }
 
 css_error css__set_min_height_from_hint(const css_hint *hint,
@@ -29,7 +29,7 @@ css_error css__set_min_height_from_hint(const css_hint *hint,
 
 css_error css__initial_min_height(css_select_state *state)
 {
-	return set_min_height(state->computed, CSS_MIN_HEIGHT_SET,
+	return set_min_height(state->computed, CSS_MIN_HEIGHT_AUTO, 
 			0, CSS_UNIT_PX);
 }
 

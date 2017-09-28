@@ -1,4 +1,4 @@
-*
+/*
  * This file is part of LibCSS.
  * Licensed under the MIT License,
  *		  http://www.opensource.org/licenses/mit-license.php

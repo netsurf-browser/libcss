@@ -17,7 +17,7 @@
 css_error css__cascade_min_width(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
-	return css__cascade_length(opv, style, state, set_min_width);
+	return css__cascade_length_auto(opv, style, state, set_min_width);
 }
 
 css_error css__set_min_width_from_hint(const css_hint *hint,
@@ -29,7 +29,8 @@ css_error css__set_min_width_from_hint(const css_hint *hint,
 
 css_error css__initial_min_width(css_select_state *state)
 {
-	return set_min_width(state->computed, CSS_MIN_WIDTH_SET, 0, CSS_UNIT_PX);
+	return set_min_width(state->computed, CSS_MIN_WIDTH_AUTO,
+			0, CSS_UNIT_PX);
 }
 
 css_error css__compose_min_width(const css_computed_style *parent,
