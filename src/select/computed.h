@@ -160,8 +160,14 @@ struct css_computed_style_i {
  * visibility			  2
  * white_space			  3
  * box_sizing			  2
+ * align_content		  3
+ * align_items			  3
+ * align_self			  3
+ * flex_direction		  3
+ * flex_wrap			  2
+ * justify_content		  3
  *				---
- *				 86 bits
+ *				103 bits
  *
  * Colours are 32bits of AARRGGBB
  * Dimensions are encoded as a fixed point value + 4 bits of unit data
@@ -192,8 +198,8 @@ struct css_computed_style_i {
  * margin_left			  2 + 4		  4
  * max_height			  2 + 4		  4
  * max_width			  2 + 4		  4
- * min_height			  1 + 4		  4
- * min_width			  1 + 4		  4
+ * min_height			  2 + 4		  4
+ * min_width			  2 + 4		  4
  * padding_top			  1 + 4		  4
  * padding_right		  1 + 4		  4
  * padding_bottom		  1 + 4		  4
@@ -202,8 +208,12 @@ struct css_computed_style_i {
  * vertical_align		  4 + 4		  4
  * width			  2 + 4		  4
  * z_index			  2		  4
+ * flex_basis			  2 + 4		  4
+ * flex_grow			  1		  4
+ * flex_shrink			  1		  4
+ * order			  1		  4
  * 				---		---
- *				181 bits	140 + 2sizeof(ptr) bytes
+ *				196 bits	156 + 2sizeof(ptr) bytes
  *
  * Encode font family as an array of string objects, terminated with a
  * blank entry.
@@ -219,11 +229,11 @@ struct css_computed_style_i {
  * 				  1 bit		  sizeof(ptr) bytes
  *
  * 				___		___
- *				269 bits	140 + 4sizeof(ptr) bytes
+ *				303 bits	156 + 4sizeof(ptr) bytes
  *
- *				 34 bytes	140 + 4sizeof(ptr) bytes
+ *				 38 bytes	156 + 4sizeof(ptr) bytes
  *				===================
- *				174 + 4sizeof(ptr) bytes
+ *				194 + 4sizeof(ptr) bytes
  *
  * Bit allocations:
  *
@@ -247,8 +257,8 @@ struct css_computed_style_i {
  * 17 mmmmmmee	max-height          | empty-cells
  * 18 mmmmmmff	max-width           | float
  * 19 wwwwwwff	width               | font-style
- * 20 mmmmmbbb	min-height          | background-repeat
- * 21 mmmmmccc	min-width           | clear
+ * 20 mmmmmmff	min-height          | flex-wrap
+ * 21 mmmmmmsg	min-width           | flex-shrink           | flex_grow
  * 22 tttttxxx	padding-top         | overflow-x
  * 23 rrrrrppp	padding-right       | position
  * 24 bbbbboss	padding-bottom      | opacity               | box-sizing
@@ -262,9 +272,12 @@ struct css_computed_style_i {
  * 32 ffffllll	font-weight         | list-style-type
  * 33 oooottuu	outline-style       | table-layout          | unicode-bidi
  * 34 vvlltttt	visibility          | list-style-position   | text-align
- * 35 yyy.....	overflow-y          | <unused>
+ * 35 yyybbbaa	overflow-y          | background-repeat     | align-content1
+ * 36 bbbbbbaj	flex-basis          | align-content2        | justify_content1
+ * 37 fffcccjj	flex-direction      | clear                 | justify_content2
+ * 38 iiissso.	align-items         | align-self            | order
  */
-	uint8_t bits[35];
+	uint8_t bits[38];
 
 	uint8_t unused[1];
 
@@ -309,6 +322,14 @@ struct css_computed_style_i {
 	css_fixed width;
 
 	int32_t z_index;
+
+	css_fixed flex_basis;
+
+	css_fixed flex_grow;
+
+	css_fixed flex_shrink;
+
+	int32_t order;
 
 	css_computed_uncommon *uncommon;/**< Uncommon properties */
 	void *aural;			/**< Aural properties */

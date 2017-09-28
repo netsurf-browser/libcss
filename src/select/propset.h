@@ -908,7 +908,7 @@ static inline css_error set_background_image(
 			((type & 0x1) << BACKGROUND_IMAGE_SHIFT);
 
 	if (url != NULL) {
-                style->i.background_image = lwc_string_ref(url);
+		style->i.background_image = lwc_string_ref(url);
 	} else {
 		style->i.background_image = NULL;
 	}
@@ -1361,7 +1361,7 @@ static inline css_error set_background_attachment(
 #undef BACKGROUND_ATTACHMENT_SHIFT
 #undef BACKGROUND_ATTACHMENT_INDEX
 
-#define BOX_SIZING_INDEX 34
+#define BOX_SIZING_INDEX 23
 #define BOX_SIZING_SHIFT 0
 #define BOX_SIZING_MASK  0x3
 static inline css_error set_box_sizing(
@@ -1551,17 +1551,17 @@ static inline css_error set_font_style(
 #undef FONT_STYLE_INDEX
 
 #define MIN_HEIGHT_INDEX 19
-#define MIN_HEIGHT_SHIFT 3
-#define MIN_HEIGHT_MASK  0xf8
+#define MIN_HEIGHT_SHIFT 2
+#define MIN_HEIGHT_MASK  0xfc
 static inline css_error set_min_height(
 		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->i.bits[MIN_HEIGHT_INDEX];
 
-	/* 5bits: uuuut : units | type */
+	/* 6bits: uuuutt : units | type */
 	*bits = (*bits & ~MIN_HEIGHT_MASK) |
-			(((type & 0x1) | (unit << 1)) << MIN_HEIGHT_SHIFT);
+			(((type & 0x3) | (unit << 2)) << MIN_HEIGHT_SHIFT);
 
 	style->i.min_height = length;
 
@@ -1572,17 +1572,17 @@ static inline css_error set_min_height(
 #undef MIN_HEIGHT_INDEX
 
 #define MIN_WIDTH_INDEX 20
-#define MIN_WIDTH_SHIFT 3
-#define MIN_WIDTH_MASK  0xf8
+#define MIN_WIDTH_SHIFT 2
+#define MIN_WIDTH_MASK  0xfc
 static inline css_error set_min_width(
 		css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
 	uint8_t *bits = &style->i.bits[MIN_WIDTH_INDEX];
 
-	/* 5bits: uuuut : units | type */
+	/* 6bits: uuuutt : units | type */
 	*bits = (*bits & ~MIN_WIDTH_MASK) |
-			(((type & 0x1) | (unit << 1)) << MIN_WIDTH_SHIFT);
+			(((type & 0x3) | (unit << 2)) << MIN_WIDTH_SHIFT);
 
 	style->i.min_width = length;
 
@@ -1592,9 +1592,9 @@ static inline css_error set_min_width(
 #undef MIN_WIDTH_SHIFT
 #undef MIN_WIDTH_INDEX
 
-#define BACKGROUND_REPEAT_INDEX 19
-#define BACKGROUND_REPEAT_SHIFT 0
-#define BACKGROUND_REPEAT_MASK  0x7
+#define BACKGROUND_REPEAT_INDEX 34
+#define BACKGROUND_REPEAT_SHIFT 2
+#define BACKGROUND_REPEAT_MASK  0x1c
 static inline css_error set_background_repeat(
 		css_computed_style *style, uint8_t type)
 {
@@ -1610,9 +1610,9 @@ static inline css_error set_background_repeat(
 #undef BACKGROUND_REPEAT_SHIFT
 #undef BACKGROUND_REPEAT_INDEX
 
-#define CLEAR_INDEX 20
-#define CLEAR_SHIFT 0
-#define CLEAR_MASK  0x7
+#define CLEAR_INDEX 36
+#define CLEAR_SHIFT 2
+#define CLEAR_MASK  0x1c
 static inline css_error set_clear(
 		css_computed_style *style, uint8_t type)
 {
@@ -2324,5 +2324,223 @@ static inline css_error set_widows(
 #undef WIDOWS_INDEX
 #undef WIDOWS_SHIFT
 #undef WIDOWS_MASK
+
+#define ALIGN_CONTENT_INDEX_A 34
+#define ALIGN_CONTENT_SHIFT_A 0
+#define ALIGN_CONTENT_MASK_A  0x3
+#define ALIGN_CONTENT_INDEX_B 35
+#define ALIGN_CONTENT_SHIFT_B 1
+#define ALIGN_CONTENT_MASK_B  0x2
+static inline css_error set_align_content(
+		css_computed_style *style, uint8_t type)
+{
+	uint8_t *bits_a = &style->i.bits[ALIGN_CONTENT_INDEX_A];
+	uint8_t *bits_b = &style->i.bits[ALIGN_CONTENT_INDEX_B];
+
+	/* type is 3bits: assigning the least significant two */
+	*bits_a = (*bits_a & ~ALIGN_CONTENT_MASK_A) |
+			((type & 0x3) << ALIGN_CONTENT_SHIFT_A);
+
+	/* type is 3bits: assigning the most significant one */
+	*bits_b = (*bits_b & ~ALIGN_CONTENT_MASK_B) |
+			(((type & 0x4) >> 2) << ALIGN_CONTENT_SHIFT_B);
+
+	return CSS_OK;
+}
+#undef ALIGN_CONTENT_MASK_A
+#undef ALIGN_CONTENT_SHIFT_A
+#undef ALIGN_CONTENT_INDEX_A
+#undef ALIGN_CONTENT_MASK_B
+#undef ALIGN_CONTENT_SHIFT_B
+#undef ALIGN_CONTENT_INDEX_B
+
+#define FLEX_WRAP_INDEX 19
+#define FLEX_WRAP_SHIFT 0
+#define FLEX_WRAP_MASK  0x3
+static inline css_error set_flex_wrap(
+		css_computed_style *style, uint8_t type)
+{
+	uint8_t *bits = &style->i.bits[FLEX_WRAP_INDEX];
+
+	/* 2bits: type */
+	*bits = (*bits & ~FLEX_WRAP_MASK) |
+			((type & 0x3) << FLEX_WRAP_SHIFT);
+
+	return CSS_OK;
+}
+#undef FLEX_WRAP_MASK
+#undef FLEX_WRAP_SHIFT
+#undef FLEX_WRAP_INDEX
+
+#define FLEX_BASIS_INDEX 35
+#define FLEX_BASIS_SHIFT 2
+#define FLEX_BASIS_MASK  0xfc
+static inline css_error set_flex_basis(
+		css_computed_style *style, uint8_t type,
+		css_fixed length, css_unit unit)
+{
+	uint8_t *bits = &style->i.bits[FLEX_BASIS_INDEX];
+
+	/* 6bits: uuuutt : units | type */
+	*bits = (*bits & ~FLEX_BASIS_MASK) |
+			(((type & 0x3) | (unit << 2)) << FLEX_BASIS_SHIFT);
+
+	style->i.flex_basis = length;
+
+	return CSS_OK;
+}
+
+#undef FLEX_BASIS_MASK
+#undef FLEX_BASIS_SHIFT
+#undef FLEX_BASIS_INDEX
+
+#define FLEX_SHRINK_INDEX 20
+#define FLEX_SHRINK_SHIFT 1
+#define FLEX_SHRINK_MASK  0x2
+static inline css_error set_flex_shrink(
+		css_computed_style *style, uint8_t type,
+		css_fixed number)
+{
+	uint8_t *bits = &style->i.bits[FLEX_SHRINK_INDEX];
+
+	/* 1bit: type */
+	*bits = (*bits & ~FLEX_SHRINK_MASK) |
+			((type & 0x1) << FLEX_SHRINK_SHIFT);
+
+	style->i.flex_shrink = number;
+
+	return CSS_OK;
+}
+
+#undef FLEX_SHRINK_MASK
+#undef FLEX_SHRINK_SHIFT
+#undef FLEX_SHRINK_INDEX
+
+#define FLEX_GROW_INDEX 20
+#define FLEX_GROW_SHIFT 0
+#define FLEX_GROW_MASK  0x1
+static inline css_error set_flex_grow(
+		css_computed_style *style, uint8_t type,
+		css_fixed number)
+{
+	uint8_t *bits = &style->i.bits[FLEX_GROW_INDEX];
+
+	/* 1bit: type */
+	*bits = (*bits & ~FLEX_GROW_MASK) |
+			((type & 0x1) << FLEX_GROW_SHIFT);
+
+	style->i.flex_grow = number;
+
+	return CSS_OK;
+}
+
+#undef FLEX_GROW_MASK
+#undef FLEX_GROW_SHIFT
+#undef FLEX_GROW_INDEX
+
+#define FLEX_DIRECTION_INDEX 36
+#define FLEX_DIRECTION_SHIFT 5
+#define FLEX_DIRECTION_MASK  0xe0
+static inline css_error set_flex_direction(
+		css_computed_style *style, uint8_t type)
+{
+	uint8_t *bits = &style->i.bits[FLEX_DIRECTION_INDEX];
+
+	/* 3bits: type */
+	*bits = (*bits & ~FLEX_DIRECTION_MASK) |
+			((type & 0x7) << FLEX_DIRECTION_SHIFT);
+
+	return CSS_OK;
+}
+#undef FLEX_DIRECTION_MASK
+#undef FLEX_DIRECTION_SHIFT
+#undef FLEX_DIRECTION_INDEX
+
+#define JUSTIFY_CONTENT_INDEX_A 35
+#define JUSTIFY_CONTENT_SHIFT_A 0
+#define JUSTIFY_CONTENT_MASK_A  0x1
+#define JUSTIFY_CONTENT_INDEX_B 36
+#define JUSTIFY_CONTENT_SHIFT_B 0
+#define JUSTIFY_CONTENT_MASK_B  0x3
+static inline css_error set_justify_content(
+		css_computed_style *style, uint8_t type)
+{
+	uint8_t *bits_a = &style->i.bits[JUSTIFY_CONTENT_INDEX_A];
+	uint8_t *bits_b = &style->i.bits[JUSTIFY_CONTENT_INDEX_B];
+
+	/* type is 3bits: assigning the least significant one */
+	*bits_a = (*bits_a & ~JUSTIFY_CONTENT_MASK_A) |
+			((type & 0x1) << JUSTIFY_CONTENT_SHIFT_A);
+
+	/* type is 3bits: assigning the most significant two */
+	*bits_b = (*bits_b & ~JUSTIFY_CONTENT_MASK_B) |
+			(((type & 0x6) >> 1) << JUSTIFY_CONTENT_SHIFT_B);
+
+	return CSS_OK;
+}
+#undef JUSTIFY_CONTENT_MASK_A
+#undef JUSTIFY_CONTENT_SHIFT_A
+#undef JUSTIFY_CONTENT_INDEX_A
+#undef JUSTIFY_CONTENT_MASK_B
+#undef JUSTIFY_CONTENT_SHIFT_B
+#undef JUSTIFY_CONTENT_INDEX_B
+
+#define ORDER_INDEX 37
+#define ORDER_SHIFT 1
+#define ORDER_MASK  0x2
+static inline css_error set_order(
+		css_computed_style *style, uint8_t type,
+		int32_t number)
+{
+	uint8_t *bits = &style->i.bits[ORDER_INDEX];
+
+	/* 1bit: type */
+	*bits = (*bits & ~ORDER_MASK) |
+			((type & 0x1) << ORDER_SHIFT);
+
+	style->i.order = number;
+
+	return CSS_OK;
+}
+
+#undef ORDER_MASK
+#undef ORDER_SHIFT
+#undef ORDER_INDEX
+
+#define ALIGN_ITEMS_INDEX 37
+#define ALIGN_ITEMS_SHIFT 5
+#define ALIGN_ITEMS_MASK  0xe0
+static inline css_error set_align_items(
+		css_computed_style *style, uint8_t type)
+{
+	uint8_t *bits = &style->i.bits[ALIGN_ITEMS_INDEX];
+
+	/* 3bits: type */
+	*bits = (*bits & ~ALIGN_ITEMS_MASK) |
+			((type & 0x7) << ALIGN_ITEMS_SHIFT);
+
+	return CSS_OK;
+}
+#undef ALIGN_ITEMS_MASK
+#undef ALIGN_ITEMS_SHIFT
+#undef ALIGN_ITEMS_INDEX
+
+#define ALIGN_SELF_INDEX 37
+#define ALIGN_SELF_SHIFT 2
+#define ALIGN_SELF_MASK  0x1c
+static inline css_error set_align_self(
+		css_computed_style *style, uint8_t type)
+{
+	uint8_t *bits = &style->i.bits[ALIGN_SELF_INDEX];
+
+	/* 3bits: type */
+	*bits = (*bits & ~ALIGN_SELF_MASK) |
+			((type & 0x7) << ALIGN_SELF_SHIFT);
+
+	return CSS_OK;
+}
+#undef ALIGN_SELF_MASK
+#undef ALIGN_SELF_SHIFT
+#undef ALIGN_SELF_INDEX
 
 #endif
