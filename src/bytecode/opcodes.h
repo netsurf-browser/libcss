@@ -10,6 +10,33 @@
 
 #include <inttypes.h>
 
+enum op_align_content {
+	ALIGN_CONTENT_STRETCH		= 0x0000,
+	ALIGN_CONTENT_FLEX_START	= 0x0001,
+	ALIGN_CONTENT_FLEX_END		= 0x0002,
+	ALIGN_CONTENT_CENTER		= 0x0003,
+	ALIGN_CONTENT_SPACE_BETWEEN	= 0x0004,
+	ALIGN_CONTENT_SPACE_AROUND	= 0x0005,
+	ALIGN_CONTENT_SPACE_EVENLY	= 0x0006
+};
+
+enum op_align_items {
+	ALIGN_ITEMS_STRETCH		= 0x0000,
+	ALIGN_ITEMS_FLEX_START		= 0x0001,
+	ALIGN_ITEMS_FLEX_END		= 0x0002,
+	ALIGN_ITEMS_CENTER		= 0x0003,
+	ALIGN_ITEMS_BASELINE		= 0x0004
+};
+
+enum op_align_self {
+	ALIGN_SELF_STRETCH		= 0x0000,
+	ALIGN_SELF_FLEX_START		= 0x0001,
+	ALIGN_SELF_FLEX_END		= 0x0002,
+	ALIGN_SELF_CENTER		= 0x0003,
+	ALIGN_SELF_BASELINE		= 0x0004,
+	ALIGN_SELF_AUTO			= 0x0005
+};
+
 enum op_azimuth {
 	AZIMUTH_ANGLE			= 0x0080,
 
@@ -303,7 +330,9 @@ enum op_display {
 	DISPLAY_TABLE_COLUMN		= 0x000c,
 	DISPLAY_TABLE_CELL		= 0x000d,
 	DISPLAY_TABLE_CAPTION		= 0x000e,
-	DISPLAY_NONE			= 0x000f
+	DISPLAY_NONE			= 0x000f,
+	DISPLAY_FLEX			= 0x0010,
+	DISPLAY_INLINE_FLEX		= 0x0011
 };
 
 enum op_elevation {
@@ -318,6 +347,33 @@ enum op_elevation {
 enum op_empty_cells {
 	EMPTY_CELLS_SHOW		= 0x0000,
 	EMPTY_CELLS_HIDE		= 0x0001
+};
+
+enum op_flex_basis {
+	FLEX_BASIS_AUTO			= 0x0000,
+	FLEX_BASIS_CONTENT		= 0x0001,
+	FLEX_BASIS_SET			= 0x0080
+};
+
+enum op_flex_direction {
+	FLEX_DIRECTION_ROW		= 0x0000,
+	FLEX_DIRECTION_ROW_REVERSE	= 0x0001,
+	FLEX_DIRECTION_COLUMN		= 0x0002,
+	FLEX_DIRECTION_COLUMN_REVERSE	= 0x0003
+};
+
+enum op_flex_grow {
+	FLEX_GROW_SET			= 0x0080
+};
+
+enum op_flex_shrink {
+	FLEX_SHRINK_SET			= 0x0080
+};
+
+enum op_flex_wrap {
+	FLEX_WRAP_NOWRAP		= 0x0000,
+	FLEX_WRAP_WRAP			= 0x0001,
+	FLEX_WRAP_WRAP_REVERSE		= 0x0002
 };
 
 enum op_float {
@@ -385,6 +441,15 @@ enum op_height {
 	HEIGHT_AUTO			= 0x0000
 };
 
+enum op_justify_content {
+	JUSTIFY_CONTENT_FLEX_START	= 0x0000,
+	JUSTIFY_CONTENT_FLEX_END	= 0x0001,
+	JUSTIFY_CONTENT_CENTER		= 0x0002,
+	JUSTIFY_CONTENT_SPACE_BETWEEN	= 0x0003,
+	JUSTIFY_CONTENT_SPACE_AROUND	= 0x0004,
+	JUSTIFY_CONTENT_SPACE_EVENLY	= 0x0005
+};
+
 enum op_left {
 	LEFT_SET			= BOTTOM_SET,
 	LEFT_AUTO			= BOTTOM_AUTO
@@ -445,15 +510,21 @@ enum op_max_width {
 };
 
 enum op_min_height {
-	MIN_HEIGHT_SET			= 0x0080
+	MIN_HEIGHT_SET			= 0x0080,
+	MIN_HEIGHT_AUTO			= 0x0000
 };
 
 enum op_min_width {
-	MIN_WIDTH_SET			= 0x0080
+	MIN_WIDTH_SET			= 0x0080,
+	MIN_WIDTH_AUTO			= 0x0000
 };
 
 enum op_opacity {
 	OPACITY_SET			= 0x0080
+};
+
+enum op_order {
+	ORDER_SET			= 0x0080
 };
 
 enum op_orphans {
@@ -735,4 +806,3 @@ enum op_z_index {
 };
 
 #endif
-

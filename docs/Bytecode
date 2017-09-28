@@ -464,6 +464,8 @@ Opcodes
 		d     => table-cell,
 		e     => table-caption,
 		f     => none,
+		10    => flex,
+		11    => inline-flex,
 		other => Reserved for future expansion.
 
 21 - elevation
@@ -678,8 +680,9 @@ Opcodes
 		bits 0-7 :
 			bit 7: set => length or percentage follows
 					bits 0-6: MBZ
-			       clear => Reserved for future expansion
-			       		bits 0-6: MBZ
+			bit 7 clear => keywords:
+				bits 0-6: 0000000 => auto,
+					  other   => rffe.
 
 37 - min-width
 	<value> (14bits) :
@@ -687,8 +690,9 @@ Opcodes
 		bits 0-7 :
 			bit 7: set => length or percentage follows
 					bits 0-6: MBZ
-			       clear => Reserved for future expansion
-			       		bits 0-6: MBZ
+			bit 7 clear => keywords:
+				bits 0-6: 0000000 => auto,
+					  other   => rffe.
 
 38 - orphans
 	<value> (14bits) :
@@ -1255,5 +1259,98 @@ Opcodes
 		1     => border-box,
 		other => Reserved for future expansion.
 
-72-3ff - Reserved for future expansion.
+72 - align-content
+	<value> (14bits) :
+		0     => stretch,
+		1     => flex-start,
+		2     => flex-end,
+		3     => center,
+		4     => space-between,
+		5     => space-around,
+		6     => space-evenly
+		other => Reserved for future expansion.
 
+73 - align-items
+	<value> (14bits) :
+		0     => stretch,
+		1     => flex-start,
+		2     => flex-end,
+		3     => center,
+		4     => baseline,
+		other => Reserved for future expansion.
+
+74 - align-self
+	<value> (14bits) :
+		0     => stretch,
+		1     => flex-start,
+		2     => flex-end,
+		3     => center,
+		4     => baseline,
+		5     => auto,
+		other => Reserved for future expansion.
+
+75 - flex-basis
+	<value> (14bits) :
+		bits 8-13: MBZ
+		bits 0-7 :
+			bit 7 set => length or percentage follows
+				bits 0-6: MBZ
+			bit 7 clear => keywords:
+				bits 0-6:
+					0000000 => auto,
+					0000001 => content,
+					other   => rffe.
+
+76 - flex-direction
+	<value> (14bits) :
+		0     => row,
+		1     => row-reverse,
+		2     => column,
+		3     => column-reverse,
+		other => Reserved for future expansion.
+
+77 - flex-grow
+	<value> (14bits) :
+		bits 8-13: MBZ
+		bits 0-7 :
+			bit 7 set => number follows
+				bits 0-6: MBZ
+			bit 7 clear => Reserved for future expansion
+				bits 0-6: MBZ
+
+78 - flex-shrink
+	<value> (14bits) :
+		bits 8-13: MBZ
+		bits 0-7 :
+			bit 7 set => number follows
+				bits 0-6: MBZ
+			bit 7 clear => Reserved for future expansion
+				bits 0-6: MBZ
+
+79 - flex-wrap
+	<value> (14bits) :
+		0     => nowrap,
+		1     => wrap,
+		2     => wrap-reverse,
+		other => Reserved for future expansion.
+
+7a - justify-content
+	<value> (14bits) :
+		0     => flex-start,
+		1     => flex-end,
+		2     => center,
+		3     => space-between,
+		4     => space-around,
+		5     => space-evenly,
+		other => Reserved for future expansion.
+
+7b - order
+	<value> (14bits) :
+		bits 8-13: MBZ
+		bits 0-7 :
+			bit 7 set => integer follows
+				bits 0-6: MBZ
+			bit 7 clear => Reserved for future expansion
+				bits 0-6: MBZ
+
+7c-3ff - Reserved for future expansion.
