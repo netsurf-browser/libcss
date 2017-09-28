@@ -12,6 +12,9 @@
  */
 const css_prop_handler property_handlers[LAST_PROP + 1 - FIRST_PROP] =
 {
+	css__parse_align_content,
+	css__parse_align_items,
+	css__parse_align_self,
 	css__parse_azimuth,
 	css__parse_background,
 	css__parse_background_attachment,
@@ -71,6 +74,13 @@ const css_prop_handler property_handlers[LAST_PROP + 1 - FIRST_PROP] =
 	css__parse_display,
 	css__parse_elevation,
 	css__parse_empty_cells,
+	css__parse_flex,
+	css__parse_flex_basis,
+	css__parse_flex_direction,
+	css__parse_flex_flow,
+	css__parse_flex_grow,
+	css__parse_flex_shrink,
+	css__parse_flex_wrap,
 	css__parse_float,
 	css__parse_font,
 	css__parse_font_family,
@@ -79,6 +89,7 @@ const css_prop_handler property_handlers[LAST_PROP + 1 - FIRST_PROP] =
 	css__parse_font_variant,
 	css__parse_font_weight,
 	css__parse_height,
+	css__parse_justify_content,
 	css__parse_left,
 	css__parse_letter_spacing,
 	css__parse_line_height,
@@ -96,6 +107,7 @@ const css_prop_handler property_handlers[LAST_PROP + 1 - FIRST_PROP] =
 	css__parse_min_height,
 	css__parse_min_width,
 	css__parse_opacity,
+	css__parse_order,
 	css__parse_orphans,
 	css__parse_outline,
 	css__parse_outline_color,
@@ -146,4 +158,3 @@ const css_prop_handler property_handlers[LAST_PROP + 1 - FIRST_PROP] =
 	css__parse_writing_mode,
 	css__parse_z_index
 };
-

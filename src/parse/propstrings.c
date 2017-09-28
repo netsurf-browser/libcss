@@ -82,6 +82,9 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	{ "before", SLEN("before") },
 	{ "after", SLEN("after") },
 
+	{ "align-content", SLEN("align-content") },
+	{ "align-items", SLEN("align-items") },
+	{ "align-self", SLEN("align-self") },
 	{ "azimuth", SLEN("azimuth") },
 	{ "background", SLEN("background") },
 	{ "background-attachment", SLEN("background-attachment") },
@@ -141,6 +144,13 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	{ "display", SLEN("display") },
 	{ "elevation", SLEN("elevation") },
 	{ "empty-cells", SLEN("empty-cells") },
+	{ "flex", SLEN("flex") },
+	{ "flex-basis", SLEN("flex-basis") },
+	{ "flex-direction", SLEN("flex-direction") },
+	{ "flex-flow", SLEN("flex-flow") },
+	{ "flex-grow", SLEN("flex-grow") },
+	{ "flex-shrink", SLEN("flex-shrink") },
+	{ "flex-wrap", SLEN("flex-wrap") },
 	{ "float", SLEN("float") },
 	{ "font", SLEN("font") },
 	{ "font-family", SLEN("font-family") },
@@ -149,6 +159,7 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	{ "font-variant", SLEN("font-variant") },
 	{ "font-weight", SLEN("font-weight") },
 	{ "height", SLEN("height") },
+	{ "justify-content", SLEN("justify-content") },
 	{ "left", SLEN("left") },
 	{ "letter-spacing", SLEN("letter-spacing") },
 	{ "line-height", SLEN("line-height") },
@@ -166,6 +177,7 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	{ "min-height", SLEN("min-height") },
 	{ "min-width", SLEN("min-width") },
 	{ "opacity", SLEN("opacity") },
+	{ "order", SLEN("order") },
 	{ "orphans", SLEN("orphans") },
 	{ "outline", SLEN("outline") },
 	{ "outline-color", SLEN("outline-color") },
@@ -415,6 +427,18 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	{ "vertical-lr", SLEN("vertical-lr") },
 	{ "content-box", SLEN("content-box") },
 	{ "border-box", SLEN("border-box") },
+	{ "stretch", SLEN("stretch") },
+	{ "inline-flex", SLEN("inline-flex") },
+	{ "flex-start", SLEN("flex-start") },
+	{ "flex-end", SLEN("flex-end") },
+	{ "space-between", SLEN("space-between") },
+	{ "space-around", SLEN("space-around") },
+	{ "space-evenly", SLEN("space-evenly") },
+	{ "row", SLEN("row") },
+	{ "row-reverse", SLEN("row-reverse") },
+	{ "column-reverse", SLEN("column-reverse") },
+	{ "wrap", SLEN("wrap") },
+	{ "wrap-reverse", SLEN("wrap-reverse") },
 
 	{ "aliceblue", SLEN("aliceblue") },
 	{ "antiquewhite", SLEN("antiquewhite") },
@@ -621,5 +645,3 @@ void css__propstrings_unref(void)
 			lwc_string_unref(css__propstrings.strings[i]);
 	}
 }
-
-
