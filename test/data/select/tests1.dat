@@ -6498,10 +6498,6 @@ z-index: auto
 | div
 |  p*
 #ua
-div { align-content: flex-end; }
-p { align-content: inherit; align-items: stretch; align-self: flex-start; }
-| div*
-#ua
 div { align-content: center; align-items: center; align-self: center; }
 p { align-content: inherit; align-items: inherit; align-self: inherit; }
 #user
