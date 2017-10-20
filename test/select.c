@@ -1643,7 +1643,7 @@ css_error compute_font_size(void *pw, const css_hint *parent, css_hint *size)
 	} else if (size->status == CSS_FONT_SIZE_SMALLER) {
 		/** \todo Step within table, if appropriate */
 		size->data.length.value =
-				FMUL(parent_size->value, FLTTOFIX(1.2));
+				FDIV(parent_size->value, FLTTOFIX(1.2));
 		size->data.length.unit = parent_size->unit;
 	} else if (size->data.length.unit == CSS_UNIT_EM ||
 			size->data.length.unit == CSS_UNIT_EX) {
