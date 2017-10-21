@@ -258,6 +258,21 @@ void css__make_style_important(css_style *style)
 					offset += 2; /* length + units */
 				break;
 
+			case CSS_PROP_FLEX_BASIS:
+				if (value == FLEX_BASIS_SET)
+					offset += 2; /* length + units */
+				break;
+
+			case CSS_PROP_FLEX_GROW:
+				if (value == FLEX_GROW_SET)
+					offset++; /* value */
+				break;
+
+			case CSS_PROP_FLEX_SHRINK:
+				if (value == FLEX_SHRINK_SET)
+					offset++; /* value */
+				break;
+
 			case CSS_PROP_FONT_FAMILY:
 				while (value != FONT_FAMILY_END) {
 					switch (value) {
@@ -328,6 +343,11 @@ void css__make_style_important(css_style *style)
 
 			case CSS_PROP_OPACITY:
 				if (value == OPACITY_SET)
+					offset++; /* value */
+				break;
+
+			case CSS_PROP_ORDER:
+				if (value == ORDER_SET)
 					offset++; /* value */
 				break;
 

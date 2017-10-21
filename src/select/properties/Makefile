@@ -1,5 +1,8 @@
 # Sources
 DIR_SOURCES := helpers.c \
+align_content.c \
+align_items.c \
+align_self.c \
 azimuth.c \
 background_attachment.c \
 background_color.c \
@@ -47,6 +50,11 @@ direction.c \
 display.c \
 elevation.c \
 empty_cells.c \
+flex_basis.c \
+flex_direction.c \
+flex_grow.c \
+flex_shrink.c \
+flex_wrap.c \
 float.c \
 font_family.c \
 font_size.c \
@@ -54,6 +62,7 @@ font_style.c \
 font_variant.c \
 font_weight.c \
 height.c \
+justify_content.c \
 left.c \
 letter_spacing.c \
 line_height.c \
@@ -69,6 +78,7 @@ max_width.c \
 min_height.c \
 min_width.c \
 opacity.c \
+order.c \
 orphans.c \
 outline_color.c \
 outline_style.c \

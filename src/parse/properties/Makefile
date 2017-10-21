@@ -45,6 +45,8 @@ DIR_SOURCES :=				\
 	cue.c				\
 	cursor.c			\
 	elevation.c			\
+	flex.c				\
+	flex_flow.c			\
 	font.c				\
 	font_family.c			\
 	font_weight.c			\

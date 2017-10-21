@@ -22,6 +22,15 @@ typedef css_error (*css_prop_handler)(css_language *c,
 
 extern const css_prop_handler property_handlers[LAST_PROP + 1 - FIRST_PROP];
 
+css_error css__parse_align_content(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
+css_error css__parse_align_items(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
+css_error css__parse_align_self(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
 css_error css__parse_azimuth(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		css_style *result);
@@ -199,6 +208,27 @@ css_error css__parse_elevation(css_language *c,
 css_error css__parse_empty_cells(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		css_style *result);
+css_error css__parse_flex(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
+css_error css__parse_flex_basis(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
+css_error css__parse_flex_direction(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
+css_error css__parse_flex_flow(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
+css_error css__parse_flex_grow(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
+css_error css__parse_flex_shrink(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
+css_error css__parse_flex_wrap(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
 css_error css__parse_float(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		css_style *result);
@@ -221,6 +251,9 @@ css_error css__parse_font_weight(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		css_style *result);
 css_error css__parse_height(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
+css_error css__parse_justify_content(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		css_style *result);
 css_error css__parse_left(css_language *c,
@@ -272,6 +305,9 @@ css_error css__parse_min_width(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		css_style *result);
 css_error css__parse_opacity(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
+css_error css__parse_order(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		css_style *result);
 css_error css__parse_orphans(css_language *c,
@@ -423,4 +459,3 @@ css_error css__parse_z_index(css_language *c,
 		css_style *result);
 
 #endif
-

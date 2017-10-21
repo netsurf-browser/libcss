@@ -71,6 +71,12 @@ css_error css__cascade_display(uint32_t opv, css_style *style,
 		case DISPLAY_NONE:
 			value = CSS_DISPLAY_NONE;
 			break;
+		case DISPLAY_FLEX:
+			value = CSS_DISPLAY_FLEX;
+			break;
+		case DISPLAY_INLINE_FLEX:
+			value = CSS_DISPLAY_INLINE_FLEX;
+			break;
 		}
 	}
 

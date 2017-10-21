@@ -749,13 +749,39 @@ uint8_t css_computed_font_style(const css_computed_style *style)
 uint8_t css_computed_min_height(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	return get_min_height(style, length, unit);
+	uint8_t min_height = get_min_height(style, length, unit);
+
+	if (min_height == CSS_MIN_HEIGHT_AUTO) {
+		uint8_t display = get_display(style);
+
+		if (display != CSS_DISPLAY_FLEX &&
+				display != CSS_DISPLAY_INLINE_FLEX) {
+			min_height = CSS_MIN_HEIGHT_SET;
+			*length = 0;
+			*unit = CSS_UNIT_PX;
+		}
+	}
+
+	return min_height;
 }
 
 uint8_t css_computed_min_width(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	return get_min_width(style, length, unit);
+	uint8_t min_width = get_min_width(style, length, unit);
+
+	if (min_width == CSS_MIN_WIDTH_AUTO) {
+		uint8_t display = get_display(style);
+
+		if (display != CSS_DISPLAY_FLEX &&
+				display != CSS_DISPLAY_INLINE_FLEX) {
+			min_width = CSS_MIN_WIDTH_SET;
+			*length = 0;
+			*unit = CSS_UNIT_PX;
+		}
+	}
+
+	return min_width;
 }
 
 uint8_t css_computed_background_repeat(const css_computed_style *style)
@@ -927,6 +953,8 @@ uint8_t css_computed_display(const css_computed_style *style,
 			root /* 4. */) {
 		if (display == CSS_DISPLAY_INLINE_TABLE) {
 			return CSS_DISPLAY_TABLE;
+		} else if (display == CSS_DISPLAY_INLINE_FLEX) {
+			return CSS_DISPLAY_FLEX;
 		} else if (display == CSS_DISPLAY_INLINE ||
 				display == CSS_DISPLAY_RUN_IN ||
 				display == CSS_DISPLAY_TABLE_ROW_GROUP ||
@@ -1054,6 +1082,59 @@ uint8_t css_computed_widows(const css_computed_style *style,
 	return get_widows(style, widows);
 }
 
+uint8_t css_computed_align_content(const css_computed_style *style)
+{
+	return get_align_content(style);
+}
+
+uint8_t css_computed_align_items(const css_computed_style *style)
+{
+	return get_align_items(style);
+}
+
+uint8_t css_computed_align_self(const css_computed_style *style)
+{
+	return get_align_self(style);
+}
+
+uint8_t css_computed_flex_basis(const css_computed_style *style,
+		css_fixed *length, css_unit *unit)
+{
+	return get_flex_basis(style, length, unit);
+}
+
+uint8_t css_computed_flex_direction(const css_computed_style *style)
+{
+	return get_flex_direction(style);
+}
+
+uint8_t css_computed_flex_grow(const css_computed_style *style,
+		css_fixed *number)
+{
+	return get_flex_grow(style, number);
+}
+
+uint8_t css_computed_flex_shrink(const css_computed_style *style,
+		css_fixed *number)
+{
+	return get_flex_shrink(style, number);
+}
+
+uint8_t css_computed_flex_wrap(const css_computed_style *style)
+{
+	return get_flex_wrap(style);
+}
+
+uint8_t css_computed_justify_content(const css_computed_style *style)
+{
+	return get_justify_content(style);
+}
+
+uint8_t css_computed_order(const css_computed_style *style,
+		int32_t *order)
+{
+	return get_order(style, order);
+}
 
 /******************************************************************************
  * Library internals                                                          *
@@ -1202,6 +1283,12 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 	/* Fix up width */
 	error = compute_absolute_length(style, &ex_size.data.length,
 			get_width, set_width);
+	if (error != CSS_OK)
+		return error;
+
+	/* Fix up flex-basis */
+	error = compute_absolute_length(style, &ex_size.data.length,
+			get_flex_basis, set_flex_basis);
 	if (error != CSS_OK)
 		return error;
 

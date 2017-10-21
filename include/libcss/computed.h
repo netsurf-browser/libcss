@@ -439,6 +439,41 @@ uint8_t css_computed_widows(
 		const css_computed_style *style,
 		int32_t *widows);
 
+uint8_t css_computed_align_content(
+		const css_computed_style *style);
+
+uint8_t css_computed_align_items(
+		const css_computed_style *style);
+
+uint8_t css_computed_align_self(
+		const css_computed_style *style);
+
+uint8_t css_computed_flex_basis(
+		const css_computed_style *style,
+		css_fixed *length,
+		css_unit *unit);
+
+uint8_t css_computed_flex_direction(
+		const css_computed_style *style);
+
+uint8_t css_computed_flex_grow(
+		const css_computed_style *style,
+		css_fixed *number);
+
+uint8_t css_computed_flex_shrink(
+		const css_computed_style *style,
+		css_fixed *number);
+
+uint8_t css_computed_flex_wrap(
+		const css_computed_style *style);
+
+uint8_t css_computed_justify_content(
+		const css_computed_style *style);
+
+uint8_t css_computed_order(
+		const css_computed_style *style,
+		int32_t *order);
+
 #ifdef __cplusplus
 }
 #endif

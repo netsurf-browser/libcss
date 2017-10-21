@@ -21,6 +21,9 @@
   css_error css__compose_##pname (const css_computed_style *parent, const css_computed_style *child, css_computed_style *result); \
   uint32_t destroy_##pname (void *bytecode)
 
+PROPERTY_FUNCS(align_content);
+PROPERTY_FUNCS(align_items);
+PROPERTY_FUNCS(align_self);
 PROPERTY_FUNCS(azimuth);
 PROPERTY_FUNCS(background_attachment);
 PROPERTY_FUNCS(background_color);
@@ -68,6 +71,11 @@ PROPERTY_FUNCS(direction);
 PROPERTY_FUNCS(display);
 PROPERTY_FUNCS(elevation);
 PROPERTY_FUNCS(empty_cells);
+PROPERTY_FUNCS(flex_basis);
+PROPERTY_FUNCS(flex_direction);
+PROPERTY_FUNCS(flex_grow);
+PROPERTY_FUNCS(flex_shrink);
+PROPERTY_FUNCS(flex_wrap);
 PROPERTY_FUNCS(float);
 PROPERTY_FUNCS(font_family);
 PROPERTY_FUNCS(font_size);
@@ -75,6 +83,7 @@ PROPERTY_FUNCS(font_style);
 PROPERTY_FUNCS(font_variant);
 PROPERTY_FUNCS(font_weight);
 PROPERTY_FUNCS(height);
+PROPERTY_FUNCS(justify_content);
 PROPERTY_FUNCS(left);
 PROPERTY_FUNCS(letter_spacing);
 PROPERTY_FUNCS(line_height);
@@ -90,6 +99,7 @@ PROPERTY_FUNCS(max_width);
 PROPERTY_FUNCS(min_height);
 PROPERTY_FUNCS(min_width);
 PROPERTY_FUNCS(opacity);
+PROPERTY_FUNCS(order);
 PROPERTY_FUNCS(orphans);
 PROPERTY_FUNCS(outline_color);
 PROPERTY_FUNCS(outline_style);
