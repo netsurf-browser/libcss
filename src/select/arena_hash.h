@@ -49,8 +49,8 @@ static inline uint32_t css__arena_hash(const uint8_t *data, size_t len)
 
 	/* Hash any left over bytes */
 	switch (len) {
-	case 3: h ^= data[2] << 16;
-	case 2: h ^= data[1] << 8;
+	case 3: h ^= data[2] << 16; /* Fall through */
+	case 2: h ^= data[1] << 8;  /* Fall through */
 	case 1: h ^= data[0];
 		h *= m;
 	}

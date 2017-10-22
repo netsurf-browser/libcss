@@ -2098,8 +2098,8 @@ css_error parseMalformedDeclaration(css_parser *parser)
 			;
 
 		state->substate = Go;
-		/* Fall through */
 	}
+	/* Fall through */
 	case Go:
 		while (1) {
 			char want;
@@ -2296,8 +2296,8 @@ css_error parseMalformedAtRule(css_parser *parser)
 			;
 
 		state->substate = Go;
-		/* Fall through */
 	}
+	/* Fall through */
 	case Go:
 		while (1) {
 			char want;
