@@ -80,26 +80,39 @@ typedef uint32_t css_color;
 
 /* CSS unit */
 typedef enum css_unit {
-	CSS_UNIT_PX                 = 0x0,
-	CSS_UNIT_EX                 = 0x1,
-	CSS_UNIT_EM                 = 0x2,
-	CSS_UNIT_IN                 = 0x3,
-	CSS_UNIT_CM                 = 0x4,
-	CSS_UNIT_MM                 = 0x5,
-	CSS_UNIT_PT                 = 0x6,
-	CSS_UNIT_PC                 = 0x7,
+	CSS_UNIT_PX                 = 0x00,
+	CSS_UNIT_EX                 = 0x01,
+	CSS_UNIT_EM                 = 0x02,
+	CSS_UNIT_IN                 = 0x03,
+	CSS_UNIT_CM                 = 0x04,
+	CSS_UNIT_MM                 = 0x05,
+	CSS_UNIT_PT                 = 0x06,
+	CSS_UNIT_PC                 = 0x07,
+	CSS_UNIT_CAP                = 0x08,
+	CSS_UNIT_CH                 = 0x09,
+	CSS_UNIT_IC                 = 0x0a,
+	CSS_UNIT_REM                = 0x0b,
+	CSS_UNIT_LH                 = 0x0c,
+	CSS_UNIT_RLH                = 0x0d,
+	CSS_UNIT_VH                 = 0x0e,
+	CSS_UNIT_VW                 = 0x0f,
+	CSS_UNIT_VI                 = 0x10,
+	CSS_UNIT_VB                 = 0x11,
+	CSS_UNIT_VMIN               = 0x12,
+	CSS_UNIT_VMAX               = 0x13,
+	CSS_UNIT_Q                  = 0x14,
 
-	CSS_UNIT_PCT                = 0x8,	/* Percentage */
+	CSS_UNIT_PCT                = 0x15,	/* Percentage */
 
-	CSS_UNIT_DEG                = 0x9,
-	CSS_UNIT_GRAD               = 0xa,
-	CSS_UNIT_RAD                = 0xb,
+	CSS_UNIT_DEG                = 0x16,
+	CSS_UNIT_GRAD               = 0x17,
+	CSS_UNIT_RAD                = 0x18,
 
-	CSS_UNIT_MS                 = 0xc,
-	CSS_UNIT_S                  = 0xd,
+	CSS_UNIT_MS                 = 0x19,
+	CSS_UNIT_S                  = 0x1a,
 
-	CSS_UNIT_HZ                 = 0xe,
-	CSS_UNIT_KHZ                = 0xf
+	CSS_UNIT_HZ                 = 0x1b,
+	CSS_UNIT_KHZ                = 0x1c
 } css_unit;
 
 /**

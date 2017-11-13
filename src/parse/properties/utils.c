@@ -1007,6 +1007,10 @@ css_error css__parse_unit_keyword(const char *ptr, size_t len, uint32_t *unit)
 	if (len == 4) {
 		if (strncasecmp(ptr, "grad", 4) == 0)
 			*unit = UNIT_GRAD;
+		else if (strncasecmp(ptr, "vmin", 4) == 0)
+			*unit = UNIT_VMIN;
+		else if (strncasecmp(ptr, "vmax", 4) == 0)
+			*unit = UNIT_VMAX;
 		else
 			return CSS_INVALID;
 	} else if (len == 3) {
@@ -1016,6 +1020,12 @@ css_error css__parse_unit_keyword(const char *ptr, size_t len, uint32_t *unit)
 			*unit = UNIT_DEG;
 		else if (strncasecmp(ptr, "rad", 3) == 0)
 			*unit = UNIT_RAD;
+		else if (strncasecmp(ptr, "cap", 3) == 0)
+			*unit = UNIT_CAP;
+		else if (strncasecmp(ptr, "rem", 3) == 0)
+			*unit = UNIT_REM;
+		else if (strncasecmp(ptr, "rlh", 3) == 0)
+			*unit = UNIT_RLH;
 		else
 			return CSS_INVALID;
 	} else if (len == 2) {
@@ -1039,11 +1049,27 @@ css_error css__parse_unit_keyword(const char *ptr, size_t len, uint32_t *unit)
 			*unit = UNIT_PT;
 		else if (strncasecmp(ptr, "pc", 2) == 0)
 			*unit = UNIT_PC;
+		else if (strncasecmp(ptr, "ch", 2) == 0)
+			*unit = UNIT_CH;
+		else if (strncasecmp(ptr, "ic", 2) == 0)
+			*unit = UNIT_IC;
+		else if (strncasecmp(ptr, "lh", 2) == 0)
+			*unit = UNIT_LH;
+		else if (strncasecmp(ptr, "vh", 2) == 0)
+			*unit = UNIT_VH;
+		else if (strncasecmp(ptr, "vw", 2) == 0)
+			*unit = UNIT_VW;
+		else if (strncasecmp(ptr, "vi", 2) == 0)
+			*unit = UNIT_VI;
+		else if (strncasecmp(ptr, "vb", 2) == 0)
+			*unit = UNIT_VB;
 		else
 			return CSS_INVALID;
 	} else if (len == 1) {
 		if (strncasecmp(ptr, "s", 1) == 0)
 			*unit = UNIT_S;
+		else if (strncasecmp(ptr, "q", 1) == 0)
+			*unit = UNIT_Q;
 		else
 			return CSS_INVALID;
 	} else
