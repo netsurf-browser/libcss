@@ -584,6 +584,45 @@ static void dump_unit(css_fixed val, uint32_t unit, char **ptr)
 	case UNIT_PC:
 		*ptr += sprintf(*ptr, "pc");
 		break;
+	case UNIT_CAP:
+		*ptr += sprintf(*ptr, "cap");
+		break;
+	case UNIT_CH:
+		*ptr += sprintf(*ptr, "ch");
+		break;
+	case UNIT_IC:
+		*ptr += sprintf(*ptr, "ic");
+		break;
+	case UNIT_REM:
+		*ptr += sprintf(*ptr, "rem");
+		break;
+	case UNIT_LH:
+		*ptr += sprintf(*ptr, "lh");
+		break;
+	case UNIT_RLH:
+		*ptr += sprintf(*ptr, "rlh");
+		break;
+	case UNIT_VH:
+		*ptr += sprintf(*ptr, "vh");
+		break;
+	case UNIT_VW:
+		*ptr += sprintf(*ptr, "vw");
+		break;
+	case UNIT_VI:
+		*ptr += sprintf(*ptr, "vi");
+		break;
+	case UNIT_VB:
+		*ptr += sprintf(*ptr, "vb");
+		break;
+	case UNIT_VMIN:
+		*ptr += sprintf(*ptr, "vmin");
+		break;
+	case UNIT_VMAX:
+		*ptr += sprintf(*ptr, "vmax");
+		break;
+	case UNIT_Q:
+		*ptr += sprintf(*ptr, "q");
+		break;
 	case UNIT_PCT:
 		*ptr += sprintf(*ptr, "%%");
 		break;
