@@ -218,6 +218,8 @@ class CSSProperty:
         self.override = get_tuple(override)
         self.comments = comments
         self.__mask = None
+        self.index = None
+        self.shift = None
 
     def make_values(self, vals):
         """Make list of values for this property."""
@@ -380,7 +382,7 @@ class CSSGroup:
     def __init__(self, config):
         self.name = config['name']
         self.props = [ CSSProperty(*x) for x in config['props'] ]
-        self.__bits_array = None
+        self.bits_array = self.make_bits_array()
 
     @property
     def bits_size(self):
@@ -397,20 +399,17 @@ class CSSGroup:
         """Sum of all property pointers."""
         return sum([ p.ptr_size for p in self.props ])
 
-    @property
-    def bits_array(self):
+    def make_bits_array(self):
         """Implement a `best fit first` heuristics for the bin packing
-        of property bits in the bits array."""
-
-        if self.__bits_array is not None:
-            return self.__bits_array
+        of property bits in the bits array.
+        Also generate index, shift and mask for each property in group."""
 
         bin_size = 32 # We're using uint32_t as concrete bins.
-        self.__bits_array = []
+        bits_array = []
         props = sorted(self.props, key=(lambda x: x.bits_size), reverse=True)
 
         for p in props:
-            for b in self.__bits_array:
+            for b in bits_array:
                 if b.size + p.bits_size <= bin_size:
                     b.push(p)
                     p.shift = (bin_size -
@@ -418,17 +417,17 @@ class CSSGroup:
                     break
             else:
                 p.shift = bin_size - p.bits_size
-                self.__bits_array.append(Bin(p))
+                bits_array.append(Bin(p))
 
             p.mask = (sum([ 2 ** x for x in range(p.bits_size) ]) *
                       2 ** p.shift)
-            self.__bits_array.sort(key=(lambda x: x.size), reverse=True)
+            bits_array.sort(key=(lambda x: x.size), reverse=True)
 
-        for i, b in enumerate(self.__bits_array):
+        for i, b in enumerate(bits_array):
             for p in b.contents:
                 p.index = i
 
-        return self.__bits_array
+        return bits_array
 
     def get_idot_grp(self):
         """Make parameters for accessing bits and values in this group."""

@@ -32,16 +32,16 @@ static inline uint8_t get_clip(
 			rect->top_auto = (bits & 0x20);
 
 			rect->top = style->i.uncommon->i.clip_a;
-			rect->tunit = bits & 0x3e00000;
+			rect->tunit = bits & 0x3e00000 >> 21;
 
 			rect->right = style->i.uncommon->i.clip_b;
-			rect->runit = bits & 0x1f0000;
+			rect->runit = bits & 0x1f0000 >> 16;
 
 			rect->bottom = style->i.uncommon->i.clip_c;
-			rect->bunit = bits & 0xf800;
+			rect->bunit = (bits & 0xf800) >> 11;
 
 			rect->left = style->i.uncommon->i.clip_d;
-			rect->lunit = bits & 0x7c0;
+			rect->lunit = (bits & 0x7c0) >> 6;
 		}
 
 		return (bits & 0x3);
@@ -208,7 +208,7 @@ static inline uint8_t get_{0}(
 		*unit = bits >> 2;
 	}}
 
-	return (bits & 0x7);
+	return (bits & 0x3);
 }}
 static inline uint8_t get_{0}_bits(
 		const css_computed_style *style)
