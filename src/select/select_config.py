@@ -164,7 +164,7 @@ uncommon = {
     ('cursor', 5, 'string_arr', None, 'CSS_CURSOR_AUTO',
         'Encode cursor uri(s) as an array of string objects, terminated '
         'with a blank entry'),
-    ('content', 2, 'content_item', 'CSS_CONTENT_NORMAL', 'CSS_CONTENT_NORMAL',
+    ('content', 2, 'content_item', 'CSS_CONTENT_SET', 'CSS_CONTENT_NORMAL',
         'Encode content as an array of content items, terminated with '
         'a blank entry.', 'set')
 }
