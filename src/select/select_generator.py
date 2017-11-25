@@ -641,9 +641,9 @@ class CSSGroup:
                 old_t, old_n_shift = shift_star(v.type, old_n)
 
                 if v.name is 'string':
-                    t.append('{} {} = style{}->{}{} = {};'.format(
+                    t.append('{} {} = style{}->{}{};'.format(
                         old_t, old_n_shift,
-                        grp, i_dot, p.name + v.suffix, v.name + v.suffix))
+                        grp, i_dot, p.name + v.suffix))
                     t.append()
                     t.append('if ({} != NULL) {{'.format(v.name + v.suffix))
                     t.indent(1)
