@@ -16,6 +16,7 @@ Requirements
     + GNU make or compatible
     + Pkg-config
     + Perl (for the testcases)
+    + Python3 (minimum 3.6)
 
   LibCSS also requires the following libraries to be installed:
 
