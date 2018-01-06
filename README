@@ -16,7 +16,7 @@ Requirements
     + GNU make or compatible
     + Pkg-config
     + Perl (for the testcases)
-    + Python3 (minimum 3.6)
+    + Python3 (minimum 3.6, for generated selection code)
 
   LibCSS also requires the following libraries to be installed:
 
@@ -28,7 +28,16 @@ Compilation
 
   If necessary, modify the toolchain settings in the Makefile.
   Invoke make:
-  		$ make
+
+      $ make
+
+Regenerating generated selection source code
+--------------------------------------------
+
+  To regenerate the selection sources (computed style data accesses),
+  note this requires python3:
+
+      $ make select_generator
 
 Verification
 ------------
@@ -36,7 +45,7 @@ Verification
   To verify that the parser is working, it is necessary to specify a
   different makefile target than that used for normal compilation, thus:
 
-  		$ make test
+      $ make test
 
 API documentation
 -----------------
