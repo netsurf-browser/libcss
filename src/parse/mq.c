@@ -433,14 +433,111 @@ static css_error mq_parse_media_feature(css_language *c,
 	return CSS_OK;
 }
 
+/*
+ * Consume any value
+ *
+ * CSS Syntax Module Level 3: 8.2
+ */
+static css_error mq_parse_consume_any_value(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		bool until, const char until_char)
+{
+	const css_token *token;
+	css_error error;
+
+	while (true) {
+		consumeWhitespace(vector, ctx);
+
+		token = parserutils_vector_iterate(vector, ctx);
+		if (token == NULL) {
+			return CSS_INVALID;
+		}
+
+		switch (token->type) {
+		case CSS_TOKEN_INVALID_STRING:
+			return CSS_INVALID;
+
+		case CSS_TOKEN_CHAR:
+			if (until && tokenIsChar(token, until_char)) {
+				/* Found matching close bracket */
+				return CSS_OK;
+
+			} else if (tokenIsChar(token, ')') ||
+			           tokenIsChar(token, ']') ||
+			           tokenIsChar(token, '}')) {
+				/* Non-matching close bracket */
+				return CSS_INVALID;
+			}
+			if (tokenIsChar(token, '(')) {
+				/* Need to consume until matching bracket. */
+				error = mq_parse_consume_any_value(
+						c, vector, ctx, true, ')');
+				if (error != CSS_OK) {
+					return error;
+				}
+			} else if (tokenIsChar(token, '[')) {
+				/* Need to consume until matching bracket. */
+				error = mq_parse_consume_any_value(
+						c, vector, ctx, true, ']');
+				if (error != CSS_OK) {
+					return error;
+				}
+			} else if (tokenIsChar(token, '{')) {
+				/* Need to consume until matching bracket. */
+				error = mq_parse_consume_any_value(
+						c, vector, ctx, true, '}');
+				if (error != CSS_OK) {
+					return error;
+				}
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	return CSS_OK;
+}
+
 static css_error mq_parse_general_enclosed(css_language *c,
 		const parserutils_vector *vector, int *ctx)
 {
+	const css_token *token;
+	css_error error;
+
 	/* <general-enclosed> = [ <function-token> <any-value> ) ]
 	 *                    | ( <ident> <any-value> )
 	 */
 
-	/* TODO: implement */
+	token = parserutils_vector_iterate(vector, ctx);
+	if (token == NULL) {
+		return CSS_INVALID;
+	}
+
+	switch (token->type) {
+	case CSS_TOKEN_FUNCTION:
+		error = mq_parse_consume_any_value(c, vector, ctx, true, ')');
+		if (error != CSS_OK) {
+			return error;
+		}
+
+		token = parserutils_vector_peek(vector, *ctx);
+		if (!tokenIsChar(token, ')')) {
+			return CSS_INVALID;
+		}
+		break;
+
+	case CSS_TOKEN_IDENT:
+		error = mq_parse_consume_any_value(c, vector, ctx, false, '\0');
+		if (error != CSS_OK) {
+			return error;
+		}
+		break;
+
+	default:
+		return CSS_INVALID;
+	}
 
 	return CSS_OK;
 }
