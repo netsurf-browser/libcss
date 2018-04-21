@@ -17,7 +17,7 @@
 #include "parse/properties/utils.h"
 #include "utils/utils.h"
 
-static css_error mq_parse_ratio(css_language *c,
+static css_error mq_parse_ratio(
 		const parserutils_vector *vector, int *ctx,
 		const css_token *numerator, css_fixed *ratio)
 {
@@ -166,7 +166,7 @@ static css_error mq_parse_range(css_language *c,
 	if (name_or_value->type == CSS_TOKEN_NUMBER &&
 			tokenIsChar(parserutils_vector_peek(vector, *ctx), '/')) {
 		/* ratio */
-		error = mq_parse_ratio(c, vector, ctx, token, &ratio);
+		error = mq_parse_ratio(vector, ctx, token, &ratio);
 		if (error != CSS_OK) {
 			return error;
 		}
@@ -213,7 +213,7 @@ static css_error mq_parse_range(css_language *c,
 	if (value_or_name->type == CSS_TOKEN_NUMBER &&
 			tokenIsChar(parserutils_vector_peek(vector, *ctx), '/')) {
 		/* ratio */
-		error = mq_parse_ratio(c, vector, ctx, token, &ratio);
+		error = mq_parse_ratio(vector, ctx, token, &ratio);
 		if (error != CSS_OK) {
 			return error;
 		}
@@ -260,7 +260,7 @@ static css_error mq_parse_range(css_language *c,
 		if (value_or_name->type == CSS_TOKEN_NUMBER &&
 				tokenIsChar(parserutils_vector_peek(vector, *ctx), '/')) {
 			/* ratio */
-			error = mq_parse_ratio(c, vector, ctx, token, &ratio2);
+			error = mq_parse_ratio(vector, ctx, token, &ratio2);
 			if (error != CSS_OK) {
 				return error;
 			}
@@ -381,7 +381,7 @@ static css_error mq_parse_media_feature(css_language *c,
 				/* ratio */
 				css_fixed ratio;
 
-				error = mq_parse_ratio(c, vector, ctx, token, &ratio);
+				error = mq_parse_ratio(vector, ctx, token, &ratio);
 				if (error != CSS_OK) {
 					free(result);
 					return error;
