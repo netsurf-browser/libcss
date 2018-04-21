@@ -82,8 +82,9 @@ static css_error mq_populate_value(css_mq_value *value,
 		const char *data = lwc_string_data(token->idata);
 		uint32_t unit = UNIT_PX;
 		size_t consumed;
+		css_error error;
 
-		value->type == CSS_MQ_VALUE_TYPE_DIM;
+		value->type = CSS_MQ_VALUE_TYPE_DIM;
 		value->data.dim.len = css__number_from_lwc_string(
 				token->idata, false, &consumed);
 		error = css__parse_unit_keyword(data + consumed, len - consumed,
@@ -91,7 +92,7 @@ static css_error mq_populate_value(css_mq_value *value,
 		if (error != CSS_OK) {
 			return error;
 		}
-		value->data.dim.unit = temp_unit;
+		value->data.dim.unit = unit;
 	} else if (token->type == CSS_TOKEN_IDENT) {
 		value->type = CSS_MQ_VALUE_TYPE_IDENT;
 		value->data.ident = lwc_string_ref(token->idata);
@@ -447,7 +448,7 @@ static css_error mq_parse_media_in_parens(css_language *c,
 	const css_token *token;
 	bool match;
 	int old_ctx;
-	cond_or_feature *result = NULL;
+	css_mq_cond_or_feature *result = NULL;
 	css_error error = CSS_OK;
 
 	/* <media-in-parens> = ( <media-condition> ) | <media-feature> | <general-enclosed>
@@ -609,7 +610,7 @@ static css_error mq_parse_condition(css_language *c,
 		result->parts->parts = parts;
 		result->parts->nparts++;
 
-		consumeWhitespace(vector, token);
+		consumeWhitespace(vector, ctx);
 
 		token = parserutils_vector_peek(vector, *ctx);
 		if (token != NULL && tokenIsChar(token, ')') == false &&
