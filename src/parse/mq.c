@@ -780,7 +780,7 @@ css_error css__mq_parse_media_list(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		css_mq_query **media)
 {
-	css_mq_query *result = NULL, *last;
+	css_mq_query *result = NULL, *last = NULL;
 	const css_token *token;
 	css_error error;
 
@@ -804,6 +804,7 @@ css_error css__mq_parse_media_list(css_language *c,
 			if (result == NULL) {
 				result = last = query;
 			} else {
+				assert(last != NULL);
 				last->next = query;
 				last = query;
 			}
