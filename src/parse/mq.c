@@ -17,6 +17,10 @@
 #include "parse/properties/utils.h"
 #include "utils/utils.h"
 
+static css_error mq_parse_condition(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		bool permit_or, css_mq_cond **cond);
+
 static css_error mq_parse_ratio(
 		const parserutils_vector *vector, int *ctx,
 		const css_token *numerator, css_fixed *ratio)
