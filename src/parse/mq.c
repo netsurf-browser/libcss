@@ -7,6 +7,8 @@
 
 /* https://drafts.csswg.org/mediaqueries/ */
 
+#include <string.h>
+
 #include <libcss/fpmath.h>
 
 #include "stylesheet.h"
