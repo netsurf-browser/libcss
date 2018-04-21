@@ -442,6 +442,7 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	{ "and", SLEN("and") },
 	{ "or", SLEN("or") },
 	{ "only", SLEN("only") },
+	{ "infinite", SLEN("infinite") },
 
 	{ "aliceblue", SLEN("aliceblue") },
 	{ "antiquewhite", SLEN("antiquewhite") },
