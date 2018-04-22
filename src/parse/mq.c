@@ -369,8 +369,7 @@ static css_error mq_parse_range(css_language *c,
 			/* num/dim/ident */
 			error = mq_populate_value(&result->value2, token);
 			if (error != CSS_OK) {
-				/* TODO: clean up result properly? */
-				free(result);
+				css_mq_feature_destroy(result);
 				return error;
 			}
 		}
@@ -481,7 +480,7 @@ static css_error mq_parse_media_feature(css_language *c,
 
 	token = parserutils_vector_iterate(vector, ctx);
 	if (tokenIsChar(token, ')') == false) {
-		/* TODO: clean up result */
+		css_mq_feature_destroy(result);
 		return CSS_INVALID;
 	}
 
@@ -644,7 +643,7 @@ static css_error mq_parse_media_in_parens(css_language *c,
 
 			result = malloc(sizeof(*result));
 			if (result == NULL) {
-				/* TODO: clean up cond */
+				css__mq_cond_destroy(cond);
 				return CSS_NOMEM;
 			}
 			memset(result, 0, sizeof(*result));
@@ -661,7 +660,7 @@ static css_error mq_parse_media_in_parens(css_language *c,
 		if (error == CSS_OK) {
 			result = malloc(sizeof(*result));
 			if (result == NULL) {
-				/* TODO: clean up feature */
+				css_mq_feature_destroy(feature);
 				return CSS_NOMEM;
 			}
 			memset(result, 0, sizeof(*result));
@@ -724,8 +723,7 @@ static css_error mq_parse_condition(css_language *c,
 
 		error = mq_parse_media_in_parens(c, vector, ctx, &cond_or_feature);
 		if (error != CSS_OK) {
-			free(result->parts);
-			free(result);
+			css__mq_cond_destroy(result);
 			return CSS_INVALID;
 		}
 
@@ -733,9 +731,8 @@ static css_error mq_parse_condition(css_language *c,
 		result->parts->nparts = 1;
 		result->parts->parts = malloc(sizeof(*result->parts->parts));
 		if (result->parts->parts == NULL) {
-			/* TODO: clean up cond_or_feature */
-			free(result->parts);
-			free(result);
+			css__mq_cond_or_feature_destroy(cond_or_feature);
+			css__mq_cond_destroy(result);
 			return CSS_NOMEM;
 		}
 		result->parts->parts[0] = cond_or_feature;
@@ -750,18 +747,15 @@ static css_error mq_parse_condition(css_language *c,
 			tokenIsChar(token, ',') == false) {
 		error = mq_parse_media_in_parens(c, vector, ctx, &cond_or_feature);
 		if (error != CSS_OK) {
-			/* TODO: clean up result->parts->parts */
-			free(result->parts);
-			free(result);
+			css__mq_cond_destroy(result);
 			return CSS_INVALID;
 		}
 
 		parts = realloc(result->parts->parts,
 				(result->parts->nparts+1)*sizeof(*result->parts->parts));
 		if (parts == NULL) {
-			/* TODO: clean up result->parts->parts */
-			free(result->parts);
-			free(result);
+			css__mq_cond_or_feature_destroy(cond_or_feature);
+			css__mq_cond_destroy(result);
 			return CSS_NOMEM;
 		}
 		parts[result->parts->nparts] = cond_or_feature;
@@ -774,17 +768,13 @@ static css_error mq_parse_condition(css_language *c,
 		if (token != NULL && tokenIsChar(token, ')') == false &&
 				tokenIsChar(token, ',') == false) {
 			if (token->type != CSS_TOKEN_IDENT) {
-				/* TODO: clean up result->parts->parts */
-				free(result->parts);
-				free(result);
+				css__mq_cond_destroy(result);
 				return CSS_INVALID;
 			} else if (lwc_string_caseless_isequal(token->idata,
 					c->strings[AND], &match) == lwc_error_ok &&
 					match) {
 				if (op != 0 && op != AND) {
-					/* TODO: clean up result->parts->parts */
-					free(result->parts);
-					free(result);
+					css__mq_cond_destroy(result);
 					return CSS_INVALID;
 				}
 				op = AND;
@@ -792,17 +782,13 @@ static css_error mq_parse_condition(css_language *c,
 						c->strings[OR], &match) == lwc_error_ok &&
 					match) {
 				if (permit_or == false || (op != 0 && op != OR)) {
-					/* TODO: clean up result->parts->parts */
-					free(result->parts);
-					free(result);
+					css__mq_cond_destroy(result);
 					return CSS_INVALID;
 				}
 				op = OR;
 			} else {
 				/* Neither AND nor OR */
-				/* TODO: clean up result->parts->parts */
-				free(result->parts);
-				free(result);
+				css__mq_cond_destroy(result);
 				return CSS_INVALID;
 			}
 
@@ -954,6 +940,8 @@ css_error css__mq_parse_media_list(css_language *c,
 		error = mq_parse_media_query(c, vector, ctx, &query);
 		if (error != CSS_OK) {
 			/* TODO: error recovery (see above) */
+			css__mq_query_destroy(result);
+			return error;
 		} else {
 			if (result == NULL) {
 				result = last = query;
