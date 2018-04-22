@@ -17,6 +17,63 @@
 #include "parse/properties/utils.h"
 #include "utils/utils.h"
 
+static void css_mq_feature_destroy(css_mq_feature *feature)
+{
+	if (feature != NULL) {
+		lwc_string_unref(feature->name);
+		free(feature);
+	}
+}
+
+static void css__mq_cond_or_feature_destroy(
+		css_mq_cond_or_feature *cond_or_feature);
+
+static void css__mq_cond_parts_destroy(css_mq_cond_parts *cond_parts)
+{
+	if (cond_parts != NULL) {
+		for (uint32_t i = 0; i < cond_parts->nparts; i++) {
+			css__mq_cond_or_feature_destroy(cond_parts->parts[i]);
+		}
+		free(cond_parts);
+	}
+}
+
+static void css__mq_cond_destroy(css_mq_cond *cond)
+{
+	if (cond != NULL) {
+		css__mq_cond_parts_destroy(cond->parts);
+		free(cond);
+	}
+}
+
+static void css__mq_cond_or_feature_destroy(
+		css_mq_cond_or_feature *cond_or_feature)
+{
+	if (cond_or_feature != NULL) {
+		switch (cond_or_feature->type) {
+		case CSS_MQ_FEATURE:
+			css_mq_feature_destroy(cond_or_feature->data.feat);
+			break;
+		case CSS_MQ_COND:
+			css__mq_cond_destroy(cond_or_feature->data.cond);
+			break;
+		}
+		free(cond_or_feature);
+	}
+}
+
+void css__mq_query_destroy(css_mq_query *media)
+{
+	while (media != NULL) {
+		css_mq_query *next = media->next;
+
+		css__mq_cond_destroy(media->cond);
+		free(media);
+
+		media = next;
+	}
+}
+
 static css_error mq_parse_condition(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		bool permit_or, css_mq_cond **cond);

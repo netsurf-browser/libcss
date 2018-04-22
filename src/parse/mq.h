@@ -91,6 +91,6 @@ css_error css__mq_parse_media_list(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		css_mq_query **media);
 
-css_mq_query *css__mq_query_destroy(css_mq_query *media);
+void css__mq_query_destroy(css_mq_query *media);
 
 #endif
