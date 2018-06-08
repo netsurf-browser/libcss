@@ -10,6 +10,7 @@
 
 #include "stylesheet.h"
 #include "select/hash.h"
+#include "select/mq.h"
 #include "utils/utils.h"
 
 #undef PRINT_CHAIN_BLOOM_DETAILS
@@ -104,36 +105,6 @@ static inline bool _chain_good_for_element_name(const css_selector *selector,
 	}
 
 	return true;
-}
-
-/**
- * Test whether the rule applies for current media.
- *
- * \param rule		Rule to test
- * \meaid media		Current media type(s)
- * \return true iff chain's rule applies for media
- */
-static inline bool _rule_good_for_media(const css_rule *rule, uint64_t media)
-{
-	bool applies = true;
-	const css_rule *ancestor = rule;
-
-	while (ancestor != NULL) {
-		const css_rule_media *m = (const css_rule_media *) ancestor;
-
-		if (ancestor->type == CSS_RULE_MEDIA &&
-				(m->media & media) == 0) {
-			applies = false;
-			break;
-		}
-
-		if (ancestor->ptype != CSS_RULE_PARENT_STYLESHEET)
-			ancestor = ancestor->parent;
-		else
-			ancestor = NULL;
-	}
-
-	return applies;
 }
 
 
@@ -396,7 +367,7 @@ css_error css__selector_hash_find(css_selector_hash *hash,
 				if (css_bloom_in_bloom(
 						head->sel_chain_bloom,
 						req->node_bloom) &&
-				    _rule_good_for_media(head->sel->rule,
+				    mq_rule_good_for_media(head->sel->rule,
 						req->media)) {
 					/* Found a match */
 					break;
@@ -474,7 +445,7 @@ css_error css__selector_hash_find_by_class(css_selector_hash *hash,
 							head->sel,
 							&(req->qname),
 							req->uni) &&
-					    _rule_good_for_media(
+					    mq_rule_good_for_media(
 							head->sel->rule,
 							req->media)) {
 						/* Found a match */
@@ -554,7 +525,7 @@ css_error css__selector_hash_find_by_id(css_selector_hash *hash,
 							head->sel,
 							&req->qname,
 							req->uni) &&
-					    _rule_good_for_media(
+					    mq_rule_good_for_media(
 							head->sel->rule,
 							req->media)) {
 						/* Found a match */
@@ -605,7 +576,7 @@ css_error css__selector_hash_find_universal(css_selector_hash *hash,
 			    css_bloom_in_bloom(
 					head->sel_chain_bloom,
 					req->node_bloom) &&
-			    _rule_good_for_media(head->sel->rule,
+			    mq_rule_good_for_media(head->sel->rule,
 					req->media)) {
 				/* Found a match */
 				break;
@@ -949,7 +920,7 @@ css_error _iterate_elements(
 				if (css_bloom_in_bloom(
 						head->sel_chain_bloom,
 						req->node_bloom) &&
-				    _rule_good_for_media(head->sel->rule,
+				    mq_rule_good_for_media(head->sel->rule,
 						req->media)) {
 					/* Found a match */
 					break;
@@ -1008,7 +979,7 @@ css_error _iterate_classes(
 							head->sel,
 							&(req->qname),
 							req->uni) &&
-					    _rule_good_for_media(
+					    mq_rule_good_for_media(
 							head->sel->rule,
 							req->media)) {
 						/* Found a match */
@@ -1069,7 +1040,7 @@ css_error _iterate_ids(
 							head->sel,
 							&req->qname,
 							req->uni) &&
-					    _rule_good_for_media(
+					    mq_rule_good_for_media(
 							head->sel->rule,
 							req->media)) {
 						/* Found a match */
@@ -1113,7 +1084,7 @@ css_error _iterate_universal(
 			    css_bloom_in_bloom(
 					head->sel_chain_bloom,
 					req->node_bloom) &&
-			    _rule_good_for_media(head->sel->rule,
+			    mq_rule_good_for_media(head->sel->rule,
 					req->media)) {
 				/* Found a match */
 				break;

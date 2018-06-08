@@ -19,6 +19,7 @@
 #include "select/computed.h"
 #include "select/dispatch.h"
 #include "select/hash.h"
+#include "select/mq.h"
 #include "select/propset.h"
 #include "select/font_face.h"
 #include "select/select.h"
@@ -1885,34 +1886,11 @@ css_error select_from_sheet(css_select_ctx *ctx, const css_stylesheet *sheet,
 	return CSS_OK;
 }
 
-static inline bool _rule_applies_to_media(const css_rule *rule, uint64_t media)
-{
-	bool applies = true;
-	const css_rule *ancestor = rule;
-
-	while (ancestor != NULL) {
-		const css_rule_media *m = (const css_rule_media *) ancestor;
-
-		if (ancestor->type == CSS_RULE_MEDIA &&
-				(m->media & media) == 0) {
-			applies = false;
-			break;
-		}
-
-		if (ancestor->ptype != CSS_RULE_PARENT_STYLESHEET)
-			ancestor = ancestor->parent;
-		else
-			ancestor = NULL;
-	}
-
-	return applies;
-}
-
 static css_error _select_font_face_from_rule(
 		const css_rule_font_face *rule, css_origin origin,
 		css_select_font_faces_state *state)
 {
-	if (_rule_applies_to_media((const css_rule *) rule, state->media)) {
+	if (mq_rule_good_for_media((const css_rule *) rule, state->media)) {
 		bool correct_family = false;
 
 		if (lwc_string_isequal(
