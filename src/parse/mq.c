@@ -227,7 +227,7 @@ static css_error mq_parse_range(css_language *c,
 	if (name_or_value->type == CSS_TOKEN_NUMBER &&
 			tokenIsChar(parserutils_vector_peek(vector, *ctx), '/')) {
 		/* ratio */
-		error = mq_parse_ratio(vector, ctx, token, &ratio);
+		error = mq_parse_ratio(vector, ctx, name_or_value, &ratio);
 		if (error != CSS_OK) {
 			return error;
 		}
