@@ -652,7 +652,7 @@ css_error css__parse_colour_specifier(css_language *c,
 			goto invalid;
 		}
 
-		*result = (a << 24) | (r << 16) | (g << 8) | b;
+		*result = ((unsigned)a << 24) | (r << 16) | (g << 8) | b;
 	}
 
 	*value = COLOR_SET;
@@ -886,7 +886,7 @@ css_error css__parse_hash_colour(lwc_string *data, uint32_t *result)
 	} else
 		return CSS_INVALID;
 
-	*result = (a << 24) | (r << 16) | (g << 8) | b;
+	*result = ((unsigned)a << 24) | (r << 16) | (g << 8) | b;
 
 	return CSS_OK;
 }
