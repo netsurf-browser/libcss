@@ -219,7 +219,8 @@ void run_test(const uint8_t *data, size_t len, const char *exp, size_t explen)
 
 	dump_sheet(sheet, buf, &buflen);
 
-	if (2 * explen - buflen != explen || memcmp(buf, exp, explen) != 0) {
+	if (2 * explen - buflen != explen ||
+			(explen > 0 && memcmp(buf, exp, explen) != 0)) {
 		printf("Expected (%u):\n%.*s\n",
 				(int) explen, (int) explen, exp);
 		printf("Result (%u):\n%.*s\n", (int) (2 * explen - buflen),
