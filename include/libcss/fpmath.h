@@ -83,7 +83,7 @@ css_multiply_fixed(const css_fixed x, const css_fixed y) {
 
 static inline css_fixed
 css_int_to_fixed(const int a) {
-	int64_t xx = ((int64_t) a) << CSS_RADIX_POINT;
+	int64_t xx = ((int64_t) a) * (1 << CSS_RADIX_POINT);
 
 	if (xx < INT_MIN)
 		xx = INT_MIN;
