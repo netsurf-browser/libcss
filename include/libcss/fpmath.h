@@ -57,7 +57,7 @@ css_subtract_fixed(const css_fixed x, const css_fixed y) {
 
 static inline css_fixed
 css_divide_fixed(const css_fixed x, const css_fixed y) {
-	int64_t xx = ((int64_t)x << CSS_RADIX_POINT) / y;
+	int64_t xx = ((int64_t)x * (1 << CSS_RADIX_POINT)) / y;
 
 	if (xx < INT_MIN)
 		xx = INT_MIN;
