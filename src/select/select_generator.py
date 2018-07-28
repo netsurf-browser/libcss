@@ -625,7 +625,7 @@ class CSSGroup:
 
             type_mask, shift_list, bits_comment = p.get_bits()
             t.append(bits_comment)
-            type_mask = '(type & {})'.format(type_mask)
+            type_mask = '((uint32_t)type & {})'.format(type_mask)
             val_list = [ '({} << {})'.format(x[0], x[1]) for x in shift_list ]
             ops_str = ' | '.join([ type_mask ] + val_list)
             t.append('*bits = (*bits & ~{0}_MASK) | '
