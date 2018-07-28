@@ -133,7 +133,7 @@ void run_test(const uint8_t *data, size_t len, const char *exp, size_t explen)
 
 void print_css_fixed(char *buf, size_t len, css_fixed f)
 {
-#define ABS(x) (uint32_t)((x) < 0 ? -(x) : (x))
+#define ABS(x) (uint32_t)((x) < 0 ? -((int64_t)x) : (x))
 	uint32_t uintpart = FIXTOINT(ABS(f));
 	/* + 500 to ensure round to nearest (division will truncate) */
 	uint32_t fracpart = ((ABS(f) & 0x3ff) * 1000 + 500) / (1 << 10);
