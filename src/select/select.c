@@ -1847,7 +1847,8 @@ css_error select_from_sheet(css_select_ctx *ctx, const css_stylesheet *sheet,
 					(const css_rule_import *) rule;
 
 			if (import->sheet != NULL &&
-					(import->media & state->media) != 0) {
+					mq__list_match(import->media,
+							state->media)) {
 				/* It's applicable, so process it */
 				if (sp >= IMPORT_STACK_SIZE)
 					return CSS_NOMEM;
@@ -1954,7 +1955,8 @@ static css_error select_font_faces_from_sheet(
 					(const css_rule_import *) rule;
 
 			if (import->sheet != NULL &&
-					(import->media & state->media) != 0) {
+					mq__list_match(import->media,
+							state->media)) {
 				/* It's applicable, so process it */
 				if (sp >= IMPORT_STACK_SIZE)
 					return CSS_NOMEM;
