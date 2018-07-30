@@ -74,7 +74,7 @@ void css__mq_query_destroy(css_mq_query *media)
 	}
 }
 
-static css_error mq_parse_condition(css_language *c,
+static css_error mq_parse_condition(lwc_string **strings,
 		const parserutils_vector *vector, int *ctx,
 		bool permit_or, css_mq_cond **cond);
 
@@ -197,7 +197,7 @@ static css_error mq_parse_op(const css_token *token,
 	return CSS_OK;
 }
 
-static css_error mq_parse_range(css_language *c,
+static css_error mq_parse_range(lwc_string **strings,
 		const parserutils_vector *vector, int *ctx,
 		const css_token *name_or_value,
 		css_mq_feature **feature)
@@ -237,7 +237,7 @@ static css_error mq_parse_range(css_language *c,
 		value_is_ratio = true;
 	} else if (name_or_value->type == CSS_TOKEN_IDENT &&
 			lwc_string_caseless_isequal(name_or_value->idata,
-				c->strings[INFINITE], &match) == lwc_error_ok && 
+				strings[INFINITE], &match) == lwc_error_ok && 
 			match == false) {
 		/* The only ident permitted for mf-value is 'infinite', thus must have name */
 		name = name_or_value;
@@ -380,7 +380,7 @@ static css_error mq_parse_range(css_language *c,
 	return CSS_OK;
 }
 
-static css_error mq_parse_media_feature(css_language *c,
+static css_error mq_parse_media_feature(lwc_string **strings,
 		const parserutils_vector *vector, int *ctx,
 		css_mq_feature **feature)
 {
@@ -461,7 +461,8 @@ static css_error mq_parse_media_feature(css_language *c,
 			consumeWhitespace(vector, ctx);
 		} else {
 			/* mf-range */
-			error = mq_parse_range(c, vector, ctx, name_or_value, &result);
+			error = mq_parse_range(strings, vector, ctx,
+					name_or_value, &result);
 			if (error != CSS_OK) {
 				return error;
 			}
@@ -470,7 +471,8 @@ static css_error mq_parse_media_feature(css_language *c,
 		}
 	} else {
 		/* mf-range */
-		error = mq_parse_range(c, vector, ctx, name_or_value, &result);
+		error = mq_parse_range(strings, vector, ctx,
+				name_or_value, &result);
 		if (error != CSS_OK) {
 			return error;
 		}
@@ -494,7 +496,7 @@ static css_error mq_parse_media_feature(css_language *c,
  *
  * CSS Syntax Module Level 3: 8.2
  */
-static css_error mq_parse_consume_any_value(css_language *c,
+static css_error mq_parse_consume_any_value(lwc_string **strings,
 		const parserutils_vector *vector, int *ctx,
 		bool until, const char until_char)
 {
@@ -526,22 +528,22 @@ static css_error mq_parse_consume_any_value(css_language *c,
 			}
 			if (tokenIsChar(token, '(')) {
 				/* Need to consume until matching bracket. */
-				error = mq_parse_consume_any_value(
-						c, vector, ctx, true, ')');
+				error = mq_parse_consume_any_value(strings,
+						vector, ctx, true, ')');
 				if (error != CSS_OK) {
 					return error;
 				}
 			} else if (tokenIsChar(token, '[')) {
 				/* Need to consume until matching bracket. */
-				error = mq_parse_consume_any_value(
-						c, vector, ctx, true, ']');
+				error = mq_parse_consume_any_value(strings,
+						vector, ctx, true, ']');
 				if (error != CSS_OK) {
 					return error;
 				}
 			} else if (tokenIsChar(token, '{')) {
 				/* Need to consume until matching bracket. */
-				error = mq_parse_consume_any_value(
-						c, vector, ctx, true, '}');
+				error = mq_parse_consume_any_value(strings,
+						vector, ctx, true, '}');
 				if (error != CSS_OK) {
 					return error;
 				}
@@ -556,7 +558,7 @@ static css_error mq_parse_consume_any_value(css_language *c,
 	return CSS_OK;
 }
 
-static css_error mq_parse_general_enclosed(css_language *c,
+static css_error mq_parse_general_enclosed(lwc_string **strings,
 		const parserutils_vector *vector, int *ctx)
 {
 	const css_token *token;
@@ -573,7 +575,8 @@ static css_error mq_parse_general_enclosed(css_language *c,
 
 	switch (token->type) {
 	case CSS_TOKEN_FUNCTION:
-		error = mq_parse_consume_any_value(c, vector, ctx, true, ')');
+		error = mq_parse_consume_any_value(strings, vector, ctx,
+				true, ')');
 		if (error != CSS_OK) {
 			return error;
 		}
@@ -585,7 +588,8 @@ static css_error mq_parse_general_enclosed(css_language *c,
 		break;
 
 	case CSS_TOKEN_IDENT:
-		error = mq_parse_consume_any_value(c, vector, ctx, false, '\0');
+		error = mq_parse_consume_any_value(strings, vector, ctx,
+				false, '\0');
 		if (error != CSS_OK) {
 			return error;
 		}
@@ -598,7 +602,7 @@ static css_error mq_parse_general_enclosed(css_language *c,
 	return CSS_OK;
 }
 
-static css_error mq_parse_media_in_parens(css_language *c,
+static css_error mq_parse_media_in_parens(lwc_string **strings,
 		const parserutils_vector *vector, int *ctx,
 		css_mq_cond_or_feature **cond_or_feature)
 {
@@ -631,10 +635,10 @@ static css_error mq_parse_media_in_parens(css_language *c,
 
 	if (tokenIsChar(token, '(') || (token->type == CSS_TOKEN_IDENT &&
 			lwc_string_caseless_isequal(token->idata,
-				c->strings[NOT], &match) == lwc_error_ok &&
+				strings[NOT], &match) == lwc_error_ok &&
 			match)) {
 		css_mq_cond *cond;
-		error = mq_parse_condition(c, vector, ctx, true, &cond);
+		error = mq_parse_condition(strings, vector, ctx, true, &cond);
 		if (error == CSS_OK) {
 			token = parserutils_vector_iterate(vector, ctx);
 			if (tokenIsChar(token, ')') == false) {
@@ -656,7 +660,7 @@ static css_error mq_parse_media_in_parens(css_language *c,
 			token->type == CSS_TOKEN_NUMBER ||
 			token->type == CSS_TOKEN_DIMENSION) {
 		css_mq_feature *feature;
-		error = mq_parse_media_feature(c, vector, ctx, &feature);
+		error = mq_parse_media_feature(strings, vector, ctx, &feature);
 		if (error == CSS_OK) {
 			result = malloc(sizeof(*result));
 			if (result == NULL) {
@@ -672,12 +676,12 @@ static css_error mq_parse_media_in_parens(css_language *c,
 	}
 
 	*ctx = old_ctx;
-	error = mq_parse_general_enclosed(c, vector, ctx);
+	error = mq_parse_general_enclosed(strings, vector, ctx);
 
 	return error;
 }
 
-static css_error mq_parse_condition(css_language *c,
+static css_error mq_parse_condition(lwc_string **strings,
 		const parserutils_vector *vector, int *ctx,
 		bool permit_or, css_mq_cond **cond)
 {
@@ -699,7 +703,7 @@ static css_error mq_parse_condition(css_language *c,
 	if (token == NULL || tokenIsChar(token, '(') == false ||
 			token->type != CSS_TOKEN_IDENT ||
 			lwc_string_caseless_isequal(token->idata,
-				c->strings[NOT], &match) != lwc_error_ok ||
+				strings[NOT], &match) != lwc_error_ok ||
 			match == false) {
 		return CSS_INVALID;
 	}
@@ -721,7 +725,8 @@ static css_error mq_parse_condition(css_language *c,
 		parserutils_vector_iterate(vector, ctx);
 		consumeWhitespace(vector, ctx);
 
-		error = mq_parse_media_in_parens(c, vector, ctx, &cond_or_feature);
+		error = mq_parse_media_in_parens(strings,
+				vector, ctx, &cond_or_feature);
 		if (error != CSS_OK) {
 			css__mq_cond_destroy(result);
 			return CSS_INVALID;
@@ -745,7 +750,8 @@ static css_error mq_parse_condition(css_language *c,
 	/* FOLLOW(media-condition) := RPAREN | COMMA | EOF */
 	while (token != NULL && tokenIsChar(token, ')') == false &&
 			tokenIsChar(token, ',') == false) {
-		error = mq_parse_media_in_parens(c, vector, ctx, &cond_or_feature);
+		error = mq_parse_media_in_parens(strings, vector, ctx,
+				&cond_or_feature);
 		if (error != CSS_OK) {
 			css__mq_cond_destroy(result);
 			return CSS_INVALID;
@@ -771,7 +777,7 @@ static css_error mq_parse_condition(css_language *c,
 				css__mq_cond_destroy(result);
 				return CSS_INVALID;
 			} else if (lwc_string_caseless_isequal(token->idata,
-					c->strings[AND], &match) == lwc_error_ok &&
+					strings[AND], &match) == lwc_error_ok &&
 					match) {
 				if (op != 0 && op != AND) {
 					css__mq_cond_destroy(result);
@@ -779,7 +785,7 @@ static css_error mq_parse_condition(css_language *c,
 				}
 				op = AND;
 			} else if (lwc_string_caseless_isequal(token->idata,
-						c->strings[OR], &match) == lwc_error_ok &&
+						strings[OR], &match) == lwc_error_ok &&
 					match) {
 				if (permit_or == false || (op != 0 && op != OR)) {
 					css__mq_cond_destroy(result);
@@ -809,54 +815,54 @@ static css_error mq_parse_condition(css_language *c,
 /**
  * Parse a media query type.
  */
-static uint64_t mq_parse_type(css_language *c, lwc_string *type)
+static uint64_t mq_parse_type(lwc_string **strings, lwc_string *type)
 {
 	bool match;
 
 	if (type == NULL) {
 		return CSS_MEDIA_ALL;
 	} else if (lwc_string_caseless_isequal(
-			type, c->strings[AURAL],
+			type, strings[AURAL],
 			&match) == lwc_error_ok && match) {
 		return CSS_MEDIA_AURAL;
 	} else if (lwc_string_caseless_isequal(
-			type, c->strings[BRAILLE],
+			type, strings[BRAILLE],
 			&match) == lwc_error_ok && match) {
 		return CSS_MEDIA_BRAILLE;
 	} else if (lwc_string_caseless_isequal(
-			type, c->strings[EMBOSSED],
+			type, strings[EMBOSSED],
 			&match) == lwc_error_ok && match) {
 		return CSS_MEDIA_EMBOSSED;
 	} else if (lwc_string_caseless_isequal(
-			type, c->strings[HANDHELD],
+			type, strings[HANDHELD],
 			&match) == lwc_error_ok && match) {
 		return CSS_MEDIA_HANDHELD;
 	} else if (lwc_string_caseless_isequal(
-			type, c->strings[PRINT],
+			type, strings[PRINT],
 			&match) == lwc_error_ok && match) {
 		return CSS_MEDIA_PRINT;
 	} else if (lwc_string_caseless_isequal(
-			type, c->strings[PROJECTION],
+			type, strings[PROJECTION],
 			&match) == lwc_error_ok && match) {
 		return CSS_MEDIA_PROJECTION;
 	} else if (lwc_string_caseless_isequal(
-			type, c->strings[SCREEN],
+			type, strings[SCREEN],
 			&match) == lwc_error_ok && match) {
 		return CSS_MEDIA_SCREEN;
 	} else if (lwc_string_caseless_isequal(
-			type, c->strings[SPEECH],
+			type, strings[SPEECH],
 			&match) == lwc_error_ok && match) {
 		return CSS_MEDIA_SPEECH;
 	} else if (lwc_string_caseless_isequal(
-			type, c->strings[TTY],
+			type, strings[TTY],
 			&match) == lwc_error_ok && match) {
 		return CSS_MEDIA_TTY;
 	} else if (lwc_string_caseless_isequal(
-			type, c->strings[TV],
+			type, strings[TV],
 			&match) == lwc_error_ok && match) {
 		return CSS_MEDIA_TV;
 	} else if (lwc_string_caseless_isequal(
-			type, c->strings[ALL],
+			type, strings[ALL],
 			&match) == lwc_error_ok && match) {
 		return CSS_MEDIA_ALL;
 	}
@@ -864,7 +870,7 @@ static uint64_t mq_parse_type(css_language *c, lwc_string *type)
 	return 0;
 }
 
-static css_error mq_parse_media_query(css_language *c,
+static css_error mq_parse_media_query(lwc_string **strings,
 		const parserutils_vector *vector, int *ctx,
 		css_mq_query **query)
 {
@@ -888,7 +894,7 @@ static css_error mq_parse_media_query(css_language *c,
 		is_condition = true;
 	} else if (token->type == CSS_TOKEN_IDENT &&
 			lwc_string_caseless_isequal(token->idata,
-				c->strings[NOT], &match) == lwc_error_ok &&
+				strings[NOT], &match) == lwc_error_ok &&
 				match) {
 		int old_ctx = *ctx;
 
@@ -911,7 +917,8 @@ static css_error mq_parse_media_query(css_language *c,
 
 	if (is_condition) {
 		/* media-condition */
-		error = mq_parse_condition(c, vector, ctx, true, &result->cond);
+		error = mq_parse_condition(strings, vector, ctx, true,
+				&result->cond);
 		if (error != CSS_OK) {
 			free(result);
 			return error;
@@ -928,14 +935,12 @@ static css_error mq_parse_media_query(css_language *c,
 	}
 
 	if (lwc_string_caseless_isequal(token->idata,
-			c->strings[NOT], &match) == lwc_error_ok &&
-			match) {
+			strings[NOT], &match) == lwc_error_ok && match) {
 		result->negate_type = 1;
 		consumeWhitespace(vector, ctx);
 		token = parserutils_vector_iterate(vector, ctx);
 	} else if (lwc_string_caseless_isequal(token->idata,
-			c->strings[ONLY], &match) == lwc_error_ok &&
-			match) {
+			strings[ONLY], &match) == lwc_error_ok && match) {
 		consumeWhitespace(vector, ctx);
 		token = parserutils_vector_iterate(vector, ctx);
 	}
@@ -945,7 +950,7 @@ static css_error mq_parse_media_query(css_language *c,
 		return CSS_INVALID;
 	}
 
-	result->type = mq_parse_type(c, token->idata);
+	result->type = mq_parse_type(strings, token->idata);
 
 	consumeWhitespace(vector, ctx);
 
@@ -953,7 +958,7 @@ static css_error mq_parse_media_query(css_language *c,
 	if (token != NULL) {
 		if (token->type != CSS_TOKEN_IDENT ||
 				lwc_string_caseless_isequal(token->idata,
-					c->strings[AND], &match) != lwc_error_ok ||
+					strings[AND], &match) != lwc_error_ok ||
 				match == false) {
 			free(result);
 			return CSS_INVALID;
@@ -961,7 +966,8 @@ static css_error mq_parse_media_query(css_language *c,
 
 		consumeWhitespace(vector, ctx);
 
-		error = mq_parse_condition(c, vector, ctx, false, &result->cond);
+		error = mq_parse_condition(strings, vector, ctx, false,
+				&result->cond);
 		if (error != CSS_OK) {
 			free(result);
 			return error;
@@ -972,7 +978,7 @@ static css_error mq_parse_media_query(css_language *c,
 	return CSS_OK;
 }
 
-css_error css__mq_parse_media_list(css_language *c,
+css_error css__mq_parse_media_list(lwc_string **strings,
 		const parserutils_vector *vector, int *ctx,
 		css_mq_query **media)
 {
@@ -993,7 +999,7 @@ css_error css__mq_parse_media_list(css_language *c,
 	while (token != NULL) {
 		css_mq_query *query;
 
-		error = mq_parse_media_query(c, vector, ctx, &query);
+		error = mq_parse_media_query(strings, vector, ctx, &query);
 		if (error != CSS_OK) {
 			/* TODO: error recovery (see above) */
 			css__mq_query_destroy(result);

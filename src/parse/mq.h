@@ -87,7 +87,7 @@ typedef struct css_mq_query {
 	css_mq_cond *cond;
 } css_mq_query;
 
-css_error css__mq_parse_media_list(css_language *c,
+css_error css__mq_parse_media_list(lwc_string **strings,
 		const parserutils_vector *vector, int *ctx,
 		css_mq_query **media);
 

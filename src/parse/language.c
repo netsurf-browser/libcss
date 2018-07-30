@@ -426,7 +426,8 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 			consumeWhitespace(vector, &ctx);
 
 			/* Parse media list */
-			error = css__mq_parse_media_list(c, vector, &ctx, &media);
+			error = css__mq_parse_media_list(
+					c->strings, vector, &ctx, &media);
 			if (error != CSS_OK)
 				return error;
 
@@ -532,7 +533,8 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 
 		/* any0 = media query */
 
-		error = css__mq_parse_media_list(c, vector, &ctx, &media);
+		error = css__mq_parse_media_list(
+				c->strings, vector, &ctx, &media);
 		if (error != CSS_OK)
 			return error;
 
