@@ -82,7 +82,7 @@ typedef struct css_mq_query {
 	struct css_mq_query *next;
 
 	uint32_t negate_type : 1; /* set if "not type" */
-	lwc_string *type; /* or NULL */
+	uint64_t type; /* or NULL */
 
 	css_mq_cond *cond;
 } css_mq_query;
