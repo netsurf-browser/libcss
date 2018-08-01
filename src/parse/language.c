@@ -532,7 +532,6 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 		css_mq_query *media = NULL;
 
 		/* any0 = media query */
-
 		error = css__mq_parse_media_list(
 				c->strings, vector, &ctx, &media);
 		if (error != CSS_OK)

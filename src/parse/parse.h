@@ -61,6 +61,8 @@ css_error css__parser_create(const char *charset, css_charset_source cs_source,
 		css_parser **parser);
 css_error css__parser_create_for_inline_style(const char *charset,
 		css_charset_source cs_source, css_parser **parser);
+css_error css__parser_create_for_media_query(const char *charset,
+		css_charset_source cs_source, css_parser **parser);
 css_error css__parser_destroy(css_parser *parser);
 
 css_error css__parser_setopt(css_parser *parser, css_parser_opttype type,

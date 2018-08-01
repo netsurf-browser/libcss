@@ -220,6 +220,25 @@ css_error css__parser_create_for_inline_style(const char *charset,
 }
 
 /**
+ * Create a CSS parser for a media query
+ *
+ * \param charset     Charset of data, if known, or NULL
+ * \param cs_source   Source of charset information, or CSS_CHARSET_DEFAULT
+ * \param parser      Pointer to location to receive parser instance
+ * \return CSS_OK on success,
+ *         CSS_BADPARM on bad parameters,
+ *         CSS_NOMEM on memory exhaustion
+ */
+css_error css__parser_create_for_media_query(const char *charset,
+		css_charset_source cs_source, css_parser **parser)
+{
+	parser_state initial = { sAtRule, 0 };
+
+	return css__parser_create_internal(charset, cs_source,
+			initial, parser);
+}
+
+/**
  * Destroy a CSS parser
  *
  * \param parser  The parser instance to destroy
