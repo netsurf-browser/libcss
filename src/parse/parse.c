@@ -927,21 +927,19 @@ css_error parseRuleset(css_parser *parser)
 		if (error != CSS_OK)
 			return error;
 
-		if (token->type == CSS_TOKEN_EOF) {
+		if (token->type != CSS_TOKEN_CHAR ||
+				lwc_string_length(token->idata) != 1 ||
+				lwc_string_data(token->idata)[0] != '{') {
+			/* FOLLOW(selector) contains only '{', but we may
+			 * also have seen EOF, which is a parse error. */
 			error = pushBack(parser, token);
 			if (error != CSS_OK)
 				return error;
 
+			parser->parseError = true;
 			return done(parser);
 		}
 
-		if (token->type != CSS_TOKEN_CHAR ||
-				lwc_string_length(token->idata) != 1 ||
-				lwc_string_data(token->idata)[0] != '{') {
-			/* This should never happen, as FOLLOW(selector)
-			 * contains only '{' */
-			assert(0 && "Expected {");
-		}
 
 		state->substate = WS;
 		/* Fall through */
@@ -1961,6 +1959,9 @@ css_error parseAny1(css_parser *parser)
 		if (error != CSS_OK)
 			return error;
 
+		if (token->type == CSS_TOKEN_EOF)
+			return done(parser);
+
 		/* Grammar ambiguity: any0 can be followed by
 		 * '{', ';', ')', ']'. any1 can only be followed by '{'. */
 		if (token->type == CSS_TOKEN_CHAR &&
@@ -2079,6 +2080,17 @@ css_error parseAny(css_parser *parser)
 		error = getToken(parser, &token);
 		if (error != CSS_OK)
 			return error;
+
+		if (token->type == CSS_TOKEN_EOF) {
+			error = pushBack(parser, token);
+			if (error != CSS_OK)
+				return error;
+
+			/* parse error */
+			parser->parseError = true;
+
+			return done(parser);
+		}
 
 		/* Match correct close bracket (grammar ambiguity) */
 		if (token->type == CSS_TOKEN_CHAR &&
