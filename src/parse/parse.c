@@ -99,8 +99,6 @@ struct css_parser
 	bool parseError;		/**< A parse error has occurred */
 	parserutils_stack *open_items;	/**< Stack of open brackets */
 
-	uint8_t match_char;		/**< Close bracket type for parseAny */
-
 	bool last_was_ws;		/**< Last token was whitespace */
 
 	css_parser_event_handler event;	/**< Client's event handler */
@@ -478,7 +476,6 @@ css_error css__parser_create_internal(const char *charset,
 	p->quirks = false;
 	p->pushback = NULL;
 	p->parseError = false;
-	p->match_char = 0;
 	p->event = NULL;
 	p->last_was_ws = false;
 	p->event_pw = NULL;
@@ -2044,14 +2041,15 @@ css_error parseAny(css_parser *parser)
 		}
 
 		if (token->type == CSS_TOKEN_FUNCTION) {
-			parser->match_char = ')';
+			parserutils_stack_push(parser->open_items, &")"[0]);
 			state->substate = WS;
 		} else if (token->type == CSS_TOKEN_CHAR &&
 				lwc_string_length(token->idata) == 1 &&
 				(lwc_string_data(token->idata)[0] == '(' ||
 				lwc_string_data(token->idata)[0] == '[')) {
-			parser->match_char = lwc_string_data(
-					token->idata)[0] == '(' ? ')' : ']';
+			parserutils_stack_push(parser->open_items,
+					&(lwc_string_data(
+					token->idata)[0] == '(' ? ")" : "]")[0]);
 			state->substate = WS;
 		} else {
 			state->substate = WS2;
@@ -2086,7 +2084,9 @@ css_error parseAny(css_parser *parser)
 		if (token->type == CSS_TOKEN_CHAR &&
 				lwc_string_length(token->idata) == 1 &&
 				lwc_string_data(token->idata)[0] ==
-				parser->match_char) {
+				((uint8_t *) parserutils_stack_get_current(
+						parser->open_items))[0]) {
+			parserutils_stack_pop(parser->open_items, NULL);
 			state->substate = WS2;
 			goto ws2;
 		}
