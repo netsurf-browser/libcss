@@ -686,7 +686,7 @@ static css_error mq_parse_condition(lwc_string **strings,
 		bool permit_or, css_mq_cond **cond)
 {
 	const css_token *token;
-	bool match;
+	bool match = false;
 	int op = 0; /* Will be AND | OR once we've had one */
 	css_mq_cond_or_feature *cond_or_feature, **parts;
 	css_mq_cond *result;
@@ -700,11 +700,12 @@ static css_error mq_parse_condition(lwc_string **strings,
 	 */
 
 	token = parserutils_vector_peek(vector, *ctx);
-	if (token == NULL || tokenIsChar(token, '(') == false ||
-			token->type != CSS_TOKEN_IDENT ||
+	if (token == NULL ||
+			(tokenIsChar(token, '(') == false &&
+			token->type != CSS_TOKEN_IDENT &&
 			lwc_string_caseless_isequal(token->idata,
-				strings[NOT], &match) != lwc_error_ok ||
-			match == false) {
+				strings[NOT], &match) != lwc_error_ok &&
+			match == false)) {
 		return CSS_INVALID;
 	}
 
