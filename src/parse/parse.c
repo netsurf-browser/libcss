@@ -2053,9 +2053,9 @@ css_error parseAny(css_parser *parser)
 			parser->match_char = lwc_string_data(
 					token->idata)[0] == '(' ? ')' : ']';
 			state->substate = WS;
+		} else {
+			state->substate = WS2;
 		}
-
-		state->substate = WS2;
 		/* Fall through */
 	case WS:
 	case WS2:
