@@ -2623,7 +2623,11 @@ static void tprinter(void *token)
 {
 	css_token *t = token;
 
-	if (t->data.data)
+	if (t->idata) {
+		printf("%d: %.*s", t->type,
+				(int) lwc_string_length(t->idata),
+				lwc_string_data(t->idata));
+	} else if (t->data.data)
 		printf("%d: %.*s", t->type, (int) t->data.len, t->data.data);
 	else
 		printf("%d", t->type);
