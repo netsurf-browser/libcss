@@ -906,17 +906,6 @@ css_error parseRuleset(css_parser *parser)
 		}
 		break;
 	case Brace:
-#if !defined(NDEBUG) && defined(DEBUG_EVENTS)
-		printf("Begin ruleset\n");
-		parserutils_vector_dump(parser->tokens, __func__, tprinter);
-#endif
-		if (parser->parseError == false && parser->event != NULL) {
-			if (parser->event(CSS_PARSER_START_RULESET,
-					parser->tokens, parser->event_pw) ==
-					CSS_INVALID)
-				parser->parseError = true;
-		}
-
 		if (parser->parseError == true) {
 			parser_state to = { sMalformedSelector, Initial };
 
@@ -940,6 +929,26 @@ css_error parseRuleset(css_parser *parser)
 			return done(parser);
 		}
 
+		/* We don't want to emit the brace, so push it back */
+		error = pushBack(parser, token);
+		if (error != CSS_OK)
+			return error;
+
+#if !defined(NDEBUG) && defined(DEBUG_EVENTS)
+		printf("Begin ruleset\n");
+		parserutils_vector_dump(parser->tokens, __func__, tprinter);
+#endif
+		if (parser->parseError == false && parser->event != NULL) {
+			if (parser->event(CSS_PARSER_START_RULESET,
+					parser->tokens, parser->event_pw) ==
+					CSS_INVALID)
+				parser->parseError = true;
+		}
+
+		/* Re-read the brace */
+		error = getToken(parser, &token);
+		if (error != CSS_OK)
+			return error;
 
 		state->substate = WS;
 		/* Fall through */
