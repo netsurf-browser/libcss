@@ -113,14 +113,22 @@ css_error css__stylesheet_string_get(css_stylesheet *sheet,
 	return CSS_OK;
 }
 
-static css_error css_parse_media_query_handle_event(css_parser_event type,
-		const parserutils_vector *tokens, void *pw)
+typedef struct css_mq_parse_ctx {
+	lwc_string **strings;
+	css_mq_query *media;
+} css_mq_parse_ctx;
+
+static css_error css_parse_media_query_handle_event(
+		css_parser_event type,
+		const parserutils_vector *tokens,
+		void *pw)
 {
 	int idx = 0;
 	css_error err;
 	css_mq_query *media;
 	const css_token *tok;
-	lwc_string **strings = pw;
+	css_mq_parse_ctx *ctx = pw;
+	lwc_string **strings = ctx->strings;
 
 	UNUSED(type);
 
@@ -139,22 +147,28 @@ static css_error css_parse_media_query_handle_event(css_parser_event type,
 		return CSS_OK;
 	}
 
-	css__mq_query_destroy(media);
+	ctx->media = media;
 	return CSS_OK;
 }
 
-static css_error css_parse_media_query(lwc_string **strings,
-		const uint8_t *mq, size_t len)
+static css_error css_parse_media_query(
+		lwc_string **strings,
+		const uint8_t *mq,
+		size_t len,
+		css_mq_query **media_out)
 {
 	css_error err;
 	css_parser *parser;
+	css_mq_parse_ctx ctx = {
+		.strings = strings,
+	};
 	css_parser_optparams params_quirks = {
 		.quirks = false,
 	};
 	css_parser_optparams params_handler = {
 		.event_handler = {
 			.handler = css_parse_media_query_handle_event,
-			.pw = strings,
+			.pw = &ctx,
 		},
 	};
 
@@ -200,6 +214,7 @@ static css_error css_parse_media_query(lwc_string **strings,
 
 	css__parser_destroy(parser);
 
+	*media_out = ctx.media;
 	return CSS_OK;
 }
 
@@ -235,9 +250,13 @@ css_error css_stylesheet_create(const css_stylesheet_params *params,
 		free(sheet);
 		return error;
 	}
-css_parse_media_query(sheet->propstrings,
+
+	css_mq_query *media;
+	error = css_parse_media_query(sheet->propstrings,
 		(const uint8_t *)"screen and (min-width: 30em)",
-		          strlen("screen and (min-width: 30em)"));
+		          strlen("screen and (min-width: 30em)"), &media);
+	if (error == CSS_OK)
+		css__mq_query_destroy(media);
 
 	sheet->inline_style = params->inline_style;
 
