@@ -122,7 +122,7 @@ static css_error css_parse_media_query_handle_event(css_parser_event type,
 	const css_token *tok;
 	lwc_string **strings = pw;
 
-	printf("mq event type: %i\n", type);
+	UNUSED(type);
 
 	/* Skip @media */
 	tok = parserutils_vector_iterate(tokens, &idx);
@@ -134,27 +134,12 @@ static css_error css_parse_media_query_handle_event(css_parser_event type,
 	assert(tok->type == CSS_TOKEN_S);
 	UNUSED(tok);
 
-	printf("  Tokens:\n");
-	while ((tok = parserutils_vector_iterate(tokens, &idx)) != NULL) {
-		if (tok->idata != NULL) {
-			printf("  - (%i) %s\n",
-					tok->type,
-					lwc_string_data(tok->idata));
-		} else {
-			printf("  - (%i)\n", tok->type);
-		}
-	}
-	idx = 2;
-
 	err = css__mq_parse_media_list(strings, tokens, &idx, &media);
 	if (err != CSS_OK) {
-		printf("Error parsing mq\n");
 		return CSS_OK;
 	}
 
-	printf("PARSED MQ!!!!!!!\n");
 	css__mq_query_destroy(media);
-
 	return CSS_OK;
 }
 
@@ -193,7 +178,6 @@ static css_error css_parse_media_query(lwc_string **strings,
 		return err;
 	}
 
-	printf("try parsing a mq\n");
 	err = css__parser_parse_chunk(parser,
 			(const uint8_t *)"@media ",
 			          strlen("@media "));
