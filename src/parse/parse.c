@@ -67,7 +67,8 @@ enum {
 	sMalformedAtRule = 22,
 	sInlineStyle = 23,
 	sISBody0 = 24,
-	sISBody = 25
+	sISBody = 25,
+	sMediaQuery = 26,
 };
 
 /**
@@ -144,6 +145,7 @@ static css_error parseMalformedAtRule(css_parser *parser);
 static css_error parseInlineStyle(css_parser *parser);
 static css_error parseISBody0(css_parser *parser);
 static css_error parseISBody(css_parser *parser);
+static css_error parseMediaQuery(css_parser *parser);
 
 static void unref_interned_strings_in_tokens(css_parser *parser);
 
@@ -176,7 +178,8 @@ static css_error (*parseFuncs[])(css_parser *parser) = {
 	parseMalformedAtRule,
 	parseInlineStyle,
 	parseISBody0,
-	parseISBody
+	parseISBody,
+	parseMediaQuery,
 };
 
 /**
@@ -230,7 +233,7 @@ css_error css__parser_create_for_inline_style(const char *charset,
 css_error css__parser_create_for_media_query(const char *charset,
 		css_charset_source cs_source, css_parser **parser)
 {
-	parser_state initial = { sAtRule, 0 };
+	parser_state initial = { sMediaQuery, 0 };
 
 	return css__parser_create_internal(charset, cs_source,
 			initial, parser);
@@ -2605,6 +2608,31 @@ css_error parseISBody(css_parser *parser)
 		if (error != CSS_OK)
 			return error;
 
+		break;
+	}
+
+	return done(parser);
+}
+
+css_error parseMediaQuery(css_parser *parser)
+{
+	enum { Initial = 0, AfterAtRule = 1 };
+	parser_state *state = parserutils_stack_get_current(parser->states);
+
+	/* media-query = at-rule */
+
+	switch (state->substate) {
+	case Initial:
+	{
+		parser_state to = { sAtRule, Initial };
+		parser_state subsequent = { sMediaQuery, AfterAtRule };
+
+		return transition(parser, to, subsequent);
+	}
+	case AfterAtRule:
+		/* Clean up any remaining tokens */
+		unref_interned_strings_in_tokens(parser);
+		parserutils_vector_clear(parser->tokens);
 		break;
 	}
 
