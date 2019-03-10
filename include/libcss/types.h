@@ -208,6 +208,9 @@ typedef struct css_media_resolution {
  * Media specification
  */
 typedef struct css_media {
+	/* Media type */
+	css_media_type        type;
+
 	/* Screen / Device media features */
 	css_media_length      width;
 	css_media_length      height;
