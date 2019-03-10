@@ -145,13 +145,6 @@ css_error css_stylesheet_create(const css_stylesheet_params *params,
 		return error;
 	}
 
-	css_mq_query *media;
-	error = css_parse_media_query(sheet->propstrings,
-		(const uint8_t *)"screen and (min-width: 30em)",
-		          strlen("screen and (min-width: 30em)"), &media);
-	if (error == CSS_OK)
-		css__mq_query_destroy(media);
-
 	sheet->inline_style = params->inline_style;
 
 	if (params->inline_style) {
