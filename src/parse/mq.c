@@ -17,10 +17,21 @@
 #include "parse/properties/utils.h"
 #include "utils/utils.h"
 
-static void css_mq_feature_destroy(css_mq_feature *feature)
+static void css__mq_value_destroy(css_mq_value *value)
+{
+	assert(value != NULL);
+
+	if (value->type == CSS_MQ_VALUE_TYPE_IDENT) {
+		lwc_string_unref(value->data.ident);
+	}
+}
+
+static void css__mq_feature_destroy(css_mq_feature *feature)
 {
 	if (feature != NULL) {
 		lwc_string_unref(feature->name);
+		css__mq_value_destroy(&feature->value);
+		css__mq_value_destroy(&feature->value2);
 		free(feature);
 	}
 }
@@ -52,7 +63,7 @@ static void css__mq_cond_or_feature_destroy(
 	if (cond_or_feature != NULL) {
 		switch (cond_or_feature->type) {
 		case CSS_MQ_FEATURE:
-			css_mq_feature_destroy(cond_or_feature->data.feat);
+			css__mq_feature_destroy(cond_or_feature->data.feat);
 			break;
 		case CSS_MQ_COND:
 			css__mq_cond_destroy(cond_or_feature->data.cond);
@@ -369,7 +380,7 @@ static css_error mq_parse_range(lwc_string **strings,
 			/* num/dim/ident */
 			error = mq_populate_value(&result->value2, token);
 			if (error != CSS_OK) {
-				css_mq_feature_destroy(result);
+				css__mq_feature_destroy(result);
 				return error;
 			}
 		}
@@ -482,7 +493,7 @@ static css_error mq_parse_media_feature(lwc_string **strings,
 
 	token = parserutils_vector_iterate(vector, ctx);
 	if (tokenIsChar(token, ')') == false) {
-		css_mq_feature_destroy(result);
+		css__mq_feature_destroy(result);
 		return CSS_INVALID;
 	}
 
@@ -664,7 +675,7 @@ static css_error mq_parse_media_in_parens(lwc_string **strings,
 		if (error == CSS_OK) {
 			result = malloc(sizeof(*result));
 			if (result == NULL) {
-				css_mq_feature_destroy(feature);
+				css__mq_feature_destroy(feature);
 				return CSS_NOMEM;
 			}
 			memset(result, 0, sizeof(*result));
