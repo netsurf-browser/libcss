@@ -147,7 +147,7 @@ static css_error parseISBody0(css_parser *parser);
 static css_error parseISBody(css_parser *parser);
 static css_error parseMediaQuery(css_parser *parser);
 
-static void unref_interned_strings_in_tokens(css_parser *parser);
+static void discard_tokens(css_parser *parser);
 
 /**
  * Dispatch table for parsing, indexed by major state number
@@ -765,8 +765,7 @@ css_error parseStart(css_parser *parser)
 				parser->event_pw);
 	}
 
-        unref_interned_strings_in_tokens(parser);
-	parserutils_vector_clear(parser->tokens);
+	discard_tokens(parser);
 
 	return done(parser);
 }
@@ -797,8 +796,7 @@ css_error parseStylesheet(css_parser *parser)
 				if (error != CSS_OK)
 					return error;
 
-                                unref_interned_strings_in_tokens(parser);
-				parserutils_vector_clear(parser->tokens);
+				discard_tokens(parser);
 
 				return done(parser);
 			case CSS_TOKEN_CDO:
@@ -868,8 +866,7 @@ css_error parseRuleset(css_parser *parser)
 
 	switch (state->substate) {
 	case Initial:
-                unref_interned_strings_in_tokens(parser);
-		parserutils_vector_clear(parser->tokens);
+		discard_tokens(parser);
 
 		error = getToken(parser, &token);
 		if (error != CSS_OK)
@@ -1067,8 +1064,7 @@ css_error parseAtRule(css_parser *parser)
 
 	switch (state->substate) {
 	case Initial:
-                unref_interned_strings_in_tokens(parser);
-		parserutils_vector_clear(parser->tokens);
+		discard_tokens(parser);
 
 		error = getToken(parser, &token);
 		if (error != CSS_OK)
@@ -1238,8 +1234,7 @@ css_error parseBlock(css_parser *parser)
 			assert(0 && "Expected {");
 		}
 
-                unref_interned_strings_in_tokens(parser);
-		parserutils_vector_clear(parser->tokens);
+		discard_tokens(parser);
 
 		state->substate = WS;
 		/* Fall through */
@@ -1295,8 +1290,7 @@ css_error parseBlock(css_parser *parser)
 		parser->event(CSS_PARSER_END_BLOCK, NULL, parser->event_pw);
 	}
 
-        unref_interned_strings_in_tokens(parser);
-	parserutils_vector_clear(parser->tokens);
+	discard_tokens(parser);
 
 	return done(parser);
 }
@@ -1348,10 +1342,7 @@ css_error parseBlockContent(css_parser *parser)
 							parser->event_pw);
 					}
 
-					unref_interned_strings_in_tokens(
-							parser);
-					parserutils_vector_clear(
-							parser->tokens);
+					discard_tokens(parser);
 
 					return transition(parser, to,
 							subsequent);
@@ -1379,10 +1370,7 @@ css_error parseBlockContent(css_parser *parser)
 					if (error != CSS_OK)
 						return error;
 
-					unref_interned_strings_in_tokens(
-							parser);
-					parserutils_vector_clear(
-							parser->tokens);
+					discard_tokens(parser);
 
 					state->substate = WS;
 				} else if (lwc_string_length(
@@ -1405,10 +1393,7 @@ css_error parseBlockContent(css_parser *parser)
 							parser->event_pw);
 					}
 
-					unref_interned_strings_in_tokens(
-							parser);
-					parserutils_vector_clear(
-							parser->tokens);
+					discard_tokens(parser);
 
 					return done(parser);
 				}
@@ -1427,8 +1412,7 @@ css_error parseBlockContent(css_parser *parser)
 							parser->event_pw);
 				}
 
-				unref_interned_strings_in_tokens(parser);
-				parserutils_vector_clear(parser->tokens);
+				discard_tokens(parser);
 
 				return done(parser);
 			}
@@ -1471,8 +1455,7 @@ css_error parseSelector(css_parser *parser)
 		parser_state to = { sAny1, Initial };
 		parser_state subsequent = { sSelector, AfterAny1 };
 
-                unref_interned_strings_in_tokens(parser);
-		parserutils_vector_clear(parser->tokens);
+		discard_tokens(parser);
 
 		return transition(parser, to, subsequent);
 	}
@@ -1498,8 +1481,7 @@ css_error parseDeclaration(css_parser *parser)
 		parser_state to = { sProperty, Initial };
 		parser_state subsequent = { sDeclaration, Colon };
 
-                unref_interned_strings_in_tokens(parser);
-		parserutils_vector_clear(parser->tokens);
+		discard_tokens(parser);
 
 		return transition(parser, to, subsequent);
 	}
@@ -2217,8 +2199,7 @@ css_error parseMalformedDeclaration(css_parser *parser)
 		return error;
 
 	/* Discard the tokens we've read */
-        unref_interned_strings_in_tokens(parser);
-	parserutils_vector_clear(parser->tokens);
+	discard_tokens(parser);
 
 	return done(parser);
 }
@@ -2313,8 +2294,7 @@ css_error parseMalformedSelector(css_parser *parser)
 		return error;
 
 	/* Discard the tokens we've read */
-        unref_interned_strings_in_tokens(parser);
-	parserutils_vector_clear(parser->tokens);
+	discard_tokens(parser);
 
 	return done(parser);
 }
@@ -2422,8 +2402,7 @@ css_error parseMalformedAtRule(css_parser *parser)
 		return error;
 
 	/* Discard the tokens we've read */
-        unref_interned_strings_in_tokens(parser);
-	parserutils_vector_clear(parser->tokens);
+	discard_tokens(parser);
 
 	return done(parser);
 }
@@ -2468,7 +2447,7 @@ css_error parseInlineStyle(css_parser *parser)
 	}
 	case AfterISBody0:
 		/* Clean up any remaining tokens */
-		unref_interned_strings_in_tokens(parser);
+		discard_tokens(parser);
 
 		/* Emit remaining fake events to end the parse */
 		if (parser->event != NULL) {
@@ -2631,8 +2610,7 @@ css_error parseMediaQuery(css_parser *parser)
 	}
 	case AfterAtRule:
 		/* Clean up any remaining tokens */
-		unref_interned_strings_in_tokens(parser);
-		parserutils_vector_clear(parser->tokens);
+		discard_tokens(parser);
 		break;
 	}
 
@@ -2640,21 +2618,23 @@ css_error parseMediaQuery(css_parser *parser)
 }
 
 /**
- * Iterate the token vector and unref any interned strings in the tokens.
+ * Discard the contents of the token vector
  *
  * \param parser The parser whose tokens we are cleaning up.
  */
-void unref_interned_strings_in_tokens(css_parser *parser)
+void discard_tokens(css_parser *parser)
 {
-        int32_t ctx = 0;
-        const css_token *tok;
+	int32_t ctx = 0;
+	const css_token *tok;
 
-        while ((tok = parserutils_vector_iterate(
+	while ((tok = parserutils_vector_iterate(
 			parser->tokens, &ctx)) != NULL) {
-                if (tok->idata != NULL) {
-                        lwc_string_unref(tok->idata);
+		if (tok->idata != NULL) {
+			lwc_string_unref(tok->idata);
 		}
-        }
+	}
+
+	parserutils_vector_clear(parser->tokens);
 }
 
 #ifndef NDEBUG
