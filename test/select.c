@@ -42,7 +42,7 @@ typedef struct node {
 typedef struct sheet_ctx {
 	css_stylesheet *sheet;
 	css_origin origin;
-	uint64_t media;
+	char *media;
 } sheet_ctx;
 
 typedef struct line_ctx {
@@ -62,7 +62,7 @@ typedef struct line_ctx {
 	uint32_t n_sheets;
 	sheet_ctx *sheets;
 
-	uint64_t media;
+	css_media media;
 	uint32_t pseudo_element;
 	node *target;
 
@@ -77,7 +77,7 @@ static bool handle_line(const char *data, size_t datalen, void *pw);
 static void css__parse_tree(line_ctx *ctx, const char *data, size_t len);
 static void css__parse_tree_data(line_ctx *ctx, const char *data, size_t len);
 static void css__parse_sheet(line_ctx *ctx, const char *data, size_t len);
-static void css__parse_media_list(const char **data, size_t *len, uint64_t *media);
+static void css__parse_media_list(const char **data, size_t *len, css_media *media);
 static void css__parse_pseudo_list(const char **data, size_t *len,
 		uint32_t *element);
 static void css__parse_expected(line_ctx *ctx, const char *data, size_t len);
@@ -363,7 +363,7 @@ void css__parse_tree(line_ctx *ctx, const char *data, size_t len)
 
 	/* [ <media_list> <pseudo>? ] ? */
 
-	ctx->media = CSS_MEDIA_ALL;
+	ctx->media.type = CSS_MEDIA_ALL;
 	ctx->pseudo_element = CSS_PSEUDO_ELEMENT_NONE;
 
 	/* Consume any leading whitespace */
@@ -515,9 +515,9 @@ void css__parse_sheet(line_ctx *ctx, const char *data, size_t len)
 	const char *p;
 	const char *end = data + len;
 	css_origin origin = CSS_ORIGIN_AUTHOR;
-	uint64_t media = CSS_MEDIA_ALL;
 	css_stylesheet *sheet;
 	sheet_ctx *temp;
+	char *media = NULL;
 
 	/* <origin> <media_list>? */
 
@@ -540,11 +540,11 @@ void css__parse_sheet(line_ctx *ctx, const char *data, size_t len)
 	while (p < end && isspace(*p))
 		p++;
 
-	if (p < end) {
-		size_t ignored = end - p;
-
-		css__parse_media_list(&p, &ignored, &media);
-	}
+	assert(end >= p);
+	media = malloc(end - p + 1);
+	assert(media != NULL);
+	memcpy(media, p, end - p);
+	media[end - p] = '\0';
 
 	params.params_version = CSS_STYLESHEET_PARAMS_VERSION_1;
 	params.level = CSS_LEVEL_21;
@@ -579,7 +579,7 @@ void css__parse_sheet(line_ctx *ctx, const char *data, size_t len)
 	ctx->n_sheets++;
 }
 
-void css__parse_media_list(const char **data, size_t *len, uint64_t *media)
+void css__parse_media_list(const char **data, size_t *len, css_media *media)
 {
 	const char *p = *data;
 	const char *end = p + *len;
@@ -646,7 +646,7 @@ void css__parse_media_list(const char **data, size_t *len, uint64_t *media)
 			p++;
 	}
 
-	*media = result;
+	media->type = result;
 
 	*data = p;
 	*len = end - p;
@@ -765,7 +765,7 @@ static void run_test_select_tree(css_select_ctx *select,
 	css_select_results *sr;
 	struct node *n = NULL;
 
-	assert(css_select_style(select, node, ctx->media, NULL,
+	assert(css_select_style(select, node, &ctx->media, NULL,
 			&select_handler, ctx, &sr) == CSS_OK);
 
 	if (node->parent != NULL) {
@@ -841,6 +841,7 @@ void run_test(line_ctx *ctx, const char *exp, size_t explen)
 
 	for (i = 0; i < ctx->n_sheets; i++) {
 		css_stylesheet_destroy(ctx->sheets[i].sheet);
+		free(ctx->sheets[i].media);
 	}
 
 	ctx->tree = NULL;
