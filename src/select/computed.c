@@ -250,7 +250,7 @@ css_error css__computed_style_initialise(css_computed_style *style,
 		return CSS_BADPARM;
 
 	state.node = NULL;
-	state.media = CSS_MEDIA_ALL;
+	state.media = NULL;
 	state.results = NULL;
 	state.computed = style;
 	state.handler = handler;

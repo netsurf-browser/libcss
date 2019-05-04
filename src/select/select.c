@@ -38,7 +38,7 @@
 typedef struct css_select_sheet {
 	const css_stylesheet *sheet;	/**< Stylesheet */
 	css_origin origin;		/**< Stylesheet origin */
-	uint64_t media;			/**< Applicable media */
+	css_mq_query *media;		/**< Applicable media */
 } css_select_sheet;
 
 /**
@@ -97,7 +97,7 @@ typedef struct css_select_font_faces_list {
  */
 typedef struct css_select_font_faces_state {
 	lwc_string *font_family;
-	uint64_t media;
+	const css_media *media;
 
 	css_select_font_faces_list ua_font_faces;
 	css_select_font_faces_list user_font_faces;
@@ -289,8 +289,12 @@ css_error css_select_ctx_destroy(css_select_ctx *ctx)
 	if (ctx->default_style != NULL)
 		css_computed_style_destroy(ctx->default_style);
 
-	if (ctx->sheets != NULL)
+	if (ctx->sheets != NULL) {
+		for (uint32_t index = 0; index < ctx->n_sheets; index++) {
+			css__mq_query_destroy(ctx->sheets[index].media);
+		}
 		free(ctx->sheets);
+	}
 
 	free(ctx);
 
@@ -303,12 +307,12 @@ css_error css_select_ctx_destroy(css_select_ctx *ctx)
  * \param ctx     The context to append to
  * \param sheet   The sheet to append
  * \param origin  Origin of the sheet
- * \param media   Media types to which the sheet applies
+ * \param media   Media string for the stylesheet
  * \return CSS_OK on success, appropriate error otherwise
  */
 css_error css_select_ctx_append_sheet(css_select_ctx *ctx,
 		const css_stylesheet *sheet, css_origin origin,
-		uint64_t media)
+		const char *media)
 {
 	if (ctx == NULL || sheet == NULL)
 		return CSS_BADPARM;
@@ -324,14 +328,16 @@ css_error css_select_ctx_append_sheet(css_select_ctx *ctx,
  * \param sheet  Sheet to insert
  * \param index  Index in context to insert sheet
  * \param origin  Origin of the sheet
- * \param media   Media types to which the sheet applies
+ * \param media   Media string for the stylesheet
  * \return CSS_OK on success, appropriate error otherwise
  */
 css_error css_select_ctx_insert_sheet(css_select_ctx *ctx,
 		const css_stylesheet *sheet, uint32_t index,
-		css_origin origin, uint64_t media)
+		css_origin origin, const char *media)
 {
 	css_select_sheet *temp;
+	css_mq_query *mq;
+	css_error error;
 
 	if (ctx == NULL || sheet == NULL)
 		return CSS_BADPARM;
@@ -357,9 +363,23 @@ css_error css_select_ctx_insert_sheet(css_select_ctx *ctx,
 			(ctx->n_sheets - index) * sizeof(css_select_sheet));
 	}
 
+	error = css_parse_media_query(sheet->propstrings,
+			(const uint8_t *)media,
+			(media == NULL) ? 0 : strlen(media), &mq);
+	if (error == CSS_NOMEM) {
+		return error;
+	} else if (error != CSS_OK) {
+		/* Fall back to default media: "all". */
+		mq = calloc(1, sizeof(*mq));
+		if (mq == NULL) {
+			return CSS_NOMEM;
+		}
+		mq->type = CSS_MEDIA_ALL;
+	}
+
 	ctx->sheets[index].sheet = sheet;
 	ctx->sheets[index].origin = origin;
-	ctx->sheets[index].media = media;
+	ctx->sheets[index].media = mq;
 
 	ctx->n_sheets++;
 
@@ -388,6 +408,8 @@ css_error css_select_ctx_remove_sheet(css_select_ctx *ctx,
 
 	if (index == ctx->n_sheets)
 		return CSS_INVALID;
+
+	css__mq_query_destroy(ctx->sheets[index].media);
 
 	ctx->n_sheets--;
 
@@ -1032,7 +1054,7 @@ static void css_select__finalise_selection_state(
  * \param[in]  state    The selection state to initialise
  * \param[in]  node     The node we are selecting for.
  * \param[in]  parent   The node's parent node, or NULL.
- * \param[in]  media    The media type we're selecting for.
+ * \param[in]  media    The media specification we're selecting for.
  * \param[in]  handler  The client selection callback table.
  * \param[in]  pw       The client private data, passsed out to callbacks.
  * \return CSS_OK or appropriate error otherwise.
@@ -1041,7 +1063,7 @@ static css_error css_select__initialise_selection_state(
 		css_select_state *state,
 		void *node,
 		void *parent,
-		uint64_t media,
+		const css_media *media,
 		css_select_handler *handler,
 		void *pw)
 {
@@ -1142,7 +1164,7 @@ failed:
  *
  * \param ctx             Selection context to use
  * \param node            Node to select style for
- * \param media           Currently active media types
+ * \param media           Currently active media specification
  * \param inline_style    Corresponding inline style for node, or NULL
  * \param handler         Dispatch table of handler functions
  * \param pw              Client-specific private data for handler functions
@@ -1159,7 +1181,7 @@ failed:
  * update the fully computed style for a node when layout changes.
  */
 css_error css_select_style(css_select_ctx *ctx, void *node,
-		uint64_t media, const css_stylesheet *inline_style,
+		const css_media *media, const css_stylesheet *inline_style,
 		css_select_handler *handler, void *pw,
 		css_select_results **result)
 {
@@ -1244,7 +1266,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	for (i = 0; i < ctx->n_sheets; i++) {
 		const css_select_sheet s = ctx->sheets[i];
 
-		if ((s.media & media) != 0 &&
+		if (mq__list_match(s.media, media) &&
 				s.sheet->disabled == false) {
 			error = select_from_sheet(ctx, s.sheet,
 					s.origin, &state);
@@ -1394,13 +1416,13 @@ css_error css_select_results_destroy(css_select_results *results)
  * Search a selection context for defined font faces
  *
  * \param ctx          Selection context
- * \param media        Currently active media types
+ * \param media        Currently active media spec
  * \param font_family  Font family to search for
  * \param result       Pointer to location to receive result
  * \return CSS_OK on success, appropriate error otherwise.
  */
 css_error css_select_font_faces(css_select_ctx *ctx,
-		uint64_t media, lwc_string *font_family,
+		const css_media *media, lwc_string *font_family,
 		css_select_font_faces_results **result)
 {
 	uint32_t i;
@@ -1421,7 +1443,7 @@ css_error css_select_font_faces(css_select_ctx *ctx,
 	for (i = 0; i < ctx->n_sheets; i++) {
 		const css_select_sheet s = ctx->sheets[i];
 
-		if ((s.media & media) != 0 &&
+		if (mq__list_match(s.media, media) &&
 				s.sheet->disabled == false) {
 			error = select_font_faces_from_sheet(s.sheet,
 					s.origin, &state);

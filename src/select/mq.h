@@ -32,11 +32,11 @@ static inline bool mq_match_condition(css_mq_cond *cond)
  * \meaid media  Current media spec, to check against m.
  * \return true if media query list matches media
  */
-static inline bool mq__list_match(const css_mq_query *m, uint64_t media)
+static inline bool mq__list_match(const css_mq_query *m, const css_media *media)
 {
 	for (; m != NULL; m = m->next) {
 		/* Check type */
-		if (!!(m->type & media) != m->negate_type) {
+		if (!!(m->type & media->type) != m->negate_type) {
 			if (mq_match_condition(m->cond)) {
 				/* We have a match, no need to look further. */
 				return true;
@@ -54,7 +54,7 @@ static inline bool mq__list_match(const css_mq_query *m, uint64_t media)
  * \param media  Current media type(s)
  * \return true iff chain's rule applies for media
  */
-static inline bool mq_rule_good_for_media(const css_rule *rule, uint64_t media)
+static inline bool mq_rule_good_for_media(const css_rule *rule, const css_media *media)
 {
 	bool applies = true;
 	const css_rule *ancestor = rule;

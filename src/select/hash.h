@@ -25,7 +25,7 @@ struct css_hash_selection_requirments {
 	lwc_string *class;		/* Name of class, or NULL */
 	lwc_string *id;			/* Name of id, or NULL */
 	lwc_string *uni;		/* Universal element string "*" */
-	uint64_t media;			/* Media type(s) we're selecting for */
+	const css_media *media;		/* Media spec we're selecting for */
 	const css_bloom *node_bloom;	/* Node's bloom filter */
 };
 
