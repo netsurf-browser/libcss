@@ -161,6 +161,9 @@ int main(int argc, char **argv)
 	uint32_t count;
 	unsigned int hh;
 	css_stylesheet_params params;
+	css_media media = {
+		.type = CSS_MEDIA_SCREEN,
+	};
 
 	UNUSED(argc);
 	UNUSED(argv);
@@ -210,7 +213,7 @@ int main(int argc, char **argv)
 	if (code != CSS_OK)
 		die("css_select_ctx_create", code);
 	code = css_select_ctx_append_sheet(select_ctx, sheet, CSS_ORIGIN_AUTHOR,
-			CSS_MEDIA_ALL);
+			NULL);
 	if (code != CSS_OK)
 		die("css_select_ctx_append_sheet", code);
 	code = css_select_ctx_count_sheets(select_ctx, &count);
@@ -234,7 +237,7 @@ int main(int argc, char **argv)
 		lwc_intern_string(element, strlen(element), &element_name);
 
 		code = css_select_style(select_ctx, element_name,
-				CSS_MEDIA_SCREEN, NULL,
+				&media, NULL,
 				&select_handler, 0,
 				&style);
 		if (code != CSS_OK)
