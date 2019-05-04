@@ -18,7 +18,8 @@
 static inline bool mq_match_condition(css_mq_cond *cond)
 {
 	/* TODO: Implement this. */
-	return cond == NULL;
+	(void) cond;
+	return true;
 }
 
 /**
