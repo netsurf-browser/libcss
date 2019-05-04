@@ -10,13 +10,51 @@
 #define css_select_mq_h_
 
 /**
+ * Match media query conditions.
+ *
+ * \param[in] cond  Condition to match.
+ * \return true if condition matches, otherwise false.
+ */
+static inline bool mq_match_condition(css_mq_cond *cond)
+{
+	/* TODO: Implement this. */
+	(void) cond;
+	return true;
+}
+
+/**
+ * Test whether media query list matches current media.
+ *
+ * If anything in the list matches, the list matches.  If none match
+ * it doesn't match.
+ *
+ * \param m      Media query list.
+ * \meaid media  Current media spec, to check against m.
+ * \return true if media query list matches media
+ */
+static inline bool mq__list_match(const css_mq_query *m, const css_media *media)
+{
+	for (; m != NULL; m = m->next) {
+		/* Check type */
+		if (!!(m->type & media->type) != m->negate_type) {
+			if (mq_match_condition(m->cond)) {
+				/* We have a match, no need to look further. */
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+/**
  * Test whether the rule applies for current media.
  *
- * \param rule		Rule to test
- * \meaid media		Current media type(s)
+ * \param rule   Rule to test
+ * \param media  Current media type(s)
  * \return true iff chain's rule applies for media
  */
-static inline bool mq_rule_good_for_media(const css_rule *rule, uint64_t media)
+static inline bool mq_rule_good_for_media(const css_rule *rule, const css_media *media)
 {
 	bool applies = true;
 	const css_rule *ancestor = rule;
@@ -24,10 +62,11 @@ static inline bool mq_rule_good_for_media(const css_rule *rule, uint64_t media)
 	while (ancestor != NULL) {
 		const css_rule_media *m = (const css_rule_media *) ancestor;
 
-		if (ancestor->type == CSS_RULE_MEDIA &&
-				(m->media & media) == 0) {
-			applies = false;
-			break;
+		if (ancestor->type == CSS_RULE_MEDIA) {
+			applies = mq__list_match(m->media, media);
+			if (applies == false) {
+				break;
+			}
 		}
 
 		if (ancestor->ptype != CSS_RULE_PARENT_STYLESHEET) {

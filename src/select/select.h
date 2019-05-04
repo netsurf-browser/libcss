@@ -63,7 +63,7 @@ struct css_node_data {
  */
 typedef struct css_select_state {
 	void *node;			/* Node we're selecting for */
-	uint64_t media;			/* Currently active media types */
+	const css_media *media;		/* Currently active media spec */
 	css_select_results *results;	/* Result set to populate */
 
 	css_pseudo_element current_pseudo;	/* Current pseudo element */

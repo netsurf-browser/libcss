@@ -36,7 +36,6 @@ typedef css_error (*css_url_resolution_fn)(void *pw,
  * \param pw      Client data
  * \param parent  Stylesheet requesting the import
  * \param url     URL of the imported sheet
- * \param media   Applicable media for the imported sheet
  * \return CSS_OK on success, appropriate error otherwise
  *
  * \note This function will be invoked for notification purposes
@@ -46,7 +45,7 @@ typedef css_error (*css_url_resolution_fn)(void *pw,
  *       registration API.
  */
 typedef css_error (*css_import_notification_fn)(void *pw,
-		css_stylesheet *parent, lwc_string *url, uint64_t media);
+		css_stylesheet *parent, lwc_string *url);
 
 /**
  * Callback use to resolve system colour names to RGB values
@@ -145,7 +144,7 @@ css_error css_stylesheet_append_data(css_stylesheet *sheet,
 css_error css_stylesheet_data_done(css_stylesheet *sheet);
 
 css_error css_stylesheet_next_pending_import(css_stylesheet *parent,
-		lwc_string **url, uint64_t *media);
+		lwc_string **url);
 css_error css_stylesheet_register_import(css_stylesheet *parent,
 		css_stylesheet *child);
 

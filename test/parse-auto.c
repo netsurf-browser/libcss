@@ -395,10 +395,8 @@ void run_test(const uint8_t *data, size_t len, exp_entry *exp, size_t explen)
 
 	while (error == CSS_IMPORTS_PENDING) {
 		lwc_string *url;
-		uint64_t media;
 
-		error = css_stylesheet_next_pending_import(sheet,
-				&url, &media);
+		error = css_stylesheet_next_pending_import(sheet, &url);
 		assert(error == CSS_OK || error == CSS_INVALID);
 
 		if (error == CSS_OK) {

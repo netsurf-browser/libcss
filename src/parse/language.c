@@ -15,6 +15,7 @@
 #include "parse/font_face.h"
 #include "parse/important.h"
 #include "parse/language.h"
+#include "parse/mq.h"
 #include "parse/parse.h"
 #include "parse/propstrings.h"
 #include "parse/properties/properties.h"
@@ -53,9 +54,6 @@ static css_error handleDeclaration(css_language *c,
 		const parserutils_vector *vector);
 
 /* At-rule parsing */
-static css_error parseMediaList(css_language *c,
-		const parserutils_vector *vector, int *ctx,
-		uint64_t *media);
 static css_error addNamespace(css_language *c,
 		lwc_string *prefix, lwc_string *uri);
 static css_error lookupNamespace(css_language *c,
@@ -416,10 +414,9 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 			match) {
 		if (c->state <= IMPORT_PERMITTED) {
 			lwc_string *url;
-			uint64_t media = 0;
+			css_mq_query *media = NULL;
 
-			/* any0 = (STRING | URI) ws
-			 *	  (IDENT ws (',' ws IDENT ws)* )? */
+			/* any0 = (STRING | URI) ws (media query)? */
 			const css_token *uri =
 				parserutils_vector_iterate(vector, &ctx);
 			if (uri == NULL || (uri->type != CSS_TOKEN_STRING &&
@@ -429,15 +426,18 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 			consumeWhitespace(vector, &ctx);
 
 			/* Parse media list */
-			error = parseMediaList(c, vector, &ctx, &media);
+			error = css__mq_parse_media_list(
+					c->strings, vector, &ctx, &media);
 			if (error != CSS_OK)
 				return error;
 
 			/* Create rule */
 			error = css__stylesheet_rule_create(c->sheet,
 					CSS_RULE_IMPORT, &rule);
-			if (error != CSS_OK)
+			if (error != CSS_OK) {
+				css__mq_query_destroy(media);
 				return error;
+			}
 
 			/* Resolve import URI */
 			error = c->sheet->resolve(c->sheet->resolve_pw,
@@ -445,6 +445,7 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 					uri->idata, &url);
 			if (error != CSS_OK) {
 				css__stylesheet_rule_destroy(c->sheet, rule);
+				css__mq_query_destroy(media);
 				return error;
 			}
 
@@ -454,13 +455,14 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 			if (error != CSS_OK) {
 				lwc_string_unref(url);
 				css__stylesheet_rule_destroy(c->sheet, rule);
+				css__mq_query_destroy(media);
 				return error;
 			}
 
 			/* Inform client of need for import */
 			if (c->sheet->import != NULL) {
 				error = c->sheet->import(c->sheet->import_pw,
-						c->sheet, url, media);
+						c->sheet, url);
 				if (error != CSS_OK) {
 					lwc_string_unref(url);
 					css__stylesheet_rule_destroy(c->sheet,
@@ -527,22 +529,25 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 		}
 	} else if (lwc_string_caseless_isequal(atkeyword->idata, c->strings[MEDIA],
 			&match) == lwc_error_ok && match) {
-		uint64_t media = 0;
+		css_mq_query *media = NULL;
 
-		/* any0 = IDENT ws (',' ws IDENT ws)* */
-
-		error = parseMediaList(c, vector, &ctx, &media);
+		/* any0 = media query */
+		error = css__mq_parse_media_list(
+				c->strings, vector, &ctx, &media);
 		if (error != CSS_OK)
 			return error;
 
 		error = css__stylesheet_rule_create(c->sheet,
 				CSS_RULE_MEDIA, &rule);
-		if (error != CSS_OK)
+		if (error != CSS_OK) {
+			css__mq_query_destroy(media);
 			return error;
+		}
 
 		error = css__stylesheet_rule_set_media(c->sheet, rule, media);
 		if (error != CSS_OK) {
 			css__stylesheet_rule_destroy(c->sheet, rule);
+			css__mq_query_destroy(media);
 			return error;
 		}
 
@@ -794,85 +799,6 @@ css_error handleDeclaration(css_language *c, const parserutils_vector *vector)
 /******************************************************************************
  * At-rule parsing functions						      *
  ******************************************************************************/
-
-css_error parseMediaList(css_language *c,
-		const parserutils_vector *vector, int *ctx,
-		uint64_t *media)
-{
-	uint64_t ret = 0;
-	bool match = false;
-	const css_token *token;
-
-	token = parserutils_vector_iterate(vector, ctx);
-
-	while (token != NULL) {
-		if (token->type != CSS_TOKEN_IDENT)
-			return CSS_INVALID;
-
-		if (lwc_string_caseless_isequal(token->idata, c->strings[AURAL],
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_AURAL;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[BRAILLE],
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_BRAILLE;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[EMBOSSED],
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_EMBOSSED;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[HANDHELD],
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_HANDHELD;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[PRINT],
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_PRINT;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[PROJECTION],
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_PROJECTION;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[SCREEN],
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_SCREEN;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[SPEECH],
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_SPEECH;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[TTY],
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_TTY;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[TV],
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_TV;
-		} else if (lwc_string_caseless_isequal(
-				token->idata, c->strings[ALL],
-				&match) == lwc_error_ok && match) {
-			ret |= CSS_MEDIA_ALL;
-		} else
-			return CSS_INVALID;
-
-		consumeWhitespace(vector, ctx);
-
-		token = parserutils_vector_iterate(vector, ctx);
-		if (token != NULL && tokenIsChar(token, ',') == false)
-			return CSS_INVALID;
-
-		consumeWhitespace(vector, ctx);
-	}
-
-	/* If, after parsing the media list, we still have no media,
-	 * then it must be ALL. */
-	if (ret == 0)
-		ret = CSS_MEDIA_ALL;
-
-	*media = ret;
-
-	return CSS_OK;
-}
 
 /**
  * Add a namespace mapping

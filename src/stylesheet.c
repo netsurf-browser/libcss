@@ -12,6 +12,7 @@
 #include "stylesheet.h"
 #include "bytecode/bytecode.h"
 #include "parse/language.h"
+#include "parse/mq.h"
 #include "utils/parserutilserror.h"
 #include "utils/utils.h"
 #include "select/dispatch.h"
@@ -377,8 +378,6 @@ css_error css_stylesheet_data_done(css_stylesheet *sheet)
  * \param parent  Parent stylesheet
  * \param url	  Pointer to object to be populated with details of URL of
  *		  imported stylesheet (potentially relative)
- * \param media	  Pointer to location to receive applicable media types for
- *		  imported sheet,
  * \return CSS_OK on success,
  *	   CSS_INVALID if there are no pending imports remaining
  *
@@ -396,11 +395,11 @@ css_error css_stylesheet_data_done(css_stylesheet *sheet)
  * register an empty stylesheet with the parent in its place.
  */
 css_error css_stylesheet_next_pending_import(css_stylesheet *parent,
-		lwc_string **url, uint64_t *media)
+		lwc_string **url)
 {
 	const css_rule *r;
 
-	if (parent == NULL || url == NULL || media == NULL)
+	if (parent == NULL || url == NULL)
 		return CSS_BADPARM;
 
 	for (r = parent->rule_list; r != NULL; r = r->next) {
@@ -413,7 +412,6 @@ css_error css_stylesheet_next_pending_import(css_stylesheet *parent,
 
 		if (r->type == CSS_RULE_IMPORT && i->sheet == NULL) {
 			*url = lwc_string_ref(i->url);
-			*media = i->media;
 
 			return CSS_OK;
 		}
@@ -1154,6 +1152,9 @@ css_error css__stylesheet_rule_destroy(css_stylesheet *sheet, css_rule *rule)
 		css_rule_import *import = (css_rule_import *) rule;
 
 		lwc_string_unref(import->url);
+		if (import->media != NULL) {
+			css__mq_query_destroy(import->media);
+		}
 
 		/* Do not destroy imported sheet: it is owned by the client */
 	}
@@ -1162,6 +1163,10 @@ css_error css__stylesheet_rule_destroy(css_stylesheet *sheet, css_rule *rule)
 	{
 		css_rule_media *media = (css_rule_media *) rule;
 		css_rule *c, *d;
+
+		if (media->media != NULL) {
+			css__mq_query_destroy(media->media);
+		}
 
 		for (c = media->first_child; c != NULL; c = d) {
 			d = c->next;
@@ -1326,7 +1331,7 @@ css_error css__stylesheet_rule_set_charset(css_stylesheet *sheet,
  */
 css_error css__stylesheet_rule_set_nascent_import(css_stylesheet *sheet,
 		css_rule *rule, lwc_string *url,
-		uint64_t media)
+		css_mq_query *media)
 {
 	css_rule_import *r = (css_rule_import *) rule;
 
@@ -1352,7 +1357,7 @@ css_error css__stylesheet_rule_set_nascent_import(css_stylesheet *sheet,
  * \return CSS_OK on success, appropriate error otherwise
  */
 css_error css__stylesheet_rule_set_media(css_stylesheet *sheet,
-		css_rule *rule, uint64_t media)
+		css_rule *rule, css_mq_query *media)
 {
 	css_rule_media *r = (css_rule_media *) rule;
 

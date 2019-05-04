@@ -69,6 +69,7 @@ Length is a 32bit numeric value (as described above) and unit is as follows:
 			00000000 => deg
 			00000001 => grad
 			00000010 => rad
+			00000011 => turn
 
 	bit 10 set => time unit
 		bits 11-31: MBZ
@@ -83,6 +84,14 @@ Length is a 32bit numeric value (as described above) and unit is as follows:
 		bits 0-7  :
 			00000000 => Hz
 			00000001 => kHz
+
+	bit 12 set => resolution unit
+		bits 13-31: MBZ
+		bits 8-11 : MBZ
+		bits 0-7  :
+			00000000 => dpi
+			00000001 => dpcm
+			00000010 => dppx
 
 CSS colours are stored as one 32bit value. See "Colour" for their format.
 

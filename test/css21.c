@@ -99,10 +99,8 @@ int main(int argc, char **argv)
 
 		while (error == CSS_IMPORTS_PENDING) {
 			lwc_string *url;
-			uint64_t media;
 
-			error = css_stylesheet_next_pending_import(sheet,
-					&url, &media);
+			error = css_stylesheet_next_pending_import(sheet, &url);
 			assert(error == CSS_OK || error == CSS_INVALID);
 
 			if (error == CSS_OK) {
