@@ -1098,6 +1098,10 @@ css_error css_parse_media_query(lwc_string **strings,
 		},
 	};
 
+	if (mq == NULL || len == 0) {
+		return CSS_BADPARM;
+	}
+
 	err = css__parser_create_for_media_query(NULL,
 			CSS_CHARSET_DEFAULT, &parser);
 	if (err != CSS_OK) {
