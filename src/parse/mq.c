@@ -45,6 +45,7 @@ static void css__mq_cond_parts_destroy(css_mq_cond_parts *cond_parts)
 		for (uint32_t i = 0; i < cond_parts->nparts; i++) {
 			css__mq_cond_or_feature_destroy(cond_parts->parts[i]);
 		}
+		free(cond_parts->parts);
 		free(cond_parts);
 	}
 }
