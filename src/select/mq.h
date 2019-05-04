@@ -25,7 +25,7 @@ static inline bool mq_match_condition(css_mq_cond *cond)
 /**
  * Test whether media query list matches current media.
  *
- * If anything in the list matches, it the list matches.  If none match
+ * If anything in the list matches, the list matches.  If none match
  * it doesn't match.
  *
  * \param m      Media query list.
