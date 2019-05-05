@@ -12,14 +12,63 @@
 /**
  * Match media query conditions.
  *
- * \param[in] cond  Condition to match.
+ * \param[in] feat  Condition to match.
+ * \param[in] media  Current media spec, to check against feat.
  * \return true if condition matches, otherwise false.
  */
-static inline bool mq_match_condition(css_mq_cond *cond)
+static inline bool mq_match_feature(
+		const css_mq_feature *feat,
+		const css_media *media)
 {
 	/* TODO: Implement this. */
-	(void) cond;
+	(void) feat;
+	(void) media;
+
 	return true;
+}
+
+/**
+ * Match media query conditions.
+ *
+ * \param[in] cond   Condition to match.
+ * \param[in] media  Current media spec, to check against cond.
+ * \return true if condition matches, otherwise false.
+ */
+static inline bool mq_match_condition(
+		const css_mq_cond *cond,
+		const css_media *media)
+{
+	bool matched = !cond->op;
+
+	for (uint32_t i = 0; i < cond->parts->nparts; i++) {
+		bool part_matched;
+		if (cond->parts->parts[i]->type == CSS_MQ_FEATURE) {
+			part_matched = mq_match_feature(
+					cond->parts->parts[i]->data.feat,
+					media);
+		} else {
+			assert(cond->parts->parts[i]->type == SS_MQ_COND);
+			part_matched = mq_match_condition(
+					cond->parts->parts[i]->data.cond,
+					media);
+		}
+
+		if (cond->op) {
+			/* OR */
+			matched |= part_matched;
+			if (matched) {
+				break; /* Short-circuit */
+			}
+		} else {
+			/* AND */
+			matched &= part_matched;
+			if (!matched) {
+				break; /* Short-circuit */
+			}
+		}
+	}
+
+	return matched != cond->negate;
 }
 
 /**
@@ -28,16 +77,19 @@ static inline bool mq_match_condition(css_mq_cond *cond)
  * If anything in the list matches, the list matches.  If none match
  * it doesn't match.
  *
- * \param m      Media query list.
- * \meaid media  Current media spec, to check against m.
+ * \param[in] m      Media query list.
+ * \param[in] media  Current media spec, to check against m.
  * \return true if media query list matches media
  */
-static inline bool mq__list_match(const css_mq_query *m, const css_media *media)
+static inline bool mq__list_match(
+		const css_mq_query *m,
+		const css_media *media)
 {
 	for (; m != NULL; m = m->next) {
 		/* Check type */
 		if (!!(m->type & media->type) != m->negate_type) {
-			if (mq_match_condition(m->cond)) {
+			if (m->cond == NULL ||
+					mq_match_condition(m->cond, media)) {
 				/* We have a match, no need to look further. */
 				return true;
 			}
@@ -51,7 +103,7 @@ static inline bool mq__list_match(const css_mq_query *m, const css_media *media)
  * Test whether the rule applies for current media.
  *
  * \param rule   Rule to test
- * \param media  Current media type(s)
+ * \param media  Current media spec
  * \return true iff chain's rule applies for media
  */
 static inline bool mq_rule_good_for_media(const css_rule *rule, const css_media *media)
