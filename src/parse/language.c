@@ -428,8 +428,16 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 			/* Parse media list */
 			error = css__mq_parse_media_list(
 					c->strings, vector, &ctx, &media);
-			if (error != CSS_OK)
+			if (error == CSS_NOMEM) {
 				return error;
+			} else if (media == NULL) {
+				/* Fall back to default media: "all". */
+				media = calloc(1, sizeof(*media));
+				if (media == NULL) {
+					return CSS_NOMEM;
+				}
+				media->type = CSS_MEDIA_ALL;
+			}
 
 			/* Create rule */
 			error = css__stylesheet_rule_create(c->sheet,
