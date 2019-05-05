@@ -135,7 +135,10 @@ static css_error mq_create_feature(
 
 	memset(f, 0, sizeof(*f));
 
-	f->name = lwc_string_ref(name);
+	if (lwc_string_tolower(name, &f->name) != lwc_error_ok) {
+		free(f);
+		return CSS_NOMEM;
+	}
 
 	*feature = f;
 
