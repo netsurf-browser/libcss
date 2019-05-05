@@ -47,7 +47,7 @@ static inline bool mq_match_condition(
 					cond->parts->parts[i]->data.feat,
 					media);
 		} else {
-			assert(cond->parts->parts[i]->type == SS_MQ_COND);
+			assert(cond->parts->parts[i]->type == CSS_MQ_COND);
 			part_matched = mq_match_condition(
 					cond->parts->parts[i]->data.cond,
 					media);
