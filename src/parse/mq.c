@@ -212,6 +212,57 @@ static css_error mq_parse_op(const css_token *token,
 	return CSS_OK;
 }
 
+
+/**
+ * Convert level 3 ranged descriptors into level 4 style.
+ *
+ * Helper for \ref mq_parse_range().
+ *
+ * \param[in] feature  Range feature to convert.
+ * \return CSS_OK, or error code.
+ *
+ * This detects the min- and max- prefixes, strips them, and converts
+ * the operator.
+ */
+static css_error mq_parse_range__convert_to_level_4(
+		css_mq_feature *feature)
+{
+	lwc_string *new_name;
+	const char *name = lwc_string_data(feature->name);
+
+	if (feature->op != CSS_MQ_FEATURE_OP_EQ ||
+			lwc_string_length(feature->name) <= 4) {
+		return CSS_OK;
+	}
+
+	if (name[0] == 'm' && name[3] == '-') {
+		if (name[1] == 'i' && name[2] == 'n') {
+			if (lwc_intern_substring(feature->name,
+					4, lwc_string_length(feature->name) - 4,
+					&new_name) != lwc_error_ok) {
+				return CSS_NOMEM;
+			}
+			lwc_string_unref(feature->name);
+			feature->name = new_name;
+
+			feature->op = CSS_MQ_FEATURE_OP_GTE;
+
+		} else if (name[1] == 'a' && name[2] == 'x') {
+			if (lwc_intern_substring(feature->name,
+					4, lwc_string_length(feature->name) - 4,
+					&new_name) != lwc_error_ok) {
+				return CSS_NOMEM;
+			}
+			lwc_string_unref(feature->name);
+			feature->name = new_name;
+
+			feature->op = CSS_MQ_FEATURE_OP_LTE;
+		}
+	}
+
+	return CSS_OK;
+}
+
 static css_error mq_parse_range(lwc_string **strings,
 		const parserutils_vector *vector, int *ctx,
 		const css_token *name_or_value,
@@ -388,6 +439,12 @@ static css_error mq_parse_range(lwc_string **strings,
 				return error;
 			}
 		}
+	}
+
+	error = mq_parse_range__convert_to_level_4(result);
+	if (error != CSS_OK) {
+		css__mq_feature_destroy(result);
+		return error;
 	}
 
 	*feature = result;
