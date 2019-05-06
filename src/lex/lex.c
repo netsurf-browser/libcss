@@ -1275,6 +1275,24 @@ start:
 		lexer->state = sESCAPEDIDENT;
 		lexer->substate = 0;
 		return EscapedIdentOrFunction(lexer, token);
+	case '>':
+		/* Check for >= */
+		perror = parserutils_inputstream_peek(lexer->input,
+				lexer->bytesReadForToken, &cptr, &clen);
+		if (perror != PARSERUTILS_OK && perror != PARSERUTILS_EOF) {
+			return css_error_from_parserutils_error(perror);
+		}
+
+		if (perror == PARSERUTILS_EOF) {
+			return emitToken(lexer, CSS_TOKEN_CHAR, token);
+		}
+
+		c = *cptr;
+
+		if (c == '=') {
+			APPEND(lexer, cptr, clen);
+		}
+		return emitToken(lexer, CSS_TOKEN_CHAR, token);
 	default:
 		return emitToken(lexer, CSS_TOKEN_CHAR, token);
 	}
