@@ -441,12 +441,6 @@ static css_error mq_parse_range(lwc_string **strings,
 		}
 	}
 
-	error = mq_parse_range__convert_to_level_4(result);
-	if (error != CSS_OK) {
-		css__mq_feature_destroy(result);
-		return error;
-	}
-
 	*feature = result;
 
 	return CSS_OK;
@@ -531,6 +525,12 @@ static css_error mq_parse_media_feature(lwc_string **strings,
 			}
 
 			consumeWhitespace(vector, ctx);
+
+			error = mq_parse_range__convert_to_level_4(result);
+			if (error != CSS_OK) {
+				css__mq_feature_destroy(result);
+				return error;
+			}
 		} else {
 			/* mf-range */
 			error = mq_parse_range(strings, vector, ctx,
