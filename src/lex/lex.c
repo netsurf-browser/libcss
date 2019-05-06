@@ -698,6 +698,11 @@ css_error CDO(css_lexer *lexer, css_token **token)
 
 		if (c == '!') {
 			APPEND(lexer, cptr, clen);
+		} else if (c == '=') {
+			/* This is not relatated to comment parsing but
+			 * media queries add a comment token. */
+			APPEND(lexer, cptr, clen);
+			return emitToken(lexer, CSS_TOKEN_CHAR, token);
 		} else {
 			return emitToken(lexer, CSS_TOKEN_CHAR, token);
 		}
