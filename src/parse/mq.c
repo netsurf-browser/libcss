@@ -997,8 +997,7 @@ static css_error mq_parse_media_query(lwc_string **strings,
 			return error;
 		}
 
-		*query = result;
-		return CSS_OK;
+		goto finished;
 	}
 
 	token = parserutils_vector_iterate(vector, ctx);
@@ -1045,6 +1044,11 @@ static css_error mq_parse_media_query(lwc_string **strings,
 			free(result);
 			return error;
 		}
+	}
+
+finished:
+	if (result->type == 0) {
+		result->type = CSS_MEDIA_ALL;
 	}
 
 	*query = result;
