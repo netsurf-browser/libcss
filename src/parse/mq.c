@@ -245,7 +245,7 @@ static css_error mq_parse_range__convert_to_level_4(
 			lwc_string_unref(feature->name);
 			feature->name = new_name;
 
-			feature->op = CSS_MQ_FEATURE_OP_GTE;
+			feature->op = CSS_MQ_FEATURE_OP_LTE;
 
 		} else if (name[1] == 'a' && name[2] == 'x') {
 			if (lwc_intern_substring(feature->name,
@@ -256,7 +256,7 @@ static css_error mq_parse_range__convert_to_level_4(
 			lwc_string_unref(feature->name);
 			feature->name = new_name;
 
-			feature->op = CSS_MQ_FEATURE_OP_LTE;
+			feature->op = CSS_MQ_FEATURE_OP_GTE;
 		}
 	}
 
