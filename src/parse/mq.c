@@ -420,7 +420,7 @@ static css_error mq_parse_range(lwc_string **strings,
 		result->value.data.num_or_ratio = ratio;
 	} else {
 		/* num/dim/ident */
-		error = mq_populate_value(&result->value, token);
+		error = mq_populate_value(&result->value, name_or_value);
 		if (error != CSS_OK) {
 			free(result);
 			return error;
@@ -433,7 +433,7 @@ static css_error mq_parse_range(lwc_string **strings,
 			result->value2.data.num_or_ratio = ratio;
 		} else {
 			/* num/dim/ident */
-			error = mq_populate_value(&result->value2, token);
+			error = mq_populate_value(&result->value2, value2);
 			if (error != CSS_OK) {
 				css__mq_feature_destroy(result);
 				return error;
