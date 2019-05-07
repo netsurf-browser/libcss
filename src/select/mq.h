@@ -9,32 +9,133 @@
 #ifndef css_select_mq_h_
 #define css_select_mq_h_
 
+static inline css_fixed css_len2px(
+		css_fixed length,
+		css_unit unit,
+		const css_media *media)
+{
+	css_fixed px_per_unit;
+
+	switch (unit) {
+	case CSS_UNIT_VI:
+		/* TODO: Assumes writing mode. */
+		unit = CSS_UNIT_VW;
+		break;
+	case CSS_UNIT_VB:
+		/* TODO: Assumes writing mode. */
+		unit = CSS_UNIT_VH;
+		break;
+	case CSS_UNIT_VMIN:
+		unit = (media->height < media->width) ?
+				CSS_UNIT_VH : CSS_UNIT_VW;
+		break;
+	case CSS_UNIT_VMAX:
+		unit = (media->width > media->height) ?
+				CSS_UNIT_VH : CSS_UNIT_VW;
+		break;
+	default:
+		break;
+	}
+
+	switch (unit) {
+	case CSS_UNIT_EM:
+	case CSS_UNIT_EX:
+	case CSS_UNIT_CAP:
+	case CSS_UNIT_CH:
+	case CSS_UNIT_IC:
+	{
+		px_per_unit = FDIV(FMUL(media->client_font_size, F_96), F_72);
+
+		/* TODO: Handling these as fixed ratios of CSS_UNIT_EM. */
+		switch (unit) {
+		case CSS_UNIT_EX:
+			px_per_unit = FMUL(px_per_unit, FLTTOFIX(0.6));
+			break;
+		case CSS_UNIT_CAP:
+			px_per_unit = FMUL(px_per_unit, FLTTOFIX(0.9));
+			break;
+		case CSS_UNIT_CH:
+			px_per_unit = FMUL(px_per_unit, FLTTOFIX(0.4));
+			break;
+		case CSS_UNIT_IC:
+			px_per_unit = FMUL(px_per_unit, FLTTOFIX(1.1));
+			break;
+		default:
+			break;
+		}
+	}
+		break;
+	case CSS_UNIT_PX:
+		return length;
+	case CSS_UNIT_IN:
+		px_per_unit = F_96;
+		break;
+	case CSS_UNIT_CM:
+		px_per_unit = FDIV(F_96, FLTTOFIX(2.54));
+		break;
+	case CSS_UNIT_MM:
+		px_per_unit = FDIV(F_96, FLTTOFIX(25.4));
+		break;
+	case CSS_UNIT_Q:
+		px_per_unit = FDIV(F_96, FLTTOFIX(101.6));
+		break;
+	case CSS_UNIT_PT:
+		px_per_unit = FDIV(F_96, F_72);
+		break;
+	case CSS_UNIT_PC:
+		px_per_unit = FDIV(F_96, INTTOFIX(6));
+		break;
+	case CSS_UNIT_REM:
+		px_per_unit = FDIV(FMUL(media->client_font_size, F_96), F_72);
+		break;
+	case CSS_UNIT_RLH:
+		px_per_unit = media->client_line_height;
+		break;
+	case CSS_UNIT_VH:
+		px_per_unit = FDIV(media->height, F_100);
+		break;
+	case CSS_UNIT_VW:
+		px_per_unit = FDIV(media->width, F_100);
+		break;
+	default:
+		px_per_unit = 0;
+		break;
+	}
+
+	/* Ensure we round px_per_unit to the nearest whole number of pixels:
+	 * the use of FIXTOINT() below will truncate. */
+	px_per_unit += F_0_5;
+
+	/* Calculate total number of pixels */
+	return FMUL(length, TRUNCATEFIX(px_per_unit));
+}
+
 static inline bool mq_match_feature_range_length_op1(
 		css_mq_feature_op op,
 		const css_mq_value *value,
-		const css_media_length *client_len)
+		const css_fixed client_len,
+		const css_media *media)
 {
+	css_fixed v;
+
 	if (value->type != CSS_MQ_VALUE_TYPE_DIM) {
 		return false;
 	}
-	/* TODO: convert to same units */
-	if (value->data.dim.unit != client_len->unit) {
-		return false;
+
+	if (value->data.dim.unit != CSS_UNIT_PX) {
+		v = css_len2px(value->data.dim.len,
+				value->data.dim.unit, media);
+	} else {
+		v = value->data.dim.len;
 	}
 
 	switch (op) {
-	case CSS_MQ_FEATURE_OP_BOOL:
-		return false;
-	case CSS_MQ_FEATURE_OP_LT:
-		return value->data.dim.len <  client_len->value;
-	case CSS_MQ_FEATURE_OP_LTE:
-		return value->data.dim.len <= client_len->value;
-	case CSS_MQ_FEATURE_OP_EQ:
-		return value->data.dim.len == client_len->value;
-	case CSS_MQ_FEATURE_OP_GTE:
-		return value->data.dim.len >= client_len->value;
-	case CSS_MQ_FEATURE_OP_GT:
-		return value->data.dim.len >  client_len->value;
+	case CSS_MQ_FEATURE_OP_BOOL: return false;
+	case CSS_MQ_FEATURE_OP_LT:   return v <  client_len;
+	case CSS_MQ_FEATURE_OP_LTE:  return v <= client_len;
+	case CSS_MQ_FEATURE_OP_EQ:   return v == client_len;
+	case CSS_MQ_FEATURE_OP_GTE:  return v >= client_len;
+	case CSS_MQ_FEATURE_OP_GT:   return v >  client_len;
 	default:
 		return false;
 	}
@@ -43,30 +144,31 @@ static inline bool mq_match_feature_range_length_op1(
 static inline bool mq_match_feature_range_length_op2(
 		css_mq_feature_op op,
 		const css_mq_value *value,
-		const css_media_length *client_len)
+		const css_fixed client_len,
+		const css_media *media)
 {
+	css_fixed v;
+
 	if (op == CSS_MQ_FEATURE_OP_UNUSED) {
 		return true;
 	}
 	if (value->type != CSS_MQ_VALUE_TYPE_DIM) {
 		return false;
 	}
-	/* TODO: convert to same units */
-	if (value->data.dim.unit != client_len->unit) {
-		return false;
+
+	if (value->data.dim.unit != CSS_UNIT_PX) {
+		v = css_len2px(value->data.dim.len,
+				value->data.dim.unit, media);
+	} else {
+		v = value->data.dim.len;
 	}
 
 	switch (op) {
-	case CSS_MQ_FEATURE_OP_LT:
-		return client_len->value <  value->data.dim.len;
-	case CSS_MQ_FEATURE_OP_LTE:
-		return client_len->value <= value->data.dim.len;
-	case CSS_MQ_FEATURE_OP_EQ:
-		return client_len->value == value->data.dim.len;
-	case CSS_MQ_FEATURE_OP_GTE:
-		return client_len->value >= value->data.dim.len;
-	case CSS_MQ_FEATURE_OP_GT:
-		return client_len->value >  value->data.dim.len;
+	case CSS_MQ_FEATURE_OP_LT:  return client_len <  v;
+	case CSS_MQ_FEATURE_OP_LTE: return client_len <= v;
+	case CSS_MQ_FEATURE_OP_EQ:  return client_len == v;
+	case CSS_MQ_FEATURE_OP_GTE: return client_len >= v;
+	case CSS_MQ_FEATURE_OP_GT:  return client_len >  v;
 	default:
 		return false;
 	}
@@ -75,7 +177,7 @@ static inline bool mq_match_feature_range_length_op2(
 /**
  * Match media query features.
  *
- * \param[in] feat  Condition to match.
+ * \param[in] feat   Condition to match.
  * \param[in] media  Current media spec, to check against feat.
  * \return true if condition matches, otherwise false.
  */
@@ -85,21 +187,21 @@ static inline bool mq_match_feature(
 {
 	/* TODO: Use interned string for comparison. */
 	if (strcmp(lwc_string_data(feat->name), "width") == 0) {
-		if (!mq_match_feature_range_length_op1(
-				feat->op, &feat->value, &media->width)) {
+		if (!mq_match_feature_range_length_op1(feat->op, &feat->value,
+					media->width, media)) {
 			return false;
 		}
-		return mq_match_feature_range_length_op2(
-				feat->op2, &feat->value2, &media->width);
+		return mq_match_feature_range_length_op2(feat->op2,
+					&feat->value2, media->width, media);
 
 	} else if (strcmp(lwc_string_data(feat->name), "height") == 0) {
-		if (!mq_match_feature_range_length_op1(
-				feat->op, &feat->value, &media->height)) {
+		if (!mq_match_feature_range_length_op1(feat->op, &feat->value,
+				media->height, media)) {
 			return false;
 		}
 
-		return mq_match_feature_range_length_op2(
-				feat->op2, &feat->value2, &media->height);
+		return mq_match_feature_range_length_op2(feat->op2,
+				&feat->value2, media->height, media);
 	}
 
 	/* TODO: Look at other feature names. */

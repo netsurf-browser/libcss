@@ -194,11 +194,6 @@ typedef enum css_media_scripting {
 	CSS_MEDIA_SCRIPTING_ENABLED      = 2
 } css_media_scripting;
 
-typedef struct css_media_length {
-	css_fixed value;
-	css_unit unit;
-} css_media_length;
-
 typedef struct css_media_resolution {
 	css_fixed value;
 	css_unit unit;
@@ -211,9 +206,9 @@ typedef struct css_media {
 	/* Media type */
 	css_media_type        type;
 
-	/* Screen / Device media features */
-	css_media_length      width;
-	css_media_length      height;
+	/* Viewport / page media features */
+	css_fixed             width;  /* In css pixels */
+	css_fixed             height; /* In css pixels */
 	css_fixed             aspect_ratio;
 	css_media_orientation orientation;
 
@@ -242,6 +237,10 @@ typedef struct css_media {
 
 	/* Scripting media features */
 	css_media_scripting scripting;
+
+	/* Client details for length conversion */
+	css_fixed client_font_size;   /* In pt */
+	css_fixed client_line_height; /* In css pixels */
 } css_media;
 
 /**
