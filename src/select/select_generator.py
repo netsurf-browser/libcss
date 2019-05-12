@@ -495,7 +495,6 @@ class CSSGroup:
             for g in css_groups:
                 if g.name is not 'style' and g.name is not 'page':
                     t.append('css_computed_{0} *{0};'.format(g.name))
-            t.append('void *aural;')
 
         t.indent(-1)
         t.append('}}{};'.format(

@@ -17,16 +17,6 @@
 #include "bytecode/bytecode.h"
 #include "select/select.h"
 
-/**
- * Enumeration of property groups
- */
-enum prop_group {
-	GROUP_NORMAL	= 0x0,
-	GROUP_UNCOMMON	= 0x1,
-	GROUP_PAGE	= 0x2,
-	GROUP_AURAL	= 0x3
-};
-
 extern struct prop_table {
 	css_error (*cascade)(uint32_t opv, css_style *style,
 			css_select_state *state);
@@ -37,7 +27,6 @@ extern struct prop_table {
 			const css_computed_style *child,
 			css_computed_style *result);
 	unsigned int inherited;
-	unsigned int group;
 } prop_dispatch[CSS_N_PROPERTIES];
 
 #endif

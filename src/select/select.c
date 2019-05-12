@@ -1811,29 +1811,6 @@ css_error set_initial(css_select_state *state,
 	 */
 	if (prop_dispatch[prop].inherited == false ||
 			(pseudo == CSS_PSEUDO_ELEMENT_NONE && parent == NULL)) {
-		enum prop_group group = prop_dispatch[prop].group;
-
-		/* Remaining properties are neither inherited nor
-		 * already set. Thus, we set them to their initial
-		 * values here. Except, however, if the property in
-		 * question resides in one of the extension blocks and
-		 * the extension block has yet to be allocated. In that
-		 * case, we do nothing and leave it to the property
-		 * accessors to return the initial values for the
-		 * property.
-		 */
-		switch (group) {
-		case GROUP_NORMAL:
-			break;
-		case GROUP_UNCOMMON:
-			break;
-		case GROUP_PAGE:
-			break;
-		case GROUP_AURAL:
-			if (state->computed->i.aural == NULL)
-				return CSS_OK;
-			break;
-		}
 		error = prop_dispatch[prop].initial(state);
 		if (error != CSS_OK)
 			return error;

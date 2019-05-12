@@ -101,10 +101,6 @@ css_error css_computed_style_destroy(css_computed_style *style)
 		css__arena_remove_style(style);
 	}
 
-	if (style->i.aural != NULL) {
-		free(style->i.aural);
-	}
-
 	if (style->counter_increment != NULL) {
 		css_computed_counter *c;
 
@@ -225,8 +221,7 @@ css_error css__computed_style_initialise(css_computed_style *style,
 	for (i = 0; i < CSS_N_PROPERTIES; i++) {
 		/* No need to initialise anything other than the normal
 		 * properties -- the others are handled by the accessors */
-		if (prop_dispatch[i].inherited == false &&
-				prop_dispatch[i].group == GROUP_NORMAL) {
+		if (prop_dispatch[i].inherited == false) {
 			error = prop_dispatch[i].initial(&state);
 			if (error != CSS_OK)
 				return error;
@@ -273,16 +268,6 @@ css_error css_computed_style_compose(
 
 	/* Iterate through the properties */
 	for (i = 0; i < CSS_N_PROPERTIES; i++) {
-		/* Skip any in extension blocks if the block does not exist */
-		switch(prop_dispatch[i].group) {
-		case GROUP_NORMAL:
-			break;
-		case GROUP_AURAL:
-			if (parent->i.aural == NULL && child->i.aural == NULL)
-				continue;
-			break;
-		}
-
 		/* Compose the property */
 		error = prop_dispatch[i].compose(parent, child, composed);
 		if (error != CSS_OK)
