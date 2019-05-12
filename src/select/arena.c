@@ -15,34 +15,12 @@
 #define TU_SIZE 3037
 #define TS_SIZE 5101
 
-struct css_computed_uncommon *table_u[TU_SIZE];
 struct css_computed_style *table_s[TS_SIZE];
-
-
-static inline uint32_t css__arena_hash_uncommon(struct css_computed_uncommon *u)
-{
-	return css__arena_hash((const uint8_t *) &u->i, sizeof(u->i));
-}
 
 
 static inline uint32_t css__arena_hash_style(struct css_computed_style *s)
 {
 	return css__arena_hash((const uint8_t *) &s->i, sizeof(s->i));
-}
-
-
-static inline bool arena__compare_computed_page(
-		const struct css_computed_page *a,
-		const struct css_computed_page *b)
-{
-	if (a == NULL && b == NULL) {
-		return true;
-
-	} else if (a == NULL || b == NULL) {
-		return false;
-	}
-
-	return memcmp(a, b, sizeof(struct css_computed_page)) == 0;
 }
 
 
@@ -119,11 +97,17 @@ static inline bool arena__compare_string_list(
 }
 
 
-static inline bool css__arena_uncommon_is_equal(
-		struct css_computed_uncommon *a,
-		struct css_computed_uncommon *b)
+static inline bool css__arena_style_is_equal(
+		struct css_computed_style *a,
+		struct css_computed_style *b)
 {
-	if (memcmp(&a->i, &b->i, sizeof(struct css_computed_uncommon_i)) != 0) {
+	if (memcmp(&a->i, &b->i, sizeof(struct css_computed_style_i)) != 0) {
+		return false;
+	}
+
+	if (!arena__compare_string_list(
+			a->font_family,
+			b->font_family)) {
 		return false;
 	}
 
@@ -151,79 +135,13 @@ static inline bool css__arena_uncommon_is_equal(
 		return false;
 	}
 
-	return true;
-}
-
-
-static inline bool css__arena_style_is_equal(
-		struct css_computed_style *a,
-		struct css_computed_style *b)
-{
-	if (memcmp(&a->i, &b->i, sizeof(struct css_computed_style_i)) != 0) {
-		return false;
-	}
-
-	if (!arena__compare_string_list(
-			a->font_family,
-			b->font_family)) {
-		return false;
-	}
-
 	if (!arena__compare_string_list(
 			a->quotes,
 			b->quotes)) {
 		return false;
 	}
 
-	if (!arena__compare_computed_page(
-			a->page,
-			b->page)) {
-		return false;
-	}
-
 	return true;
-}
-
-
-static void css__arena_intern_uncommon(
-		struct css_computed_uncommon **uncommon)
-{
-	struct css_computed_uncommon *u = *uncommon;
-	uint32_t hash, index;
-
-	/* Need to intern the uncommon block */
-	hash = css__arena_hash_uncommon(u);
-	index = hash % TU_SIZE;
-	u->bin = index;
-
-	if (table_u[index] == NULL) {
-		/* Can just insert */
-		table_u[index] = u;
-		u->count = 1;
-	} else {
-		/* Check for existing */
-		struct css_computed_uncommon *l = table_u[index];
-		struct css_computed_uncommon *existing = NULL;
-
-		do {
-			if (css__arena_uncommon_is_equal(l, u)) {
-				existing = l;
-				break;
-			}
-			l = l->next;
-		} while (l != NULL);
-
-		if (existing != NULL) {
-			css__computed_uncommon_destroy(u);
-			existing->count++;
-			*uncommon = existing;
-		} else {
-			/* Add to list */
-			u->next = table_u[index];
-			table_u[index] = u;
-			u->count = 1;
-		}
-	}
 }
 
 
@@ -236,13 +154,6 @@ css_error css__arena_intern_style(struct css_computed_style **style)
 	/* Don't try to intern an already-interned computed style */
 	if (s->count != 0) {
 		return CSS_BADPARM;
-	}
-
-	if (s->i.uncommon != NULL) {
-		if (s->i.uncommon->count != 0) {
-			return CSS_BADPARM;
-		}
-		css__arena_intern_uncommon(&s->i.uncommon);
 	}
 
 	/* Need to intern the style block */
@@ -268,7 +179,6 @@ css_error css__arena_intern_style(struct css_computed_style **style)
 		} while (l != NULL);
 
 		if (existing != NULL) {
-			s->i.uncommon = NULL;
 			css_computed_style_destroy(s);
 			existing->count++;
 			*style = existing;
@@ -320,43 +230,3 @@ enum css_error css__arena_remove_style(struct css_computed_style *style)
 
 	return CSS_OK;
 }
-
-
-/* Internally exported function, documented in src/select/arena.h */
-enum css_error css__arena_remove_uncommon_style(
-		struct css_computed_uncommon *uncommon)
-{
-	uint32_t index = uncommon->bin;
-
-	if (table_u[index] == NULL) {
-		return CSS_BADPARM;
-
-	} else {
-		/* Check for existing */
-		struct css_computed_uncommon *l = table_u[index];
-		struct css_computed_uncommon *existing = NULL;
-		struct css_computed_uncommon *prev = NULL;
-
-		do {
-			if (css__arena_uncommon_is_equal(l, uncommon)) {
-				existing = l;
-				break;
-			}
-			prev = l;
-			l = l->next;
-		} while (l != NULL);
-
-		if (existing != NULL) {
-			if (prev != NULL) {
-				prev->next = existing->next;
-			} else {
-				table_u[index] = existing->next;
-			}
-		} else {
-			return CSS_BADPARM;
-		}
-	}
-
-	return CSS_OK;
-}
-

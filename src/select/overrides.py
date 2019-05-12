@@ -14,41 +14,36 @@ static inline uint8_t get_clip(
 		const css_computed_style *style,
 		css_computed_clip_rect *rect)
 {
-	if (style->i.uncommon != NULL) {
-		uint32_t bits = style->i.uncommon->i.bits[CLIP_INDEX];
-		bits &= CLIP_MASK;
-		bits >>= CLIP_SHIFT;
+	uint32_t bits = style->i.bits[CLIP_INDEX];
+	bits &= CLIP_MASK;
+	bits >>= CLIP_SHIFT;
 
-		/*
-		26bits: tt tttr rrrr bbbb blll llTR BLyy:
-		units: top | right | bottom | left
-		opcodes: top | right | bottom | left | type
-		*/
+	/*
+	26bits: tt tttr rrrr bbbb blll llTR BLyy:
+	units: top | right | bottom | left
+	opcodes: top | right | bottom | left | type
+	*/
 
-		if ((bits & 0x3) == CSS_CLIP_RECT) {
-			rect->left_auto = (bits & 0x4);
-			rect->bottom_auto = (bits & 0x8);
-			rect->right_auto = (bits & 0x10);
-			rect->top_auto = (bits & 0x20);
+	if ((bits & 0x3) == CSS_CLIP_RECT) {
+		rect->left_auto = (bits & 0x4);
+		rect->bottom_auto = (bits & 0x8);
+		rect->right_auto = (bits & 0x10);
+		rect->top_auto = (bits & 0x20);
 
-			rect->top = style->i.uncommon->i.clip_a;
-			rect->tunit = bits & 0x3e00000 >> 21;
+		rect->top = style->i.clip_a;
+		rect->tunit = bits & 0x3e00000 >> 21;
 
-			rect->right = style->i.uncommon->i.clip_b;
-			rect->runit = bits & 0x1f0000 >> 16;
+		rect->right = style->i.clip_b;
+		rect->runit = bits & 0x1f0000 >> 16;
 
-			rect->bottom = style->i.uncommon->i.clip_c;
-			rect->bunit = (bits & 0xf800) >> 11;
+		rect->bottom = style->i.clip_c;
+		rect->bunit = (bits & 0xf800) >> 11;
 
-			rect->left = style->i.uncommon->i.clip_d;
-			rect->lunit = (bits & 0x7c0) >> 6;
-		}
-
-		return (bits & 0x3);
+		rect->left = style->i.clip_d;
+		rect->lunit = (bits & 0x7c0) >> 6;
 	}
 
-	/* Initial value */
-	return CSS_CLIP_AUTO;
+	return (bits & 0x3);
 }'''
 
 overrides['set']['clip'] = '''\
@@ -58,9 +53,7 @@ static inline css_error set_clip(
 {
 	uint32_t *bits;
 
-	ENSURE_UNCOMMON;
-
-	bits = &style->i.uncommon->i.bits[CLIP_INDEX];
+	bits = &style->i.bits[CLIP_INDEX];
 
 	/*
 	26bits: tt tttr rrrr bbbb blll llTR BLyy:
@@ -82,10 +75,10 @@ static inline css_error set_clip(
 		*bits |= (((rect->bunit << 5) | rect->lunit)
 				<< (CLIP_SHIFT + 6));
 
-		style->i.uncommon->i.clip_a = rect->top;
-		style->i.uncommon->i.clip_b = rect->right;
-		style->i.uncommon->i.clip_c = rect->bottom;
-		style->i.uncommon->i.clip_d = rect->left;
+		style->i.clip_a = rect->top;
+		style->i.clip_b = rect->right;
+		style->i.clip_c = rect->bottom;
+		style->i.clip_d = rect->left;
 	}
 
 	return CSS_OK;
@@ -122,11 +115,9 @@ static inline css_error set_content(
 	css_computed_content_item *oldcontent;
 	css_computed_content_item *c;
 
-	ENSURE_UNCOMMON;
-
 	/* 2bits: type */
-	bits = &style->i.uncommon->i.bits[CONTENT_INDEX];
-	oldcontent = style->i.uncommon->content;
+	bits = &style->i.bits[CONTENT_INDEX];
+	oldcontent = style->content;
 
 	*bits = (*bits & ~CONTENT_MASK) |
 			((type & 0x3) << CONTENT_SHIFT);
@@ -158,7 +149,7 @@ static inline css_error set_content(
 		}
 	}
 
-	style->i.uncommon->content = content;
+	style->content = content;
 
 	/* Free existing array */
 	if (oldcontent != NULL) {

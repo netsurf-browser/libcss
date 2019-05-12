@@ -83,95 +83,6 @@ css_error css__computed_style_create(css_computed_style **result)
 }
 
 /**
- * Destroy an uncommon computed style section
- *
- * \param style  Style to destroy
- * \return CSS_OK on success, appropriate error otherwise
- */
-css_error css__computed_uncommon_destroy(css_computed_uncommon *uncommon)
-{
-	if (uncommon == NULL)
-		return CSS_BADPARM;
-
-	if (uncommon->count > 1) {
-		uncommon->count--;
-		return CSS_OK;
-
-	} else if (uncommon->count == 1) {
-		css__arena_remove_uncommon_style(uncommon);
-	}
-
-	if (uncommon != NULL) {
-		if (uncommon->counter_increment != NULL) {
-			css_computed_counter *c;
-
-			for (c = uncommon->counter_increment;
-					c->name != NULL; c++) {
-				lwc_string_unref(c->name);
-			}
-
-			free(uncommon->counter_increment);
-		}
-
-		if (uncommon->counter_reset != NULL) {
-			css_computed_counter *c;
-
-			for (c = uncommon->counter_reset;
-					c->name != NULL; c++) {
-				lwc_string_unref(c->name);
-			}
-
-			free(uncommon->counter_reset);
-		}
-
-		if (uncommon->cursor != NULL) {
-			lwc_string **s;
-
-			for (s = uncommon->cursor; *s != NULL; s++) {
-				lwc_string_unref(*s);
-			}
-
-			free(uncommon->cursor);
-		}
-
-		if (uncommon->content != NULL) {
-			css_computed_content_item *c;
-
-			for (c = uncommon->content;
-					c->type != CSS_COMPUTED_CONTENT_NONE;
-					c++) {
-				switch (c->type) {
-				case CSS_COMPUTED_CONTENT_STRING:
-					lwc_string_unref(c->data.string);
-					break;
-				case CSS_COMPUTED_CONTENT_URI:
-					lwc_string_unref(c->data.uri);
-					break;
-				case CSS_COMPUTED_CONTENT_ATTR:
-					lwc_string_unref(c->data.attr);
-					break;
-				case CSS_COMPUTED_CONTENT_COUNTER:
-					lwc_string_unref(c->data.counter.name);
-					break;
-				case CSS_COMPUTED_CONTENT_COUNTERS:
-					lwc_string_unref(c->data.counters.name);
-					lwc_string_unref(c->data.counters.sep);
-					break;
-				default:
-					break;
-				}
-			}
-
-			free(uncommon->content);
-		}
-
-		free(uncommon);
-	}
-
-	return CSS_OK;
-}
-
-/**
  * Destroy a computed style
  *
  * \param style  Style to destroy
@@ -182,8 +93,6 @@ css_error css_computed_style_destroy(css_computed_style *style)
 	if (style == NULL)
 		return CSS_BADPARM;
 
-	css__computed_uncommon_destroy(style->i.uncommon);
-
 	if (style->count > 1) {
 		style->count--;
 		return CSS_OK;
@@ -192,12 +101,69 @@ css_error css_computed_style_destroy(css_computed_style *style)
 		css__arena_remove_style(style);
 	}
 
-	if (style->page != NULL) {
-		free(style->page);
-	}
-
 	if (style->i.aural != NULL) {
 		free(style->i.aural);
+	}
+
+	if (style->counter_increment != NULL) {
+		css_computed_counter *c;
+
+		for (c = style->counter_increment; c->name != NULL; c++) {
+			lwc_string_unref(c->name);
+		}
+
+		free(style->counter_increment);
+	}
+
+	if (style->counter_reset != NULL) {
+		css_computed_counter *c;
+
+		for (c = style->counter_reset; c->name != NULL; c++) {
+			lwc_string_unref(c->name);
+		}
+
+		free(style->counter_reset);
+	}
+
+	if (style->cursor != NULL) {
+		lwc_string **s;
+
+		for (s = style->cursor; *s != NULL; s++) {
+			lwc_string_unref(*s);
+		}
+
+		free(style->cursor);
+	}
+
+	if (style->content != NULL) {
+		css_computed_content_item *c;
+
+		for (c = style->content;
+				c->type != CSS_COMPUTED_CONTENT_NONE;
+				c++) {
+			switch (c->type) {
+			case CSS_COMPUTED_CONTENT_STRING:
+				lwc_string_unref(c->data.string);
+				break;
+			case CSS_COMPUTED_CONTENT_URI:
+				lwc_string_unref(c->data.uri);
+				break;
+			case CSS_COMPUTED_CONTENT_ATTR:
+				lwc_string_unref(c->data.attr);
+				break;
+			case CSS_COMPUTED_CONTENT_COUNTER:
+				lwc_string_unref(c->data.counter.name);
+				break;
+			case CSS_COMPUTED_CONTENT_COUNTERS:
+				lwc_string_unref(c->data.counters.name);
+				lwc_string_unref(c->data.counters.sep);
+				break;
+			default:
+				break;
+			}
+		}
+
+		free(style->content);
 	}
 
 	if (style->font_family != NULL) {
@@ -310,15 +276,6 @@ css_error css_computed_style_compose(
 		/* Skip any in extension blocks if the block does not exist */
 		switch(prop_dispatch[i].group) {
 		case GROUP_NORMAL:
-			break;
-		case GROUP_UNCOMMON:
-			if (parent->i.uncommon == NULL &&
-					child->i.uncommon == NULL)
-				continue;
-			break;
-		case GROUP_PAGE:
-			if (parent->page == NULL && child->page == NULL)
-				continue;
 			break;
 		case GROUP_AURAL:
 			if (parent->i.aural == NULL && child->i.aural == NULL)
@@ -1292,76 +1249,73 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 	if (error != CSS_OK)
 		return error;
 
-	/* Uncommon properties */
-	if (style->i.uncommon != NULL) {
-		/* Fix up border-spacing */
-		error = compute_absolute_length_pair(style,
-				&ex_size.data.length,
-				get_border_spacing,
-				set_border_spacing);
-		if (error != CSS_OK)
+	/* Fix up border-spacing */
+	error = compute_absolute_length_pair(style,
+			&ex_size.data.length,
+			get_border_spacing,
+			set_border_spacing);
+	if (error != CSS_OK)
+		return error;
+
+	/* Fix up clip */
+	error = compute_absolute_clip(style, &ex_size.data.length);
+	if (error != CSS_OK)
+		return error;
+
+	/* Fix up letter-spacing */
+	error = compute_absolute_length(style,
+			&ex_size.data.length,
+			get_letter_spacing,
+			set_letter_spacing);
+	if (error != CSS_OK)
+		return error;
+
+	/* Fix up outline-color */
+	error = compute_absolute_color(style,
+			get_outline_color,
+			set_outline_color);
+	if (error != CSS_OK)
+		return error;
+
+	/* Fix up outline-width */
+	error = compute_absolute_border_side_width(style,
+			&ex_size.data.length,
+			get_outline_width,
+		set_outline_width);
+	if (error != CSS_OK)
+		return error;
+
+	/* Fix up word-spacing */
+	error = compute_absolute_length(style,
+			&ex_size.data.length,
+			get_word_spacing,
+			set_word_spacing);
+	if (error != CSS_OK)
+		return error;
+
+	/* Fix up column-rule-width */
+	error = compute_absolute_border_side_width(style,
+			&ex_size.data.length,
+			get_column_rule_width,
+			set_column_rule_width);
+	if (error != CSS_OK)
 			return error;
 
-		/* Fix up clip */
-		error = compute_absolute_clip(style, &ex_size.data.length);
-		if (error != CSS_OK)
+	/* Fix up column-width */
+	error = compute_absolute_length(style,
+			&ex_size.data.length,
+			get_column_width,
+			set_column_width);
+	if (error != CSS_OK)
 			return error;
 
-		/* Fix up letter-spacing */
-		error = compute_absolute_length(style,
-				&ex_size.data.length,
-				get_letter_spacing,
-				set_letter_spacing);
-		if (error != CSS_OK)
-			return error;
-
-		/* Fix up outline-color */
-		error = compute_absolute_color(style,
-				get_outline_color,
-				set_outline_color);
-		if (error != CSS_OK)
-			return error;
-
-		/* Fix up outline-width */
-		error = compute_absolute_border_side_width(style,
-				&ex_size.data.length,
-				get_outline_width,
-				set_outline_width);
-		if (error != CSS_OK)
-			return error;
-
-		/* Fix up word-spacing */
-		error = compute_absolute_length(style,
-				&ex_size.data.length,
-				get_word_spacing,
-				set_word_spacing);
-		if (error != CSS_OK)
-			return error;
-
-		/* Fix up column-rule-width */
-		error = compute_absolute_border_side_width(style,
-				&ex_size.data.length,
-				get_column_rule_width,
-				set_column_rule_width);
-		if (error != CSS_OK)
-			return error;
-
-		/* Fix up column-width */
-		error = compute_absolute_length(style,
-				&ex_size.data.length,
-				get_column_width,
-				set_column_width);
-		if (error != CSS_OK)
-			return error;
-
-		/* Fix up column-gap */
-		error = compute_absolute_length(style,
-				&ex_size.data.length,
-				get_column_gap,
-				set_column_gap);
-		if (error != CSS_OK)
-			return error;
-	}
+	/* Fix up column-gap */
+	error = compute_absolute_length(style,
+			&ex_size.data.length,
+			get_column_gap,
+			set_column_gap);
+	if (error != CSS_OK)
+		return error;
 
 	return CSS_OK;
 }

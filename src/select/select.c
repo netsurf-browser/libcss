@@ -1826,12 +1826,8 @@ css_error set_initial(css_select_state *state,
 		case GROUP_NORMAL:
 			break;
 		case GROUP_UNCOMMON:
-			if (state->computed->i.uncommon == NULL)
-				return CSS_OK;
 			break;
 		case GROUP_PAGE:
-			if (state->computed->page == NULL)
-				return CSS_OK;
 			break;
 		case GROUP_AURAL:
 			if (state->computed->i.aural == NULL)

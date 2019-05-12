@@ -204,43 +204,34 @@ css_error css__compose_content(const css_computed_style *parent,
 		css_computed_style *result)
 {
 	css_error error;
+	css_computed_content_item *copy = NULL;
 	const css_computed_content_item *items = NULL;
 	uint8_t type = get_content(child, &items);
 
-	if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-			type == CSS_CONTENT_INHERIT ||
-			(child->i.uncommon != NULL && result != child)) {
-		size_t n_items = 0;
-		css_computed_content_item *copy = NULL;
-
-		if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-				type == CSS_CONTENT_INHERIT) {
-			type = get_content(parent, &items);
-		}
-
-		if (type == CSS_CONTENT_SET) {
-			const css_computed_content_item *i;
-
-			for (i = items; i->type != CSS_COMPUTED_CONTENT_NONE;
-					i++)
-				n_items++;
-
-			copy = malloc((n_items + 1) *
-					sizeof(css_computed_content_item));
-			if (copy == NULL)
-				return CSS_NOMEM;
-
-			memcpy(copy, items, (n_items + 1) *
-					sizeof(css_computed_content_item));
-		}
-
-		error = set_content(result, type, copy);
-		if (error != CSS_OK && copy != NULL)
-			free(copy);
-
-		return error;
+	if (type == CSS_CONTENT_INHERIT) {
+		type = get_content(parent, &items);
 	}
 
-	return CSS_OK;
-}
+	if (type == CSS_CONTENT_SET) {
+		size_t n_items = 0;
+		const css_computed_content_item *i;
 
+		for (i = items; i->type != CSS_COMPUTED_CONTENT_NONE;
+				i++)
+			n_items++;
+
+		copy = malloc((n_items + 1) *
+				sizeof(css_computed_content_item));
+		if (copy == NULL)
+			return CSS_NOMEM;
+
+		memcpy(copy, items, (n_items + 1) *
+				sizeof(css_computed_content_item));
+	}
+
+	error = set_content(result, type, copy);
+	if (error != CSS_OK && copy != NULL)
+		free(copy);
+
+	return error;
+}

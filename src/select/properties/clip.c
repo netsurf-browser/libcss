@@ -102,17 +102,9 @@ css_error css__compose_clip(const css_computed_style *parent,
 			false, false, false, false };
 	uint8_t type = get_clip(child, &rect);
 
-	if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-			type == CSS_CLIP_INHERIT ||
-			(child->i.uncommon != NULL && result != child)) {
-		if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-				type == CSS_CLIP_INHERIT) {
-			type = get_clip(parent, &rect);
-		}
-
-		return set_clip(result, type, &rect);
+	if (type == CSS_CLIP_INHERIT) {
+		type = get_clip(parent, &rect);
 	}
 
-	return CSS_OK;
+	return set_clip(result, type, &rect);
 }
-

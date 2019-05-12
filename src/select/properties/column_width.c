@@ -41,17 +41,9 @@ css_error css__compose_column_width(const css_computed_style *parent,
 	css_unit unit = CSS_UNIT_EM;
 	uint8_t type = get_column_width(child, &length, &unit);
 
-	if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-			type == CSS_COLUMN_WIDTH_INHERIT ||
-			(child->i.uncommon != NULL && result != child)) {
-		if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-				type == CSS_COLUMN_WIDTH_INHERIT) {
-			type = get_column_width(parent, &length, &unit);
-		}
-
-		return set_column_width(result, type, length, unit);
+	if (type == CSS_COLUMN_WIDTH_INHERIT) {
+		type = get_column_width(parent, &length, &unit);
 	}
 
-	return CSS_OK;
+	return set_column_width(result, type, length, unit);
 }
-

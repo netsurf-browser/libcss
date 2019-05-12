@@ -65,17 +65,9 @@ css_error css__compose_outline_color(const css_computed_style *parent,
 	css_color color = 0;
 	uint8_t type = get_outline_color(child, &color);
 
-	if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-			type == CSS_OUTLINE_COLOR_INHERIT ||
-			(child->i.uncommon != NULL && result != child)) {
-		if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-				type == CSS_OUTLINE_COLOR_INHERIT) {
-			type = get_outline_color(parent, &color);
-		}
-
-		return set_outline_color(result, type, color);
+	if (type == CSS_OUTLINE_COLOR_INHERIT) {
+		type = get_outline_color(parent, &color);
 	}
 
-	return CSS_OK;
+	return set_outline_color(result, type, color);
 }
-

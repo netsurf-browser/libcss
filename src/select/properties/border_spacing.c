@@ -71,19 +71,10 @@ css_error css__compose_border_spacing(const css_computed_style *parent,
 	uint8_t type = get_border_spacing(child, &hlength, &hunit,
 			&vlength, &vunit);
 
-	if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-			type == CSS_BORDER_SPACING_INHERIT ||
-			(child->i.uncommon != NULL && result != child)) {
-		if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-				type == CSS_BORDER_SPACING_INHERIT) {
-			type = get_border_spacing(parent,
-					&hlength, &hunit, &vlength, &vunit);
-		}
-
-		return set_border_spacing(result, type, hlength, hunit,
-				vlength, vunit);
+	if (type == CSS_BORDER_SPACING_INHERIT) {
+		type = get_border_spacing(parent,
+				&hlength, &hunit, &vlength, &vunit);
 	}
 
-	return CSS_OK;
+	return set_border_spacing(result, type, hlength, hunit, vlength, vunit);
 }
-

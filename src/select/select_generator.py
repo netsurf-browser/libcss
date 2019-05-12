@@ -512,9 +512,6 @@ class CSSGroup:
             t.append(self.make_value_declaration(for_commented=True))
             t.append()
 
-            if self.name is 'style':
-                t.append('css_computed_page *page;')
-
             t.append('struct css_computed_' + self.name + ' *next;')
             t.append('uint32_t count;')
             t.append('uint32_t bin;')

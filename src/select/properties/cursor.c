@@ -169,42 +169,33 @@ css_error css__compose_cursor(const css_computed_style *parent,
 		css_computed_style *result)
 {
 	css_error error;
+	lwc_string **copy = NULL;
 	lwc_string **urls = NULL;
 	uint8_t type = get_cursor(child, &urls);
 
-	if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-			type == CSS_CURSOR_INHERIT ||
-			(child->i.uncommon != NULL && result != child)) {
-		size_t n_urls = 0;
-		lwc_string **copy = NULL;
-
-		if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-				type == CSS_CURSOR_INHERIT) {
-			type = get_cursor(parent, &urls);
-		}
-
-		if (urls != NULL) {
-			lwc_string **i;
-
-			for (i = urls; (*i) != NULL; i++)
-				n_urls++;
-
-			copy = malloc((n_urls + 1) *
-					sizeof(lwc_string *));
-			if (copy == NULL)
-				return CSS_NOMEM;
-
-			memcpy(copy, urls, (n_urls + 1) *
-					sizeof(lwc_string *));
-		}
-
-		error = set_cursor(result, type, copy);
-		if (error != CSS_OK && copy != NULL)
-			free(copy);
-
-		return error;
+	if (type == CSS_CURSOR_INHERIT) {
+		type = get_cursor(parent, &urls);
 	}
 
-	return CSS_OK;
-}
+	if (urls != NULL) {
+		lwc_string **i;
+		size_t n_urls = 0;
 
+		for (i = urls; (*i) != NULL; i++)
+			n_urls++;
+
+		copy = malloc((n_urls + 1) *
+				sizeof(lwc_string *));
+		if (copy == NULL)
+			return CSS_NOMEM;
+
+		memcpy(copy, urls, (n_urls + 1) *
+				sizeof(lwc_string *));
+	}
+
+	error = set_cursor(result, type, copy);
+	if (error != CSS_OK && copy != NULL)
+		free(copy);
+
+	return error;
+}

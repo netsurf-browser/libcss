@@ -41,17 +41,9 @@ css_error css__compose_word_spacing(const css_computed_style *parent,
 	css_unit unit = CSS_UNIT_PX;
 	uint8_t type = get_word_spacing(child, &length, &unit);
 
-	if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-			type == CSS_WORD_SPACING_INHERIT ||
-			(child->i.uncommon != NULL && result != child)) {
-		if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-				type == CSS_WORD_SPACING_INHERIT) {
-			type = get_word_spacing(parent, &length, &unit);
-		}
-
-		return set_word_spacing(result, type, length, unit);
+	if (type == CSS_WORD_SPACING_INHERIT) {
+		type = get_word_spacing(parent, &length, &unit);
 	}
 
-	return CSS_OK;
+	return set_word_spacing(result, type, length, unit);
 }
-

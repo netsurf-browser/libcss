@@ -59,17 +59,9 @@ css_error css__compose_column_count(const css_computed_style *parent,
 	int32_t count = 0;
 	uint8_t type = get_column_count(child, &count);
 
-	if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-			type == CSS_COLUMN_COUNT_INHERIT ||
-			(child->i.uncommon != NULL && result != child)) {
-		if ((child->i.uncommon == NULL && parent->i.uncommon != NULL) ||
-				type == CSS_COLUMN_COUNT_INHERIT) {
-			type = get_column_count(parent, &count);
-		}
-
-		return set_column_count(result, type, count);
+	if (type == CSS_COLUMN_COUNT_INHERIT) {
+		type = get_column_count(parent, &count);
 	}
 
-	return CSS_OK;
+	return set_column_count(result, type, count);
 }
-

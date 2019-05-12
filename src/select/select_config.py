@@ -110,10 +110,7 @@ style = {
         'blank entry.'),
     ('quotes', 1, 'string_arr', None, None,
         'Encode quotes as an array of string objects, terminated with a '
-        'blank entry.')
-}
-
-page = {
+        'blank entry.'),
     # Page group
     ('page_break_after', 3, None, None, 'CSS_PAGE_BREAK_AFTER_AUTO'),
     ('page_break_before', 3, None, None, 'CSS_PAGE_BREAK_BEFORE_AUTO'),
@@ -121,10 +118,7 @@ page = {
     ('widows', 1, (('integer', '2'),), None,
         'CSS_WIDOWS_SET'),
     ('orphans', 1, (('integer', '2'),), None,
-        'CSS_ORPHANS_SET')
-}
-
-uncommon = {
+        'CSS_ORPHANS_SET'),
     # Uncommon group
     ('border_spacing', 1, (('length',), ('length',)), 'CSS_BORDER_SPACING_SET',
         'CSS_BORDER_SPACING_SET'),
@@ -170,7 +164,5 @@ uncommon = {
 }
 
 groups = [
-    { 'name': 'uncommon', 'props': uncommon },
-    { 'name': 'page', 'props': page },
     { 'name': 'style', 'props': style }
 ]

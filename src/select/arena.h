@@ -10,7 +10,6 @@
 #define css_select_arena_h_
 
 struct css_computed_style;
-struct css_computed_uncommon;
 
 /*
  * Add computed style to the style sharing arena, or exchange for existing
@@ -31,15 +30,6 @@ enum css_error css__arena_intern_style(struct css_computed_style **style);
  * \return CSS_OK on success or appropriate error otherwise.
  */
 enum css_error css__arena_remove_style(struct css_computed_style *style);
-
-/*
- * Remove a computed style's uncommon block from the style sharing arena
- *
- * \params uncommon  The uncommon style to remove from the style sharing arena
- * \return CSS_OK on success or appropriate error otherwise.
- */
-enum css_error css__arena_remove_uncommon_style(
-		struct css_computed_uncommon *uncommon);
 
 #endif
 
