@@ -426,7 +426,7 @@ static css_error mq_parse_range(lwc_string **strings,
 		/* num/dim/ident */
 		error = mq_populate_value(&result->value, name_or_value);
 		if (error != CSS_OK) {
-			free(result);
+			css__mq_feature_destroy(result);
 			return error;
 		}
 	}
@@ -513,7 +513,7 @@ static css_error mq_parse_media_feature(lwc_string **strings,
 
 				error = mq_parse_ratio(vector, ctx, token, &ratio);
 				if (error != CSS_OK) {
-					free(result);
+					css__mq_feature_destroy(result);
 					return error;
 				}
 
@@ -523,7 +523,7 @@ static css_error mq_parse_media_feature(lwc_string **strings,
 				/* num/dim/ident */
 				error = mq_populate_value(&result->value, token);
 				if (error != CSS_OK) {
-					free(result);
+					css__mq_feature_destroy(result);
 					return error;
 				}
 			}
