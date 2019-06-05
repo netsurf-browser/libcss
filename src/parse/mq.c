@@ -117,6 +117,10 @@ static css_error mq_parse_ratio(
 	num = css__number_from_lwc_string(numerator->idata, true, &num_len);
 	den = css__number_from_lwc_string(token->idata, true, &den_len);
 
+	if (num == 0 || den == 0) {
+		return CSS_INVALID;
+	}
+
 	*ratio = css_divide_fixed(num, den);
 
 	return CSS_OK;
