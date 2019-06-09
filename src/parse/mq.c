@@ -1059,6 +1059,34 @@ finished:
 	return CSS_OK;
 }
 
+/**
+ * Create a `not all` media query.
+ *
+ * > 3.2: "A media query that does not match the grammar in the previous
+ * > section must be replaced by not all during parsing."
+ *
+ * https://www.w3.org/TR/mediaqueries-4/#error-handling
+ *
+ * \param[out]  Returns the created mq on success.
+ * \return CSS_OK on success,
+ */
+static css_error css__mq_parse__create_not_all(
+		css_mq_query **not_all_out)
+{
+	css_mq_query *not_all;
+
+	not_all = calloc(1, sizeof(*not_all));
+	if (not_all == NULL) {
+		return CSS_NOMEM;
+	}
+
+	not_all->negate_type = 1;
+	not_all->type = CSS_MEDIA_ALL;
+
+	*not_all_out = not_all;
+	return CSS_OK;
+}
+
 css_error css__mq_parse_media_list(lwc_string **strings,
 		const parserutils_vector *vector, int *ctx,
 		css_mq_query **media)
@@ -1081,18 +1109,21 @@ css_error css__mq_parse_media_list(lwc_string **strings,
 		css_mq_query *query;
 
 		error = mq_parse_media_query(strings, vector, ctx, &query);
+		if (error == CSS_INVALID) {
+			error = css__mq_parse__create_not_all(&query);
+		}
+
 		if (error != CSS_OK) {
-			/* TODO: error recovery (see above) */
 			css__mq_query_destroy(result);
 			return error;
+		}
+
+		if (result == NULL) {
+			result = last = query;
 		} else {
-			if (result == NULL) {
-				result = last = query;
-			} else {
-				assert(last != NULL);
-				last->next = query;
-				last = query;
-			}
+			assert(last != NULL);
+			last->next = query;
+			last = query;
 		}
 
 		consumeWhitespace(vector, ctx);
