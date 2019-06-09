@@ -1106,7 +1106,7 @@ css_error css__mq_parse_media_list(lwc_string **strings,
 
 	token = parserutils_vector_peek(vector, *ctx);
 	while (token != NULL) {
-		css_mq_query *query;
+		css_mq_query *query = NULL;
 
 		error = mq_parse_media_query(strings, vector, ctx, &query);
 		if (error == CSS_INVALID) {
