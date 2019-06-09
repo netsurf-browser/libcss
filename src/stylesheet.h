@@ -117,10 +117,10 @@ struct css_rule {
 	css_rule *next;				/**< next in list */
 	css_rule *prev;				/**< previous in list */
 
-	unsigned int type  :  4,		/**< css_rule_type */
-		     index : 16,		/**< index in sheet */
-		     items :  8,		/**< # items in rule */
-		     ptype :  1;		/**< css_rule_parent_type */
+	uint32_t index; /**< index in sheet */
+	uint16_t items; /**< number of items (selectors) in rule */
+	uint8_t type;   /**< css_rule_type */
+	uint8_t ptype;  /**< css_rule_parent_type */
 } _ALIGNED;
 
 typedef struct css_rule_selector {
