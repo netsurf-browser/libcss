@@ -222,17 +222,15 @@ static inline bool mq_match_condition(
 {
 	bool matched = !cond->op;
 
-	for (uint32_t i = 0; i < cond->parts->nparts; i++) {
+	for (uint32_t i = 0; i < cond->nparts; i++) {
 		bool part_matched;
-		if (cond->parts->parts[i]->type == CSS_MQ_FEATURE) {
+		if (cond->parts[i]->type == CSS_MQ_FEATURE) {
 			part_matched = mq_match_feature(
-					cond->parts->parts[i]->data.feat,
-					media);
+					cond->parts[i]->data.feat, media);
 		} else {
-			assert(cond->parts->parts[i]->type == CSS_MQ_COND);
+			assert(cond->parts[i]->type == CSS_MQ_COND);
 			part_matched = mq_match_condition(
-					cond->parts->parts[i]->data.cond,
-					media);
+					cond->parts[i]->data.cond, media);
 		}
 
 		if (cond->op) {

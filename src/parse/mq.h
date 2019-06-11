@@ -57,14 +57,10 @@ typedef struct {
 typedef struct css_mq_cond_or_feature css_mq_cond_or_feature;
 
 typedef struct {
-	uint32_t nparts;
-	css_mq_cond_or_feature **parts;
-} css_mq_cond_parts;
-
-typedef struct {
 	uint32_t negate : 1, /* set if "not" */
 		 op     : 1; /* clear if "and", set if "or" */
-	css_mq_cond_parts *parts;
+	uint32_t nparts;
+	css_mq_cond_or_feature **parts;
 } css_mq_cond;
 
 struct css_mq_cond_or_feature {

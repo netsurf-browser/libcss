@@ -39,21 +39,13 @@ static void css__mq_feature_destroy(css_mq_feature *feature)
 static void css__mq_cond_or_feature_destroy(
 		css_mq_cond_or_feature *cond_or_feature);
 
-static void css__mq_cond_parts_destroy(css_mq_cond_parts *cond_parts)
-{
-	if (cond_parts != NULL) {
-		for (uint32_t i = 0; i < cond_parts->nparts; i++) {
-			css__mq_cond_or_feature_destroy(cond_parts->parts[i]);
-		}
-		free(cond_parts->parts);
-		free(cond_parts);
-	}
-}
-
 static void css__mq_cond_destroy(css_mq_cond *cond)
 {
 	if (cond != NULL) {
-		css__mq_cond_parts_destroy(cond->parts);
+		for (uint32_t i = 0; i < cond->nparts; i++) {
+			css__mq_cond_or_feature_destroy(cond->parts[i]);
+		}
+		free(cond->parts);
 		free(cond);
 	}
 }
@@ -790,12 +782,6 @@ static css_error mq_parse_condition(lwc_string **strings,
 		return CSS_NOMEM;
 	}
 	memset(result, 0, sizeof(*result));
-	result->parts = malloc(sizeof(*result->parts));
-	if (result->parts == NULL) {
-		free(result);
-		return CSS_NOMEM;
-	}
-	memset(result->parts, 0, sizeof(*result->parts));
 
 	if (tokenIsChar(token, '(') == false) {
 		/* Must be "not" */
@@ -810,14 +796,14 @@ static css_error mq_parse_condition(lwc_string **strings,
 		}
 
 		result->negate = 1;
-		result->parts->nparts = 1;
-		result->parts->parts = malloc(sizeof(*result->parts->parts));
-		if (result->parts->parts == NULL) {
+		result->nparts = 1;
+		result->parts = malloc(sizeof(*result->parts));
+		if (result->parts == NULL) {
 			css__mq_cond_or_feature_destroy(cond_or_feature);
 			css__mq_cond_destroy(result);
 			return CSS_NOMEM;
 		}
-		result->parts->parts[0] = cond_or_feature;
+		result->parts[0] = cond_or_feature;
 
 		*cond = result;
 
@@ -834,16 +820,16 @@ static css_error mq_parse_condition(lwc_string **strings,
 			return CSS_INVALID;
 		}
 
-		parts = realloc(result->parts->parts,
-				(result->parts->nparts+1)*sizeof(*result->parts->parts));
+		parts = realloc(result->parts,
+				(result->nparts+1)*sizeof(*result->parts));
 		if (parts == NULL) {
 			css__mq_cond_or_feature_destroy(cond_or_feature);
 			css__mq_cond_destroy(result);
 			return CSS_NOMEM;
 		}
-		parts[result->parts->nparts] = cond_or_feature;
-		result->parts->parts = parts;
-		result->parts->nparts++;
+		parts[result->nparts] = cond_or_feature;
+		result->parts = parts;
+		result->nparts++;
 
 		consumeWhitespace(vector, ctx);
 
