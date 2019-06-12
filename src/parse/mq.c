@@ -745,6 +745,9 @@ static css_error mq_parse_media_in_parens(lwc_string **strings,
 
 	*ctx = old_ctx;
 	error = mq_parse_general_enclosed(strings, vector, ctx);
+	if (error == CSS_OK) {
+		*cond_or_feature = NULL;
+	}
 
 	return error;
 }
