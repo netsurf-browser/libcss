@@ -745,11 +745,12 @@ static css_error mq_parse_media_in_parens(lwc_string **strings,
 
 	*ctx = old_ctx;
 	error = mq_parse_general_enclosed(strings, vector, ctx);
-	if (error == CSS_OK) {
-		*cond_or_feature = NULL;
+	if (error != CSS_OK) {
+		return error;
 	}
 
-	return error;
+	*cond_or_feature = NULL;
+	return CSS_OK;
 }
 
 static css_error mq_parse_condition(lwc_string **strings,
