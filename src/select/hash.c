@@ -815,23 +815,22 @@ css_error _insert_into_chain(css_selector_hash *ctx, hash_entry *head,
 			search = search->next;
 		} while (search != NULL);
 
+		if (prev == NULL) {
+			*entry = *head;
+			head->next = entry;
+
+			entry = head;
+		} else {
+			entry->next = prev->next;
+			prev->next = entry;
+		}
+
 		entry->sel = selector;
 		_chain_bloom_generate(selector, entry->sel_chain_bloom);
 
 #ifdef PRINT_CHAIN_BLOOM_DETAILS
 		print_chain_bloom_details(entry->sel_chain_bloom);
 #endif
-
-		if (prev == NULL) {
-			hash_entry temp;
-			entry->next = entry;
-			temp = *entry;
-			*entry = *head;
-			*head = temp;
-		} else {
-			entry->next = prev->next;
-			prev->next = entry;
-		}
 
 		ctx->hash_size += sizeof(hash_entry);
 	}
