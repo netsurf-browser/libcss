@@ -1388,7 +1388,7 @@ css_error parseBlockContent(css_parser *parser)
 #endif
 					if (parser->event != NULL) {
 						parser->event(
-							CSS_PARSER_BLOCK_CONTENT,
+							CSS_PARSER_END_BLOCK_CONTENT,
 							parser->tokens,
 							parser->event_pw);
 					}

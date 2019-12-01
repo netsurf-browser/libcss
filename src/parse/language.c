@@ -50,6 +50,8 @@ static css_error handleEndBlock(css_language *c,
 		const parserutils_vector *vector);
 static css_error handleBlockContent(css_language *c,
 		const parserutils_vector *vector);
+static css_error handleEndBlockContent(css_language *c,
+		const parserutils_vector *vector);
 static css_error handleDeclaration(css_language *c,
 		const parserutils_vector *vector);
 
@@ -219,6 +221,8 @@ css_error language_handle_event(css_parser_event type,
 		return handleEndBlock(language, tokens);
 	case CSS_PARSER_BLOCK_CONTENT:
 		return handleBlockContent(language, tokens);
+	case CSS_PARSER_END_BLOCK_CONTENT:
+		return handleEndBlockContent(language, tokens);
 	case CSS_PARSER_DECLARATION:
 		return handleDeclaration(language, tokens);
 	}
@@ -743,6 +747,40 @@ css_error handleBlockContent(css_language *c, const parserutils_vector *vector)
 	} else {
 		/* Expect declarations */
 		return handleDeclaration(c, vector);
+	}
+
+	return CSS_OK;
+}
+
+css_error handleEndBlockContent(css_language *c, const parserutils_vector *vector)
+{
+	context_entry *entry;
+	parserutils_error perror;
+	css_error ret;
+
+	/* First we call handleBlockContent() to deal with any intermediate
+	 * tokens we have left
+	 */
+	ret = handleBlockContent(c, vector);
+	if (ret != CSS_OK) {
+		return ret;
+	}
+
+	/* Our goal here is to ensure that the language parse stack is in the
+	 * right state.  We've encountered the end of a BlockContent such as
+	 * @media ... { ... }
+	 * and we need to ensure that the language stack reflects the end of
+	 * that block, not any unfinished business within it such as
+	 * @media ... { d }
+	 */
+
+	entry = parserutils_stack_get_current(c->context);
+	while (entry != NULL && entry->type != CSS_PARSER_START_BLOCK) {
+		perror = parserutils_stack_pop(c->context, NULL);
+		if (perror != PARSERUTILS_OK) {
+			return css_error_from_parserutils_error(perror);
+		}
+		entry = parserutils_stack_get_current(c->context);
 	}
 
 	return CSS_OK;
