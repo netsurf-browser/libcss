@@ -122,20 +122,29 @@ css_error css__parse_outline(css_language *c,
 	/* defaults */
 	if (color) {
 		error = css__stylesheet_style_appendOPV(color_style,
-			       CSS_PROP_OUTLINE_COLOR,
+				CSS_PROP_OUTLINE_COLOR,
 				0, OUTLINE_COLOR_INVERT);
+		if (error != CSS_OK) {
+			goto css__parse_outline_cleanup;
+		}
 	}
 
 	if (style) {
 		error = css__stylesheet_style_appendOPV(style_style,
-			       CSS_PROP_OUTLINE_STYLE,
+				CSS_PROP_OUTLINE_STYLE,
 				0, OUTLINE_STYLE_NONE);
+		if (error != CSS_OK) {
+			goto css__parse_outline_cleanup;
+		}
 	}
 
 	if (width) {
 		error = css__stylesheet_style_appendOPV(width_style,
-			       CSS_PROP_OUTLINE_WIDTH,
+				CSS_PROP_OUTLINE_WIDTH,
 				0, OUTLINE_WIDTH_MEDIUM);
+		if (error != CSS_OK) {
+			goto css__parse_outline_cleanup;
+		}
 	}
 
 
