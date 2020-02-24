@@ -800,13 +800,13 @@ static css_error mq_parse_condition(lwc_string **strings,
 		}
 
 		result->negate = 1;
-		result->nparts = 1;
 		result->parts = malloc(sizeof(*result->parts));
 		if (result->parts == NULL) {
 			css__mq_cond_or_feature_destroy(cond_or_feature);
 			css__mq_cond_destroy(result);
 			return CSS_NOMEM;
 		}
+		result->nparts = 1;
 		result->parts[0] = cond_or_feature;
 
 		*cond = result;
