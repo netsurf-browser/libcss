@@ -122,20 +122,29 @@ css_error css__parse_list_style(css_language *c,
 	/* defaults */
 	if (image) {
 		error = css__stylesheet_style_appendOPV(image_style,
-			       CSS_PROP_LIST_STYLE_IMAGE,
+				CSS_PROP_LIST_STYLE_IMAGE,
 				0, LIST_STYLE_IMAGE_NONE);
+		if (error != CSS_OK) {
+			goto css__parse_list_style_cleanup;
+		}
 	}
 
 	if (position) {
 		error = css__stylesheet_style_appendOPV(position_style,
-			       CSS_PROP_LIST_STYLE_POSITION,
+				CSS_PROP_LIST_STYLE_POSITION,
 				0, LIST_STYLE_POSITION_OUTSIDE);
+		if (error != CSS_OK) {
+			goto css__parse_list_style_cleanup;
+		}
 	}
 
 	if (type) {
 		error = css__stylesheet_style_appendOPV(type_style,
-			       CSS_PROP_LIST_STYLE_TYPE,
+				CSS_PROP_LIST_STYLE_TYPE,
 				0, LIST_STYLE_TYPE_DISC);
+		if (error != CSS_OK) {
+			goto css__parse_list_style_cleanup;
+		}
 	}
 
 
