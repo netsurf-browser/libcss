@@ -1460,6 +1460,8 @@ css_error compute_absolute_border_side_width(css_computed_style *style,
 			unit = ex_size->unit;
 		}
 		break;
+	default:
+		return CSS_INVALID;
 	}
 
 	return set(style, CSS_BORDER_WIDTH_WIDTH, length, unit);
