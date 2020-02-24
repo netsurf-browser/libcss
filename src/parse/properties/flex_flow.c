@@ -107,15 +107,21 @@ css_error css__parse_flex_flow(css_language *c,
 
 	/* defaults */
 	if (direction) {
-		error = css__stylesheet_style_appendOPV(direction_style, 
+		error = css__stylesheet_style_appendOPV(direction_style,
 				CSS_PROP_FLEX_DIRECTION,
 				0, FLEX_DIRECTION_ROW);
+		if (error != CSS_OK) {
+			goto css__parse_flex_flow_cleanup;
+		}
 	}
 
 	if (wrap) {
-		error = css__stylesheet_style_appendOPV(wrap_style, 
+		error = css__stylesheet_style_appendOPV(wrap_style,
 				CSS_PROP_FLEX_WRAP,
 				0, FLEX_WRAP_NOWRAP);
+		if (error != CSS_OK) {
+			goto css__parse_flex_flow_cleanup;
+		}
 	}
 
 	error = css__stylesheet_merge_style(result, direction_style);
