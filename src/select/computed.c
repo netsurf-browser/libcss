@@ -1743,6 +1743,10 @@ css_error compute_absolute_length_pair(css_computed_style *style,
 
 	type = get(style, &length1, &unit1, &length2, &unit2);
 
+	if (type != CSS_BACKGROUND_POSITION_SET) {
+		return CSS_OK;
+	}
+
 	if (unit1 == CSS_UNIT_EX) {
 		length1 = FMUL(length1, ex_size->value);
 		unit1 = ex_size->unit;
