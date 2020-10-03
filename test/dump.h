@@ -834,6 +834,13 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					*ptr += sprintf(*ptr, " ");
 					break;
 				}
+				case CALC_PUSH_NUMBER: {
+					css_fixed num = *((css_fixed *)bytecode);
+					ADVANCE(sizeof(num));
+					dump_number(num, ptr);
+					*ptr += sprintf(*ptr, " ");
+					break;
+				}
 				default:
 					*ptr += sprintf(*ptr, "??%d ", calc_opcode);
 					break;

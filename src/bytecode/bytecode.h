@@ -35,12 +35,13 @@ enum flag {
 };
 
 enum calc_opcodes {
-	CALC_PUSH_VALUE = 'V',
-	CALC_ADD        = '+',
-	CALC_SUBTRACT   = '-',
-	CALC_MULTIPLY   = '*',
-	CALC_DIVIDE     = '/',
-	CALC_FINISH     = '=',
+	CALC_PUSH_NUMBER = 'N',
+	CALC_PUSH_VALUE  = 'V',
+	CALC_ADD         = '+',
+	CALC_SUBTRACT    = '-',
+	CALC_MULTIPLY    = '*',
+	CALC_DIVIDE      = '/',
+	CALC_FINISH      = '=',
 };
 
 typedef enum unit {
