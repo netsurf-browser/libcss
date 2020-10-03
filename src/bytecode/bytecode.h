@@ -34,6 +34,14 @@ enum flag {
 	FLAG_UNSET     = (FLAG_VALUE_UNSET   << 1),
 };
 
+enum calc_opcodes {
+	CALC_PUSH_VALUE = 'V',
+	CALC_ADD        = '+',
+	CALC_SUBTRACT   = '-',
+	CALC_MULTIPLY   = '*',
+	CALC_DIVIDE     = '/',
+	CALC_FINISH     = '=',
+};
 
 typedef enum unit {
 	UNIT_LENGTH = (1u << 8),
@@ -126,6 +134,12 @@ static inline bool hasFlagValue(css_code_t OPV)
 static inline bool isInherit(css_code_t OPV)
 {
 	return getFlagValue(OPV) == FLAG_VALUE_INHERIT;
+}
+
+static inline bool isCalc(css_code_t OPV)
+{
+	/* Note, this relies on all _CALC values being the same ultimately */
+	return getValue(OPV) == 0x7f;
 }
 
 #endif

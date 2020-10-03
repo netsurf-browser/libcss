@@ -1373,8 +1373,10 @@ css__parse_calc_value(css_language *c,
 	int orig_ctx = *ctx;
 	const css_token *token;
 
-	token = parserutils_vector_iterate(vector, ctx);
+	/* On entry, we are already pointing at the value to parse, so peek it */
+	token = parserutils_vector_peek(vector, *ctx);
 	if (tokenIsChar(token, '(')) {
+		parserutils_vector_iterate(vector, ctx);
 		error = css__parse_calc_sum(c, vector, ctx, result);
 		if (error != CSS_OK) {
 			return error;
@@ -1384,7 +1386,8 @@ css__parse_calc_value(css_language *c,
 		if (!tokenIsChar(token, ')')) {
 			return CSS_INVALID;
 		}
-
+		/* Consume the close-paren to complete this value */
+		parserutils_vector_iterate(vector, ctx);
 	} else switch (token->type) {
 	case CSS_TOKEN_NUMBER:    /* Fall through */
 	case CSS_TOKEN_DIMENSION: /* Fall through */
@@ -1400,7 +1403,7 @@ css__parse_calc_value(css_language *c,
 			return error;
 		}
 
-		error = css__stylesheet_style_vappend(result, 3, (css_code_t) 'V', length, unit);
+		error = css__stylesheet_style_vappend(result, 3, (css_code_t) CALC_PUSH_VALUE, length, unit);
 	}
 		break;
 
@@ -1409,6 +1412,11 @@ css__parse_calc_value(css_language *c,
 		break;
 	}
 
+	token = parserutils_vector_peek(vector, *ctx);
+	while (token->type == CSS_TOKEN_S) {
+		parserutils_vector_iterate(vector, ctx);
+		token = parserutils_vector_peek(vector, *ctx);
+	}
 	return error;
 }
 
@@ -1439,7 +1447,10 @@ css__parse_calc_product(css_language *c,
 		if (token == NULL) {
 			error = CSS_INVALID;
 			break;
-		} else if (tokenIsChar(token, ')'))
+		} else if (
+				tokenIsChar(token, ')') ||
+				tokenIsChar(token, '+') ||
+				tokenIsChar(token, '-'))
 			break;
 		else if (tokenIsChar(token, '*'))
 			multiplication = true;
@@ -1450,15 +1461,21 @@ css__parse_calc_product(css_language *c,
 			break;
 		}
 		/* Consume that * or / now */
-		token = parserutils_vector_iterate(vector, ctx);
+		parserutils_vector_iterate(vector, ctx);
+		token = parserutils_vector_peek(vector, *ctx);
 
+		while (token->type == CSS_TOKEN_S) {
+			parserutils_vector_iterate(vector, ctx);
+			token = parserutils_vector_peek(vector, *ctx);
+		}
 		/* parse another value */
 		error = css__parse_calc_value(c, vector, ctx, result);
 		if (error != CSS_OK)
 			break;
 
 		/* emit the multiplication/division operator */
-		error = css__stylesheet_style_append(result, (css_code_t) (multiplication ? '*' : '/'));
+		error = css__stylesheet_style_append(result,
+					(css_code_t) (multiplication ? CALC_MULTIPLY : CALC_DIVIDE));
 	} while (1);
 	/* We've fallen off, either we had an error or we're left with ')' */
 	return error;
@@ -1498,7 +1515,13 @@ css__parse_calc_sum(css_language *c,
 			break;
 		}
 		/* Consume that + or - now */
-		token = parserutils_vector_iterate(vector, ctx);
+		parserutils_vector_iterate(vector, ctx);
+		token = parserutils_vector_peek(vector, *ctx);
+
+		while (token->type == CSS_TOKEN_S) {
+			parserutils_vector_iterate(vector, ctx);
+			token = parserutils_vector_peek(vector, *ctx);
+		}
 
 		/* parse another product */
 		error = css__parse_calc_product(c, vector, ctx, result);
@@ -1506,7 +1529,7 @@ css__parse_calc_sum(css_language *c,
 			break;
 
 		/* emit the addition/subtraction operator */
-		error = css__stylesheet_style_append(result, (css_code_t) (addition ? '+' : '-'));
+		error = css__stylesheet_style_append(result, (css_code_t) (addition ? CALC_ADD : CALC_SUBTRACT));
 	} while (1);
 	/* We've fallen off, either we had an error or we're left with ')' */
 	return error;
@@ -1524,16 +1547,15 @@ css_error css__parse_calc(css_language *c,
 	css_error error = CSS_OK;
 	css_style *calc_style = NULL;
 
-	token = parserutils_vector_iterate(vector, ctx);
+	token = parserutils_vector_peek(vector, *ctx);
 	if (token == NULL) {
 		*ctx = orig_ctx;
 		return CSS_INVALID;
 	}
 
-	if (!tokenIsChar(token, '(')) {
-		/* If we don't get an open-paren, give up now */
-		*ctx = orig_ctx;
-		return CSS_INVALID;
+	while (token->type == CSS_TOKEN_S) {
+		parserutils_vector_iterate(vector, ctx);
+		token = parserutils_vector_peek(vector, *ctx);
 	}
 
 	error = css__stylesheet_style_create(c->sheet, &calc_style);
@@ -1545,27 +1567,33 @@ css_error css__parse_calc(css_language *c,
 		goto cleanup;
 	
 	error = css__stylesheet_style_append(calc_style, (css_code_t) unit);
+	if (error != CSS_OK)
+		goto cleanup;
 
 	error = css__parse_calc_sum(c, vector, ctx, calc_style);
 	if (error != CSS_OK)
 		goto cleanup;
 
-	token = parserutils_vector_iterate(vector, ctx);
+	token = parserutils_vector_peek(vector, *ctx);
+	while (token->type == CSS_TOKEN_S) {
+		parserutils_vector_iterate(vector, ctx);
+		token = parserutils_vector_peek(vector, *ctx);
+	}
 	if (!tokenIsChar(token, ')')) {
 		/* If we don't get a close-paren, give up now */
 		error = CSS_INVALID;
 		goto cleanup;
 	}
 
+	/* Swallow that close paren */
+	parserutils_vector_iterate(vector, ctx);
+
 	/* Append the indicator that the calc is finished */
-	error = css__stylesheet_style_append(calc_style, (css_code_t) '=');
+	error = css__stylesheet_style_append(calc_style, (css_code_t) CALC_FINISH);
 	if (error != CSS_OK)
 		goto cleanup;
 
-	/* TODO: Once we're OK to do so, merge the style */
-	(void)result;
-	/* error = css__stylesheet_style_merge_style(result, calc_style); */
-
+	error = css__stylesheet_merge_style(result, calc_style);
 cleanup:
 	css__stylesheet_style_destroy(calc_style);
 	if (error != CSS_OK) {
