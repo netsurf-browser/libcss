@@ -1351,9 +1351,9 @@ cleanup:
  *
  *
  * calc(10px + (4rem / 2)) =>
- *   U 10 px
- *   U 4 rem
- *   N 2
+ *   V 10 px
+ *   V 4 rem
+ *   V 2 NUMBER
  *   /
  *   +
  *   =
@@ -1362,14 +1362,12 @@ cleanup:
 static css_error
 css__parse_calc_sum(css_language *c,
 		const parserutils_vector *vector, int *ctx,
-		css_style *result,
-		uint32_t unit);
+		css_style *result);
 
 static css_error
 css__parse_calc_value(css_language *c,
 		const parserutils_vector *vector, int *ctx,
-		css_style *result,
-		uint32_t default_unit)
+		css_style *result)
 {
 	css_error error;
 	int orig_ctx = *ctx;
@@ -1377,7 +1375,7 @@ css__parse_calc_value(css_language *c,
 
 	token = parserutils_vector_iterate(vector, ctx);
 	if (tokenIsChar(token, '(')) {
-		error = css__parse_calc_sum(c, vector, ctx, result, default_unit);
+		error = css__parse_calc_sum(c, vector, ctx, result);
 		if (error != CSS_OK) {
 			return error;
 		}
@@ -1396,13 +1394,13 @@ css__parse_calc_value(css_language *c,
 		uint32_t unit = 0;
 		*ctx = orig_ctx;
 
-		error = css__parse_unit_specifier(c, vector, ctx, default_unit, &length, &unit);
+		error = css__parse_unit_specifier(c, vector, ctx, UNIT_CALC_NUMBER, &length, &unit);
 		if (error != CSS_OK) {
 			*ctx = orig_ctx;
 			return error;
 		}
 
-		error = css__stylesheet_style_vappend(result, 3, (css_code_t) 'U', length, unit);
+		error = css__stylesheet_style_vappend(result, 3, (css_code_t) 'V', length, unit);
 	}
 		break;
 
@@ -1422,8 +1420,7 @@ css__parse_calc_value(css_language *c,
 static css_error
 css__parse_calc_product(css_language *c,
 		const parserutils_vector *vector, int *ctx,
-		css_style *result,
-		uint32_t unit)
+		css_style *result)
 {
 	css_error error = CSS_OK;
 	const css_token *token;
@@ -1431,7 +1428,7 @@ css__parse_calc_product(css_language *c,
 
 
 	/* First parse a value */
-	error = css__parse_calc_value(c, vector, ctx, result, unit);
+	error = css__parse_calc_value(c, vector, ctx, result);
 	if (error != CSS_OK) {
 		return error;
 	}
@@ -1455,33 +1452,10 @@ css__parse_calc_product(css_language *c,
 		/* Consume that * or / now */
 		token = parserutils_vector_iterate(vector, ctx);
 
-		if (multiplication) {
-			/* parse another value */
-			error = css__parse_calc_value(c, vector, ctx, result, unit);
-			if (error != CSS_OK)
-				break;
-		} else {
-			css_fixed num;
-			size_t consumed;
-
-			token = parserutils_vector_iterate(vector, ctx);
-			if (token->type != CSS_TOKEN_NUMBER) {
-				error = CSS_INVALID;
-				break;
-			}
-			num = css__number_from_lwc_string(token->idata, false, &consumed);
-			if (consumed != lwc_string_length(token->idata)) {
-				error = CSS_INVALID;
-				break;
-			}
-
-			error = css__stylesheet_style_append(result, (css_code_t) 'N');
-			if (error != CSS_OK)
-				break;
-			error = css__stylesheet_style_append(result, (css_code_t) num);
-			if (error != CSS_OK)
-				break;
-		}
+		/* parse another value */
+		error = css__parse_calc_value(c, vector, ctx, result);
+		if (error != CSS_OK)
+			break;
 
 		/* emit the multiplication/division operator */
 		error = css__stylesheet_style_append(result, (css_code_t) (multiplication ? '*' : '/'));
@@ -1494,8 +1468,7 @@ css__parse_calc_product(css_language *c,
 css_error
 css__parse_calc_sum(css_language *c,
 		const parserutils_vector *vector, int *ctx,
-		css_style *result,
-		uint32_t unit)
+		css_style *result)
 {
 	css_error error = CSS_OK;
 	const css_token *token;
@@ -1503,7 +1476,7 @@ css__parse_calc_sum(css_language *c,
 
 
 	/* First parse a product */
-	error = css__parse_calc_product(c, vector, ctx, result, unit);
+	error = css__parse_calc_product(c, vector, ctx, result);
 	if (error != CSS_OK) {
 		return error;
 	}
@@ -1528,7 +1501,7 @@ css__parse_calc_sum(css_language *c,
 		token = parserutils_vector_iterate(vector, ctx);
 
 		/* parse another product */
-		error = css__parse_calc_product(c, vector, ctx, result, unit);
+		error = css__parse_calc_product(c, vector, ctx, result);
 		if (error != CSS_OK)
 			break;
 
@@ -1570,8 +1543,10 @@ css_error css__parse_calc(css_language *c,
 	error = css__stylesheet_style_append(calc_style, property);
 	if (error != CSS_OK)
 		goto cleanup;
+	
+	error = css__stylesheet_style_append(calc_style, (css_code_t) unit);
 
-	error = css__parse_calc_sum(c, vector, ctx, calc_style, unit);
+	error = css__parse_calc_sum(c, vector, ctx, calc_style);
 	if (error != CSS_OK)
 		goto cleanup;
 
