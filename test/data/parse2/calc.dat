@@ -5,3 +5,153 @@
 | *
 |  height: /* -> 0px */ calc(50vh 10px + =)
 #reset
+
+#data
+* { line-height: calc(50vh + 10px)}
+#errors
+#expected
+| *
+|  line-height: /* -> 0any */ calc(50vh 10px + =)
+#reset
+
+#data
+* { line-height: calc( / 2)}
+#errors
+#expected
+| *
+#reset
+
+#data
+* { line-height: calc( + 2)}
+#errors
+#expected
+| *
+#reset
+
+#data
+* { line-height: calc(2 / 2px)}
+#errors
+#expected
+| *
+#reset
+
+#data
+* { z-index: calc(50vh + 10px)}
+#errors
+#expected
+| *
+|  z-index: /* -> 0number */ calc(50vh 10px + =)
+#reset
+
+#data
+* { z-index: calc(2 * 3)}
+#errors
+#expected
+| *
+|  z-index: /* -> 0number */ calc(2 3 * =)
+#reset
+
+#data
+* { z-index: calc(50vh + 10px / 9)}
+#errors
+#expected
+| *
+|  z-index: /* -> 0number */ calc(50vh 10px 9 / + =)
+#reset
+
+#data
+* { z-index: calc(1 + 2 + 3 + 4)}
+#errors
+#expected
+| *
+|  z-index: /* -> 0number */ calc(1 2 + 3 + 4 + =)
+#reset
+
+#data
+* { z-index: calc(1 + 2 * 3 + 4)}
+#errors
+#expected
+| *
+|  z-index: /* -> 0number */ calc(1 2 3 * + 4 + =)
+#reset
+
+#data
+* { z-index: calc((1 + 2) * (3 + 4))}
+#errors
+#expected
+| *
+|  z-index: /* -> 0number */ calc(1 2 + 3 4 + * =)
+#reset
+
+#data
+* { z-index: calc(1 + 2}
+#errors
+#expected
+| *
+#reset
+
+#data
+* { z-index: calc(}
+#errors
+#expected
+| *
+#reset
+
+#data
+* { z-index: calc}
+#errors
+#expected
+| *
+#reset
+
+#data
+* { z-index: calc (1 + 2)}
+#errors
+#expected
+| *
+#reset
+
+#data
+* { z-index: calc(1)}
+#errors
+#expected
+| *
+|  z-index: /* -> 0number */ calc(1 =)
+#reset
+
+#data
+* { z-index: calc()}
+#errors
+#expected
+| *
+#reset
+
+#data
+* { z-index: calc((1 + 2)}
+#errors
+#expected
+| *
+#reset
+
+#data
+* { z-index: calc(((1 + 2)))}
+#errors
+#expected
+| *
+|  z-index: /* -> 0number */ calc(1 2 + =)
+#reset
+
+#data
+* { z-index: calc( ( ( 1 + 2 ) ) )}
+#errors
+#expected
+| *
+|  z-index: /* -> 0number */ calc(1 2 + =)
+#reset
+
+#data
+* { z-index: calc( ( 3 / ( 1 + 2 ) ) )}
+#errors
+#expected
+| *
+#reset
