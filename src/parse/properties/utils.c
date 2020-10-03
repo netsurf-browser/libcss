@@ -1333,3 +1333,269 @@ cleanup:
 
 	return error;
 }
+
+/******************************************************************************/
+
+/* CALC
+ *
+ * calc( <calc-sum> )
+ *
+ * where
+ * <calc-sum> = <calc-product> [ [ '+' | '-' ] <calc-product> ]*
+ *
+ * where
+ * <calc-product> = <calc-value> [ '*' <calc-value> | '/' <number> ]*
+ *
+ * where
+ * <calc-value> = <number> | <dimension> | <percentage> | ( <calc-sum> )
+ *
+ *
+ * calc(10px + (4rem / 2)) =>
+ *   U 10 px
+ *   U 4 rem
+ *   N 2
+ *   /
+ *   +
+ *   =
+ */
+
+static css_error
+css__parse_calc_sum(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result,
+		uint32_t unit);
+
+static css_error
+css__parse_calc_value(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result,
+		uint32_t default_unit)
+{
+	css_error error;
+	int orig_ctx = *ctx;
+	const css_token *token;
+
+	token = parserutils_vector_iterate(vector, ctx);
+	if (tokenIsChar(token, '(')) {
+		error = css__parse_calc_sum(c, vector, ctx, result, default_unit);
+		if (error != CSS_OK) {
+			return error;
+		}
+
+		token = parserutils_vector_peek(vector, *ctx);
+		if (!tokenIsChar(token, ')')) {
+			return CSS_INVALID;
+		}
+
+	} else switch (token->type) {
+	case CSS_TOKEN_NUMBER:    /* Fall through */
+	case CSS_TOKEN_DIMENSION: /* Fall through */
+	case CSS_TOKEN_PERCENTAGE:
+	{
+		css_fixed length = 0;
+		uint32_t unit = 0;
+		*ctx = orig_ctx;
+
+		error = css__parse_unit_specifier(c, vector, ctx, default_unit, &length, &unit);
+		if (error != CSS_OK) {
+			*ctx = orig_ctx;
+			return error;
+		}
+
+		error = css__stylesheet_style_vappend(result, 3, (css_code_t) 'U', length, unit);
+	}
+		break;
+
+	default:
+		error = CSS_INVALID;
+		break;
+	}
+
+	return error;
+}
+
+/* Both this, and css_parse_calc_sum must stop when it encounters a close-paren.
+ * If it hasn't had any useful tokens before that, it's an error.  It does not
+ * need to restore ctx before returning an error but it does need to ensure that
+ * the close paren has not been consumed
+ */
+static css_error
+css__parse_calc_product(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result,
+		uint32_t unit)
+{
+	css_error error = CSS_OK;
+	const css_token *token;
+	bool multiplication;
+
+
+	/* First parse a value */
+	error = css__parse_calc_value(c, vector, ctx, result, unit);
+	if (error != CSS_OK) {
+		return error;
+	}
+
+	do {
+		/* What is our next token? */
+		token = parserutils_vector_peek(vector, *ctx);
+		if (token == NULL) {
+			error = CSS_INVALID;
+			break;
+		} else if (tokenIsChar(token, ')'))
+			break;
+		else if (tokenIsChar(token, '*'))
+			multiplication = true;
+		else if (tokenIsChar(token, '/'))
+			multiplication = false;
+		else {
+			error = CSS_INVALID;
+			break;
+		}
+		/* Consume that * or / now */
+		token = parserutils_vector_iterate(vector, ctx);
+
+		if (multiplication) {
+			/* parse another value */
+			error = css__parse_calc_value(c, vector, ctx, result, unit);
+			if (error != CSS_OK)
+				break;
+		} else {
+			css_fixed num;
+			size_t consumed;
+
+			token = parserutils_vector_iterate(vector, ctx);
+			if (token->type != CSS_TOKEN_NUMBER) {
+				error = CSS_INVALID;
+				break;
+			}
+			num = css__number_from_lwc_string(token->idata, false, &consumed);
+			if (consumed != lwc_string_length(token->idata)) {
+				error = CSS_INVALID;
+				break;
+			}
+
+			error = css__stylesheet_style_append(result, (css_code_t) 'N');
+			if (error != CSS_OK)
+				break;
+			error = css__stylesheet_style_append(result, (css_code_t) num);
+			if (error != CSS_OK)
+				break;
+		}
+
+		/* emit the multiplication/division operator */
+		error = css__stylesheet_style_append(result, (css_code_t) (multiplication ? '*' : '/'));
+	} while (1);
+	/* We've fallen off, either we had an error or we're left with ')' */
+	return error;
+}
+
+
+css_error
+css__parse_calc_sum(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result,
+		uint32_t unit)
+{
+	css_error error = CSS_OK;
+	const css_token *token;
+	bool addition;
+
+
+	/* First parse a product */
+	error = css__parse_calc_product(c, vector, ctx, result, unit);
+	if (error != CSS_OK) {
+		return error;
+	}
+
+	do {
+		/* What is our next token? */
+		token = parserutils_vector_peek(vector, *ctx);
+		if (token == NULL) {
+			error = CSS_INVALID;
+			break;
+		} else if (tokenIsChar(token, ')'))
+			break;
+		else if (tokenIsChar(token, '+'))
+			addition = true;
+		else if (tokenIsChar(token, '-'))
+			addition = false;
+		else {
+			error = CSS_INVALID;
+			break;
+		}
+		/* Consume that + or - now */
+		token = parserutils_vector_iterate(vector, ctx);
+
+		/* parse another product */
+		error = css__parse_calc_product(c, vector, ctx, result, unit);
+		if (error != CSS_OK)
+			break;
+
+		/* emit the addition/subtraction operator */
+		error = css__stylesheet_style_append(result, (css_code_t) (addition ? '+' : '-'));
+	} while (1);
+	/* We've fallen off, either we had an error or we're left with ')' */
+	return error;
+}
+
+/* Documented in utils.h */
+css_error css__parse_calc(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result,
+		css_code_t property,
+		uint32_t unit)
+{
+	int orig_ctx = *ctx;
+	const css_token *token;
+	css_error error = CSS_OK;
+	css_style *calc_style = NULL;
+
+	token = parserutils_vector_iterate(vector, ctx);
+	if (token == NULL) {
+		*ctx = orig_ctx;
+		return CSS_INVALID;
+	}
+
+	if (!tokenIsChar(token, '(')) {
+		/* If we don't get an open-paren, give up now */
+		*ctx = orig_ctx;
+		return CSS_INVALID;
+	}
+
+	error = css__stylesheet_style_create(c->sheet, &calc_style);
+	if (error != CSS_OK)
+		goto cleanup;
+
+	error = css__stylesheet_style_append(calc_style, property);
+	if (error != CSS_OK)
+		goto cleanup;
+
+	error = css__parse_calc_sum(c, vector, ctx, calc_style, unit);
+	if (error != CSS_OK)
+		goto cleanup;
+
+	token = parserutils_vector_iterate(vector, ctx);
+	if (!tokenIsChar(token, ')')) {
+		/* If we don't get a close-paren, give up now */
+		error = CSS_INVALID;
+		goto cleanup;
+	}
+
+	/* Append the indicator that the calc is finished */
+	error = css__stylesheet_style_append(calc_style, (css_code_t) '=');
+	if (error != CSS_OK)
+		goto cleanup;
+
+	/* TODO: Once we're OK to do so, merge the style */
+	(void)result;
+	/* error = css__stylesheet_style_merge_style(result, calc_style); */
+
+cleanup:
+	css__stylesheet_style_destroy(calc_style);
+	if (error != CSS_OK) {
+		*ctx = orig_ctx;
+	}
+
+	return error;
+}
