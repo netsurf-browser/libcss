@@ -642,6 +642,12 @@ static void dump_unit(css_fixed val, uint32_t unit, char **ptr)
 	case UNIT_KHZ:
 		*ptr += sprintf(*ptr, "kHz");
 		break;
+	case UNIT_CALC_ANY:
+		*ptr += sprintf(*ptr, "any");
+		break;
+	case UNIT_CALC_NUMBER:
+		*ptr += sprintf(*ptr, "number");
+		break;
 	}
 }
 
@@ -798,6 +804,45 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 			*ptr += sprintf(*ptr, "revert");
 		} else if (getFlagValue(opv) == FLAG_VALUE_UNSET) {
 			*ptr += sprintf(*ptr, "unset");
+		} else if (isCalc(opv)) {
+			/* First entry is a unit */
+			uint32_t unit = *((uint32_t *)bytecode);
+			ADVANCE(sizeof(unit));
+			*ptr += sprintf(*ptr, "/* -> ");
+			dump_unit(0, unit, ptr);
+			*ptr += sprintf(*ptr, " */ calc(");
+			css_code_t calc_opcode;
+			while ((calc_opcode = *((css_code_t *)bytecode)) != CALC_FINISH) {
+				ADVANCE(sizeof(calc_opcode));
+				switch (calc_opcode) {
+				case CALC_ADD:
+					*ptr += sprintf(*ptr, "+ ");
+					break;
+				case CALC_SUBTRACT:
+					*ptr += sprintf(*ptr, "- ");
+					break;
+				case CALC_MULTIPLY:
+					*ptr += sprintf(*ptr, "* ");
+					break;
+				case CALC_DIVIDE:
+					*ptr += sprintf(*ptr, "/ ");
+					break;
+				case CALC_PUSH_VALUE: {
+					css_fixed num = *((css_fixed *)bytecode);
+					ADVANCE(sizeof(num));
+					uint32_t unit = *((uint32_t *)bytecode);
+					ADVANCE(sizeof(unit));
+					dump_unit(num, unit, ptr);
+					*ptr += sprintf(*ptr, " ");
+					break;
+				}
+				default:
+					*ptr += sprintf(*ptr, "??%d ", calc_opcode);
+					break;
+				}
+			}
+			ADVANCE(sizeof(calc_opcode));
+			*ptr += sprintf(*ptr, "=)");
 		} else {
 			value = getValue(opv);
 
