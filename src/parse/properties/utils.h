@@ -228,4 +228,28 @@ css_error css__comma_list_to_style(css_language *c,
 				bool first),
 		css_style *result);
 
+/**
+ * Parse a CSS calc() invocation
+ *
+ * Calc can generate a number of kinds of units, so we have to tell the
+ * parser the kind of unit we're aiming for (e.g. UNIT_PX, UNIT_ANGLE, etc.)
+ *
+ * \param[in] c        Parsing context
+ * \param[in] vector   Vector of tokens to process
+ * \param[in] ctx      Pointer to vector iteration context
+ * \param[in] result   Pointer to location to receive resulting style
+ * \param[in] property The CSS property we are calculating for
+ * \param[in] unit     The kind of unit which we want to come out of this calc()
+ * \return CSS_OK on success,
+ *         CSS_NOMEM on memory exhaustion,
+           CSS_INVALID if the input is not valid
+ *
+ * Post condition: \a *ctx is updated with the next token to process
+ *                 If the input is invalid, then \a *ctx remains unchanged.
+ */
+css_error css__parse_calc(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result,
+		css_code_t property,
+		uint32_t unit);
 #endif

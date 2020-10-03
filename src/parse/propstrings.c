@@ -491,6 +491,7 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	SMAP("grid"),
 	SMAP("inline-grid"),
 	SMAP("sticky"),
+	SMAP("calc"),
 
 	SMAP("aliceblue"),
 	SMAP("antiquewhite"),

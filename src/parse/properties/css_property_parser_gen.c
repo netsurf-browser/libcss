@@ -316,6 +316,16 @@ void output_length_unit(FILE *outputf, struct keyval *parseid, struct keyval_lis
 	struct keyval *ckv = kvlist->item[0];
 	int ident_count;
 
+	fprintf(outputf,
+		"if ((token->type == CSS_TOKEN_IDENT) && "
+		"(lwc_string_caseless_isequal(token->idata, c->strings[CALC], &match) == lwc_error_ok && match))"
+		" {\n"
+		"\t\terror = css__parse_calc(c, vector, ctx, result, buildOPV(%s, 0, %s /* _CALC */), %s);\n"
+		"\t} else ",
+		parseid->val,
+		ckv->val,
+		ckv->key
+	);
 
 	fprintf(outputf,
 		"{\n"
