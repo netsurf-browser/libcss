@@ -19,6 +19,12 @@
  * list_style_position:CSS_PROP_LIST_STYLE_POSITION IDENT:( INHERIT: INSIDE:0,LIST_STYLE_POSITION_INSIDE OUTSIDE:0,LIST_STYLE_POSITION_OUTSIDE IDENT:)
 */
 
+typedef enum {
+	CALC_ANY,
+	CALC_NUMBER,
+	CALC_UNIT,
+} calc_kind;
+
 struct keyval {
 	char *key;
 	char *val;
@@ -311,21 +317,34 @@ void output_color(FILE *outputf, struct keyval *parseid, struct keyval_list *kvl
 		parseid->val);
 }
 
-void output_length_unit(FILE *outputf, struct keyval *parseid, struct keyval_list *kvlist)
+void output_calc(FILE *outputf, struct keyval *parseid, struct keyval_list *kvlist)
 {
 	struct keyval *ckv = kvlist->item[0];
-	int ident_count;
+	const char *kind;
+
+	if (strcmp(ckv->key, "NUMBER") == 0)
+		kind = "UNIT_CALC_NUMBER";
+	else if (strcmp(ckv->key, "ANY") == 0)
+		kind = "UNIT_CALC_ANY";
+	else
+		kind = ckv->key;
 
 	fprintf(outputf,
 		"if ((token->type == CSS_TOKEN_IDENT) && "
 		"(lwc_string_caseless_isequal(token->idata, c->strings[CALC], &match) == lwc_error_ok && match))"
 		" {\n"
-		"\t\terror = css__parse_calc(c, vector, ctx, result, buildOPV(%s, 0, %s /* _CALC */), %s);\n"
+		"\t\terror = css__parse_calc(c, vector, ctx, result, buildOPV(%s, 0, %s), %s);\n"
 		"\t} else ",
 		parseid->val,
 		ckv->val,
-		ckv->key
+		kind
 	);
+}
+
+void output_length_unit(FILE *outputf, struct keyval *parseid, struct keyval_list *kvlist)
+{
+	struct keyval *ckv = kvlist->item[0];
+	int ident_count;
 
 	fprintf(outputf,
 		"{\n"
@@ -533,6 +552,7 @@ int main(int argc, char **argv)
 	struct keyval_list WRAP;
 	struct keyval_list NUMBER;
 	struct keyval_list COLOR;
+	struct keyval_list CALC;
 
 
 	if (argc < 2) {
@@ -565,6 +585,7 @@ int main(int argc, char **argv)
 	COLOR.count = 0;
 	LENGTH_UNIT.count = 0;
 	IDENT_LIST.count = 0;
+	CALC.count = 0;
 
 	curlist = &base;
 
@@ -580,7 +601,7 @@ int main(int argc, char **argv)
 		if (strcmp(rkv->key, "WRAP") == 0) {
 			WRAP.item[WRAP.count++] = rkv;
 			only_ident = false;
-		} else if (strcmp(rkv->key, "NUMBER") == 0) {
+		} else if (curlist == &base && strcmp(rkv->key, "NUMBER") == 0) {
 			if (rkv->val[0] == '(') {
 				curlist = &NUMBER;
 			} else if (rkv->val[0] == ')') {
@@ -617,6 +638,14 @@ int main(int argc, char **argv)
 			}
 			only_ident = false;
 			do_token_check = false;
+		} else if (strcmp(rkv->key, "CALC") == 0) {
+			if (rkv->val[0] == '(') {
+				curlist = &CALC;
+			} else if (rkv->val[0] == ')') {
+				curlist = &base;
+			}
+			only_ident = false;
+			do_token_check = false;
 		} else if (strcmp(rkv->key, "COLOR") == 0) {
 			COLOR.item[COLOR.count++] = rkv;
 			do_token_check = false;
@@ -640,7 +669,7 @@ int main(int argc, char **argv)
 
 
 	/* header */
-output_header(outputf, descriptor, base.item[0], is_generic);
+	output_header(outputf, descriptor, base.item[0], is_generic);
 
 	if (WRAP.count > 0) {
 		output_wrap(outputf, base.item[0], &WRAP);
@@ -653,6 +682,10 @@ output_header(outputf, descriptor, base.item[0], is_generic);
 
 		if (URI.count > 0)
 			output_uri(outputf, base.item[0], &URI);
+
+		if (CALC.count > 0) {
+			output_calc(outputf, base.item[0], &CALC);
+		}
 
 		if (NUMBER.count > 0)
 			output_number(outputf, base.item[0], &NUMBER);

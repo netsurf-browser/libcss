@@ -76,6 +76,10 @@ typedef enum unit {
 	UNIT_DPI  = (1 << 13) + 0,
 	UNIT_DPCM = (1 << 13) + 1,
 	UNIT_DPPX = (1 << 13) + 2,
+
+	/* These are special only to the CALC bytecodes */
+	UNIT_CALC_ANY = (1 << 20),
+	UNIT_CALC_NUMBER = (1 << 20) + 1,
 } unit;
 
 typedef uint32_t colour;
