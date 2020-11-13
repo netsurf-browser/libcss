@@ -1702,8 +1702,8 @@ css_error compute_absolute_length(css_computed_style *style,
 		css_error (*set)(css_computed_style *style, uint8_t type,
 				css_fixed len, css_unit unit))
 {
+	css_unit unit = CSS_UNIT_PX;
 	css_fixed length;
-	css_unit unit;
 	uint8_t type;
 
 	type = get(style, &length, &unit);
