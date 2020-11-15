@@ -326,6 +326,13 @@ void output_length_unit(FILE *outputf, struct keyval *parseid, struct keyval_lis
 				"\t\t\treturn CSS_INVALID;\n"
 				"\t\t}\n\n",
 				ulkv->val);
+		} else if (strcmp(ulkv->key, "MASK") == 0) {
+			fprintf(outputf,
+				"\t\tif ((unit & %s ) == 0) {\n"
+				"\t\t\t*ctx = orig_ctx;\n"
+				"\t\t\treturn CSS_INVALID;\n"
+				"\t\t}\n\n",
+				ulkv->val);
 		} else if (strcmp(ulkv->key, "RANGE") == 0) {
 			fprintf(outputf,
 				"\t\tif (length %s) {\n"
