@@ -33,7 +33,7 @@ The table is found in the stylesheet object.
 CSS dimensions are stored as two 32bit values: <length, units>.
 Length is a 32bit numeric value (as described above) and unit is as follows:
 
-	bit 8 clear => length unit
+	bit 8 set => length unit
 		bits 9-31: MBZ
 		bits 0-7 :
 			00000000 => px
@@ -58,11 +58,11 @@ Length is a 32bit numeric value (as described above) and unit is as follows:
 			00010011 => vmax
 			00010100 => q
 
-	bit 8 set => percentage unit
+	bit 9 set => percentage unit
 		bits 9-31: MBZ
 		bits 0-7 : MBZ
 
-	bit 9 set => angle unit
+	bit 10 set => angle unit
 		bits 10-31: MBZ
 		bit 8     : MBZ
 		bits 0-7  :
@@ -71,21 +71,21 @@ Length is a 32bit numeric value (as described above) and unit is as follows:
 			00000010 => rad
 			00000011 => turn
 
-	bit 10 set => time unit
+	bit 11 set => time unit
 		bits 11-31: MBZ
 		bits 8-9  : MBZ
 		bits 0-7  :
 			00000000 => ms
 			00000001 => s
 
-	bit 11 set => frequency unit
+	bit 12 set => frequency unit
 		bits 12-31: MBZ
 		bits 8-10 : MBZ
 		bits 0-7  :
 			00000000 => Hz
 			00000001 => kHz
 
-	bit 12 set => resolution unit
+	bit 13 set => resolution unit
 		bits 13-31: MBZ
 		bits 8-11 : MBZ
 		bits 0-7  :
