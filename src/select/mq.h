@@ -9,6 +9,9 @@
 #ifndef css_select_mq_h_
 #define css_select_mq_h_
 
+#include "select/properties/properties.h"
+#include "select/properties/helpers.h"
+
 static inline css_fixed css_len2px(
 		css_fixed length,
 		css_unit unit,
@@ -122,9 +125,10 @@ static inline bool mq_match_feature_range_length_op1(
 		return false;
 	}
 
-	if (value->data.dim.unit != CSS_UNIT_PX) {
+	if (value->data.dim.unit != UNIT_PX) {
 		v = css_len2px(value->data.dim.len,
-				value->data.dim.unit, media);
+				css__to_css_unit(value->data.dim.unit),
+				media);
 	} else {
 		v = value->data.dim.len;
 	}
@@ -156,9 +160,10 @@ static inline bool mq_match_feature_range_length_op2(
 		return false;
 	}
 
-	if (value->data.dim.unit != CSS_UNIT_PX) {
+	if (value->data.dim.unit != UNIT_PX) {
 		v = css_len2px(value->data.dim.len,
-				value->data.dim.unit, media);
+				css__to_css_unit(value->data.dim.unit),
+				media);
 	} else {
 		v = value->data.dim.len;
 	}
