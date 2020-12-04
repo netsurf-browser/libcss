@@ -9,8 +9,7 @@
 #ifndef css_select_mq_h_
 #define css_select_mq_h_
 
-#include "select/properties/properties.h"
-#include "select/properties/helpers.h"
+#include "select/helpers.h"
 
 static inline css_fixed css_len2px(
 		css_fixed length,

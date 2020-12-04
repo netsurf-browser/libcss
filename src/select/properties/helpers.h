@@ -8,12 +8,12 @@
 #ifndef css_select_properties_helpers_h_
 #define css_select_properties_helpers_h_
 
+#include "select/helpers.h"
+
 uint32_t generic_destroy_color(void *bytecode);
 uint32_t generic_destroy_uri(void *bytecode);
 uint32_t generic_destroy_length(void *bytecode);
 uint32_t generic_destroy_number(void *bytecode);
-
-css_unit css__to_css_unit(uint32_t u);
 
 css_error css__cascade_bg_border_color(uint32_t opv, css_style *style,
 		css_select_state *state,
