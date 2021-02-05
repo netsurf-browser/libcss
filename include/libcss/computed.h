@@ -88,7 +88,30 @@ css_error css_computed_style_compose(
 		css_computed_style **restrict result);
 
 /******************************************************************************
- * Property accessors below here                                              *
+ * speciality formatters                                                      *
+ ******************************************************************************/
+
+/**
+ * Format a value into a text string controled by a list style
+ *
+ * \param[in] style The computed style to use for formatting
+ * \param[in] value The value to format
+ * \param[out] buffer The buffer to recive the formatted result
+ * \param[in] buffer_length The length of the buffer
+ * \param[out] format_length The complete length of the formatted result which
+ *                             may exceed buffer_length in which case the
+ *                             buffer data will not be complete.
+ * \return CSS_OK on success and the buffer and format_length updated
+ */
+css_error css_computed_format_list_style(
+		const css_computed_style *style,
+		int value,
+		char *buffer,
+		size_t buffer_length,
+		size_t *format_length);
+
+/******************************************************************************
+ * Property accessors                                                         *
  ******************************************************************************/
 
 uint8_t css_computed_letter_spacing(
