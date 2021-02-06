@@ -281,27 +281,32 @@ calc_roman_system(uint8_t *buf,
 		  const struct list_counter_style *cstyle)
 {
 	const int S[]  = {    0,   2,   4,   2,   4,   2,   4 };
-	const int D[]  = { 1000, 500, 100,  50,  10,   5,   1 };
-	const size_t L = sizeof(D) / sizeof(int) - 1;
 	size_t k = 0; /* index into output buffer */
 	unsigned int i = 0; /* index into maps */
-	int r, r2;
-
-	UNUSED(cstyle);
+	int r;
+	int r2 = 0;
+	size_t L;
 
 	assert(cstyle->items == 7);
 
+	/* ensure value is within acceptable range of this system */
+	if ((value < cstyle->range.start) || (value > cstyle->range.end)) {
+		return 0;
+	}
+
+	L = cstyle->items - 1;
+
 	while (value > 0) {
-		if (D[i] <= value) {
-			r = value / D[i];
-			value = value - (r * D[i]);
+		if (cstyle->weights[i] <= value) {
+			r = value / cstyle->weights[i];
+			value = value - (r * cstyle->weights[i]);
 			if (i < L) {
 				/* lookahead */
-				r2 = value / D[i+1];
+				r2 = value / cstyle->weights[i+1];
 			}
 			if (i < L && r2 >= S[i+1]) {
 				/* will violate repeat boundary on next pass */
-				value = value - (r2 * D[i+1]);
+				value = value - (r2 * cstyle->weights[i+1]);
 				if (k < maxlen) buf[k++] = i+1;
 				if (k < maxlen) buf[k++] = i-1;
 			} else if (S[i] && r >= S[i]) {
@@ -316,9 +321,7 @@ calc_roman_system(uint8_t *buf,
 		}
 		i++;
 	}
-	if (k < maxlen) {
-		buf[k] = '\0';
-	}
+
 	return k;
 }
 
@@ -437,12 +440,19 @@ static struct list_counter_style lcs_lower_alpha = {
 };
 
 
+static const int roman_weights[] = {
+	1000, 500, 100,  50,  10,   5,   1
+};
 static const symbol_t upper_roman_symbols[] = {
 	"M", "D", "C", "L", "X", "V", "I"
 };
 static const struct list_counter_style lcs_upper_roman = {
 	.name = "upper-roman",
+	.range = {
+		.start = 1,
+		.end = 3999,},
 	.symbols = upper_roman_symbols,
+	.weights = roman_weights,
 	.items = (sizeof(upper_roman_symbols) / SYMBOL_SIZE),
 	.calc = calc_roman_system,
 };
@@ -453,7 +463,11 @@ static const symbol_t lower_roman_symbols[] = {
 };
 static const struct list_counter_style lcs_lower_roman = {
 	.name = "lower-roman",
+	.range = {
+		.start = 1,
+		.end = 3999,},
 	.symbols = lower_roman_symbols,
+	.weights = roman_weights,
 	.items = (sizeof(lower_roman_symbols) / SYMBOL_SIZE),
 	.calc = calc_roman_system,
 };
@@ -532,10 +546,12 @@ css_error css_computed_format_list_style(
 	/* ensure it is possible to calculate with the selected system */
 	if ((alen == 0) || (alen >= sizeof(aval))) {
 		/* retry in decimal */
-		alen = lcs_decimal.calc(aval, sizeof(aval), value, &lcs_decimal);
+		cstyle = &lcs_decimal;
+
+		alen = cstyle->calc(aval, sizeof(aval), value, cstyle);
 		if ((alen == 0) || (alen >= sizeof(aval))) {
 			/* failed in decimal, give up */
-			return 0;
+			return CSS_INVALID;
 		}
 	}
 
