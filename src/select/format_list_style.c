@@ -340,10 +340,11 @@ static const int georgian_weights[] = {
 	90,   80,   70,   60,   50,   40,   30,   20,   10,
 	9,    8,    7,    6,    5,    4,    3,    2,    1
 };
-static struct list_counter_style lcs_georgian =	{
+static const struct list_counter_style lcs_georgian =	{
 	.name="georgian",
-	.range.start = 1,
-	.range.end = 19999,
+	.range = {
+		.start = 1,
+		.end = 19999,},
 	.symbols = georgian_symbols,
 	.weights = georgian_weights,
 	.items = (sizeof(georgian_symbols) / SYMBOL_SIZE),
@@ -363,10 +364,11 @@ static const int armenian_weights[] = {
 	90,   80,   70,   60,   50,   40,   30,   20,   10,
 	9,    8,    7,    6,    5,    4,    3,    2,    1
 };
-static struct list_counter_style lcs_armenian =	{
+static const struct list_counter_style lcs_armenian = {
 	.name = "armenian",
-	.range.start = 1,
-	.range.end = 9999,
+	.range = {
+		.start = 1,
+		.end = 9999,},
 	.symbols = armenian_symbols,
 	.weights = armenian_weights,
 	.items = (sizeof(armenian_symbols) / SYMBOL_SIZE),
@@ -377,7 +379,7 @@ static struct list_counter_style lcs_armenian =	{
 static const symbol_t decimal_symbols[] = {
 	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
 };
-static struct list_counter_style lcs_decimal = {
+static const struct list_counter_style lcs_decimal = {
 	.name = "decimal",
 	.symbols = decimal_symbols,
 	.items = (sizeof(decimal_symbols) / SYMBOL_SIZE),
@@ -385,10 +387,11 @@ static struct list_counter_style lcs_decimal = {
 };
 
 
-static struct list_counter_style lcs_decimal_leading_zero = {
+static const struct list_counter_style lcs_decimal_leading_zero = {
 	.name = "decimal-leading-zero",
-	.pad.length = 2,
-	.pad.value = "0",
+	.pad = {
+		.length = 2,
+		.value = "0",},
 	.symbols = decimal_symbols,
 	.items = (sizeof(decimal_symbols) / SYMBOL_SIZE),
 	.calc = calc_numeric_system,
@@ -400,8 +403,8 @@ static const symbol_t lower_greek_symbols[] = {
 	"λ", "μ", "ν", "ξ", "ο", "π", "ρ", "σ", "τ", "υ",
 	"φ", "χ", "ψ", "ω"
 };
-static struct list_counter_style lcs_lower_greek = {
-	.name="lower-greek",
+static const struct list_counter_style lcs_lower_greek = {
+	.name = "lower-greek",
 	.symbols = lower_greek_symbols,
 	.items = (sizeof(lower_greek_symbols) / SYMBOL_SIZE),
 	.calc = calc_alphabet_system,
@@ -413,8 +416,8 @@ static const symbol_t upper_alpha_symbols[] = {
 	"K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
 	"U", "V", "W", "X", "Y", "Z"
 };
-static struct list_counter_style lcs_upper_alpha = {
-	.name="upper-alpha",
+static const struct list_counter_style lcs_upper_alpha = {
+	.name = "upper-alpha",
 	.symbols = upper_alpha_symbols,
 	.items = (sizeof(upper_alpha_symbols) / SYMBOL_SIZE),
 	.calc = calc_alphabet_system,
@@ -427,7 +430,7 @@ static const symbol_t lower_alpha_symbols[] = {
 	"u", "v", "w", "x", "y", "z"
 };
 static struct list_counter_style lcs_lower_alpha = {
-	.name="lower-alpha",
+	.name = "lower-alpha",
 	.symbols = lower_alpha_symbols,
 	.items = (sizeof(lower_alpha_symbols) / SYMBOL_SIZE),
 	.calc = calc_alphabet_system,
@@ -437,8 +440,8 @@ static struct list_counter_style lcs_lower_alpha = {
 static const symbol_t upper_roman_symbols[] = {
 	"M", "D", "C", "L", "X", "V", "I"
 };
-static struct list_counter_style lcs_upper_roman = {
-	.name="upper-roman",
+static const struct list_counter_style lcs_upper_roman = {
+	.name = "upper-roman",
 	.symbols = upper_roman_symbols,
 	.items = (sizeof(upper_roman_symbols) / SYMBOL_SIZE),
 	.calc = calc_roman_system,
@@ -448,8 +451,8 @@ static struct list_counter_style lcs_upper_roman = {
 static const symbol_t lower_roman_symbols[] = {
 	"m", "d", "c", "l", "x", "v", "i"
 };
-static struct list_counter_style lcs_lower_roman = {
-	.name="lower-roman",
+static const struct list_counter_style lcs_lower_roman = {
+	.name = "lower-roman",
 	.symbols = lower_roman_symbols,
 	.items = (sizeof(lower_roman_symbols) / SYMBOL_SIZE),
 	.calc = calc_roman_system,
@@ -460,8 +463,8 @@ static const symbol_t lower_hexidecimal_symbols[] = {
 	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
 	"a", "b", "c", "d", "e", "f"
 };
-static struct list_counter_style lcs_lower_hexidecimal = {
-	.name="lower_hexidecimal",
+static const struct list_counter_style lcs_lower_hexidecimal = {
+	.name = "lower_hexidecimal",
 	.symbols = lower_hexidecimal_symbols,
 	.items = (sizeof(lower_hexidecimal_symbols) / SYMBOL_SIZE),
 	.calc = calc_numeric_system,
@@ -481,7 +484,7 @@ css_error css_computed_format_list_style(
 
 	size_t alen;
 	uint8_t aval[20];
-	struct list_counter_style *cstyle;
+	const struct list_counter_style *cstyle;
 
 	switch (type) {
 	case CSS_LIST_STYLE_TYPE_DECIMAL_LEADING_ZERO:
