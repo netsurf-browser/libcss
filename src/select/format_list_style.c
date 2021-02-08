@@ -137,7 +137,7 @@ map_aval_to_symbols(char *buf, const size_t buflen,
  * \param ares Buffer to recive the converted values
  * \param alen the length of \a ares buffer
  * \param value The value to convert
- * \param slen The number of symbols in the alphabet
+ * \param cstyle The counter style in use
  * \return The length a complete conversion which may be larger than \a alen
  */
 static size_t
@@ -175,6 +175,36 @@ calc_numeric_system(uint8_t *ares,
 	}
 
 	return idx;
+}
+
+
+/**
+ * generate cyclic symbol values
+ *
+ * fills array with cyclic values that represent the input value
+ *
+ * \param ares Buffer to recive the converted values
+ * \param alen the length of \a ares buffer
+ * \param value The value to convert
+ * \param cstyle The counter style in use
+ * \return The length a complete conversion which may be larger than \a alen
+ */
+static size_t
+calc_cyclic_system(uint8_t *ares,
+		    const size_t alen,
+		    int value,
+		    const struct list_counter_style *cstyle)
+{
+	if (alen == 0) {
+		return 0;
+	}
+	if (cstyle->items == 1) {
+		/* there is only one symbol so select it */
+		ares[0] = 0;
+	} else {
+		ares[0] = (value - 1) % cstyle->items;
+	}
+	return 1;
 }
 
 
@@ -472,13 +502,40 @@ static const struct list_counter_style lcs_lower_roman = {
 	.calc = calc_roman_system,
 };
 
+static const symbol_t disc_symbols[] = { "\xE2\x80\xA2"}; /* 2022 BULLET */
+static const struct list_counter_style lcs_disc = {
+	.name = "disc",
+	.symbols = disc_symbols,
+	.items = (sizeof(disc_symbols) / SYMBOL_SIZE),
+	.postfix = " ",
+	.calc = calc_cyclic_system,
+};
+
+static const symbol_t circle_symbols[] = { "\342\227\213"}; /* 25CB WHITE CIRCLE */
+static const struct list_counter_style lcs_circle = {
+	.name = "circle",
+	.symbols = circle_symbols,
+	.items = (sizeof(circle_symbols) / SYMBOL_SIZE),
+	.postfix = " ",
+	.calc = calc_cyclic_system,
+};
+
+static const symbol_t square_symbols[] = { "\342\226\252"}; /* 25AA BLACK SMALL SQUARE */
+static const struct list_counter_style lcs_square = {
+	.name = "square",
+	.symbols = square_symbols,
+	.items = (sizeof(square_symbols) / SYMBOL_SIZE),
+	.postfix = " ",
+	.calc = calc_cyclic_system,
+};
+
 #if 0
 static const symbol_t lower_hexidecimal_symbols[] = {
 	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
 	"a", "b", "c", "d", "e", "f"
 };
 static const struct list_counter_style lcs_lower_hexidecimal = {
-	.name = "lower_hexidecimal",
+	.name = "lower-hexidecimal",
 	.symbols = lower_hexidecimal_symbols,
 	.items = (sizeof(lower_hexidecimal_symbols) / SYMBOL_SIZE),
 	.calc = calc_numeric_system,
@@ -534,6 +591,22 @@ css_error css_computed_format_list_style(
 	case CSS_LIST_STYLE_TYPE_GEORGIAN:
 		cstyle = &lcs_georgian;
 		break;
+
+	case CSS_LIST_STYLE_TYPE_DISC:
+		cstyle = &lcs_disc;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_CIRCLE:
+		cstyle = &lcs_circle;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_SQUARE:
+		cstyle = &lcs_square;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_NONE:
+		*format_length = 0;
+		return CSS_OK;
 
 	case CSS_LIST_STYLE_TYPE_DECIMAL:
 	default:
