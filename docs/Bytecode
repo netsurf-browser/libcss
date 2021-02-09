@@ -342,11 +342,9 @@ Opcodes
 				bits 0-6: 0000000 => string,
 					  0000001 => uri,
 					  0000010 => counter,
-						     bits 12-13: MBZ
-						     bits 8-11 : list-style-type
+						     bits 8-13 : list-style-type
 					  0000011 => counters,
-						     bits 12-13: MBZ
-						     bits 8-11 : list-style-type
+						     bits 8-13 : list-style-type
 					  0000100 => attr,
 					  other   => rffe.
 			bit 7 clear => keywords:
@@ -646,22 +644,24 @@ Opcodes
 
 2f - list-style-type
 	<value> (14bits) :
-		0     => disc,
-		1     => circle,
-		2     => square,
-		3     => decimal,
-		4     => decimal-leading-zero,
-		5     => lower-roman,
-		6     => upper-roman,
-		7     => lower-greek,
-		8     => lower-latin,
-		9     => upper-latin,
-		a     => armenian,
-		b     => georgian,
-		c     => lower-alpha,
-		d     => upper-alpha,
-		e     => none,
-		other => Reserved for future expansion.
+		bits 6-13: MBZ
+		bits 0-5 :
+			0     => disc,
+			1     => circle,
+			2     => square,
+			3     => decimal,
+			4     => decimal-leading-zero,
+			5     => lower-roman,
+			6     => upper-roman,
+			7     => lower-greek,
+			8     => lower-latin,
+			9     => upper-latin,
+			a     => armenian,
+			b     => georgian,
+			c     => lower-alpha,
+			d     => upper-alpha,
+			e     => none,
+			other => Reserved for future expansion.
 
 30 - margin-top
 31 - margin-right
