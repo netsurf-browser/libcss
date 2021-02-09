@@ -385,7 +385,7 @@ static const struct list_counter_style lcs_georgian =	{
 };
 
 
-static const symbol_t armenian_symbols[] = {
+static const symbol_t upper_armenian_symbols[] = {
 	"Ք", "Փ", "Ւ", "Ց", "Ր", "Տ", "Վ", "Ս", "Ռ",
 	"Ջ", "Պ", "Չ", "Ո", "Շ", "Ն", "Յ", "Մ", "Ճ",
 	"Ղ", "Ձ", "Հ", "Կ", "Ծ", "Խ", "Լ", "Ի", "Ժ",
@@ -397,14 +397,32 @@ static const int armenian_weights[] = {
 	90,   80,   70,   60,   50,   40,   30,   20,   10,
 	9,    8,    7,    6,    5,    4,    3,    2,    1
 };
-static const struct list_counter_style lcs_armenian = {
-	.name = "armenian",
+static const struct list_counter_style lcs_upper_armenian = {
+	.name = "upper-armenian",
 	.range = {
 		.start = 1,
 		.end = 9999,},
-	.symbols = armenian_symbols,
+	.symbols = upper_armenian_symbols,
 	.weights = armenian_weights,
-	.items = (sizeof(armenian_symbols) / SYMBOL_SIZE),
+	.items = (sizeof(upper_armenian_symbols) / SYMBOL_SIZE),
+	.calc = calc_additive_system,
+};
+
+
+static const symbol_t lower_armenian_symbols[] = {
+	"ք", "փ", "ւ", "ց", "ր", "տ", "վ", "ս", "ռ",
+	"ջ", "պ", "չ", "ո", "շ", "ն", "յ", "մ", "ճ",
+	"ղ", "ձ", "հ", "կ", "ծ", "խ", "լ", "ի", "ժ",
+	"թ", "ը", "է", "զ", "ե", "դ", "գ", "բ", "ա"
+};
+static const struct list_counter_style lcs_lower_armenian = {
+	.name = "lower-armenian",
+	.range = {
+		.start = 1,
+		.end = 9999,},
+	.symbols = lower_armenian_symbols,
+	.weights = armenian_weights,
+	.items = (sizeof(lower_armenian_symbols) / SYMBOL_SIZE),
 	.calc = calc_additive_system,
 };
 
@@ -529,18 +547,117 @@ static const struct list_counter_style lcs_square = {
 	.calc = calc_cyclic_system,
 };
 
-#if 0
-static const symbol_t lower_hexidecimal_symbols[] = {
+static const symbol_t binary_symbols[] = { "0", "1" };
+static const struct list_counter_style lcs_binary = {
+	.name = "binary",
+	.symbols = binary_symbols,
+	.items = (sizeof(binary_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t octal_symbols[] = {
+	"0", "1", "2", "3", "4", "5", "6", "7"
+};
+static const struct list_counter_style lcs_octal = {
+	.name = "octal",
+	.symbols = octal_symbols,
+	.items = (sizeof(octal_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+
+static const symbol_t lower_hexadecimal_symbols[] = {
 	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
 	"a", "b", "c", "d", "e", "f"
 };
-static const struct list_counter_style lcs_lower_hexidecimal = {
-	.name = "lower-hexidecimal",
-	.symbols = lower_hexidecimal_symbols,
-	.items = (sizeof(lower_hexidecimal_symbols) / SYMBOL_SIZE),
+static const struct list_counter_style lcs_lower_hexadecimal = {
+	.name = "lower-hexadecimal",
+	.symbols = lower_hexadecimal_symbols,
+	.items = (sizeof(lower_hexadecimal_symbols) / SYMBOL_SIZE),
 	.calc = calc_numeric_system,
 };
-#endif
+
+static const symbol_t upper_hexadecimal_symbols[] = {
+	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+	"a", "b", "c", "d", "e", "f"
+};
+static const struct list_counter_style lcs_upper_hexadecimal = {
+	.name = "upper-hexadecimal",
+	.symbols = upper_hexadecimal_symbols,
+	.items = (sizeof(upper_hexadecimal_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t arabic_indic_symbols[] = {
+	"\xd9\xa0", "\xd9\xa1", "\xd9\xa2", "\xd9\xa3", "\xd9\xa4", "\xd9\xa5", "\xd9\xa6", "\xd9\xa7", "\xd9\xa8", "\xd9\xa9"
+};
+static const struct list_counter_style lcs_arabic_indic = {
+	.name = "arabic-indic",
+	.symbols = arabic_indic_symbols,
+	.items = (sizeof(arabic_indic_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t bengali_symbols[] = {
+	"০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"
+};
+static const struct list_counter_style lcs_bengali = {
+	.name = "bengali",
+	.symbols = bengali_symbols,
+	.items = (sizeof(bengali_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t cambodian_symbols[] = {
+	"០", "១", "២", "៣", "៤", "៥", "៦", "៧", "៨", "៩"
+};
+static const struct list_counter_style lcs_cambodian = {
+	.name = "cambodian",
+	.symbols = cambodian_symbols,
+	.items = (sizeof(cambodian_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t cjk_decimal_symbols[] = {
+	"〇", "一", "二", "三", "四", "五", "六", "七", "八", "九"
+};
+static const struct list_counter_style lcs_cjk_decimal = {
+	.name = "cjk-decimal",
+	.symbols = cjk_decimal_symbols,
+	.postfix = "、",
+	.items = (sizeof(cjk_decimal_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t devanagari_symbols[] = {
+	"०", "१", "२", "३", "४", "५", "६", "७", "८", "९"
+};
+static const struct list_counter_style lcs_devanagari = {
+	.name = "devanagari",
+	.symbols = devanagari_symbols,
+	.items = (sizeof(devanagari_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t gujarati_symbols[] = {
+	"૦", "૧", "૨", "૩", "૪", "૫", "૬", "૭", "૮", "૯"
+};
+static const struct list_counter_style lcs_gujarati = {
+	.name = "gujarati",
+	.symbols = gujarati_symbols,
+	.items = (sizeof(gujarati_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t gurmukhi_symbols[] = {
+	"੦", "੧", "੨", "੩", "੪", "੫", "੬", "੭", "੮", "੯"
+};
+static const struct list_counter_style lcs_gurmukhi = {
+	.name = "gurmukhi",
+	.symbols = gurmukhi_symbols,
+	.items = (sizeof(gurmukhi_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
 
 
 /* exported interface defined in select.h */
@@ -558,40 +675,6 @@ css_error css_computed_format_list_style(
 	const struct list_counter_style *cstyle;
 
 	switch (type) {
-	case CSS_LIST_STYLE_TYPE_DECIMAL_LEADING_ZERO:
-		cstyle = &lcs_decimal_leading_zero;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_LOWER_ROMAN:
-		cstyle = &lcs_lower_roman;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_UPPER_ROMAN:
-		cstyle = &lcs_upper_roman;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_LOWER_ALPHA:
-	case CSS_LIST_STYLE_TYPE_LOWER_LATIN:
-		cstyle = &lcs_lower_alpha;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_UPPER_ALPHA:
-	case CSS_LIST_STYLE_TYPE_UPPER_LATIN:
-		cstyle = &lcs_upper_alpha;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_LOWER_GREEK:
-		cstyle = &lcs_lower_greek;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_ARMENIAN:
-		cstyle = &lcs_armenian;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_GEORGIAN:
-		cstyle = &lcs_georgian;
-		break;
-
 	case CSS_LIST_STYLE_TYPE_DISC:
 		cstyle = &lcs_disc;
 		break;
@@ -604,14 +687,100 @@ css_error css_computed_format_list_style(
 		cstyle = &lcs_square;
 		break;
 
+	case CSS_LIST_STYLE_TYPE_DECIMAL:
+		cstyle = &lcs_decimal;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_DECIMAL_LEADING_ZERO:
+		cstyle = &lcs_decimal_leading_zero;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_LOWER_ROMAN:
+		cstyle = &lcs_lower_roman;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_UPPER_ROMAN:
+		cstyle = &lcs_upper_roman;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_LOWER_GREEK:
+		cstyle = &lcs_lower_greek;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_LOWER_ALPHA:
+	case CSS_LIST_STYLE_TYPE_LOWER_LATIN:
+		cstyle = &lcs_lower_alpha;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_UPPER_ALPHA:
+	case CSS_LIST_STYLE_TYPE_UPPER_LATIN:
+		cstyle = &lcs_upper_alpha;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_UPPER_ARMENIAN:
+	case CSS_LIST_STYLE_TYPE_ARMENIAN:
+		cstyle = &lcs_upper_armenian;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_GEORGIAN:
+		cstyle = &lcs_georgian;
+		break;
+
 	case CSS_LIST_STYLE_TYPE_NONE:
 		*format_length = 0;
 		return CSS_OK;
 
-	case CSS_LIST_STYLE_TYPE_DECIMAL:
-	default:
-		cstyle = &lcs_decimal;
+	case CSS_LIST_STYLE_TYPE_BINARY:
+		cstyle = &lcs_binary;
 		break;
+
+	case CSS_LIST_STYLE_TYPE_OCTAL:
+		cstyle = &lcs_octal;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_LOWER_HEXADECIMAL:
+		cstyle = &lcs_lower_hexadecimal;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_UPPER_HEXADECIMAL:
+		cstyle = &lcs_upper_hexadecimal;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_ARABIC_INDIC:
+		cstyle = &lcs_arabic_indic;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_LOWER_ARMENIAN:
+		cstyle = &lcs_lower_armenian;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_BENGALI:
+		cstyle = &lcs_bengali;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_CAMBODIAN:
+	case CSS_LIST_STYLE_TYPE_KHMER:
+		cstyle = &lcs_cambodian;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_CJK_DECIMAL:
+		cstyle = &lcs_cjk_decimal;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_DEVANAGARI:
+		cstyle = &lcs_devanagari;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_GUJARATI:
+		cstyle = &lcs_gujarati;
+		break;
+
+	case CSS_LIST_STYLE_TYPE_GURMUKHI:
+		cstyle = &lcs_gurmukhi;
+		break;
+
+	default:
+		return CSS_BADPARM;
 	}
 
 	alen = cstyle->calc(aval, sizeof(aval), value, cstyle);

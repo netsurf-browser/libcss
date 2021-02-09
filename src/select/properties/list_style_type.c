@@ -68,6 +68,48 @@ css_error css__cascade_list_style_type(uint32_t opv, css_style *style,
 		case LIST_STYLE_TYPE_NONE:
 			value = CSS_LIST_STYLE_TYPE_NONE;
 			break;
+		case LIST_STYLE_TYPE_BINARY:
+			value = CSS_LIST_STYLE_TYPE_BINARY;
+			break;
+		case LIST_STYLE_TYPE_OCTAL:
+			value = CSS_LIST_STYLE_TYPE_OCTAL;
+			break;
+		case LIST_STYLE_TYPE_LOWER_HEXADECIMAL:
+			value = CSS_LIST_STYLE_TYPE_LOWER_HEXADECIMAL;
+			break;
+		case LIST_STYLE_TYPE_UPPER_HEXADECIMAL:
+			value = CSS_LIST_STYLE_TYPE_UPPER_HEXADECIMAL;
+			break;
+		case LIST_STYLE_TYPE_ARABIC_INDIC:
+			value = CSS_LIST_STYLE_TYPE_ARABIC_INDIC;
+			break;
+		case LIST_STYLE_TYPE_LOWER_ARMENIAN:
+			value = CSS_LIST_STYLE_TYPE_LOWER_ARMENIAN;
+			break;
+		case LIST_STYLE_TYPE_UPPER_ARMENIAN:
+			value = CSS_LIST_STYLE_TYPE_UPPER_ARMENIAN;
+			break;
+		case LIST_STYLE_TYPE_BENGALI:
+			value = CSS_LIST_STYLE_TYPE_BENGALI;
+			break;
+		case LIST_STYLE_TYPE_CAMBODIAN:
+			value = CSS_LIST_STYLE_TYPE_CAMBODIAN;
+			break;
+		case LIST_STYLE_TYPE_KHMER:
+			value = CSS_LIST_STYLE_TYPE_KHMER;
+			break;
+		case LIST_STYLE_TYPE_CJK_DECIMAL:
+			value = CSS_LIST_STYLE_TYPE_CJK_DECIMAL;
+			break;
+		case LIST_STYLE_TYPE_DEVANAGARI:
+			value = CSS_LIST_STYLE_TYPE_DEVANAGARI;
+			break;
+		case LIST_STYLE_TYPE_GUJARATI:
+			value = CSS_LIST_STYLE_TYPE_GUJARATI;
+			break;
+		case LIST_STYLE_TYPE_GURMUKHI:
+			value = CSS_LIST_STYLE_TYPE_GURMUKHI;
+			break;
 		}
 	}
 
@@ -102,4 +144,3 @@ css_error css__compose_list_style_type(const css_computed_style *parent,
 
 	return set_list_style_type(result, type);
 }
-
