@@ -110,6 +110,60 @@ css_error css__cascade_list_style_type(uint32_t opv, css_style *style,
 		case LIST_STYLE_TYPE_GURMUKHI:
 			value = CSS_LIST_STYLE_TYPE_GURMUKHI;
 			break;
+		case LIST_STYLE_TYPE_HEBREW:
+			value = CSS_LIST_STYLE_TYPE_HEBREW;
+			break;
+		case LIST_STYLE_TYPE_KANNADA:
+			value = CSS_LIST_STYLE_TYPE_KANNADA;
+			break;
+		case LIST_STYLE_TYPE_LAO:
+			value = CSS_LIST_STYLE_TYPE_LAO;
+			break;
+		case LIST_STYLE_TYPE_MALAYALAM:
+			value = CSS_LIST_STYLE_TYPE_MALAYALAM;
+			break;
+		case LIST_STYLE_TYPE_MONGOLIAN:
+			value = CSS_LIST_STYLE_TYPE_MONGOLIAN;
+			break;
+		case LIST_STYLE_TYPE_MYANMAR:
+			value = CSS_LIST_STYLE_TYPE_MYANMAR;
+			break;
+		case LIST_STYLE_TYPE_ORIYA:
+			value = CSS_LIST_STYLE_TYPE_ORIYA;
+			break;
+		case LIST_STYLE_TYPE_PERSIAN:
+			value = CSS_LIST_STYLE_TYPE_PERSIAN;
+			break;
+		case LIST_STYLE_TYPE_TAMIL:
+			value = CSS_LIST_STYLE_TYPE_TAMIL;
+			break;
+		case LIST_STYLE_TYPE_TELUGU:
+			value = CSS_LIST_STYLE_TYPE_TELUGU;
+			break;
+		case LIST_STYLE_TYPE_THAI:
+			value = CSS_LIST_STYLE_TYPE_THAI;
+			break;
+		case LIST_STYLE_TYPE_TIBETAN:
+			value = CSS_LIST_STYLE_TYPE_TIBETAN;
+			break;
+		case LIST_STYLE_TYPE_CJK_EARTHLY_BRANCH:
+			value = CSS_LIST_STYLE_TYPE_CJK_EARTHLY_BRANCH;
+			break;
+		case LIST_STYLE_TYPE_CJK_HEAVENLY_STEM:
+			value = CSS_LIST_STYLE_TYPE_CJK_HEAVENLY_STEM;
+			break;
+		case LIST_STYLE_TYPE_HIAGANA:
+			value = CSS_LIST_STYLE_TYPE_HIAGANA;
+			break;
+		case LIST_STYLE_TYPE_HIAGANA_IROHA:
+			value = CSS_LIST_STYLE_TYPE_HIAGANA_IROHA;
+			break;
+		case LIST_STYLE_TYPE_KATAKANA:
+			value = CSS_LIST_STYLE_TYPE_KATAKANA;
+			break;
+		case LIST_STYLE_TYPE_KATAKANA_IROHA:
+			value = CSS_LIST_STYLE_TYPE_KATAKANA_IROHA;
+			break;
 		}
 	}
 

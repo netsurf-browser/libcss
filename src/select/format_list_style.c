@@ -659,6 +659,207 @@ static const struct list_counter_style lcs_gurmukhi = {
 	.calc = calc_numeric_system,
 };
 
+static const int hebrew_weights[] = {
+				                                          10000,
+	9000, 8000, 7000, 6000, 5000, 4000, 3000, 2000,                   1000,
+	                              400,  300,  200,                    100,
+	90,   80,   70,   60,   50,   40,   30,   20, 19, 18, 17, 16, 15, 10,
+	9,    8,    7,    6,    5,    4,    3,    2,                      1
+};
+static const symbol_t hebrew_symbols[] = {
+	"\xD7\x99\xD7\xB3",
+	"\xD7\x98\xD7\xB3", "\xD7\x97\xD7\xB3", "\xD7\x96\xD7\xB3", "\xD7\x95\xD7\xB3", "\xD7\x94\xD7\xB3", "\xD7\x93\xD7\xB3", "\xD7\x92\xD7\xB3", "\xD7\x91\xD7\xB3", "\xD7\x90\xD7\xB3",
+	"\xD7\xAA", "\xD7\xA9", "\xD7\xA8", "\xD7\xA7",
+	"\xD7\xA6", "\xD7\xA4", "\xD7\xA2", "\xD7\xA1", "\xD7\xA0", "\xD7\x9E", "\xD7\x9C", /* 20 */"\xD7\x9B", "\xD7\x99\xD7\x98", "\xD7\x99\xD7\x97", "\xD7\x99\xD7\x96", "\xD7\x98\xD7\x96", "\xD7\x98\xD7\x95", "\xD7\x99",
+	"\xD7\x98", "\xD7\x97", "\xD7\x96", "\xD7\x95", "\xD7\x94", "\xD7\x93", "\xD7\x92", "\xD7\x91", "\xD7\x90"
+};
+static const struct list_counter_style lcs_hebrew = {
+	.name = "hebrew",
+	.range = {
+		.start = 1,
+		.end = 10999,},
+	.symbols = hebrew_symbols,
+	.weights = hebrew_weights,	
+	.items = (sizeof(hebrew_symbols) / SYMBOL_SIZE),
+	.calc = calc_additive_system,
+};
+
+static const symbol_t kannada_symbols[] = {
+	"\xE0\xB3\xA6", "\xE0\xB3\xA7", "\xE0\xB3\xA8", "\xE0\xB3\xA9", "\xE0\xB3\xAA", "\xE0\xB3\xAB", "\xE0\xB3\xAC", "\xE0\xB3\xAD", "\xE0\xB3\xAE", "\xE0\xB3\xAF"
+};
+static const struct list_counter_style lcs_kannada = {
+	.name = "kannada",
+	.symbols = kannada_symbols,
+	.items = (sizeof(kannada_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t lao_symbols[] = {
+	"໐", "໑", "໒", "໓", "໔", "໕", "໖", "໗", "໘", "໙"
+};
+static const struct list_counter_style lcs_lao = {
+	.name = "lao",
+	.symbols = lao_symbols,
+	.items = (sizeof(lao_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t malayalam_symbols[] = {
+	"൦", "൧", "൨", "൩", "൪", "൫", "൬", "൭", "൮", "൯"
+};
+static const struct list_counter_style lcs_malayalam = {
+	.name = "malayalam",
+	.symbols = malayalam_symbols,
+	.items = (sizeof(malayalam_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t mongolian_symbols[] = {
+	"᠐", "᠑", "᠒", "᠓", "᠔", "᠕", "᠖", "᠗", "᠘", "᠙"
+};
+static const struct list_counter_style lcs_mongolian = {
+	.name = "mongolian",
+	.symbols = mongolian_symbols,
+	.items = (sizeof(mongolian_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t myanmar_symbols[] = {
+	"၀", "၁", "၂", "၃", "၄", "၅", "၆", "၇", "၈", "၉"
+};
+static const struct list_counter_style lcs_myanmar = {
+	.name = "myanmar",
+	.symbols = myanmar_symbols,
+	.items = (sizeof(myanmar_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t oriya_symbols[] = {
+	"୦", "୧", "୨", "୩", "୪", "୫", "୬", "୭", "୮", "୯"
+};
+static const struct list_counter_style lcs_oriya = {
+	.name = "oriya",
+	.symbols = oriya_symbols,
+	.items = (sizeof(oriya_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t persian_symbols[] = {
+	"۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"
+};
+static const struct list_counter_style lcs_persian = {
+	.name = "persian",
+	.symbols = persian_symbols,
+	.items = (sizeof(persian_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t tamil_symbols[] = {
+	"௦", "௧", "௨", "௩", "௪", "௫", "௬", "௭", "௮", "௯"
+};
+static const struct list_counter_style lcs_tamil = {
+	.name = "tamil",
+	.symbols = tamil_symbols,
+	.items = (sizeof(tamil_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t telugu_symbols[] = {
+	"౦", "౧", "౨", "౩", "౪", "౫", "౬", "౭", "౮", "౯"
+};
+static const struct list_counter_style lcs_telugu = {
+	.name = "telugu",
+	.symbols = telugu_symbols,
+	.items = (sizeof(telugu_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t thai_symbols[] = {
+	"๐", "๑", "๒", "๓", "๔", "๕", "๖", "๗", "๘", "๙"
+};
+static const struct list_counter_style lcs_thai = {
+	.name = "thai",
+	.symbols = thai_symbols,
+	.items = (sizeof(thai_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t tibetan_symbols[] = {
+	"༠", "༡", "༢", "༣", "༤", "༥", "༦", "༧", "༨", "༩"
+};
+static const struct list_counter_style lcs_tibetan = {
+	.name = "tibetan",
+	.symbols = tibetan_symbols,
+	.items = (sizeof(tibetan_symbols) / SYMBOL_SIZE),
+	.calc = calc_numeric_system,
+};
+
+static const symbol_t cjk_earthly_branch_symbols[] = {
+	"子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"
+};
+static struct list_counter_style lcs_cjk_earthly_branch = {
+	.name = "cjk-earthly-branch",
+	.symbols = cjk_earthly_branch_symbols,
+	.items = (sizeof(cjk_earthly_branch_symbols) / SYMBOL_SIZE),
+	.postfix = "、",
+	.calc = calc_alphabet_system,
+};
+
+static const symbol_t cjk_heavenly_stem_symbols[] = {
+	"甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"
+};
+static struct list_counter_style lcs_cjk_heavenly_stem = {
+	.name = "cjk-heavenly-stem",
+	.symbols = cjk_heavenly_stem_symbols,
+	.items = (sizeof(cjk_heavenly_stem_symbols) / SYMBOL_SIZE),
+	.postfix = "、",
+	.calc = calc_alphabet_system,
+};
+
+static const symbol_t hiragana_symbols[] = {
+	"あ", "い", "う", "え", "お", "か", "き", "く", "け", "こ", "さ", "し", "す", "せ", "そ", "た", "ち", "つ", "て", "と", "な", "に", "ぬ", "ね", "の", "は", "ひ", "ふ", "へ", "ほ", "ま", "み", "む", "め", "も", "や", "ゆ", "よ", "ら", "り", "る", "れ", "ろ", "わ", "ゐ", "ゑ", "を", "ん"
+};
+static struct list_counter_style lcs_hiragana = {
+	.name = "hiragana",
+	.symbols = hiragana_symbols,
+	.items = (sizeof(hiragana_symbols) / SYMBOL_SIZE),
+	.postfix = "、",
+	.calc = calc_alphabet_system,
+};
+
+static const symbol_t hiragana_iroha_symbols[] = {
+	"い", "ろ", "は", "に", "ほ", "へ", "と", "ち", "り", "ぬ", "る", "を", "わ", "か", "よ", "た", "れ", "そ", "つ", "ね", "な", "ら", "む", "う", "ゐ", "の", "お", "く", "や", "ま", "け", "ふ", "こ", "え", "て", "あ", "さ", "き", "ゆ", "め", "み", "し", "ゑ", "ひ", "も", "せ", "す"
+};
+static struct list_counter_style lcs_hiragana_iroha = {
+	.name = "hiragana-iroha",
+	.symbols = hiragana_iroha_symbols,
+	.items = (sizeof(hiragana_iroha_symbols) / SYMBOL_SIZE),
+	.postfix = "、",
+	.calc = calc_alphabet_system,
+};
+
+static const symbol_t katakana_symbols[] = {
+	"ア", "イ", "ウ", "エ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "セ", "ソ", "タ", "チ", "ツ", "テ", "ト", "ナ", "ニ", "ヌ", "ネ", "ノ", "ハ", "ヒ", "フ", "ヘ", "ホ", "マ", "ミ", "ム", "メ", "モ", "ヤ", "ユ", "ヨ", "ラ", "リ", "ル", "レ", "ロ", "ワ", "ヰ", "ヱ", "ヲ", "ン"
+};
+static struct list_counter_style lcs_katakana = {
+	.name = "katakana",
+	.symbols = katakana_symbols,
+	.items = (sizeof(katakana_symbols) / SYMBOL_SIZE),
+	.postfix = "、",
+	.calc = calc_alphabet_system,
+};
+
+static const symbol_t katakana_iroha_symbols[] = {
+	"イ", "ロ", "ハ", "ニ", "ホ", "ヘ", "ト", "チ", "リ", "ヌ", "ル", "ヲ", "ワ", "カ", "ヨ", "タ", "レ", "ソ", "ツ", "ネ", "ナ", "ラ", "ム", "ウ", "ヰ", "ノ", "オ", "ク", "ヤ", "マ", "ケ", "フ", "コ", "エ", "テ", "ア", "サ", "キ", "ユ", "メ", "ミ", "シ", "ヱ", "ヒ", "モ", "セ", "ス"
+};
+static struct list_counter_style lcs_katakana_iroha = {
+	.name = "katakana-iroha",
+	.symbols = katakana_iroha_symbols,
+	.items = (sizeof(katakana_iroha_symbols) / SYMBOL_SIZE),
+	.postfix = "、",
+	.calc = calc_alphabet_system,
+};
+
 
 /* exported interface defined in select.h */
 css_error css_computed_format_list_style(
@@ -779,6 +980,60 @@ css_error css_computed_format_list_style(
 		cstyle = &lcs_gurmukhi;
 		break;
 
+	case CSS_LIST_STYLE_TYPE_HEBREW:
+		cstyle = &lcs_hebrew;
+		break;
+	case CSS_LIST_STYLE_TYPE_KANNADA:
+		cstyle = &lcs_kannada;
+		break;
+	case CSS_LIST_STYLE_TYPE_LAO:
+		cstyle = &lcs_lao;
+		break;
+	case CSS_LIST_STYLE_TYPE_MALAYALAM:
+		cstyle = &lcs_malayalam;
+		break;
+	case CSS_LIST_STYLE_TYPE_MONGOLIAN:
+		cstyle = &lcs_mongolian;
+		break;
+	case CSS_LIST_STYLE_TYPE_MYANMAR:
+		cstyle = &lcs_myanmar;
+		break;
+	case CSS_LIST_STYLE_TYPE_ORIYA:
+		cstyle = &lcs_oriya;
+		break;
+	case CSS_LIST_STYLE_TYPE_PERSIAN:
+		cstyle = &lcs_persian;
+		break;
+	case CSS_LIST_STYLE_TYPE_TAMIL:
+		cstyle = &lcs_tamil;
+		break;
+	case CSS_LIST_STYLE_TYPE_TELUGU:
+		cstyle = &lcs_telugu;
+		break;
+	case CSS_LIST_STYLE_TYPE_THAI:
+		cstyle = &lcs_thai;
+		break;
+	case CSS_LIST_STYLE_TYPE_TIBETAN:
+		cstyle = &lcs_tibetan;
+		break;
+	case CSS_LIST_STYLE_TYPE_CJK_EARTHLY_BRANCH:
+		cstyle = &lcs_cjk_earthly_branch;
+		break;
+	case CSS_LIST_STYLE_TYPE_CJK_HEAVENLY_STEM:
+		cstyle = &lcs_cjk_heavenly_stem;
+		break;
+	case CSS_LIST_STYLE_TYPE_HIAGANA:
+		cstyle = &lcs_hiragana;
+		break;
+	case CSS_LIST_STYLE_TYPE_HIAGANA_IROHA:
+		cstyle = &lcs_hiragana_iroha;
+		break;
+	case CSS_LIST_STYLE_TYPE_KATAKANA:
+		cstyle = &lcs_katakana;
+		break;
+	case CSS_LIST_STYLE_TYPE_KATAKANA_IROHA:
+		cstyle = &lcs_katakana_iroha;
+		break;
 	default:
 		return CSS_BADPARM;
 	}
