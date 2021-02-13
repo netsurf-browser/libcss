@@ -21,12 +21,26 @@ struct list_counter_style {
 		const unsigned int length;
 		const symbol_t value;
 	} pad;
+	struct {
+		const char *pre;
+		const char *post;
+	} negative;
 	const char *prefix;
-	const char *postfix;
+	const char *suffix;
 	const symbol_t *symbols; /**< array of symbols which represent this style */
 	const int *weights; /**< symbol weights for additive schemes */
 	const size_t items; /**< items in symbol and weight table */
 	size_t (*calc)(uint8_t *ares, const size_t alen, int value, const struct list_counter_style *cstyle); /**< function to calculate the system */
+};
+
+/**
+ * numeric representation of the value using a system
+ */
+struct numeric {
+	uint8_t *val; /* buffer containing the numeric values */
+	size_t len; /* length of alen */
+	size_t used; /* number of numeric values used */
+	bool negative; /* if the value is negative */
 };
 
 /**
@@ -82,12 +96,12 @@ copy_symbol(char *buf, const size_t buflen, size_t pos, const symbol_t symbol)
 }
 
 /**
- * maps alphabet values to output values with a symbol table
+ * maps numeric values to output values with a symbol table
  *
- * Takes a list of alphabet values and for each one outputs the
+ * Takes a list of numeric values and for each one outputs the
  *   compete symbol (in utf8) to an output buffer.
  *
- * \param buf The oputput buffer
+ * \param buf The output buffer
  * \param buflen the length of \a buf
  * \param aval array of alphabet values
  * \param alen The number of values in \a alen
@@ -97,33 +111,53 @@ copy_symbol(char *buf, const size_t buflen, size_t pos, const symbol_t symbol)
  *         larger than \a buflen but the buffer will not be overrun
  */
 static size_t
-map_aval_to_symbols(char *buf, const size_t buflen,
-		    const uint8_t *aval, const size_t alen,
-		    const struct list_counter_style *cstyle)
+nval_to_symbols(struct numeric *nval,
+		const struct list_counter_style *cstyle,
+		char *buf, const size_t buflen)
 {
 	size_t oidx = 0;
 	size_t aidx; /* numeral index */
-	const symbol_t postfix = "."; /* default postfix string */
+	const char *suffix = "."; /* default sufffix string */
+	const char *negative_pre = "-"; /* default negative string */
+
+	/* prefix */
+	if (cstyle->prefix != NULL) {
+		oidx += copy_string(buf, buflen, oidx, cstyle->prefix);
+	}
+
+	/* negative pre */
+	if (nval->negative) {
+		if (cstyle->negative.pre != NULL) {
+			negative_pre = cstyle->negative.pre;
+		}
+		oidx += copy_string(buf, buflen, oidx, negative_pre);
+	}
 
 	/* add padding if required */
-	if (alen < cstyle->pad.length) {
+	if (nval->used < cstyle->pad.length) {
 		size_t pidx; /* padding index */
-		for (pidx=cstyle->pad.length - alen; pidx > 0; pidx--) {
+		for (pidx = cstyle->pad.length - nval->used; pidx > 0; pidx--) {
 			oidx += copy_symbol(buf, buflen, oidx,
 					cstyle->pad.value);
 		}
 	}
 
 	/* map symbols */
-	for (aidx=0; aidx < alen; aidx++) {
+	for (aidx=0; aidx < nval->used; aidx++) {
 		oidx += copy_symbol(buf, buflen, oidx,
-				cstyle->symbols[aval[aidx]]);
+				cstyle->symbols[nval->val[aidx]]);
 	}
 
-	/* postfix */
-	oidx += copy_string(buf, buflen, oidx,
-			(cstyle->postfix != NULL) ?
-					cstyle->postfix : postfix);
+	/* negative post */
+	if ((nval->negative) && (cstyle->negative.post != NULL)) {
+		oidx += copy_string(buf, buflen, oidx, cstyle->negative.post);
+	}
+
+	/* suffix */
+	if (cstyle->suffix != NULL) {
+		suffix = cstyle->suffix;
+	}
+	oidx += copy_string(buf, buflen, oidx, suffix);
 
 	return oidx;
 }
@@ -149,6 +183,16 @@ calc_numeric_system(uint8_t *ares,
 	size_t idx = 0;
 	uint8_t *first;
 	uint8_t *last;
+
+	if (value == 0) {
+		if (alen >= 1) {
+			ares[0] = 0;
+		}
+		return 1;
+	}
+
+	value = abs(value);
+
 
 	/* generate alphabet values in ascending order */
 	while (value > 0) {
@@ -229,6 +273,16 @@ calc_additive_system(uint8_t *ares,
 	size_t aidx = 0;
 	size_t idx;
 	size_t times; /* number of times a weight occours */
+
+	/* ensure value is within acceptable range of this system */
+	if ((value < cstyle->range.start) || (value > cstyle->range.end)) {
+		return 0;
+	}
+
+	/* implementation cannot cope with negatives */
+	if (value < 1) {
+		return 0;
+	}
 
 	/* iterate over the available weights */
 	for (widx = 0; widx < cstyle->items;widx++) {
@@ -525,7 +579,7 @@ static const struct list_counter_style lcs_disc = {
 	.name = "disc",
 	.symbols = disc_symbols,
 	.items = (sizeof(disc_symbols) / SYMBOL_SIZE),
-	.postfix = " ",
+	.suffix = " ",
 	.calc = calc_cyclic_system,
 };
 
@@ -534,7 +588,7 @@ static const struct list_counter_style lcs_circle = {
 	.name = "circle",
 	.symbols = circle_symbols,
 	.items = (sizeof(circle_symbols) / SYMBOL_SIZE),
-	.postfix = " ",
+	.suffix = " ",
 	.calc = calc_cyclic_system,
 };
 
@@ -543,7 +597,7 @@ static const struct list_counter_style lcs_square = {
 	.name = "square",
 	.symbols = square_symbols,
 	.items = (sizeof(square_symbols) / SYMBOL_SIZE),
-	.postfix = " ",
+	.suffix = " ",
 	.calc = calc_cyclic_system,
 };
 
@@ -624,7 +678,7 @@ static const symbol_t cjk_decimal_symbols[] = {
 static const struct list_counter_style lcs_cjk_decimal = {
 	.name = "cjk-decimal",
 	.symbols = cjk_decimal_symbols,
-	.postfix = "、",
+	.suffix = "、",
 	.items = (sizeof(cjk_decimal_symbols) / SYMBOL_SIZE),
 	.calc = calc_numeric_system,
 };
@@ -679,7 +733,7 @@ static const struct list_counter_style lcs_hebrew = {
 		.start = 1,
 		.end = 10999,},
 	.symbols = hebrew_symbols,
-	.weights = hebrew_weights,	
+	.weights = hebrew_weights,
 	.items = (sizeof(hebrew_symbols) / SYMBOL_SIZE),
 	.calc = calc_additive_system,
 };
@@ -801,7 +855,7 @@ static struct list_counter_style lcs_cjk_earthly_branch = {
 	.name = "cjk-earthly-branch",
 	.symbols = cjk_earthly_branch_symbols,
 	.items = (sizeof(cjk_earthly_branch_symbols) / SYMBOL_SIZE),
-	.postfix = "、",
+	.suffix = "、",
 	.calc = calc_alphabet_system,
 };
 
@@ -812,7 +866,7 @@ static struct list_counter_style lcs_cjk_heavenly_stem = {
 	.name = "cjk-heavenly-stem",
 	.symbols = cjk_heavenly_stem_symbols,
 	.items = (sizeof(cjk_heavenly_stem_symbols) / SYMBOL_SIZE),
-	.postfix = "、",
+	.suffix = "、",
 	.calc = calc_alphabet_system,
 };
 
@@ -823,7 +877,7 @@ static struct list_counter_style lcs_hiragana = {
 	.name = "hiragana",
 	.symbols = hiragana_symbols,
 	.items = (sizeof(hiragana_symbols) / SYMBOL_SIZE),
-	.postfix = "、",
+	.suffix = "、",
 	.calc = calc_alphabet_system,
 };
 
@@ -834,7 +888,7 @@ static struct list_counter_style lcs_hiragana_iroha = {
 	.name = "hiragana-iroha",
 	.symbols = hiragana_iroha_symbols,
 	.items = (sizeof(hiragana_iroha_symbols) / SYMBOL_SIZE),
-	.postfix = "、",
+	.suffix = "、",
 	.calc = calc_alphabet_system,
 };
 
@@ -845,7 +899,7 @@ static struct list_counter_style lcs_katakana = {
 	.name = "katakana",
 	.symbols = katakana_symbols,
 	.items = (sizeof(katakana_symbols) / SYMBOL_SIZE),
-	.postfix = "、",
+	.suffix = "、",
 	.calc = calc_alphabet_system,
 };
 
@@ -856,9 +910,108 @@ static struct list_counter_style lcs_katakana_iroha = {
 	.name = "katakana-iroha",
 	.symbols = katakana_iroha_symbols,
 	.items = (sizeof(katakana_iroha_symbols) / SYMBOL_SIZE),
-	.postfix = "、",
+	.suffix = "、",
 	.calc = calc_alphabet_system,
 };
+
+
+static const struct list_counter_style *
+counter_style_from_computed_style(const css_computed_style *style)
+{
+	switch (get_list_style_type(style)) {
+	case CSS_LIST_STYLE_TYPE_DISC:
+		return &lcs_disc;
+	case CSS_LIST_STYLE_TYPE_CIRCLE:
+		return &lcs_circle;
+	case CSS_LIST_STYLE_TYPE_SQUARE:
+		return &lcs_square;
+	case CSS_LIST_STYLE_TYPE_DECIMAL:
+		return &lcs_decimal;
+	case CSS_LIST_STYLE_TYPE_DECIMAL_LEADING_ZERO:
+		return &lcs_decimal_leading_zero;
+	case CSS_LIST_STYLE_TYPE_LOWER_ROMAN:
+		return &lcs_lower_roman;
+	case CSS_LIST_STYLE_TYPE_UPPER_ROMAN:
+		return &lcs_upper_roman;
+	case CSS_LIST_STYLE_TYPE_LOWER_GREEK:
+		return &lcs_lower_greek;
+	case CSS_LIST_STYLE_TYPE_LOWER_ALPHA:
+	case CSS_LIST_STYLE_TYPE_LOWER_LATIN:
+		return &lcs_lower_alpha;
+	case CSS_LIST_STYLE_TYPE_UPPER_ALPHA:
+	case CSS_LIST_STYLE_TYPE_UPPER_LATIN:
+		return &lcs_upper_alpha;
+	case CSS_LIST_STYLE_TYPE_UPPER_ARMENIAN:
+	case CSS_LIST_STYLE_TYPE_ARMENIAN:
+		return &lcs_upper_armenian;
+	case CSS_LIST_STYLE_TYPE_GEORGIAN:
+		return &lcs_georgian;
+	case CSS_LIST_STYLE_TYPE_NONE:
+		return NULL;
+	case CSS_LIST_STYLE_TYPE_BINARY:
+		return &lcs_binary;
+	case CSS_LIST_STYLE_TYPE_OCTAL:
+		return &lcs_octal;
+	case CSS_LIST_STYLE_TYPE_LOWER_HEXADECIMAL:
+		return &lcs_lower_hexadecimal;
+	case CSS_LIST_STYLE_TYPE_UPPER_HEXADECIMAL:
+		return &lcs_upper_hexadecimal;
+	case CSS_LIST_STYLE_TYPE_ARABIC_INDIC:
+		return &lcs_arabic_indic;
+	case CSS_LIST_STYLE_TYPE_LOWER_ARMENIAN:
+		return &lcs_lower_armenian;
+	case CSS_LIST_STYLE_TYPE_BENGALI:
+		return &lcs_bengali;
+	case CSS_LIST_STYLE_TYPE_CAMBODIAN:
+	case CSS_LIST_STYLE_TYPE_KHMER:
+		return &lcs_cambodian;
+	case CSS_LIST_STYLE_TYPE_CJK_DECIMAL:
+		return &lcs_cjk_decimal;
+	case CSS_LIST_STYLE_TYPE_DEVANAGARI:
+		return &lcs_devanagari;
+	case CSS_LIST_STYLE_TYPE_GUJARATI:
+		return &lcs_gujarati;
+	case CSS_LIST_STYLE_TYPE_GURMUKHI:
+		return &lcs_gurmukhi;
+	case CSS_LIST_STYLE_TYPE_HEBREW:
+		return &lcs_hebrew;
+	case CSS_LIST_STYLE_TYPE_KANNADA:
+		return &lcs_kannada;
+	case CSS_LIST_STYLE_TYPE_LAO:
+		return &lcs_lao;
+	case CSS_LIST_STYLE_TYPE_MALAYALAM:
+		return &lcs_malayalam;
+	case CSS_LIST_STYLE_TYPE_MONGOLIAN:
+		return &lcs_mongolian;
+	case CSS_LIST_STYLE_TYPE_MYANMAR:
+		return &lcs_myanmar;
+	case CSS_LIST_STYLE_TYPE_ORIYA:
+		return &lcs_oriya;
+	case CSS_LIST_STYLE_TYPE_PERSIAN:
+		return &lcs_persian;
+	case CSS_LIST_STYLE_TYPE_TAMIL:
+		return &lcs_tamil;
+	case CSS_LIST_STYLE_TYPE_TELUGU:
+		return &lcs_telugu;
+	case CSS_LIST_STYLE_TYPE_THAI:
+		return &lcs_thai;
+	case CSS_LIST_STYLE_TYPE_TIBETAN:
+		return &lcs_tibetan;
+	case CSS_LIST_STYLE_TYPE_CJK_EARTHLY_BRANCH:
+		return &lcs_cjk_earthly_branch;
+	case CSS_LIST_STYLE_TYPE_CJK_HEAVENLY_STEM:
+		return &lcs_cjk_heavenly_stem;
+	case CSS_LIST_STYLE_TYPE_HIAGANA:
+		return &lcs_hiragana;
+	case CSS_LIST_STYLE_TYPE_HIAGANA_IROHA:
+		return &lcs_hiragana_iroha;
+	case CSS_LIST_STYLE_TYPE_KATAKANA:
+		return &lcs_katakana;
+	case CSS_LIST_STYLE_TYPE_KATAKANA_IROHA:
+		return &lcs_katakana_iroha;
+	}
+	return NULL;
+}
 
 
 /* exported interface defined in select.h */
@@ -869,190 +1022,40 @@ css_error css_computed_format_list_style(
 		size_t buffer_length,
 		size_t *format_length)
 {
-	uint8_t type = get_list_style_type(style);
-
-	size_t alen;
 	uint8_t aval[20];
 	const struct list_counter_style *cstyle;
+	struct numeric nval = {
+		.val = aval,
+		.len = sizeof(aval),
+		.used = 0,
+		.negative = false
+	};
 
-	switch (type) {
-	case CSS_LIST_STYLE_TYPE_DISC:
-		cstyle = &lcs_disc;
-		break;
+	nval.negative = (value < 0)?true:false;
 
-	case CSS_LIST_STYLE_TYPE_CIRCLE:
-		cstyle = &lcs_circle;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_SQUARE:
-		cstyle = &lcs_square;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_DECIMAL:
-		cstyle = &lcs_decimal;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_DECIMAL_LEADING_ZERO:
-		cstyle = &lcs_decimal_leading_zero;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_LOWER_ROMAN:
-		cstyle = &lcs_lower_roman;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_UPPER_ROMAN:
-		cstyle = &lcs_upper_roman;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_LOWER_GREEK:
-		cstyle = &lcs_lower_greek;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_LOWER_ALPHA:
-	case CSS_LIST_STYLE_TYPE_LOWER_LATIN:
-		cstyle = &lcs_lower_alpha;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_UPPER_ALPHA:
-	case CSS_LIST_STYLE_TYPE_UPPER_LATIN:
-		cstyle = &lcs_upper_alpha;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_UPPER_ARMENIAN:
-	case CSS_LIST_STYLE_TYPE_ARMENIAN:
-		cstyle = &lcs_upper_armenian;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_GEORGIAN:
-		cstyle = &lcs_georgian;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_NONE:
-		*format_length = 0;
-		return CSS_OK;
-
-	case CSS_LIST_STYLE_TYPE_BINARY:
-		cstyle = &lcs_binary;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_OCTAL:
-		cstyle = &lcs_octal;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_LOWER_HEXADECIMAL:
-		cstyle = &lcs_lower_hexadecimal;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_UPPER_HEXADECIMAL:
-		cstyle = &lcs_upper_hexadecimal;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_ARABIC_INDIC:
-		cstyle = &lcs_arabic_indic;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_LOWER_ARMENIAN:
-		cstyle = &lcs_lower_armenian;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_BENGALI:
-		cstyle = &lcs_bengali;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_CAMBODIAN:
-	case CSS_LIST_STYLE_TYPE_KHMER:
-		cstyle = &lcs_cambodian;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_CJK_DECIMAL:
-		cstyle = &lcs_cjk_decimal;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_DEVANAGARI:
-		cstyle = &lcs_devanagari;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_GUJARATI:
-		cstyle = &lcs_gujarati;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_GURMUKHI:
-		cstyle = &lcs_gurmukhi;
-		break;
-
-	case CSS_LIST_STYLE_TYPE_HEBREW:
-		cstyle = &lcs_hebrew;
-		break;
-	case CSS_LIST_STYLE_TYPE_KANNADA:
-		cstyle = &lcs_kannada;
-		break;
-	case CSS_LIST_STYLE_TYPE_LAO:
-		cstyle = &lcs_lao;
-		break;
-	case CSS_LIST_STYLE_TYPE_MALAYALAM:
-		cstyle = &lcs_malayalam;
-		break;
-	case CSS_LIST_STYLE_TYPE_MONGOLIAN:
-		cstyle = &lcs_mongolian;
-		break;
-	case CSS_LIST_STYLE_TYPE_MYANMAR:
-		cstyle = &lcs_myanmar;
-		break;
-	case CSS_LIST_STYLE_TYPE_ORIYA:
-		cstyle = &lcs_oriya;
-		break;
-	case CSS_LIST_STYLE_TYPE_PERSIAN:
-		cstyle = &lcs_persian;
-		break;
-	case CSS_LIST_STYLE_TYPE_TAMIL:
-		cstyle = &lcs_tamil;
-		break;
-	case CSS_LIST_STYLE_TYPE_TELUGU:
-		cstyle = &lcs_telugu;
-		break;
-	case CSS_LIST_STYLE_TYPE_THAI:
-		cstyle = &lcs_thai;
-		break;
-	case CSS_LIST_STYLE_TYPE_TIBETAN:
-		cstyle = &lcs_tibetan;
-		break;
-	case CSS_LIST_STYLE_TYPE_CJK_EARTHLY_BRANCH:
-		cstyle = &lcs_cjk_earthly_branch;
-		break;
-	case CSS_LIST_STYLE_TYPE_CJK_HEAVENLY_STEM:
-		cstyle = &lcs_cjk_heavenly_stem;
-		break;
-	case CSS_LIST_STYLE_TYPE_HIAGANA:
-		cstyle = &lcs_hiragana;
-		break;
-	case CSS_LIST_STYLE_TYPE_HIAGANA_IROHA:
-		cstyle = &lcs_hiragana_iroha;
-		break;
-	case CSS_LIST_STYLE_TYPE_KATAKANA:
-		cstyle = &lcs_katakana;
-		break;
-	case CSS_LIST_STYLE_TYPE_KATAKANA_IROHA:
-		cstyle = &lcs_katakana_iroha;
-		break;
-	default:
+	cstyle = counter_style_from_computed_style(style);
+	if (cstyle == NULL) {
 		return CSS_BADPARM;
 	}
 
-	alen = cstyle->calc(aval, sizeof(aval), value, cstyle);
+	nval.used = cstyle->calc(aval, sizeof(aval), value, cstyle);
 
 	/* ensure it is possible to calculate with the selected system */
-	if ((alen == 0) || (alen >= sizeof(aval))) {
+	if ((nval.used == 0) || (nval.used >= sizeof(aval))) {
 		/* retry in decimal */
 		cstyle = &lcs_decimal;
 
-		alen = cstyle->calc(aval, sizeof(aval), value, cstyle);
-		if ((alen == 0) || (alen >= sizeof(aval))) {
+		nval.used = cstyle->calc(aval, sizeof(aval), value, cstyle);
+		if ((nval.used == 0) || (nval.used >= sizeof(aval))) {
 			/* failed in decimal, give up */
 			return CSS_INVALID;
 		}
 	}
 
-	*format_length = map_aval_to_symbols(buffer, buffer_length, aval, alen, cstyle);
+	*format_length = nval_to_symbols(&nval,
+					 cstyle,
+					 buffer,
+					 buffer_length);
 
 	return CSS_OK;
 }
