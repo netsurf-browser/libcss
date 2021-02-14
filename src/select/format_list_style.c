@@ -11,28 +11,6 @@
 #define SYMBOL_SIZE 5
 typedef char symbol_t[SYMBOL_SIZE];
 
-struct list_counter_style {
-	const char *name; /**< style name for debug purposes */
-	struct {
-		const int start; /**< first acceptable value for this style */
-		const int end; /**< last acceptable value for this style */
-	} range;
-	struct {
-		const unsigned int length;
-		const symbol_t value;
-	} pad;
-	struct {
-		const char *pre;
-		const char *post;
-	} negative;
-	const char *prefix;
-	const char *suffix;
-	const symbol_t *symbols; /**< array of symbols which represent this style */
-	const int *weights; /**< symbol weights for additive schemes */
-	const size_t items; /**< items in symbol and weight table */
-	size_t (*calc)(uint8_t *ares, const size_t alen, int value, const struct list_counter_style *cstyle); /**< function to calculate the system */
-};
-
 /**
  * numeric representation of the value using a system
  */
@@ -42,6 +20,45 @@ struct numeric {
 	size_t used; /* number of numeric values used */
 	bool negative; /* if the value is negative */
 };
+
+/**
+ * list counter style
+ */
+struct list_counter_style {
+	/** style name for debug purposes */
+	const char *name;
+	/** function to calculate the system */
+	css_error (*system)(int value, const struct list_counter_style *cstyle, struct numeric *nval);
+	/** fallback style if this system fails */
+	const struct list_counter_style* fallback;
+	/** array of symbols which represent this style */
+	const symbol_t *symbols;
+	/** symbol weights for additive schemes */
+	const int *weights;
+	/** number of items in symbol and weight table */
+	const size_t items;
+	/** range of acceptable values */
+	struct {
+		const int start; /**< first acceptable value for this style */
+		const int end; /**< last acceptable value for this style */
+	} range;
+
+	/** padding formatting */
+	struct {
+		const unsigned int length;
+		const symbol_t value;
+	} pad;
+	/** negative value formating */
+	struct {
+		const char *pre;
+		const char *post;
+	} negative;
+	/** prefix formatting */
+	const char *prefix;
+	/** suffix formatting */
+	const char *suffix;
+};
+
 
 /**
  * Copy a null-terminated UTF-8 string to buffer at offset, if there is space
@@ -143,7 +160,7 @@ nval_to_symbols(struct numeric *nval,
 	}
 
 	/* map symbols */
-	for (aidx=0; aidx < nval->used; aidx++) {
+	for (aidx = 0; aidx < nval->used; aidx++) {
 		oidx += copy_symbol(buf, buflen, oidx,
 				cstyle->symbols[nval->val[aidx]]);
 	}
@@ -174,41 +191,45 @@ nval_to_symbols(struct numeric *nval,
  * \param cstyle The counter style in use
  * \return The length a complete conversion which may be larger than \a alen
  */
-static size_t
-calc_numeric_system(uint8_t *ares,
-		    const size_t alen,
-		    int value,
-		    const struct list_counter_style *cstyle)
+static css_error
+calc_numeric_system(int value,
+		    const struct list_counter_style *cstyle,
+		    struct numeric *nval)
 {
 	size_t idx = 0;
 	uint8_t *first;
 	uint8_t *last;
 
 	if (value == 0) {
-		if (alen >= 1) {
-			ares[0] = 0;
+		if (nval->len >= 1) {
+			nval->val[0] = 0;
 		}
-		return 1;
+		nval->used = 1;
+		return CSS_OK;
 	}
 
-	value = abs(value);
-
+	if (value < 0) {
+		nval->negative = true;
+		value = abs(value);
+	} else {
+		nval->negative = false;
+	}
 
 	/* generate alphabet values in ascending order */
 	while (value > 0) {
-		if (idx < alen) {
-			ares[idx] = value % cstyle->items;
+		if (idx < nval->len) {
+			nval->val[idx] = value % cstyle->items;
 		}
 		idx++;
 		value = value / cstyle->items;
 	}
 
 	/* put the values in decending order */
-	first = ares;
-	if (idx < alen) {
+	first = nval->val;
+	if (idx < nval->len) {
 		last = first + (idx - 1);
 	} else {
-		last = first + (alen - 1);
+		last = first + (nval->len - 1);
 	}
 	while (first < last) {
 		*first ^= *last;
@@ -218,7 +239,9 @@ calc_numeric_system(uint8_t *ares,
 		last--;
 	}
 
-	return idx;
+	nval->used = idx;
+
+	return CSS_OK;
 }
 
 
@@ -233,22 +256,24 @@ calc_numeric_system(uint8_t *ares,
  * \param cstyle The counter style in use
  * \return The length a complete conversion which may be larger than \a alen
  */
-static size_t
-calc_cyclic_system(uint8_t *ares,
-		    const size_t alen,
-		    int value,
-		    const struct list_counter_style *cstyle)
+static css_error
+calc_cyclic_system(int value,
+		    const struct list_counter_style *cstyle,
+		    struct numeric *nval)
 {
-	if (alen == 0) {
-		return 0;
+	if (nval->len == 0) {
+		return CSS_INVALID;
 	}
 	if (cstyle->items == 1) {
 		/* there is only one symbol so select it */
-		ares[0] = 0;
+		nval->val[0] = 0;
 	} else {
-		ares[0] = (value - 1) % cstyle->items;
+		nval->val[0] = (value - 1) % cstyle->items;
 	}
-	return 1;
+	nval->used = 1;
+	nval->negative = false;
+
+	return CSS_OK;
 }
 
 
@@ -263,34 +288,53 @@ calc_cyclic_system(uint8_t *ares,
  * \param wlen The number of weights
  * \return The length a complete conversion which may be larger than \a alen
  */
-static size_t
-calc_additive_system(uint8_t *ares,
-		     const size_t alen,
-		     int value,
-		     const struct list_counter_style *cstyle)
+static css_error
+calc_additive_system(int value,
+		    const struct list_counter_style *cstyle,
+		    struct numeric *nval)
 {
 	size_t widx; /* weight index */
-	size_t aidx = 0;
+	size_t aidx = 0; /* numerals used */
 	size_t idx;
 	size_t times; /* number of times a weight occours */
 
 	/* ensure value is within acceptable range of this system */
 	if ((value < cstyle->range.start) || (value > cstyle->range.end)) {
-		return 0;
+		return CSS_INVALID;
 	}
 
-	/* implementation cannot cope with negatives */
-	if (value < 1) {
-		return 0;
+	/* zero needs a specific weight */
+	if (value == 0) {
+		/* search weights for a zero entry */
+		for (widx = 0; widx < cstyle->items; widx++) {
+			if (cstyle->weights[widx] == 0) {
+				if (nval->len > 0) {
+					nval->val[0] = widx;
+				}
+
+				nval->used = 1;
+				nval->negative = false;
+				return CSS_OK;
+			}
+		}
+		return CSS_INVALID;
+	}
+
+	/* negative values */
+	if (value < 0) {
+		nval->negative = true;
+		value = abs(value);
+	} else {
+		nval->negative = false;
 	}
 
 	/* iterate over the available weights */
-	for (widx = 0; widx < cstyle->items;widx++) {
+	for (widx = 0; widx < cstyle->items; widx++) {
 		times = value / cstyle->weights[widx];
 		if (times > 0) {
-			for (idx=0;idx < times;idx++) {
-				if (aidx < alen) {
-					ares[aidx] = widx;
+			for (idx = 0;idx < times;idx++) {
+				if (aidx < nval->len) {
+					nval->val[aidx] = widx;
 				}
 				aidx++;
 			}
@@ -299,7 +343,9 @@ calc_additive_system(uint8_t *ares,
 		}
 	}
 
-	return aidx;
+	nval->used = aidx;
+
+	return CSS_OK;
 }
 
 
@@ -314,32 +360,35 @@ calc_additive_system(uint8_t *ares,
  * \param slen The number of symbols in the alphabet
  * \return The length a complete conversion which may be larger than \a alen
  */
-static size_t
-calc_alphabet_system(uint8_t *ares,
-		     const size_t alen,
-		     int value,
-		     const struct list_counter_style *cstyle)
+static css_error
+calc_alphabet_system(int value,
+		     const struct list_counter_style *cstyle,
+		     struct numeric *nval)
 {
 	size_t idx = 0;
 	uint8_t *first;
 	uint8_t *last;
 
+	if (value < 1) {
+		return CSS_INVALID;
+	}
+
 	/* generate alphabet values in ascending order */
 	while (value > 0) {
 		--value;
-		if (idx < alen) {
-			ares[idx] = value % cstyle->items;
+		if (idx < nval->len) {
+			nval->val[idx] = value % cstyle->items;
 		}
 		idx++;
 		value = value / cstyle->items;
 	}
 
 	/* put the values in decending order */
-	first = ares;
-	if (idx < alen) {
+	first = nval->val;
+	if (idx < nval->len) {
 		last = first + (idx - 1);
 	} else {
-		last = first + (alen - 1);
+		last = first + (nval->len - 1);
 	}
 	while (first < last) {
 		*first ^= *last;
@@ -349,7 +398,10 @@ calc_alphabet_system(uint8_t *ares,
 		last--;
 	}
 
-	return idx;
+	nval->used = idx;
+	nval->negative = false;
+
+	return CSS_OK;
 }
 
 
@@ -358,11 +410,10 @@ calc_alphabet_system(uint8_t *ares,
  *
  * \return The number of numerals that are nesesary for full output
  */
-static size_t
-calc_roman_system(uint8_t *buf,
-		  const size_t maxlen,
-		  int value,
-		  const struct list_counter_style *cstyle)
+static css_error
+calc_roman_system(int value,
+		  const struct list_counter_style *cstyle,
+		  struct numeric *nval)
 {
 	const int S[]  = {    0,   2,   4,   2,   4,   2,   4 };
 	size_t k = 0; /* index into output buffer */
@@ -375,7 +426,7 @@ calc_roman_system(uint8_t *buf,
 
 	/* ensure value is within acceptable range of this system */
 	if ((value < cstyle->range.start) || (value > cstyle->range.end)) {
-		return 0;
+		return CSS_INVALID;
 	}
 
 	L = cstyle->items - 1;
@@ -391,27 +442,47 @@ calc_roman_system(uint8_t *buf,
 			if (i < L && r2 >= S[i+1]) {
 				/* will violate repeat boundary on next pass */
 				value = value - (r2 * cstyle->weights[i+1]);
-				if (k < maxlen) buf[k++] = i+1;
-				if (k < maxlen) buf[k++] = i-1;
+				if (k < nval->len) {
+					nval->val[k++] = i+1;
+				}
+				if (k < nval->len) {
+					nval->val[k++] = i-1;
+				}
 			} else if (S[i] && r >= S[i]) {
 				/* violated repeat boundary on this pass */
-				if (k < maxlen) buf[k++] = i;
-				if (k < maxlen) buf[k++] = i-1;
+				if (k < nval->len) {
+					nval->val[k++] = i;
+				}
+				if (k < nval->len) {
+					nval->val[k++] = i-1;
+				}
 			} else {
-				while (r-- > 0 && k < maxlen) {
-					buf[k++] = i;
+				while ((r-- > 0) && (k < nval->len)) {
+					nval->val[k++] = i;
 				}
 			}
 		}
 		i++;
 	}
 
-	return k;
+	nval->used = k;
+	nval->negative = false;
+
+	return CSS_OK;
 }
 
 
 /* tables for all the counter styles */
 
+static const symbol_t decimal_symbols[] = {
+	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
+};
+static const struct list_counter_style lcs_decimal = {
+	.name = "decimal",
+	.system = calc_numeric_system,
+	.symbols = decimal_symbols,
+	.items = (sizeof(decimal_symbols) / SYMBOL_SIZE),
+};
 
 static const symbol_t georgian_symbols[] = {
 	                                        "ჵ",
@@ -429,13 +500,12 @@ static const int georgian_weights[] = {
 };
 static const struct list_counter_style lcs_georgian =	{
 	.name="georgian",
-	.range = {
-		.start = 1,
-		.end = 19999,},
+	.system = calc_additive_system,
+	.fallback = &lcs_decimal,
 	.symbols = georgian_symbols,
 	.weights = georgian_weights,
 	.items = (sizeof(georgian_symbols) / SYMBOL_SIZE),
-	.calc = calc_additive_system,
+	.range = { .start = 1, .end = 19999 },
 };
 
 
@@ -453,13 +523,12 @@ static const int armenian_weights[] = {
 };
 static const struct list_counter_style lcs_upper_armenian = {
 	.name = "upper-armenian",
-	.range = {
-		.start = 1,
-		.end = 9999,},
+	.system = calc_additive_system,
+	.fallback = &lcs_decimal,
 	.symbols = upper_armenian_symbols,
 	.weights = armenian_weights,
 	.items = (sizeof(upper_armenian_symbols) / SYMBOL_SIZE),
-	.calc = calc_additive_system,
+	.range = { .start = 1, .end = 9999 },
 };
 
 
@@ -471,35 +540,21 @@ static const symbol_t lower_armenian_symbols[] = {
 };
 static const struct list_counter_style lcs_lower_armenian = {
 	.name = "lower-armenian",
-	.range = {
-		.start = 1,
-		.end = 9999,},
+	.system = calc_additive_system,
+	.fallback = &lcs_decimal,
 	.symbols = lower_armenian_symbols,
 	.weights = armenian_weights,
 	.items = (sizeof(lower_armenian_symbols) / SYMBOL_SIZE),
-	.calc = calc_additive_system,
-};
-
-
-static const symbol_t decimal_symbols[] = {
-	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
-};
-static const struct list_counter_style lcs_decimal = {
-	.name = "decimal",
-	.symbols = decimal_symbols,
-	.items = (sizeof(decimal_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
+	.range = { .start = 1, .end = 9999 },
 };
 
 
 static const struct list_counter_style lcs_decimal_leading_zero = {
 	.name = "decimal-leading-zero",
-	.pad = {
-		.length = 2,
-		.value = "0",},
+	.system = calc_numeric_system,
 	.symbols = decimal_symbols,
 	.items = (sizeof(decimal_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
+	.pad = { .length = 2, .value = "0" },
 };
 
 
@@ -510,9 +565,10 @@ static const symbol_t lower_greek_symbols[] = {
 };
 static const struct list_counter_style lcs_lower_greek = {
 	.name = "lower-greek",
+	.system = calc_alphabet_system,
+	.fallback = &lcs_decimal,
 	.symbols = lower_greek_symbols,
 	.items = (sizeof(lower_greek_symbols) / SYMBOL_SIZE),
-	.calc = calc_alphabet_system,
 };
 
 
@@ -523,9 +579,10 @@ static const symbol_t upper_alpha_symbols[] = {
 };
 static const struct list_counter_style lcs_upper_alpha = {
 	.name = "upper-alpha",
+	.system = calc_alphabet_system,
+	.fallback = &lcs_decimal,
 	.symbols = upper_alpha_symbols,
 	.items = (sizeof(upper_alpha_symbols) / SYMBOL_SIZE),
-	.calc = calc_alphabet_system,
 };
 
 
@@ -536,9 +593,10 @@ static const symbol_t lower_alpha_symbols[] = {
 };
 static struct list_counter_style lcs_lower_alpha = {
 	.name = "lower-alpha",
+	.system = calc_alphabet_system,
+	.fallback = &lcs_decimal,
 	.symbols = lower_alpha_symbols,
 	.items = (sizeof(lower_alpha_symbols) / SYMBOL_SIZE),
-	.calc = calc_alphabet_system,
 };
 
 
@@ -550,13 +608,12 @@ static const symbol_t upper_roman_symbols[] = {
 };
 static const struct list_counter_style lcs_upper_roman = {
 	.name = "upper-roman",
-	.range = {
-		.start = 1,
-		.end = 3999,},
+	.system = calc_roman_system,
+	.fallback = &lcs_decimal,
 	.symbols = upper_roman_symbols,
 	.weights = roman_weights,
 	.items = (sizeof(upper_roman_symbols) / SYMBOL_SIZE),
-	.calc = calc_roman_system,
+	.range = { .start = 1, .end = 3999 },
 };
 
 
@@ -565,48 +622,47 @@ static const symbol_t lower_roman_symbols[] = {
 };
 static const struct list_counter_style lcs_lower_roman = {
 	.name = "lower-roman",
-	.range = {
-		.start = 1,
-		.end = 3999,},
+	.system = calc_roman_system,
+	.fallback = &lcs_decimal,
 	.symbols = lower_roman_symbols,
 	.weights = roman_weights,
 	.items = (sizeof(lower_roman_symbols) / SYMBOL_SIZE),
-	.calc = calc_roman_system,
+	.range = { .start = 1, .end = 3999 },
 };
 
 static const symbol_t disc_symbols[] = { "\xE2\x80\xA2"}; /* 2022 BULLET */
 static const struct list_counter_style lcs_disc = {
 	.name = "disc",
+	.system = calc_cyclic_system,
 	.symbols = disc_symbols,
 	.items = (sizeof(disc_symbols) / SYMBOL_SIZE),
 	.suffix = " ",
-	.calc = calc_cyclic_system,
 };
 
 static const symbol_t circle_symbols[] = { "\342\227\213"}; /* 25CB WHITE CIRCLE */
 static const struct list_counter_style lcs_circle = {
 	.name = "circle",
+	.system = calc_cyclic_system,
 	.symbols = circle_symbols,
 	.items = (sizeof(circle_symbols) / SYMBOL_SIZE),
 	.suffix = " ",
-	.calc = calc_cyclic_system,
 };
 
 static const symbol_t square_symbols[] = { "\342\226\252"}; /* 25AA BLACK SMALL SQUARE */
 static const struct list_counter_style lcs_square = {
 	.name = "square",
+	.system = calc_cyclic_system,
 	.symbols = square_symbols,
 	.items = (sizeof(square_symbols) / SYMBOL_SIZE),
 	.suffix = " ",
-	.calc = calc_cyclic_system,
 };
 
 static const symbol_t binary_symbols[] = { "0", "1" };
 static const struct list_counter_style lcs_binary = {
 	.name = "binary",
+	.system = calc_numeric_system,
 	.symbols = binary_symbols,
 	.items = (sizeof(binary_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t octal_symbols[] = {
@@ -614,9 +670,9 @@ static const symbol_t octal_symbols[] = {
 };
 static const struct list_counter_style lcs_octal = {
 	.name = "octal",
+	.system = calc_numeric_system,
 	.symbols = octal_symbols,
 	.items = (sizeof(octal_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 
@@ -626,9 +682,9 @@ static const symbol_t lower_hexadecimal_symbols[] = {
 };
 static const struct list_counter_style lcs_lower_hexadecimal = {
 	.name = "lower-hexadecimal",
+	.system = calc_numeric_system,
 	.symbols = lower_hexadecimal_symbols,
 	.items = (sizeof(lower_hexadecimal_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t upper_hexadecimal_symbols[] = {
@@ -637,9 +693,9 @@ static const symbol_t upper_hexadecimal_symbols[] = {
 };
 static const struct list_counter_style lcs_upper_hexadecimal = {
 	.name = "upper-hexadecimal",
+	.system = calc_numeric_system,
 	.symbols = upper_hexadecimal_symbols,
 	.items = (sizeof(upper_hexadecimal_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t arabic_indic_symbols[] = {
@@ -647,9 +703,9 @@ static const symbol_t arabic_indic_symbols[] = {
 };
 static const struct list_counter_style lcs_arabic_indic = {
 	.name = "arabic-indic",
+	.system = calc_numeric_system,
 	.symbols = arabic_indic_symbols,
 	.items = (sizeof(arabic_indic_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t bengali_symbols[] = {
@@ -657,9 +713,9 @@ static const symbol_t bengali_symbols[] = {
 };
 static const struct list_counter_style lcs_bengali = {
 	.name = "bengali",
+	.system = calc_numeric_system,
 	.symbols = bengali_symbols,
 	.items = (sizeof(bengali_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t cambodian_symbols[] = {
@@ -667,9 +723,9 @@ static const symbol_t cambodian_symbols[] = {
 };
 static const struct list_counter_style lcs_cambodian = {
 	.name = "cambodian",
+	.system = calc_numeric_system,
 	.symbols = cambodian_symbols,
 	.items = (sizeof(cambodian_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t cjk_decimal_symbols[] = {
@@ -677,10 +733,10 @@ static const symbol_t cjk_decimal_symbols[] = {
 };
 static const struct list_counter_style lcs_cjk_decimal = {
 	.name = "cjk-decimal",
+	.system = calc_numeric_system,
 	.symbols = cjk_decimal_symbols,
 	.suffix = "、",
 	.items = (sizeof(cjk_decimal_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t devanagari_symbols[] = {
@@ -688,9 +744,9 @@ static const symbol_t devanagari_symbols[] = {
 };
 static const struct list_counter_style lcs_devanagari = {
 	.name = "devanagari",
+	.system = calc_numeric_system,
 	.symbols = devanagari_symbols,
 	.items = (sizeof(devanagari_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t gujarati_symbols[] = {
@@ -698,9 +754,9 @@ static const symbol_t gujarati_symbols[] = {
 };
 static const struct list_counter_style lcs_gujarati = {
 	.name = "gujarati",
+	.system = calc_numeric_system,
 	.symbols = gujarati_symbols,
 	.items = (sizeof(gujarati_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t gurmukhi_symbols[] = {
@@ -708,9 +764,9 @@ static const symbol_t gurmukhi_symbols[] = {
 };
 static const struct list_counter_style lcs_gurmukhi = {
 	.name = "gurmukhi",
+	.system = calc_numeric_system,
 	.symbols = gurmukhi_symbols,
 	.items = (sizeof(gurmukhi_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const int hebrew_weights[] = {
@@ -729,13 +785,12 @@ static const symbol_t hebrew_symbols[] = {
 };
 static const struct list_counter_style lcs_hebrew = {
 	.name = "hebrew",
-	.range = {
-		.start = 1,
-		.end = 10999,},
+	.system = calc_additive_system,
+	.fallback = &lcs_decimal,
 	.symbols = hebrew_symbols,
 	.weights = hebrew_weights,
 	.items = (sizeof(hebrew_symbols) / SYMBOL_SIZE),
-	.calc = calc_additive_system,
+	.range = { .start = 1, .end = 10999 },
 };
 
 static const symbol_t kannada_symbols[] = {
@@ -743,9 +798,9 @@ static const symbol_t kannada_symbols[] = {
 };
 static const struct list_counter_style lcs_kannada = {
 	.name = "kannada",
+	.system = calc_numeric_system,
 	.symbols = kannada_symbols,
 	.items = (sizeof(kannada_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t lao_symbols[] = {
@@ -753,9 +808,9 @@ static const symbol_t lao_symbols[] = {
 };
 static const struct list_counter_style lcs_lao = {
 	.name = "lao",
+	.system = calc_numeric_system,
 	.symbols = lao_symbols,
 	.items = (sizeof(lao_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t malayalam_symbols[] = {
@@ -763,9 +818,9 @@ static const symbol_t malayalam_symbols[] = {
 };
 static const struct list_counter_style lcs_malayalam = {
 	.name = "malayalam",
+	.system = calc_numeric_system,
 	.symbols = malayalam_symbols,
 	.items = (sizeof(malayalam_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t mongolian_symbols[] = {
@@ -773,9 +828,9 @@ static const symbol_t mongolian_symbols[] = {
 };
 static const struct list_counter_style lcs_mongolian = {
 	.name = "mongolian",
+	.system = calc_numeric_system,
 	.symbols = mongolian_symbols,
 	.items = (sizeof(mongolian_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t myanmar_symbols[] = {
@@ -783,9 +838,9 @@ static const symbol_t myanmar_symbols[] = {
 };
 static const struct list_counter_style lcs_myanmar = {
 	.name = "myanmar",
+	.system = calc_numeric_system,
 	.symbols = myanmar_symbols,
 	.items = (sizeof(myanmar_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t oriya_symbols[] = {
@@ -793,9 +848,9 @@ static const symbol_t oriya_symbols[] = {
 };
 static const struct list_counter_style lcs_oriya = {
 	.name = "oriya",
+	.system = calc_numeric_system,
 	.symbols = oriya_symbols,
 	.items = (sizeof(oriya_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t persian_symbols[] = {
@@ -803,9 +858,9 @@ static const symbol_t persian_symbols[] = {
 };
 static const struct list_counter_style lcs_persian = {
 	.name = "persian",
+	.system = calc_numeric_system,
 	.symbols = persian_symbols,
 	.items = (sizeof(persian_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t tamil_symbols[] = {
@@ -813,9 +868,9 @@ static const symbol_t tamil_symbols[] = {
 };
 static const struct list_counter_style lcs_tamil = {
 	.name = "tamil",
+	.system = calc_numeric_system,
 	.symbols = tamil_symbols,
 	.items = (sizeof(tamil_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t telugu_symbols[] = {
@@ -823,9 +878,9 @@ static const symbol_t telugu_symbols[] = {
 };
 static const struct list_counter_style lcs_telugu = {
 	.name = "telugu",
+	.system = calc_numeric_system,
 	.symbols = telugu_symbols,
 	.items = (sizeof(telugu_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t thai_symbols[] = {
@@ -833,9 +888,9 @@ static const symbol_t thai_symbols[] = {
 };
 static const struct list_counter_style lcs_thai = {
 	.name = "thai",
+	.system = calc_numeric_system,
 	.symbols = thai_symbols,
 	.items = (sizeof(thai_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t tibetan_symbols[] = {
@@ -843,9 +898,9 @@ static const symbol_t tibetan_symbols[] = {
 };
 static const struct list_counter_style lcs_tibetan = {
 	.name = "tibetan",
+	.system = calc_numeric_system,
 	.symbols = tibetan_symbols,
 	.items = (sizeof(tibetan_symbols) / SYMBOL_SIZE),
-	.calc = calc_numeric_system,
 };
 
 static const symbol_t cjk_earthly_branch_symbols[] = {
@@ -853,10 +908,11 @@ static const symbol_t cjk_earthly_branch_symbols[] = {
 };
 static struct list_counter_style lcs_cjk_earthly_branch = {
 	.name = "cjk-earthly-branch",
+	.system = calc_alphabet_system,
+	.fallback = &lcs_decimal,
 	.symbols = cjk_earthly_branch_symbols,
 	.items = (sizeof(cjk_earthly_branch_symbols) / SYMBOL_SIZE),
 	.suffix = "、",
-	.calc = calc_alphabet_system,
 };
 
 static const symbol_t cjk_heavenly_stem_symbols[] = {
@@ -864,10 +920,11 @@ static const symbol_t cjk_heavenly_stem_symbols[] = {
 };
 static struct list_counter_style lcs_cjk_heavenly_stem = {
 	.name = "cjk-heavenly-stem",
+	.system = calc_alphabet_system,
+	.fallback = &lcs_decimal,
 	.symbols = cjk_heavenly_stem_symbols,
 	.items = (sizeof(cjk_heavenly_stem_symbols) / SYMBOL_SIZE),
 	.suffix = "、",
-	.calc = calc_alphabet_system,
 };
 
 static const symbol_t hiragana_symbols[] = {
@@ -875,10 +932,11 @@ static const symbol_t hiragana_symbols[] = {
 };
 static struct list_counter_style lcs_hiragana = {
 	.name = "hiragana",
+	.system = calc_alphabet_system,
+	.fallback = &lcs_decimal,
 	.symbols = hiragana_symbols,
 	.items = (sizeof(hiragana_symbols) / SYMBOL_SIZE),
 	.suffix = "、",
-	.calc = calc_alphabet_system,
 };
 
 static const symbol_t hiragana_iroha_symbols[] = {
@@ -886,10 +944,11 @@ static const symbol_t hiragana_iroha_symbols[] = {
 };
 static struct list_counter_style lcs_hiragana_iroha = {
 	.name = "hiragana-iroha",
+	.system = calc_alphabet_system,
+	.fallback = &lcs_decimal,
 	.symbols = hiragana_iroha_symbols,
 	.items = (sizeof(hiragana_iroha_symbols) / SYMBOL_SIZE),
 	.suffix = "、",
-	.calc = calc_alphabet_system,
 };
 
 static const symbol_t katakana_symbols[] = {
@@ -897,10 +956,11 @@ static const symbol_t katakana_symbols[] = {
 };
 static struct list_counter_style lcs_katakana = {
 	.name = "katakana",
+	.system = calc_alphabet_system,
+	.fallback = &lcs_decimal,
 	.symbols = katakana_symbols,
 	.items = (sizeof(katakana_symbols) / SYMBOL_SIZE),
 	.suffix = "、",
-	.calc = calc_alphabet_system,
 };
 
 static const symbol_t katakana_iroha_symbols[] = {
@@ -908,10 +968,11 @@ static const symbol_t katakana_iroha_symbols[] = {
 };
 static struct list_counter_style lcs_katakana_iroha = {
 	.name = "katakana-iroha",
+	.system = calc_alphabet_system,
+	.fallback = &lcs_decimal,
 	.symbols = katakana_iroha_symbols,
 	.items = (sizeof(katakana_iroha_symbols) / SYMBOL_SIZE),
 	.suffix = "、",
-	.calc = calc_alphabet_system,
 };
 
 
@@ -1022,8 +1083,9 @@ css_error css_computed_format_list_style(
 		size_t buffer_length,
 		size_t *format_length)
 {
-	uint8_t aval[20];
+	css_error res = CSS_INVALID;
 	const struct list_counter_style *cstyle;
+	uint8_t aval[20];
 	struct numeric nval = {
 		.val = aval,
 		.len = sizeof(aval),
@@ -1031,31 +1093,24 @@ css_error css_computed_format_list_style(
 		.negative = false
 	};
 
-	nval.negative = (value < 0)?true:false;
 
 	cstyle = counter_style_from_computed_style(style);
-	if (cstyle == NULL) {
-		return CSS_BADPARM;
-	}
+	while (cstyle != NULL) {
+		res = cstyle->system(value, cstyle, &nval);
 
-	nval.used = cstyle->calc(aval, sizeof(aval), value, cstyle);
-
-	/* ensure it is possible to calculate with the selected system */
-	if ((nval.used == 0) || (nval.used >= sizeof(aval))) {
-		/* retry in decimal */
-		cstyle = &lcs_decimal;
-
-		nval.used = cstyle->calc(aval, sizeof(aval), value, cstyle);
-		if ((nval.used == 0) || (nval.used >= sizeof(aval))) {
-			/* failed in decimal, give up */
-			return CSS_INVALID;
+		if ((res == CSS_OK) &&
+		    (nval.used < nval.len)) {
+			/* system sucessfully generated numeric values */
+			*format_length = nval_to_symbols(&nval,
+							 cstyle,
+							 buffer,
+							 buffer_length);
+			break;
 		}
+
+		res = CSS_INVALID;
+		cstyle = cstyle->fallback;
 	}
 
-	*format_length = nval_to_symbols(&nval,
-					 cstyle,
-					 buffer,
-					 buffer_length);
-
-	return CSS_OK;
+	return res;
 }
