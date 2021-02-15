@@ -8,7 +8,7 @@
 #include "select/propget.h"
 #include "utils/utils.h"
 
-#define SYMBOL_SIZE 5
+#define SYMBOL_SIZE 8
 typedef char symbol_t[SYMBOL_SIZE];
 
 /**
@@ -330,6 +330,9 @@ calc_additive_system(int value,
 
 	/* iterate over the available weights */
 	for (widx = 0; widx < cstyle->items; widx++) {
+		if (cstyle->weights[widx] == 0) {
+			break;
+		}
 		times = value / cstyle->weights[widx];
 		if (times > 0) {
 			for (idx = 0;idx < times;idx++) {
@@ -975,6 +978,106 @@ static struct list_counter_style lcs_katakana_iroha = {
 	.suffix = "、",
 };
 
+/**
+ * weights suitable for the five complex addative styles
+ */
+static const int complex_counter_weights[] = {
+	9000, 8000, 7000, 6000, 5000, 4000, 3000, 2000, 1000,
+	900,  800,  700,  600,  500,  400,  300,  200,  100,
+	90,   80,   70,   60,   50,   40,   30,   20,   10,
+	9,    8,    7,    6,    5,    4,    3,    2,    1,    0
+};
+static const symbol_t japanese_informal_symbols[] = {
+	"九千", "八千", "七千", "六千", "五千", "四千", "三千", "二千", "千",
+	"九百", "八百", "七百", "六百", "五百", "四百", "三百", "二百", "百",
+	"九十", "八十", "七十", "六十", "五十", "四十", "三十", "二十", "十",
+	"九", "八", "七", "六", "五", "四", "三", "二", "一", "〇",
+};
+static const struct list_counter_style lcs_japanese_informal = {
+	.name = "japanese-informal",
+	.system = calc_additive_system,
+	.fallback = &lcs_cjk_decimal,
+	.symbols = japanese_informal_symbols,
+	.weights = complex_counter_weights,
+	.items = (sizeof(japanese_informal_symbols) / SYMBOL_SIZE),
+	.range = { .start = -9999, .end = 9999 },
+	.negative = { .pre = "マイナス" },
+	.suffix = "\xE3\x80\x81",
+};
+
+static const symbol_t japanese_formal_symbols[] = {
+	"九阡", "八阡", "七阡", "六阡", "伍阡", "四阡", "参阡", "弐阡", "壱阡",
+	"九百", "八百", "七百", "六百", "伍百", "四百", "参百", "弐百", "壱百",
+	"九拾", "八拾", "七拾", "六拾", "伍拾", "四拾", "参拾", "弐拾", "壱拾",
+	"九", "八", "七", "六", "伍", "四", "参", "弐", "壱", "零",
+};
+static const struct list_counter_style lcs_japanese_formal = {
+	.name = "japanese-formal",
+	.system = calc_additive_system,
+	.fallback = &lcs_cjk_decimal,
+	.symbols = japanese_formal_symbols,
+	.weights = complex_counter_weights,
+	.items = (sizeof(japanese_formal_symbols) / SYMBOL_SIZE),
+	.range = { .start = -9999, .end = 9999 },
+	.negative = { .pre = "マイナス" },
+	.suffix = "\xE3\x80\x81",
+};
+
+static const symbol_t korean_hangul_formal_symbols[] = {
+	"구천", "팔천", "칠천", "육천", "오천", "사천", "삼천", "이천", "일천",
+	"구백", "팔백", "칠백", "육백", "오백", "사백", "삼백", "이백", "일백",
+	"구십", "팔십", "칠십", "육십", "오십", "사십", "삼십", "이십", "일십",
+	"구", "팔", "칠", "육", "오", "사", "삼", "이", "일", "영"
+};
+static const struct list_counter_style lcs_korean_hangul_formal = {
+	.name = "korean-hangul-formal",
+	.system = calc_additive_system,
+	.fallback = &lcs_cjk_decimal,
+	.symbols = korean_hangul_formal_symbols,
+	.weights = complex_counter_weights,
+	.items = (sizeof(korean_hangul_formal_symbols) / SYMBOL_SIZE),
+	.range = { .start = -9999, .end = 9999 },
+	.negative = { .pre = "\xEB\xA7\x88\xEC\x9D\xB4\xEB\x84\x88\xEC\x8A\xA4 " },
+	.suffix = ", ",
+};
+
+static const symbol_t korean_hanja_informal_symbols[] = {
+	"九千", "八千", "七千", "六千", "五千", "四千", "三千", "二千", "千",
+	"九百", "八百", "七百", "六百", "五百", "四百", "三百", "二百", "百",
+	"九十", "八十", "七十", "六十", "五十", "四十", "三十", "二十", "十",
+	"九", "八", "七", "六", "五", "四", "三", "二", "一", "零"
+};
+static const struct list_counter_style lcs_korean_hanja_informal = {
+	.name = "korean-hanja-informal",
+	.system = calc_additive_system,
+	.fallback = &lcs_cjk_decimal,
+	.symbols = korean_hanja_informal_symbols,
+	.weights = complex_counter_weights,
+	.items = (sizeof(korean_hanja_informal_symbols) / SYMBOL_SIZE),
+	.range = { .start = -9999, .end = 9999 },
+	.negative = { .pre = "\xEB\xA7\x88\xEC\x9D\xB4\xEB\x84\x88\xEC\x8A\xA4 " },
+	.suffix = ", ",
+};
+
+static const symbol_t korean_hanja_formal_symbols[] = {
+	"九仟", "八仟", "七仟", "六仟", "五仟", "四仟", "參仟", "貳仟", "壹仟",
+	"九百", "八百", "七百", "六百", "五百", "四百", "參百", "貳百", "壹百",
+	"九拾", "八拾", "七拾", "六拾", "五拾", "四拾", "參拾", "貳拾", "壹拾",
+	"九", "八", "七", "六", "五", "四", "參", "貳", "壹", "零"
+};
+static const struct list_counter_style lcs_korean_hanja_formal = {
+	.name = "korean-hanja-formal",
+	.system = calc_additive_system,
+	.fallback = &lcs_cjk_decimal,
+	.symbols = korean_hanja_formal_symbols,
+	.weights = complex_counter_weights,
+	.items = (sizeof(korean_hanja_formal_symbols) / SYMBOL_SIZE),
+	.range = { .start = -9999, .end = 9999 },
+	.negative = { .pre = "\xEB\xA7\x88\xEC\x9D\xB4\xEB\x84\x88\xEC\x8A\xA4 " },
+	.suffix = ", ",
+};
+
+
 
 static const struct list_counter_style *
 counter_style_from_computed_style(const css_computed_style *style)
@@ -1070,6 +1173,16 @@ counter_style_from_computed_style(const css_computed_style *style)
 		return &lcs_katakana;
 	case CSS_LIST_STYLE_TYPE_KATAKANA_IROHA:
 		return &lcs_katakana_iroha;
+	case CSS_LIST_STYLE_TYPE_JAPANESE_INFORMAL:
+		return &lcs_japanese_informal;
+	case CSS_LIST_STYLE_TYPE_JAPANESE_FORMAL:
+		return &lcs_japanese_formal;
+	case CSS_LIST_STYLE_TYPE_KOREAN_HANGUL_FORMAL:
+		return &lcs_korean_hangul_formal;
+	case CSS_LIST_STYLE_TYPE_KOREAN_HANJA_INFORMAL:
+		return &lcs_korean_hanja_informal;
+	case CSS_LIST_STYLE_TYPE_KOREAN_HANJA_FORMAL:
+		return &lcs_korean_hanja_formal;
 	}
 	return NULL;
 }

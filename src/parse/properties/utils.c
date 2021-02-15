@@ -34,7 +34,7 @@ css_error css__parse_list_style_type_value(css_language *c, const css_token *ide
 	 *	  upper-latin, armenian, georgian, lower-alpha, upper-alpha,
 	 *	  none)
 	 */
-	#define MAP_ENTRIES 47
+	#define MAP_ENTRIES 52
 	bool match;
 	int midx;
 	const struct {
@@ -87,7 +87,12 @@ css_error css__parse_list_style_type_value(css_language *c, const css_token *ide
 		{ HIAGANA, LIST_STYLE_TYPE_HIAGANA },
 		{ HIAGANA_IROHA, LIST_STYLE_TYPE_HIAGANA_IROHA },
 		{ KATAKANA, LIST_STYLE_TYPE_KATAKANA },
-		{ KATAKANA_IROHA, LIST_STYLE_TYPE_KATAKANA_IROHA }
+		{ KATAKANA_IROHA, LIST_STYLE_TYPE_KATAKANA_IROHA },
+		{ JAPANESE_INFORMAL, LIST_STYLE_TYPE_JAPANESE_INFORMAL },
+		{ JAPANESE_FORMAL, LIST_STYLE_TYPE_JAPANESE_FORMAL },
+		{ KOREAN_HANGUL_FORMAL, LIST_STYLE_TYPE_KOREAN_HANGUL_FORMAL },
+		{ KOREAN_HANJA_INFORMAL, LIST_STYLE_TYPE_KOREAN_HANJA_INFORMAL },
+		{ KOREAN_HANJA_FORMAL, LIST_STYLE_TYPE_KOREAN_HANJA_FORMAL }
 	};
 
 	for (midx = 0; midx < MAP_ENTRIES; midx++) {
