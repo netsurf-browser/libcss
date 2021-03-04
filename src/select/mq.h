@@ -10,96 +10,7 @@
 #define css_select_mq_h_
 
 #include "select/helpers.h"
-
-static inline css_fixed css_len2px(
-		css_fixed length,
-		css_unit unit,
-		const css_media *media)
-{
-	css_fixed px_per_unit;
-
-	switch (unit) {
-	case CSS_UNIT_VI:
-		/* TODO: Assumes writing mode. */
-		unit = CSS_UNIT_VW;
-		break;
-	case CSS_UNIT_VB:
-		/* TODO: Assumes writing mode. */
-		unit = CSS_UNIT_VH;
-		break;
-	case CSS_UNIT_VMIN:
-		unit = (media->height < media->width) ?
-				CSS_UNIT_VH : CSS_UNIT_VW;
-		break;
-	case CSS_UNIT_VMAX:
-		unit = (media->width > media->height) ?
-				CSS_UNIT_VH : CSS_UNIT_VW;
-		break;
-	default:
-		break;
-	}
-
-	switch (unit) {
-	case CSS_UNIT_EM:
-	case CSS_UNIT_EX:
-	case CSS_UNIT_CH:
-	{
-		px_per_unit = FDIV(FMUL(media->client_font_size, F_96), F_72);
-
-		/* TODO: Handling these as fixed ratios of CSS_UNIT_EM. */
-		switch (unit) {
-		case CSS_UNIT_EX:
-			px_per_unit = FMUL(px_per_unit, FLTTOFIX(0.6));
-			break;
-		case CSS_UNIT_CH:
-			px_per_unit = FMUL(px_per_unit, FLTTOFIX(0.4));
-			break;
-		default:
-			break;
-		}
-	}
-		break;
-	case CSS_UNIT_PX:
-		return length;
-	case CSS_UNIT_IN:
-		px_per_unit = F_96;
-		break;
-	case CSS_UNIT_CM:
-		px_per_unit = FDIV(F_96, FLTTOFIX(2.54));
-		break;
-	case CSS_UNIT_MM:
-		px_per_unit = FDIV(F_96, FLTTOFIX(25.4));
-		break;
-	case CSS_UNIT_Q:
-		px_per_unit = FDIV(F_96, FLTTOFIX(101.6));
-		break;
-	case CSS_UNIT_PT:
-		px_per_unit = FDIV(F_96, F_72);
-		break;
-	case CSS_UNIT_PC:
-		px_per_unit = FDIV(F_96, INTTOFIX(6));
-		break;
-	case CSS_UNIT_REM:
-		px_per_unit = FDIV(FMUL(media->client_font_size, F_96), F_72);
-		break;
-	case CSS_UNIT_VH:
-		px_per_unit = FDIV(media->height, F_100);
-		break;
-	case CSS_UNIT_VW:
-		px_per_unit = FDIV(media->width, F_100);
-		break;
-	default:
-		px_per_unit = 0;
-		break;
-	}
-
-	/* Ensure we round px_per_unit to the nearest whole number of pixels:
-	 * the use of FIXTOINT() below will truncate. */
-	px_per_unit += F_0_5;
-
-	/* Calculate total number of pixels */
-	return FMUL(length, TRUNCATEFIX(px_per_unit));
-}
+#include "select/unit.h"
 
 static inline bool mq_match_feature_range_length_op1(
 		css_mq_feature_op op,
@@ -114,9 +25,9 @@ static inline bool mq_match_feature_range_length_op1(
 	}
 
 	if (value->data.dim.unit != UNIT_PX) {
-		v = css_len2px(value->data.dim.len,
-				css__to_css_unit(value->data.dim.unit),
-				media);
+		v = css_unit_len2px_mq(media,
+				value->data.dim.len,
+				css__to_css_unit(value->data.dim.unit));
 	} else {
 		v = value->data.dim.len;
 	}
@@ -149,9 +60,9 @@ static inline bool mq_match_feature_range_length_op2(
 	}
 
 	if (value->data.dim.unit != UNIT_PX) {
-		v = css_len2px(value->data.dim.len,
-				css__to_css_unit(value->data.dim.unit),
-				media);
+		v = css_unit_len2px_mq(media,
+				value->data.dim.len,
+				css__to_css_unit(value->data.dim.unit));
 	} else {
 		v = value->data.dim.len;
 	}

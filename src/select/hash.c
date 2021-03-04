@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <libcss/hint.h>
+
 #include "stylesheet.h"
 #include "select/hash.h"
 #include "select/mq.h"
