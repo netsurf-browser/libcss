@@ -1032,12 +1032,8 @@ css_error css__parse_unit_keyword(const char *ptr, size_t len, uint32_t *unit)
 			*unit = UNIT_DEG;
 		else if (strncasecmp(ptr, "rad", 3) == 0)
 			*unit = UNIT_RAD;
-		else if (strncasecmp(ptr, "cap", 3) == 0)
-			*unit = UNIT_CAP;
 		else if (strncasecmp(ptr, "rem", 3) == 0)
 			*unit = UNIT_REM;
-		else if (strncasecmp(ptr, "rlh", 3) == 0)
-			*unit = UNIT_RLH;
 		else if (strncasecmp(ptr, "dpi", 3) == 0)
 			*unit = UNIT_DPI;
 		else
@@ -1065,8 +1061,6 @@ css_error css__parse_unit_keyword(const char *ptr, size_t len, uint32_t *unit)
 			*unit = UNIT_PC;
 		else if (strncasecmp(ptr, "ch", 2) == 0)
 			*unit = UNIT_CH;
-		else if (strncasecmp(ptr, "ic", 2) == 0)
-			*unit = UNIT_IC;
 		else if (strncasecmp(ptr, "lh", 2) == 0)
 			*unit = UNIT_LH;
 		else if (strncasecmp(ptr, "vh", 2) == 0)

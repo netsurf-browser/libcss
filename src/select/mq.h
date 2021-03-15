@@ -42,9 +42,7 @@ static inline css_fixed css_len2px(
 	switch (unit) {
 	case CSS_UNIT_EM:
 	case CSS_UNIT_EX:
-	case CSS_UNIT_CAP:
 	case CSS_UNIT_CH:
-	case CSS_UNIT_IC:
 	{
 		px_per_unit = FDIV(FMUL(media->client_font_size, F_96), F_72);
 
@@ -53,14 +51,8 @@ static inline css_fixed css_len2px(
 		case CSS_UNIT_EX:
 			px_per_unit = FMUL(px_per_unit, FLTTOFIX(0.6));
 			break;
-		case CSS_UNIT_CAP:
-			px_per_unit = FMUL(px_per_unit, FLTTOFIX(0.9));
-			break;
 		case CSS_UNIT_CH:
 			px_per_unit = FMUL(px_per_unit, FLTTOFIX(0.4));
-			break;
-		case CSS_UNIT_IC:
-			px_per_unit = FMUL(px_per_unit, FLTTOFIX(1.1));
 			break;
 		default:
 			break;
@@ -89,9 +81,6 @@ static inline css_fixed css_len2px(
 		break;
 	case CSS_UNIT_REM:
 		px_per_unit = FDIV(FMUL(media->client_font_size, F_96), F_72);
-		break;
-	case CSS_UNIT_RLH:
-		px_per_unit = media->client_line_height;
 		break;
 	case CSS_UNIT_VH:
 		px_per_unit = FDIV(media->height, F_100);

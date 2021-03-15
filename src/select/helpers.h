@@ -22,12 +22,9 @@ static inline css_unit css__to_css_unit(uint32_t u)
 	case UNIT_MM:   return CSS_UNIT_MM;
 	case UNIT_PT:   return CSS_UNIT_PT;
 	case UNIT_PC:   return CSS_UNIT_PC;
-	case UNIT_CAP:  return CSS_UNIT_CAP;
 	case UNIT_CH:   return CSS_UNIT_CH;
-	case UNIT_IC:   return CSS_UNIT_IC;
 	case UNIT_REM:  return CSS_UNIT_REM;
 	case UNIT_LH:   return CSS_UNIT_LH;
-	case UNIT_RLH:  return CSS_UNIT_RLH;
 	case UNIT_VH:   return CSS_UNIT_VH;
 	case UNIT_VW:   return CSS_UNIT_VW;
 	case UNIT_VI:   return CSS_UNIT_VI;

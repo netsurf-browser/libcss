@@ -105,23 +105,14 @@ static size_t dump_css_unit(css_fixed val, css_unit unit, char *ptr, size_t len)
 	case CSS_UNIT_PC:
 		ret += snprintf(ptr + ret, len - ret, "pc");
 		break;
-	case CSS_UNIT_CAP:
-		ret += snprintf(ptr + ret, len - ret, "cap");
-		break;
 	case CSS_UNIT_CH:
 		ret += snprintf(ptr + ret, len - ret, "ch");
-		break;
-	case CSS_UNIT_IC:
-		ret += snprintf(ptr + ret, len - ret, "ic");
 		break;
 	case CSS_UNIT_REM:
 		ret += snprintf(ptr + ret, len - ret, "rem");
 		break;
 	case CSS_UNIT_LH:
 		ret += snprintf(ptr + ret, len - ret, "lh");
-		break;
-	case CSS_UNIT_RLH:
-		ret += snprintf(ptr + ret, len - ret, "rlh");
 		break;
 	case CSS_UNIT_VH:
 		ret += snprintf(ptr + ret, len - ret, "vh");

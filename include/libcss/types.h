@@ -88,19 +88,16 @@ typedef enum css_unit {
 	CSS_UNIT_MM                 = 0x05,
 	CSS_UNIT_PT                 = 0x06,
 	CSS_UNIT_PC                 = 0x07,
-	CSS_UNIT_CAP                = 0x08,
-	CSS_UNIT_CH                 = 0x09,
-	CSS_UNIT_IC                 = 0x0a,
-	CSS_UNIT_REM                = 0x0b,
-	CSS_UNIT_LH                 = 0x0c,
-	CSS_UNIT_RLH                = 0x0d,
-	CSS_UNIT_VH                 = 0x0e,
-	CSS_UNIT_VW                 = 0x0f,
-	CSS_UNIT_VI                 = 0x10,
-	CSS_UNIT_VB                 = 0x11,
-	CSS_UNIT_VMIN               = 0x12,
-	CSS_UNIT_VMAX               = 0x13,
-	CSS_UNIT_Q                  = 0x14,
+	CSS_UNIT_CH                 = 0x08,
+	CSS_UNIT_REM                = 0x09,
+	CSS_UNIT_LH                 = 0x0a,
+	CSS_UNIT_VH                 = 0x0b,
+	CSS_UNIT_VW                 = 0x0c,
+	CSS_UNIT_VI                 = 0x0d,
+	CSS_UNIT_VB                 = 0x0e,
+	CSS_UNIT_VMIN               = 0x0f,
+	CSS_UNIT_VMAX               = 0x10,
+	CSS_UNIT_Q                  = 0x11,
 
 	CSS_UNIT_PCT                = 0x15,	/* Percentage */
 
@@ -116,7 +113,7 @@ typedef enum css_unit {
 } css_unit;
 
 /**
- * Media orienations
+ * Media orientations
  */
 typedef enum css_media_orientation {
 	CSS_MEDIA_ORIENTATION_PORTRAIT  = 0,

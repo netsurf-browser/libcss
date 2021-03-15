@@ -12419,7 +12419,7 @@ z-index: auto
 #tree
 | div*
 #ua
-div { width: 10cap; }
+div { width: 10em; }
 #errors
 #expected
 align-content: stretch
@@ -12519,7 +12519,7 @@ unicode-bidi: normal
 vertical-align: baseline
 visibility: visible
 white-space: normal
-width: 10cap
+width: 10em
 word-spacing: normal
 writing-mode: horizontal-tb
 z-index: auto
@@ -12637,7 +12637,7 @@ z-index: auto
 #tree
 | div*
 #ua
-div { width: 10ic; }
+div { width: 10ch; }
 #errors
 #expected
 align-content: stretch
@@ -12737,7 +12737,7 @@ unicode-bidi: normal
 vertical-align: baseline
 visibility: visible
 white-space: normal
-width: 10ic
+width: 10ch
 word-spacing: normal
 writing-mode: horizontal-tb
 z-index: auto
@@ -12964,7 +12964,7 @@ z-index: auto
 #tree
 | div*
 #ua
-div { width: 10rlh; }
+div { width: 10rem; }
 #errors
 #expected
 align-content: stretch
@@ -13064,7 +13064,7 @@ unicode-bidi: normal
 vertical-align: baseline
 visibility: visible
 white-space: normal
-width: 10rlh
+width: 10rem
 word-spacing: normal
 writing-mode: horizontal-tb
 z-index: auto

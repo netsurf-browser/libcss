@@ -70,27 +70,11 @@
 #reset
 
 #data
-* { width: 10cap; }
-#errors
-#expected
-| *
-|  width: 10cap
-#reset
-
-#data
 * { width: 10ch; }
 #errors
 #expected
 | *
 |  width: 10ch
-#reset
-
-#data
-* { width: 10ic; }
-#errors
-#expected
-| *
-|  width: 10ic
 #reset
 
 #data
@@ -107,14 +91,6 @@
 #expected
 | *
 |  width: 10lh
-#reset
-
-#data
-* { width: 10rlh; }
-#errors
-#expected
-| *
-|  width: 10rlh
 #reset
 
 #data
