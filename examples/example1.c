@@ -98,12 +98,21 @@ static css_error node_presentational_hint(void *pw, void *node,
 		uint32_t *nhints, css_hint **hints);
 static css_error ua_default_for_property(void *pw, uint32_t property,
 		css_hint *hint);
-static css_error compute_font_size(void *pw, const css_hint *parent,
-		css_hint *size);
 static css_error set_libcss_node_data(void *pw, void *n,
 		void *libcss_node_data);
 static css_error get_libcss_node_data(void *pw, void *n,
 		void **libcss_node_data);
+
+static css_unit_len_ctx uint_len_ctx = {
+	.viewport_width    = 800 * (1 << CSS_RADIX_POINT),
+	.viewport_height   = 600 * (1 << CSS_RADIX_POINT),
+	.font_size_default =  16 * (1 << CSS_RADIX_POINT),
+	.font_size_minimum =   6 * (1 << CSS_RADIX_POINT),
+	.device_dpi        =  96 * (1 << CSS_RADIX_POINT),
+	.root_style        = NULL, /* We don't have a root node yet. */
+	.pw                = NULL, /* We're not implementing measure callback */
+	.measure           = NULL, /* We're not implementing measure callback */
+};
 
 /* Table of function pointers for the LibCSS Select API. */
 static css_select_handler select_handler = {
@@ -143,9 +152,8 @@ static css_select_handler select_handler = {
 	node_is_lang,
 	node_presentational_hint,
 	ua_default_for_property,
-	compute_font_size,
 	set_libcss_node_data,
-	get_libcss_node_data
+	get_libcss_node_data,
 };
 
 
@@ -237,6 +245,7 @@ int main(int argc, char **argv)
 		lwc_intern_string(element, strlen(element), &element_name);
 
 		code = css_select_style(select_ctx, element_name,
+				&uint_len_ctx,
 				&media, NULL,
 				&select_handler, 0,
 				&style);
@@ -658,68 +667,6 @@ css_error ua_default_for_property(void *pw, uint32_t property, css_hint *hint)
 	} else {
 		return CSS_INVALID;
 	}
-
-	return CSS_OK;
-}
-
-css_error compute_font_size(void *pw, const css_hint *parent, css_hint *size)
-{
-	static css_hint_length sizes[] = {
-		{ FLTTOFIX(6.75), CSS_UNIT_PT },
-		{ FLTTOFIX(7.50), CSS_UNIT_PT },
-		{ FLTTOFIX(9.75), CSS_UNIT_PT },
-		{ FLTTOFIX(12.0), CSS_UNIT_PT },
-		{ FLTTOFIX(13.5), CSS_UNIT_PT },
-		{ FLTTOFIX(18.0), CSS_UNIT_PT },
-		{ FLTTOFIX(24.0), CSS_UNIT_PT }
-	};
-	const css_hint_length *parent_size;
-
-	UNUSED(pw);
-
-	/* Grab parent size, defaulting to medium if none */
-	if (parent == NULL) {
-		parent_size = &sizes[CSS_FONT_SIZE_MEDIUM - 1];
-	} else {
-		assert(parent->status == CSS_FONT_SIZE_DIMENSION);
-		assert(parent->data.length.unit != CSS_UNIT_EM);
-		assert(parent->data.length.unit != CSS_UNIT_EX);
-		parent_size = &parent->data.length;
-	}
-
-	assert(size->status != CSS_FONT_SIZE_INHERIT);
-
-	if (size->status < CSS_FONT_SIZE_LARGER) {
-		/* Keyword -- simple */
-		size->data.length = sizes[size->status - 1];
-	} else if (size->status == CSS_FONT_SIZE_LARGER) {
-		/** \todo Step within table, if appropriate */
-		size->data.length.value =
-				FMUL(parent_size->value, FLTTOFIX(1.2));
-		size->data.length.unit = parent_size->unit;
-	} else if (size->status == CSS_FONT_SIZE_SMALLER) {
-		/** \todo Step within table, if appropriate */
-		size->data.length.value =
-				FMUL(parent_size->value, FLTTOFIX(1.2));
-		size->data.length.unit = parent_size->unit;
-	} else if (size->data.length.unit == CSS_UNIT_EM ||
-			size->data.length.unit == CSS_UNIT_EX) {
-		size->data.length.value =
-			FMUL(size->data.length.value, parent_size->value);
-
-		if (size->data.length.unit == CSS_UNIT_EX) {
-			size->data.length.value = FMUL(size->data.length.value,
-					FLTTOFIX(0.6));
-		}
-
-		size->data.length.unit = parent_size->unit;
-	} else if (size->data.length.unit == CSS_UNIT_PCT) {
-		size->data.length.value = FDIV(FMUL(size->data.length.value,
-				parent_size->value), FLTTOFIX(100));
-		size->data.length.unit = parent_size->unit;
-	}
-
-	size->status = CSS_FONT_SIZE_DIMENSION;
 
 	return CSS_OK;
 }

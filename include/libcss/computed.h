@@ -19,6 +19,7 @@ extern "C"
 #include <libcss/functypes.h>
 #include <libcss/properties.h>
 #include <libcss/types.h>
+#include <libcss/unit.h>
 
 struct css_hint;
 struct css_select_handler;
@@ -81,10 +82,7 @@ css_error css_computed_style_destroy(css_computed_style *style);
 css_error css_computed_style_compose(
 		const css_computed_style *restrict parent,
 		const css_computed_style *restrict child,
-		css_error (*compute_font_size)(void *pw,
-				const struct css_hint *parent,
-				struct css_hint *size),
-		void *pw,
+		const css_unit_len_ctx *unit_len_ctx,
 		css_computed_style **restrict result);
 
 /******************************************************************************

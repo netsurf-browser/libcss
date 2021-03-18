@@ -115,14 +115,15 @@ static inline css_fixed css_unit__absolute_len2pt(
 	}
 }
 
-/* Exported function, documented in unit.h. */
+/* Exported function, documented in libcss/unit.h. */
 css_fixed css_unit_font_size_len2pt(
+		const css_computed_style *style,
 		const css_unit_len_ctx *ctx,
 		const css_fixed length,
 		const css_unit unit)
 {
 	return css_unit__absolute_len2pt(
-			ctx->ref_style,
+			style,
 			ctx->viewport_height,
 			ctx->viewport_width,
 			length,
@@ -303,15 +304,16 @@ css_fixed css_unit_len2px_mq(
 	return FMUL(length, TRUNCATEFIX(px_per_unit));
 }
 
-/* Exported function, documented in unit.h. */
+/* Exported function, documented in libcss/unit.h. */
 css_fixed css_unit_len2css_px(
+		const css_computed_style *style,
 		const css_unit_len_ctx *ctx,
 		const css_fixed length,
 		const css_unit unit)
 {
 	css_fixed px_per_unit = css_unit__px_per_unit(
 			ctx->measure,
-			ctx->ref_style,
+			style,
 			ctx->root_style,
 			ctx->font_size_default,
 			ctx->font_size_minimum,
@@ -328,15 +330,16 @@ css_fixed css_unit_len2css_px(
 	return FMUL(length, TRUNCATEFIX(px_per_unit));
 }
 
-/* Exported function, documented in unit.h. */
+/* Exported function, documented in libcss/unit.h. */
 css_fixed css_unit_len2device_px(
+		const css_computed_style *style,
 		const css_unit_len_ctx *ctx,
 		const css_fixed length,
 		const css_unit unit)
 {
 	css_fixed px_per_unit = css_unit__px_per_unit(
 			ctx->measure,
-			ctx->ref_style,
+			style,
 			ctx->root_style,
 			ctx->font_size_default,
 			ctx->font_size_minimum,
@@ -361,18 +364,18 @@ css_fixed css_unit_len2device_px(
  * The computed style will have font-size with an absolute unit.
  * If no computed style is given, the client default font-size will be returned.
  *
- * \param[in]  ctx    Length unit conversion context.
- * \param[in]  style  The style to get the font-size for, or NULL.
+ * \param[in] style              Reference style.  (Element or parent, or NULL).
+ * \param[in] font_size_default  Client default font size in CSS pixels.
  * \return The font size in absolute units.
  */
 static inline css_hint_length css_unit__get_font_size(
-		const css_unit_len_ctx *ctx,
-		const css_computed_style *style)
+		const css_computed_style *style,
+		css_fixed font_size_default)
 {
 	css_hint_length size;
 
 	if (style == NULL) {
-		size.value = ctx->font_size_default;
+		size.value = font_size_default;
 		size.unit = CSS_UNIT_PX;
 	} else {
 		enum css_font_size_e status = get_font_size(
@@ -391,10 +394,24 @@ static inline css_hint_length css_unit__get_font_size(
 
 /* Exported function, documented in unit.h. */
 css_error css_unit_compute_absolute_font_size(
-		const css_unit_len_ctx *ctx,
+		const css_hint_length *ref_length,
+		const css_computed_style *root_style,
+		css_fixed font_size_default,
 		css_hint *size)
 {
-	css_hint_length ref_len;
+	css_hint_length ref_len = {
+		.value = font_size_default,
+		.unit = CSS_UNIT_PX,
+	};
+
+	if (ref_length != NULL) {
+		/* Must be absolute. */
+		assert(ref_length->unit != CSS_UNIT_EM);
+		assert(ref_length->unit != CSS_UNIT_EX);
+		assert(ref_length->unit != CSS_UNIT_PCT);
+
+		ref_len = *ref_length;
+	}
 
 	assert(size->status != CSS_FONT_SIZE_INHERIT);
 
@@ -420,20 +437,18 @@ css_error css_unit_compute_absolute_font_size(
 		assert(CSS_FONT_SIZE_XX_SMALL == 1);
 
 		size->data.length.value = FMUL(factors[size->status - 1],
-				ctx->font_size_default);
+				font_size_default);
 		size->data.length.unit = CSS_UNIT_PX;
 		size->status = CSS_FONT_SIZE_DIMENSION;
 		break;
 	}
 	case CSS_FONT_SIZE_LARGER:
-		ref_len = css_unit__get_font_size(ctx, ctx->ref_style);
 		size->data.length.value = FMUL(ref_len.value, FLTTOFIX(1.2));
 		size->data.length.unit = ref_len.unit;
 		size->status = CSS_FONT_SIZE_DIMENSION;
 		break;
 
 	case CSS_FONT_SIZE_SMALLER:
-		ref_len = css_unit__get_font_size(ctx, ctx->ref_style);
 		size->data.length.value = FDIV(ref_len.value, FLTTOFIX(1.2));
 		size->data.length.unit = ref_len.unit;
 		size->status = CSS_FONT_SIZE_DIMENSION;
@@ -443,9 +458,8 @@ css_error css_unit_compute_absolute_font_size(
 		/* Convert any relative units to absolute. */
 		switch (size->data.length.unit) {
 		case CSS_UNIT_PCT:
-			ref_len = css_unit__get_font_size(ctx, ctx->ref_style);
-			size->data.length.value = FDIV(
-					FMUL(size->data.length.value,
+			size->data.length.value = FDIV(FMUL(
+					size->data.length.value,
 					ref_len.value), INTTOFIX(100));
 			size->data.length.unit = ref_len.unit;
 			break;
@@ -454,11 +468,8 @@ css_error css_unit_compute_absolute_font_size(
 		case CSS_UNIT_EX: /* Fall-through */
 		case CSS_UNIT_CH:
 			/* Parent relative units. */
-			ref_len = css_unit__get_font_size(ctx, ctx->ref_style);
-
-			size->data.length.unit = ref_len.unit;
-			size->data.length.value = FMUL(size->data.length.value,
-						ref_len.value);
+			size->data.length.value = FMUL(
+					size->data.length.value, ref_len.value);
 
 			switch (size->data.length.unit) {
 			case CSS_UNIT_EX:
@@ -476,15 +487,17 @@ css_error css_unit_compute_absolute_font_size(
 			default:
 				break;
 			}
+			size->data.length.unit = ref_len.unit;
 			break;
 
 		case CSS_UNIT_REM:
 			/* Root element relative units. */
-			ref_len = css_unit__get_font_size(ctx, ctx->root_style);
+			ref_len = css_unit__get_font_size(root_style,
+					font_size_default);
 
 			size->data.length.unit = ref_len.unit;
-			size->data.length.value = FMUL(size->data.length.value,
-						ref_len.value);
+			size->data.length.value = FMUL(
+					size->data.length.value, ref_len.value);
 			break;
 
 		default:

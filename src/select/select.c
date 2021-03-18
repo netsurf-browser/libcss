@@ -23,6 +23,7 @@
 #include "select/propset.h"
 #include "select/font_face.h"
 #include "select/select.h"
+#include "select/unit.h"
 #include "utils/parserutilserror.h"
 #include "utils/utils.h"
 
@@ -1164,6 +1165,7 @@ failed:
  *
  * \param ctx             Selection context to use
  * \param node            Node to select style for
+ * \param unit_len_ctx    Context for length unit conversions.
  * \param media           Currently active media specification
  * \param inline_style    Corresponding inline style for node, or NULL
  * \param handler         Dispatch table of handler functions
@@ -1181,6 +1183,7 @@ failed:
  * update the fully computed style for a node when layout changes.
  */
 css_error css_select_style(css_select_ctx *ctx, void *node,
+		const css_unit_len_ctx *unit_len_ctx,
 		const css_media *media, const css_stylesheet *inline_style,
 		css_select_handler *handler, void *pw,
 		css_select_results **result)
@@ -1353,7 +1356,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		/* Only compute absolute values for the base element */
 		error = css__compute_absolute_values(NULL,
 				state.results->styles[CSS_PSEUDO_ELEMENT_NONE],
-				handler->compute_font_size, pw);
+				unit_len_ctx);
 		if (error != CSS_OK)
 			goto cleanup;
 	}

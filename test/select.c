@@ -159,12 +159,14 @@ static css_error node_presentational_hint(void *pw, void *node,
 		uint32_t *nhints, css_hint **hints);
 static css_error ua_default_for_property(void *pw, uint32_t property,
 		css_hint *hints);
-static css_error compute_font_size(void *pw, const css_hint *parent,
-		css_hint *size);
 static css_error set_libcss_node_data(void *pw, void *n,
 		void *libcss_node_data);
 static css_error get_libcss_node_data(void *pw, void *n,
 		void **libcss_node_data);
+
+static css_unit_len_ctx unit_len_ctx = {
+	.font_size_default = 16 * (1 << CSS_RADIX_POINT),
+};
 
 static css_select_handler select_handler = {
 	CSS_SELECT_HANDLER_VERSION_1,
@@ -203,9 +205,9 @@ static css_select_handler select_handler = {
 	node_is_lang,
 	node_presentational_hint,
 	ua_default_for_property,
-	compute_font_size,
+
 	set_libcss_node_data,
-	get_libcss_node_data
+	get_libcss_node_data,
 };
 
 static css_error resolve_url(void *pw,
@@ -798,7 +800,12 @@ static void run_test_select_tree(css_select_ctx *select,
 	css_select_results *sr;
 	struct node *n = NULL;
 
-	assert(css_select_style(select, node, &ctx->media, NULL,
+	if (node->parent == NULL) {
+		unit_len_ctx.root_style = NULL;
+	}
+
+
+	assert(css_select_style(select, node, &unit_len_ctx, &ctx->media, NULL,
 			&select_handler, ctx, &sr) == CSS_OK);
 
 	if (node->parent != NULL) {
@@ -806,7 +813,7 @@ static void run_test_select_tree(css_select_ctx *select,
 		assert(css_computed_style_compose(
 				node->parent->sr->styles[ctx->pseudo_element],
 				sr->styles[ctx->pseudo_element],
-				compute_font_size, NULL,
+				&unit_len_ctx,
 				&composed) == CSS_OK);
 		css_computed_style_destroy(sr->styles[ctx->pseudo_element]);
 		sr->styles[ctx->pseudo_element] = composed;
@@ -817,6 +824,10 @@ static void run_test_select_tree(css_select_ctx *select,
 	if (node == ctx->target) {
 		dump_computed_style(sr->styles[ctx->pseudo_element],
 				buf, buflen);
+	}
+
+	if (node->parent == NULL) {
+		unit_len_ctx.root_style = node->sr->styles[ctx->pseudo_element];
 	}
 
 	for (n = node->children; n != NULL; n = n->next) {
@@ -1635,68 +1646,6 @@ css_error ua_default_for_property(void *pw, uint32_t property, css_hint *hint)
 	} else {
 		return CSS_INVALID;
 	}
-
-	return CSS_OK;
-}
-
-css_error compute_font_size(void *pw, const css_hint *parent, css_hint *size)
-{
-	static css_hint_length sizes[] = {
-		{ FLTTOFIX(6.75), CSS_UNIT_PT },
-		{ FLTTOFIX(7.50), CSS_UNIT_PT },
-		{ FLTTOFIX(9.75), CSS_UNIT_PT },
-		{ FLTTOFIX(12.0), CSS_UNIT_PT },
-		{ FLTTOFIX(13.5), CSS_UNIT_PT },
-		{ FLTTOFIX(18.0), CSS_UNIT_PT },
-		{ FLTTOFIX(24.0), CSS_UNIT_PT }
-	};
-	const css_hint_length *parent_size;
-
-	UNUSED(pw);
-
-	/* Grab parent size, defaulting to medium if none */
-	if (parent == NULL) {
-		parent_size = &sizes[CSS_FONT_SIZE_MEDIUM - 1];
-	} else {
-		assert(parent->status == CSS_FONT_SIZE_DIMENSION);
-		assert(parent->data.length.unit != CSS_UNIT_EM);
-		assert(parent->data.length.unit != CSS_UNIT_EX);
-		parent_size = &parent->data.length;
-	}
-
-	assert(size->status != CSS_FONT_SIZE_INHERIT);
-
-	if (size->status < CSS_FONT_SIZE_LARGER) {
-		/* Keyword -- simple */
-		size->data.length = sizes[size->status - 1];
-	} else if (size->status == CSS_FONT_SIZE_LARGER) {
-		/** \todo Step within table, if appropriate */
-		size->data.length.value =
-				FMUL(parent_size->value, FLTTOFIX(1.2));
-		size->data.length.unit = parent_size->unit;
-	} else if (size->status == CSS_FONT_SIZE_SMALLER) {
-		/** \todo Step within table, if appropriate */
-		size->data.length.value =
-				FDIV(parent_size->value, FLTTOFIX(1.2));
-		size->data.length.unit = parent_size->unit;
-	} else if (size->data.length.unit == CSS_UNIT_EM ||
-			size->data.length.unit == CSS_UNIT_EX) {
-		size->data.length.value =
-			FMUL(size->data.length.value, parent_size->value);
-
-		if (size->data.length.unit == CSS_UNIT_EX) {
-			size->data.length.value = FMUL(size->data.length.value,
-					FLTTOFIX(0.6));
-		}
-
-		size->data.length.unit = parent_size->unit;
-	} else if (size->data.length.unit == CSS_UNIT_PCT) {
-		size->data.length.value = FDIV(FMUL(size->data.length.value,
-				parent_size->value), FLTTOFIX(100));
-		size->data.length.unit = parent_size->unit;
-	}
-
-	size->status = CSS_FONT_SIZE_DIMENSION;
 
 	return CSS_OK;
 }
