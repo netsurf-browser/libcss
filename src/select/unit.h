@@ -14,13 +14,13 @@
 /**
  * Convert a length to CSS pixels for a media query context.
  *
- * \param[in]  media   Client media specification.
+ * \param[in]  ctx     Document unit conversion context.
  * \param[in]  length  Length to convert.
  * \param[in]  unit    Current unit of length.
  * \return A length in CSS pixels.
  */
 css_fixed css_unit_len2px_mq(
-		const css_media *media,
+		const css_unit_ctx *ctx,
 		const css_fixed length,
 		const css_unit unit);
 

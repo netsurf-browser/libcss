@@ -248,7 +248,7 @@ css_error css__computed_style_initialise(css_computed_style *style,
 css_error css_computed_style_compose(
 		const css_computed_style *restrict parent,
 		const css_computed_style *restrict child,
-		const css_unit_len_ctx *unit_len_ctx,
+		const css_unit_ctx *unit_ctx,
 		css_computed_style **restrict result)
 {
 	css_computed_style *composed;
@@ -274,7 +274,7 @@ css_error css_computed_style_compose(
 	}
 
 	/* Finally, compute absolute values for everything */
-	error = css__compute_absolute_values(parent, composed, unit_len_ctx);
+	error = css__compute_absolute_values(parent, composed, unit_ctx);
 	if (error != CSS_OK) {
 		return error;
 	}
@@ -1085,12 +1085,12 @@ uint8_t css_computed_order(const css_computed_style *style,
  *
  * \param parent             Parent style, or NULL for tree root
  * \param style              Computed style to process
- * \param unit_len_ctx       Client length conversion context.
+ * \param unit_ctx       Client length conversion context.
  * \return CSS_OK on success.
  */
 css_error css__compute_absolute_values(const css_computed_style *parent,
 		css_computed_style *style,
-		const css_unit_len_ctx *unit_len_ctx)
+		const css_unit_ctx *unit_ctx)
 {
 	css_hint_length *ref_length = NULL;
 	css_hint psize, size, ex_size;
@@ -1112,8 +1112,8 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 			&size.data.length.unit);
 
 	error = css_unit_compute_absolute_font_size(ref_length,
-			unit_len_ctx->root_style,
-			unit_len_ctx->font_size_default,
+			unit_ctx->root_style,
+			unit_ctx->font_size_default,
 			&size);
 	if (error != CSS_OK)
 		return error;
@@ -1131,8 +1131,8 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 
 	error = css_unit_compute_absolute_font_size(
 			&size.data.length,
-			unit_len_ctx->root_style,
-			unit_len_ctx->font_size_default,
+			unit_ctx->root_style,
+			unit_ctx->font_size_default,
 			&ex_size);
 	if (error != CSS_OK)
 		return error;

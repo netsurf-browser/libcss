@@ -64,6 +64,7 @@ struct css_node_data {
 typedef struct css_select_state {
 	void *node;			/* Node we're selecting for */
 	const css_media *media;		/* Currently active media spec */
+	const css_unit_ctx *unit_ctx;	/* Unit conversion context. */
 	css_select_results *results;	/* Result set to populate */
 
 	css_pseudo_element current_pseudo;	/* Current pseudo element */

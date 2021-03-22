@@ -37,6 +37,6 @@ css_error css__computed_style_initialise(css_computed_style *style,
 
 css_error css__compute_absolute_values(const css_computed_style *parent,
 		css_computed_style *style,
-		const css_unit_len_ctx *unit_len_ctx);
+		const css_unit_ctx *unit_ctx);
 
 #endif

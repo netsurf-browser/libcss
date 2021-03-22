@@ -164,7 +164,7 @@ static css_error set_libcss_node_data(void *pw, void *n,
 static css_error get_libcss_node_data(void *pw, void *n,
 		void **libcss_node_data);
 
-static css_unit_len_ctx unit_len_ctx = {
+static css_unit_ctx unit_ctx = {
 	.font_size_default = 16 * (1 << CSS_RADIX_POINT),
 };
 
@@ -801,11 +801,11 @@ static void run_test_select_tree(css_select_ctx *select,
 	struct node *n = NULL;
 
 	if (node->parent == NULL) {
-		unit_len_ctx.root_style = NULL;
+		unit_ctx.root_style = NULL;
 	}
 
 
-	assert(css_select_style(select, node, &unit_len_ctx, &ctx->media, NULL,
+	assert(css_select_style(select, node, &unit_ctx, &ctx->media, NULL,
 			&select_handler, ctx, &sr) == CSS_OK);
 
 	if (node->parent != NULL) {
@@ -813,7 +813,7 @@ static void run_test_select_tree(css_select_ctx *select,
 		assert(css_computed_style_compose(
 				node->parent->sr->styles[ctx->pseudo_element],
 				sr->styles[ctx->pseudo_element],
-				&unit_len_ctx,
+				&unit_ctx,
 				&composed) == CSS_OK);
 		css_computed_style_destroy(sr->styles[ctx->pseudo_element]);
 		sr->styles[ctx->pseudo_element] = composed;
@@ -827,7 +827,7 @@ static void run_test_select_tree(css_select_ctx *select,
 	}
 
 	if (node->parent == NULL) {
-		unit_len_ctx.root_style = node->sr->styles[ctx->pseudo_element];
+		unit_ctx.root_style = node->sr->styles[ctx->pseudo_element];
 	}
 
 	for (n = node->children; n != NULL; n = n->next) {

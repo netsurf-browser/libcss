@@ -10,6 +10,7 @@
 
 #include <libwapcaplet/libwapcaplet.h>
 
+#include <libcss/unit.h>
 #include <libcss/errors.h>
 #include <libcss/functypes.h>
 
@@ -26,6 +27,7 @@ struct css_hash_selection_requirments {
 	lwc_string *id;			/* Name of id, or NULL */
 	lwc_string *uni;		/* Universal element string "*" */
 	const css_media *media;		/* Media spec we're selecting for */
+	const css_unit_ctx *unit_ctx;	/* Document unit conversion context. */
 	const css_bloom *node_bloom;	/* Node's bloom filter */
 };
 

@@ -36,7 +36,7 @@ typedef css_fixed (*css_unit_len_measure)(
  * If a NULL pointer is given, LibCSS will use a fixed scaling of
  * the "em" unit.
  */
-typedef struct css_unit_len_ctx {
+typedef struct css_unit_ctx {
 	/**
 	 * Viewport width in CSS pixels.
 	 * Used if unit is vh, vw, vi, vb, vmin, or vmax.
@@ -73,7 +73,7 @@ typedef struct css_unit_len_ctx {
 	 * Optional client callback for font measuring.
 	 */
 	const css_unit_len_measure measure;
-} css_unit_len_ctx;
+} css_unit_ctx;
 
 /**
  * Convert css pixels to physical pixels.
@@ -114,7 +114,7 @@ static inline css_fixed css_unit_device2css_px(
  */
 css_fixed css_unit_font_size_len2pt(
 		const css_computed_style *style,
-		const css_unit_len_ctx *ctx,
+		const css_unit_ctx *ctx,
 		const css_fixed length,
 		const css_unit unit);
 
@@ -129,7 +129,7 @@ css_fixed css_unit_font_size_len2pt(
  */
 css_fixed css_unit_len2css_px(
 		const css_computed_style *style,
-		const css_unit_len_ctx *ctx,
+		const css_unit_ctx *ctx,
 		const css_fixed length,
 		const css_unit unit);
 
@@ -144,7 +144,7 @@ css_fixed css_unit_len2css_px(
  */
 css_fixed css_unit_len2device_px(
 		const css_computed_style *style,
-		const css_unit_len_ctx *ctx,
+		const css_unit_ctx *ctx,
 		const css_fixed length,
 		const css_unit unit);
 

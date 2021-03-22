@@ -99,6 +99,7 @@ typedef struct css_select_font_faces_list {
 typedef struct css_select_font_faces_state {
 	lwc_string *font_family;
 	const css_media *media;
+	const css_unit_ctx *unit_ctx;
 
 	css_select_font_faces_list ua_font_faces;
 	css_select_font_faces_list user_font_faces;
@@ -1052,12 +1053,13 @@ static void css_select__finalise_selection_state(
 /**
  * Initialise a selection state.
  *
- * \param[in]  state    The selection state to initialise
- * \param[in]  node     The node we are selecting for.
- * \param[in]  parent   The node's parent node, or NULL.
- * \param[in]  media    The media specification we're selecting for.
- * \param[in]  handler  The client selection callback table.
- * \param[in]  pw       The client private data, passsed out to callbacks.
+ * \param[in]  state         The selection state to initialise
+ * \param[in]  node          The node we are selecting for.
+ * \param[in]  parent        The node's parent node, or NULL.
+ * \param[in]  media         The media specification we're selecting for.
+ * \param[in]  unit_ctx  Unit conversion context.
+ * \param[in]  handler       The client selection callback table.
+ * \param[in]  pw            The client private data, passsed out to callbacks.
  * \return CSS_OK or appropriate error otherwise.
  */
 static css_error css_select__initialise_selection_state(
@@ -1065,6 +1067,7 @@ static css_error css_select__initialise_selection_state(
 		void *node,
 		void *parent,
 		const css_media *media,
+		const css_unit_ctx *unit_ctx,
 		css_select_handler *handler,
 		void *pw)
 {
@@ -1075,6 +1078,7 @@ static css_error css_select__initialise_selection_state(
 	memset(state, 0, sizeof(*state));
 	state->node = node;
 	state->media = media;
+	state->unit_ctx = unit_ctx;
 	state->handler = handler;
 	state->pw = pw;
 	state->next_reject = state->reject_cache +
@@ -1165,7 +1169,7 @@ failed:
  *
  * \param ctx             Selection context to use
  * \param node            Node to select style for
- * \param unit_len_ctx    Context for length unit conversions.
+ * \param unit_ctx        Context for length unit conversions.
  * \param media           Currently active media specification
  * \param inline_style    Corresponding inline style for node, or NULL
  * \param handler         Dispatch table of handler functions
@@ -1183,7 +1187,7 @@ failed:
  * update the fully computed style for a node when layout changes.
  */
 css_error css_select_style(css_select_ctx *ctx, void *node,
-		const css_unit_len_ctx *unit_len_ctx,
+		const css_unit_ctx *unit_ctx,
 		const css_media *media, const css_stylesheet *inline_style,
 		css_select_handler *handler, void *pw,
 		css_select_results **result)
@@ -1204,7 +1208,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		return error;
 
 	error = css_select__initialise_selection_state(
-			&state, node, parent, media, handler, pw);
+			&state, node, parent, media, unit_ctx, handler, pw);
 	if (error != CSS_OK)
 		return error;
 
@@ -1269,7 +1273,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	for (i = 0; i < ctx->n_sheets; i++) {
 		const css_select_sheet s = ctx->sheets[i];
 
-		if (mq__list_match(s.media, media) &&
+		if (mq__list_match(s.media, unit_ctx, media) &&
 				s.sheet->disabled == false) {
 			error = select_from_sheet(ctx, s.sheet,
 					s.origin, &state);
@@ -1356,7 +1360,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		/* Only compute absolute values for the base element */
 		error = css__compute_absolute_values(NULL,
 				state.results->styles[CSS_PSEUDO_ELEMENT_NONE],
-				unit_len_ctx);
+				unit_ctx);
 		if (error != CSS_OK)
 			goto cleanup;
 	}
@@ -1420,12 +1424,15 @@ css_error css_select_results_destroy(css_select_results *results)
  *
  * \param ctx          Selection context
  * \param media        Currently active media spec
+ * \param unit_ctx     Current unit conversion context.
  * \param font_family  Font family to search for
  * \param result       Pointer to location to receive result
  * \return CSS_OK on success, appropriate error otherwise.
  */
 css_error css_select_font_faces(css_select_ctx *ctx,
-		const css_media *media, lwc_string *font_family,
+		const css_media *media,
+		const css_unit_ctx *unit_ctx,
+		lwc_string *font_family,
 		css_select_font_faces_results **result)
 {
 	uint32_t i;
@@ -1439,6 +1446,7 @@ css_error css_select_font_faces(css_select_ctx *ctx,
 	memset(&state, 0, sizeof(css_select_font_faces_state));
 	state.font_family = font_family;
 	state.media = media;
+	state.unit_ctx = unit_ctx;
 
 	/* Iterate through the top-level stylesheets, selecting font-faces
 	 * from those which apply to our current media requirements and
@@ -1446,7 +1454,7 @@ css_error css_select_font_faces(css_select_ctx *ctx,
 	for (i = 0; i < ctx->n_sheets; i++) {
 		const css_select_sheet s = ctx->sheets[i];
 
-		if (mq__list_match(s.media, media) &&
+		if (mq__list_match(s.media, unit_ctx, media) &&
 				s.sheet->disabled == false) {
 			error = select_font_faces_from_sheet(s.sheet,
 					s.origin, &state);
@@ -1846,6 +1854,7 @@ css_error select_from_sheet(css_select_ctx *ctx, const css_stylesheet *sheet,
 
 			if (import->sheet != NULL &&
 					mq__list_match(import->media,
+							state->unit_ctx,
 							state->media)) {
 				/* It's applicable, so process it */
 				if (sp >= IMPORT_STACK_SIZE)
@@ -1889,7 +1898,8 @@ static css_error _select_font_face_from_rule(
 		const css_rule_font_face *rule, css_origin origin,
 		css_select_font_faces_state *state)
 {
-	if (mq_rule_good_for_media((const css_rule *) rule, state->media)) {
+	if (mq_rule_good_for_media((const css_rule *) rule,
+			state->unit_ctx, state->media)) {
 		bool correct_family = false;
 
 		if (lwc_string_isequal(
@@ -1954,6 +1964,7 @@ static css_error select_font_faces_from_sheet(
 
 			if (import->sheet != NULL &&
 					mq__list_match(import->media,
+							state->unit_ctx,
 							state->media)) {
 				/* It's applicable, so process it */
 				if (sp >= IMPORT_STACK_SIZE)
@@ -2101,6 +2112,7 @@ css_error match_selectors_in_sheet(css_select_ctx *ctx,
 
 	/* Set up general selector chain requirments */
 	req.media = state->media;
+	req.unit_ctx = state->unit_ctx;
 	req.node_bloom = state->node_data->bloom;
 	req.uni = ctx->universal;
 

@@ -234,10 +234,6 @@ typedef struct css_media {
 
 	/* Scripting media features */
 	css_media_scripting scripting;
-
-	/* Client details for length conversion */
-	css_fixed client_font_size;   /* In pt */
-	css_fixed client_line_height; /* In css pixels */
 } css_media;
 
 /**

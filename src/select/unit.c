@@ -118,7 +118,7 @@ static inline css_fixed css_unit__absolute_len2pt(
 /* Exported function, documented in libcss/unit.h. */
 css_fixed css_unit_font_size_len2pt(
 		const css_computed_style *style,
-		const css_unit_len_ctx *ctx,
+		const css_unit_ctx *ctx,
 		const css_fixed length,
 		const css_unit unit)
 {
@@ -279,22 +279,22 @@ static inline css_fixed css_unit__px_per_unit(
 
 /* Exported function, documented in unit.h. */
 css_fixed css_unit_len2px_mq(
-		const css_media *media,
+		const css_unit_ctx *ctx,
 		const css_fixed length,
 		const css_unit unit)
 {
 	/* In the media query context there is no reference or root element
-	 * style, so these are hardcoded to NULL. */
+	 * style, so these are hard-coded to NULL. */
 	css_fixed px_per_unit = css_unit__px_per_unit(
+			ctx->measure,
 			NULL,
 			NULL,
-			NULL,
-			media->client_font_size,
-			INTTOFIX(0),
-			media->height,
-			media->width,
+			ctx->font_size_default,
+			ctx->font_size_minimum,
+			ctx->viewport_height,
+			ctx->viewport_width,
 			unit,
-			NULL);
+			ctx->pw);
 
 	/* Ensure we round px_per_unit to the nearest whole number of pixels:
 	 * the use of FIXTOINT() below will truncate. */
@@ -307,7 +307,7 @@ css_fixed css_unit_len2px_mq(
 /* Exported function, documented in libcss/unit.h. */
 css_fixed css_unit_len2css_px(
 		const css_computed_style *style,
-		const css_unit_len_ctx *ctx,
+		const css_unit_ctx *ctx,
 		const css_fixed length,
 		const css_unit unit)
 {
@@ -333,7 +333,7 @@ css_fixed css_unit_len2css_px(
 /* Exported function, documented in libcss/unit.h. */
 css_fixed css_unit_len2device_px(
 		const css_computed_style *style,
-		const css_unit_len_ctx *ctx,
+		const css_unit_ctx *ctx,
 		const css_fixed length,
 		const css_unit unit)
 {

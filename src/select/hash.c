@@ -370,7 +370,7 @@ css_error css__selector_hash_find(css_selector_hash *hash,
 						head->sel_chain_bloom,
 						req->node_bloom) &&
 				    mq_rule_good_for_media(head->sel->rule,
-						req->media)) {
+						req->unit_ctx, req->media)) {
 					/* Found a match */
 					break;
 				}
@@ -449,6 +449,7 @@ css_error css__selector_hash_find_by_class(css_selector_hash *hash,
 							req->uni) &&
 					    mq_rule_good_for_media(
 							head->sel->rule,
+							req->unit_ctx,
 							req->media)) {
 						/* Found a match */
 						break;
@@ -529,6 +530,7 @@ css_error css__selector_hash_find_by_id(css_selector_hash *hash,
 							req->uni) &&
 					    mq_rule_good_for_media(
 							head->sel->rule,
+							req->unit_ctx,
 							req->media)) {
 						/* Found a match */
 						break;
@@ -579,7 +581,7 @@ css_error css__selector_hash_find_universal(css_selector_hash *hash,
 					head->sel_chain_bloom,
 					req->node_bloom) &&
 			    mq_rule_good_for_media(head->sel->rule,
-					req->media)) {
+					req->unit_ctx, req->media)) {
 				/* Found a match */
 				break;
 			}
@@ -922,7 +924,7 @@ css_error _iterate_elements(
 						head->sel_chain_bloom,
 						req->node_bloom) &&
 				    mq_rule_good_for_media(head->sel->rule,
-						req->media)) {
+						req->unit_ctx, req->media)) {
 					/* Found a match */
 					break;
 				}
@@ -982,6 +984,7 @@ css_error _iterate_classes(
 							req->uni) &&
 					    mq_rule_good_for_media(
 							head->sel->rule,
+							req->unit_ctx,
 							req->media)) {
 						/* Found a match */
 						break;
@@ -1043,6 +1046,7 @@ css_error _iterate_ids(
 							req->uni) &&
 					    mq_rule_good_for_media(
 							head->sel->rule,
+							req->unit_ctx,
 							req->media)) {
 						/* Found a match */
 						break;
@@ -1086,7 +1090,7 @@ css_error _iterate_universal(
 					head->sel_chain_bloom,
 					req->node_bloom) &&
 			    mq_rule_good_for_media(head->sel->rule,
-					req->media)) {
+					req->unit_ctx, req->media)) {
 				/* Found a match */
 				break;
 			}

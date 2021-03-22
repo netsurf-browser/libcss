@@ -82,7 +82,7 @@ css_error css_computed_style_destroy(css_computed_style *style);
 css_error css_computed_style_compose(
 		const css_computed_style *restrict parent,
 		const css_computed_style *restrict child,
-		const css_unit_len_ctx *unit_len_ctx,
+		const css_unit_ctx *unit_ctx,
 		css_computed_style **restrict result);
 
 /******************************************************************************

@@ -16,7 +16,7 @@ static inline bool mq_match_feature_range_length_op1(
 		css_mq_feature_op op,
 		const css_mq_value *value,
 		const css_fixed client_len,
-		const css_media *media)
+		const css_unit_ctx *unit_ctx)
 {
 	css_fixed v;
 
@@ -25,7 +25,7 @@ static inline bool mq_match_feature_range_length_op1(
 	}
 
 	if (value->data.dim.unit != UNIT_PX) {
-		v = css_unit_len2px_mq(media,
+		v = css_unit_len2px_mq(unit_ctx,
 				value->data.dim.len,
 				css__to_css_unit(value->data.dim.unit));
 	} else {
@@ -48,7 +48,7 @@ static inline bool mq_match_feature_range_length_op2(
 		css_mq_feature_op op,
 		const css_mq_value *value,
 		const css_fixed client_len,
-		const css_media *media)
+		const css_unit_ctx *unit_ctx)
 {
 	css_fixed v;
 
@@ -60,7 +60,7 @@ static inline bool mq_match_feature_range_length_op2(
 	}
 
 	if (value->data.dim.unit != UNIT_PX) {
-		v = css_unit_len2px_mq(media,
+		v = css_unit_len2px_mq(unit_ctx,
 				value->data.dim.len,
 				css__to_css_unit(value->data.dim.unit));
 	} else {
@@ -81,31 +81,33 @@ static inline bool mq_match_feature_range_length_op2(
 /**
  * Match media query features.
  *
- * \param[in] feat   Condition to match.
- * \param[in] media  Current media spec, to check against feat.
+ * \param[in] feat      Condition to match.
+ * \param[in] unit_ctx  Current unit conversion context.
+ * \param[in] media     Current media spec, to check against feat.
  * \return true if condition matches, otherwise false.
  */
 static inline bool mq_match_feature(
 		const css_mq_feature *feat,
+		const css_unit_ctx *unit_ctx,
 		const css_media *media)
 {
 	/* TODO: Use interned string for comparison. */
 	if (strcmp(lwc_string_data(feat->name), "width") == 0) {
 		if (!mq_match_feature_range_length_op1(feat->op, &feat->value,
-					media->width, media)) {
+					media->width, unit_ctx)) {
 			return false;
 		}
 		return mq_match_feature_range_length_op2(feat->op2,
-					&feat->value2, media->width, media);
+				&feat->value2, media->width, unit_ctx);
 
 	} else if (strcmp(lwc_string_data(feat->name), "height") == 0) {
 		if (!mq_match_feature_range_length_op1(feat->op, &feat->value,
-				media->height, media)) {
+				media->height, unit_ctx)) {
 			return false;
 		}
 
 		return mq_match_feature_range_length_op2(feat->op2,
-				&feat->value2, media->height, media);
+				&feat->value2, media->height, unit_ctx);
 	}
 
 	/* TODO: Look at other feature names. */
@@ -116,12 +118,14 @@ static inline bool mq_match_feature(
 /**
  * Match media query conditions.
  *
- * \param[in] cond   Condition to match.
- * \param[in] media  Current media spec, to check against cond.
+ * \param[in] cond      Condition to match.
+ * \param[in] unit_ctx  Current unit conversion context.
+ * \param[in] media     Current media spec, to check against cond.
  * \return true if condition matches, otherwise false.
  */
 static inline bool mq_match_condition(
 		const css_mq_cond *cond,
+		const css_unit_ctx *unit_ctx,
 		const css_media *media)
 {
 	bool matched = !cond->op;
@@ -130,11 +134,13 @@ static inline bool mq_match_condition(
 		bool part_matched;
 		if (cond->parts[i]->type == CSS_MQ_FEATURE) {
 			part_matched = mq_match_feature(
-					cond->parts[i]->data.feat, media);
+					cond->parts[i]->data.feat,
+					unit_ctx, media);
 		} else {
 			assert(cond->parts[i]->type == CSS_MQ_COND);
 			part_matched = mq_match_condition(
-					cond->parts[i]->data.cond, media);
+					cond->parts[i]->data.cond,
+					unit_ctx, media);
 		}
 
 		if (cond->op) {
@@ -161,19 +167,22 @@ static inline bool mq_match_condition(
  * If anything in the list matches, the list matches.  If none match
  * it doesn't match.
  *
- * \param[in] m      Media query list.
- * \param[in] media  Current media spec, to check against m.
+ * \param[in] m         Media query list.
+ * \param[in] unit_ctx  Current unit conversion context.
+ * \param[in] media     Current media spec, to check against m.
  * \return true if media query list matches media
  */
 static inline bool mq__list_match(
 		const css_mq_query *m,
+		const css_unit_ctx *unit_ctx,
 		const css_media *media)
 {
 	for (; m != NULL; m = m->next) {
 		/* Check type */
 		if (!!(m->type & media->type) != m->negate_type) {
 			if (m->cond == NULL ||
-					mq_match_condition(m->cond, media)) {
+					mq_match_condition(m->cond,
+							unit_ctx, media)) {
 				/* We have a match, no need to look further. */
 				return true;
 			}
@@ -186,11 +195,15 @@ static inline bool mq__list_match(
 /**
  * Test whether the rule applies for current media.
  *
- * \param rule   Rule to test
- * \param media  Current media spec
+ * \param rule      Rule to test
+ * \param unit_ctx  Current unit conversion context.
+ * \param media     Current media spec
  * \return true iff chain's rule applies for media
  */
-static inline bool mq_rule_good_for_media(const css_rule *rule, const css_media *media)
+static inline bool mq_rule_good_for_media(
+		const css_rule *rule,
+		const css_unit_ctx *unit_ctx,
+		const css_media *media)
 {
 	bool applies = true;
 	const css_rule *ancestor = rule;
@@ -199,7 +212,7 @@ static inline bool mq_rule_good_for_media(const css_rule *rule, const css_media 
 		const css_rule_media *m = (const css_rule_media *) ancestor;
 
 		if (ancestor->type == CSS_RULE_MEDIA) {
-			applies = mq__list_match(m->media, media);
+			applies = mq__list_match(m->media, unit_ctx, media);
 			if (applies == false) {
 				break;
 			}
