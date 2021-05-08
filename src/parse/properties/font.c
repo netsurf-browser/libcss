@@ -13,6 +13,45 @@
 #include "parse/properties/properties.h"
 #include "parse/properties/utils.h"
 
+/**
+ * Convert css_unit to a bytecode unit.
+ */
+static inline uint32_t css__to_parse_unit(css_unit u)
+{
+	switch (u) {
+	case CSS_UNIT_PX:   return UNIT_PX;
+	case CSS_UNIT_EX:   return UNIT_EX;
+	case CSS_UNIT_EM:   return UNIT_EM;
+	case CSS_UNIT_IN:   return UNIT_IN;
+	case CSS_UNIT_CM:   return UNIT_CM;
+	case CSS_UNIT_MM:   return UNIT_MM;
+	case CSS_UNIT_PT:   return UNIT_PT;
+	case CSS_UNIT_PC:   return UNIT_PC;
+	case CSS_UNIT_CAP:  return UNIT_CAP;
+	case CSS_UNIT_CH:   return UNIT_CH;
+	case CSS_UNIT_IC:   return UNIT_IC;
+	case CSS_UNIT_REM:  return UNIT_REM;
+	case CSS_UNIT_LH:   return UNIT_LH;
+	case CSS_UNIT_RLH:  return UNIT_RLH;
+	case CSS_UNIT_VH:   return UNIT_VH;
+	case CSS_UNIT_VW:   return UNIT_VW;
+	case CSS_UNIT_VI:   return UNIT_VI;
+	case CSS_UNIT_VB:   return UNIT_VB;
+	case CSS_UNIT_VMIN: return UNIT_VMIN;
+	case CSS_UNIT_VMAX: return UNIT_VMAX;
+	case CSS_UNIT_Q:    return UNIT_Q;
+	case CSS_UNIT_PCT:  return UNIT_PCT;
+	case CSS_UNIT_DEG:  return UNIT_DEG;
+	case CSS_UNIT_GRAD: return UNIT_GRAD;
+	case CSS_UNIT_RAD:  return UNIT_RAD;
+	case CSS_UNIT_MS:   return UNIT_MS;
+	case CSS_UNIT_S:    return UNIT_S;
+	case CSS_UNIT_HZ:   return UNIT_HZ;
+	case CSS_UNIT_KHZ:  return UNIT_KHZ;
+	}
+
+	return 0;
+}
 
 static css_error parse_system_font(css_language *c,
 		css_style *result, css_system_font *system_font)
@@ -124,7 +163,9 @@ static css_error parse_system_font(css_language *c,
 	if (error != CSS_OK)
 		return error;
 
-	error = css__stylesheet_style_vappend(result, 2, system_font->size.size, system_font->size.unit);
+	error = css__stylesheet_style_vappend(result, 2,
+			system_font->size.size,
+			css__to_parse_unit(system_font->size.unit));
 	if (error != CSS_OK)
 		return error;
 
@@ -133,7 +174,9 @@ static css_error parse_system_font(css_language *c,
 	if (error != CSS_OK)
 		return error;
 
-	error = css__stylesheet_style_vappend(result, 2, system_font->line_height.size, system_font->line_height.unit);
+	error = css__stylesheet_style_vappend(result, 2,
+			system_font->line_height.size,
+			css__to_parse_unit(system_font->line_height.unit));
 	if (error != CSS_OK)
 		return error;
 
