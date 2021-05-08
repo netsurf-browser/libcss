@@ -509,6 +509,39 @@ void css__parse_tree_data(line_ctx *ctx, const char *data, size_t len)
 	}
 }
 
+static css_error css_font_resolution_func(void *pw, lwc_string *name,
+		css_system_font *system_font)
+{
+	lwc_error err;
+
+	if (system_font == NULL) {
+		return CSS_BADPARM;
+	}
+
+	(void)(pw);
+
+	if (strncmp(lwc_string_data(name), "special-system-font",
+			lwc_string_length(name)) != 0) {
+		return CSS_INVALID;
+	}
+
+	system_font->style = CSS_FONT_STYLE_NORMAL;
+	system_font->variant = CSS_FONT_VARIANT_NORMAL;
+	system_font->weight = CSS_FONT_WEIGHT_NORMAL;
+	system_font->size.size = INTTOFIX(22);
+	system_font->size.unit = CSS_UNIT_PT;
+	system_font->line_height.size = INTTOFIX(33);
+	system_font->line_height.unit = CSS_UNIT_EM;
+	err = lwc_intern_string("special-system-font",
+			strlen("special-system-font"),
+			&system_font->family);
+	if (err != lwc_error_ok) {
+		return CSS_NOMEM;
+	}
+
+	return CSS_OK;
+}
+
 void css__parse_sheet(line_ctx *ctx, const char *data, size_t len)
 {
 	css_stylesheet_params params;
@@ -559,7 +592,7 @@ void css__parse_sheet(line_ctx *ctx, const char *data, size_t len)
 	params.import_pw = NULL;
 	params.color = NULL;
 	params.color_pw = NULL;
-	params.font = NULL;
+	params.font = css_font_resolution_func;
 	params.font_pw = NULL;
 
 	/** \todo How are we going to handle @import? */
