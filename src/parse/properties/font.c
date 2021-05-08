@@ -290,6 +290,9 @@ css_error css__parse_font(css_language *c,
 
 		error = parse_system_font(c, result, &system_font);
 
+		lwc_string_unref(system_font.family);
+		system_font.family = NULL;
+
 		if (error == CSS_OK)
 			parserutils_vector_iterate(vector, ctx);
 
