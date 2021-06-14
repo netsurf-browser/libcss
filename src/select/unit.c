@@ -372,17 +372,19 @@ static inline css_hint_length css_unit__get_font_size(
 		const css_computed_style *style,
 		css_fixed font_size_default)
 {
-	css_hint_length size;
+	css_hint_length size = {
+		.value = font_size_default,
+		.unit = CSS_UNIT_PX,
+	};
 
-	if (style == NULL) {
-		size.value = font_size_default;
-		size.unit = CSS_UNIT_PX;
-	} else {
-		enum css_font_size_e status = get_font_size(
-				style, &size.value, &size.unit);
+	if (style != NULL) {
+		enum css_font_size_e status = get_font_size(style,
+				&size.value,
+				&size.unit);
 
 		UNUSED(status);
 
+		/* The font size must be absolute. */
 		assert(status == CSS_FONT_SIZE_DIMENSION);
 		assert(size.unit != CSS_UNIT_EM);
 		assert(size.unit != CSS_UNIT_EX);
