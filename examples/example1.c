@@ -156,6 +156,15 @@ static css_select_handler select_handler = {
 	get_libcss_node_data,
 };
 
+/* LWC leak callback */
+void lwc_callback(lwc_string *str, void *pw)
+{
+	(void)(pw);
+
+	fprintf(stderr, "Leaked string: %.*s\n",
+			(int)lwc_string_length(str),
+			lwc_string_data(str));
+}
 
 int main(int argc, char **argv)
 {
@@ -276,6 +285,7 @@ int main(int argc, char **argv)
 	if (code != CSS_OK)
 		die("css_stylesheet_destroy", code);
 
+	lwc_iterate_strings(lwc_callback, NULL);
 	return 0;
 }
 
