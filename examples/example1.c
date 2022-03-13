@@ -103,7 +103,7 @@ static css_error set_libcss_node_data(void *pw, void *n,
 static css_error get_libcss_node_data(void *pw, void *n,
 		void **libcss_node_data);
 
-static css_unit_ctx uint_len_ctx = {
+static css_unit_ctx unit_len_ctx = {
 	.viewport_width    = 800 * (1 << CSS_RADIX_POINT),
 	.viewport_height   = 600 * (1 << CSS_RADIX_POINT),
 	.font_size_default =  16 * (1 << CSS_RADIX_POINT),
@@ -245,7 +245,7 @@ int main(int argc, char **argv)
 		lwc_intern_string(element, strlen(element), &element_name);
 
 		code = css_select_style(select_ctx, element_name,
-				&uint_len_ctx,
+				&unit_len_ctx,
 				&media, NULL,
 				&select_handler, 0,
 				&style);
