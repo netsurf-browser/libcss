@@ -137,8 +137,9 @@ static inline bool css_bloom_in_bloom(const css_bloom a[CSS_BLOOM_SIZE],
  * \param a	bloom to insert
  * \param b	target bloom
  */
-static inline void css_bloom_merge(const css_bloom a[CSS_BLOOM_SIZE],
-		css_bloom b[CSS_BLOOM_SIZE])
+static inline void css_bloom_merge(
+		const css_bloom a[restrict CSS_BLOOM_SIZE],
+		css_bloom b[restrict CSS_BLOOM_SIZE])
 {
 	b[0] |= a[0];
 	b[1] |= a[1];
