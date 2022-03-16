@@ -95,7 +95,8 @@ static inline bool css_bloom_has_hash(const css_bloom bloom[CSS_BLOOM_SIZE],
  * \param b	superset bloom
  * \return true iff 'a' is subset of 'b'
  */
-static inline bool css_bloom_in_bloom(const css_bloom a[CSS_BLOOM_SIZE],
+static inline bool css_bloom_in_bloom(
+		const css_bloom a[CSS_BLOOM_SIZE],
 		const css_bloom b[CSS_BLOOM_SIZE])
 {
 	if ((a[0] & b[0]) != a[0])
@@ -146,7 +147,7 @@ static inline bool css_bloom_in_bloom(const css_bloom a[CSS_BLOOM_SIZE],
  */
 static inline void css_bloom_merge(
 		const css_bloom a[restrict CSS_BLOOM_SIZE],
-		css_bloom b[restrict CSS_BLOOM_SIZE])
+		      css_bloom b[restrict CSS_BLOOM_SIZE])
 {
 	b[0] |= a[0];
 	b[1] |= a[1];
