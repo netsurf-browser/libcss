@@ -9,9 +9,13 @@
  * Bloom filter for CSS style selection optimisation.
  *
  * Attempting to match CSS rules by querying the client about DOM nodes via
- * the selection callbacks is slow.  To avoid this, clients may pass a node
- * bloom filter to css_get_style.  This bloom filter has bits set according
- * to the node's ancestor element names, class names and id names.
+ * the selection callbacks is slow.  To avoid the slow matching of CSS rule
+ * selector chains, we build up two bloom filters.  One describing the rule
+ * selector chain, and one describing the node we are selecting for in
+ * css_get_style.
+ *
+ * These bloom filters have bits set according to the node's ancestor element
+ * names, class names and id names.
  *
  * Generate the bloom filter by adding calling css_bloom_add_hash() on each
  * ancestor element name, class name and id name for the node.
@@ -19,6 +23,9 @@
  * Use the insensitive hash value:
  *
  *     lwc_err = lwc_string_caseless_hash_value(str, &hash);
+ *
+ * We avoid matching most selector chains by checking whether the rule bloom
+ * is a subset of the node bloom.
  */
 
 #ifndef libcss_bloom_h_
@@ -132,7 +139,7 @@ static inline bool css_bloom_in_bloom(const css_bloom a[CSS_BLOOM_SIZE],
 
 
 /**
- * Merge bloom 'a' into bloom 'b'.
+ * Merge bloom \ref a into bloom \ref b.
  *
  * \param a	bloom to insert
  * \param b	target bloom
