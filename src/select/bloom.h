@@ -16,7 +16,7 @@
  * Generate the bloom filter by adding calling css_bloom_add_hash() on each
  * ancestor element name, class name and id name for the node.
  *
- * Use the insesnsitive hash value:
+ * Use the insensitive hash value:
  *
  *     lwc_err = lwc_string_caseless_hash_value(str, &hash);
  */
