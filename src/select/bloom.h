@@ -32,6 +32,7 @@
 #define libcss_bloom_h_
 
 #include <stdint.h>
+#include <string.h>
 
 /* Size of bloom filter as multiple of 32 bits.
  * Has to be 4, 8, or 16.
@@ -179,27 +180,7 @@ static inline void css_bloom_merge(
  */
 static inline void css_bloom_init(css_bloom bloom[CSS_BLOOM_SIZE])
 {
-	bloom[0] = 0;
-	bloom[1] = 0;
-	bloom[2] = 0;
-	bloom[3] = 0;
-#if (CSS_BLOOM_SIZE > 4)
-	bloom[4] = 0;
-	bloom[5] = 0;
-	bloom[6] = 0;
-	bloom[7] = 0;
-#endif
-#if (CSS_BLOOM_SIZE > 8)
-	bloom[8] = 0;
-	bloom[9] = 0;
-	bloom[10] = 0;
-	bloom[11] = 0;
-	bloom[12] = 0;
-	bloom[13] = 0;
-	bloom[14] = 0;
-	bloom[15] = 0;
-#endif
+	memset(bloom, 0, sizeof(*bloom) * CSS_BLOOM_SIZE);
 }
 
 #endif
-
