@@ -761,7 +761,7 @@ static void print_chain_bloom_details(css_bloom bloom[CSS_BLOOM_SIZE])
 {
 	printf("Chain bloom:\t");
 	int total = 0, i;
-	int set[4];
+	int set[CSS_BLOOM_SIZE];
 	for (i = 0; i < CSS_BLOOM_SIZE; i++) {
 		set[i] = bits_set(bloom[i]);
 		total += set[i];
