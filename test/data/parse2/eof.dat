@@ -180,49 +180,49 @@ f{clear:both}
 @media screen
 #errors
 #expected
-| @media 
+| @media 040
 #reset
 
 #data
 @media screen 
 #errors
 #expected
-| @media 
+| @media 040
 #reset
 
 #data
 @media screen{
 #errors
 #expected
-| @media 
+| @media 040
 #reset
 
 #data
 @media screen{ 
 #errors
 #expected
-| @media 
+| @media 040
 #reset
 
 #data
 @media screen{{
 #errors
 #expected
-| @media 
+| @media 040
 #reset
 
 #data
 @media screen{;
 #errors
 #expected
-| @media 
+| @media 040
 #reset
 
 #data
 @media screen{f
 #errors
 #expected
-| @media 
+| @media 040
 |  f
 #reset
 
@@ -230,7 +230,7 @@ f{clear:both}
 @media screen{f{
 #errors
 #expected
-| @media 
+| @media 040
 |  f
 #reset
 
@@ -238,7 +238,7 @@ f{clear:both}
 @media screen{f{color
 #errors
 #expected
-| @media 
+| @media 040
 |  f
 #reset
 
@@ -246,7 +246,7 @@ f{clear:both}
 @media screen{f{color:
 #errors
 #expected
-| @media 
+| @media 040
 |  f
 #reset
 
@@ -254,7 +254,7 @@ f{clear:both}
 @media screen{f{color:blue
 #errors
 #expected
-| @media 
+| @media 040
 |  f
 |   color: #ff0000ff
 #reset
@@ -263,7 +263,7 @@ f{clear:both}
 @media screen{f{color:blue;
 #errors
 #expected
-| @media 
+| @media 040
 |  f
 |   color: #ff0000ff
 #reset
@@ -272,7 +272,7 @@ f{clear:both}
 @media screen{f{color:blue}
 #errors
 #expected
-| @media 
+| @media 040
 |  f
 |   color: #ff0000ff
 #reset
@@ -281,7 +281,7 @@ f{clear:both}
 @media screen{f{color:blue;}
 #errors
 #expected
-| @media 
+| @media 040
 |  f
 |   color: #ff0000ff
 #reset
@@ -290,7 +290,7 @@ f{clear:both}
 @media screen{f{color:blue;}}
 #errors
 #expected
-| @media 
+| @media 040
 |  f
 |   color: #ff0000ff
 #reset

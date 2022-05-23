@@ -16,6 +16,7 @@ border.dat			Border property tests
 font.dat			Font property tests
 list.dat			List property tests
 margin.dat			Margin property tests
+mq.dat				Media queries
 outline.dat			Outline property tests
 overflow.dat			Overflow property tests
 padding.dat			Padding property tests

@@ -131,7 +131,9 @@ void dump_rule_media(css_rule_media *s, char **buf, size_t *buflen)
 	char *ptr = *buf;
 	css_rule *rule;
 
-	ptr += sprintf(ptr, "| @media ");
+	ptr += sprintf(ptr, "| @media %s%03lx",
+			s->media->negate_type ? "not " : "",
+			s->media->type);
 
 	/* \todo media list */
 

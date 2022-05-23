@@ -882,59 +882,80 @@ static css_error mq_parse_condition(lwc_string **strings,
 /**
  * Parse a media query type.
  */
-static uint64_t mq_parse_type(lwc_string **strings, lwc_string *type)
+static css_error mq_parse_type(lwc_string **strings, lwc_string *type,
+		uint64_t *result)
 {
 	bool match;
+	css_error error = CSS_OK;
 
 	if (type == NULL) {
-		return CSS_MEDIA_ALL;
+		*result = CSS_MEDIA_ALL;
 	} else if (lwc_string_caseless_isequal(
 			type, strings[AURAL],
 			&match) == lwc_error_ok && match) {
-		return CSS_MEDIA_AURAL;
+		*result = CSS_MEDIA_AURAL;
 	} else if (lwc_string_caseless_isequal(
 			type, strings[BRAILLE],
 			&match) == lwc_error_ok && match) {
-		return CSS_MEDIA_BRAILLE;
+		*result = CSS_MEDIA_BRAILLE;
 	} else if (lwc_string_caseless_isequal(
 			type, strings[EMBOSSED],
 			&match) == lwc_error_ok && match) {
-		return CSS_MEDIA_EMBOSSED;
+		*result = CSS_MEDIA_EMBOSSED;
 	} else if (lwc_string_caseless_isequal(
 			type, strings[HANDHELD],
 			&match) == lwc_error_ok && match) {
-		return CSS_MEDIA_HANDHELD;
+		*result = CSS_MEDIA_HANDHELD;
 	} else if (lwc_string_caseless_isequal(
 			type, strings[PRINT],
 			&match) == lwc_error_ok && match) {
-		return CSS_MEDIA_PRINT;
+		*result = CSS_MEDIA_PRINT;
 	} else if (lwc_string_caseless_isequal(
 			type, strings[PROJECTION],
 			&match) == lwc_error_ok && match) {
-		return CSS_MEDIA_PROJECTION;
+		*result = CSS_MEDIA_PROJECTION;
 	} else if (lwc_string_caseless_isequal(
 			type, strings[SCREEN],
 			&match) == lwc_error_ok && match) {
-		return CSS_MEDIA_SCREEN;
+		*result = CSS_MEDIA_SCREEN;
 	} else if (lwc_string_caseless_isequal(
 			type, strings[SPEECH],
 			&match) == lwc_error_ok && match) {
-		return CSS_MEDIA_SPEECH;
+		*result =  CSS_MEDIA_SPEECH;
 	} else if (lwc_string_caseless_isequal(
 			type, strings[TTY],
 			&match) == lwc_error_ok && match) {
-		return CSS_MEDIA_TTY;
+		*result = CSS_MEDIA_TTY;
 	} else if (lwc_string_caseless_isequal(
 			type, strings[TV],
 			&match) == lwc_error_ok && match) {
-		return CSS_MEDIA_TV;
+		*result = CSS_MEDIA_TV;
 	} else if (lwc_string_caseless_isequal(
 			type, strings[ALL],
 			&match) == lwc_error_ok && match) {
-		return CSS_MEDIA_ALL;
+		*result = CSS_MEDIA_ALL;
+	} else if (lwc_string_caseless_isequal(
+			type, strings[NOT],
+			&match) == lwc_error_ok && match) {
+		error = CSS_INVALID;
+	} else if (lwc_string_caseless_isequal(
+			type, strings[AND],
+			&match) == lwc_error_ok && match) {
+		error = CSS_INVALID;
+	} else if (lwc_string_caseless_isequal(
+			type, strings[OR],
+			&match) == lwc_error_ok && match) {
+		error = CSS_INVALID;
+	} else if (lwc_string_caseless_isequal(
+			type, strings[ONLY],
+			&match) == lwc_error_ok && match) {
+		error = CSS_INVALID;
+	} else {
+		/* Unknown type: same as not matching */
+		*result = 0;
 	}
 
-	return 0;
+	return error;
 }
 
 static css_error mq_parse_media_query(lwc_string **strings,
@@ -1016,7 +1037,11 @@ static css_error mq_parse_media_query(lwc_string **strings,
 		return CSS_INVALID;
 	}
 
-	result->type = mq_parse_type(strings, token->idata);
+	error = mq_parse_type(strings, token->idata, &result->type);
+	if (error != CSS_OK) {
+		free(result);
+		return error;
+	}
 
 	consumeWhitespace(vector, ctx);
 
