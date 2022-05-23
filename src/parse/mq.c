@@ -1012,6 +1012,7 @@ static css_error mq_parse_media_query(lwc_string **strings,
 			return error;
 		}
 
+		result->type = CSS_MEDIA_ALL;
 		goto finished;
 	}
 
@@ -1066,10 +1067,6 @@ static css_error mq_parse_media_query(lwc_string **strings,
 	}
 
 finished:
-	if (result->type == 0) {
-		result->type = CSS_MEDIA_ALL;
-	}
-
 	*query = result;
 	return CSS_OK;
 }
