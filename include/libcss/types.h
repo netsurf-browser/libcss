@@ -223,6 +223,8 @@ typedef struct css_media {
 	css_fixed monochrome; /* monochrome bpp (0 for colour) */
 	css_fixed inverted_colors; /** boolean: {0|1} */
 
+	lwc_string *prefers_color_scheme; /* "light", "dark" */
+
 	/* Interaction media features */
 	css_media_pointer pointer;
 	css_media_pointer any_pointer;
