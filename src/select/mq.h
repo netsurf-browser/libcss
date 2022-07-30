@@ -78,6 +78,31 @@ static inline bool mq_match_feature_range_length_op2(
 	}
 }
 
+static inline bool mq_match_feature_eq_ident_op1(
+		css_mq_feature_op op,
+		const css_mq_value *value,
+		const lwc_string *client_value)
+{
+	bool is_match;
+
+	if (value->type != CSS_MQ_VALUE_TYPE_IDENT) {
+		return false;
+	}
+
+	if (value->data.ident == NULL || client_value == NULL) {
+		return false;
+	}
+
+	switch (op) {
+	case CSS_MQ_FEATURE_OP_EQ:
+		return (lwc_string_isequal(value->data.ident,
+				client_value, &is_match) == lwc_error_ok) &&
+				is_match;
+	default:
+		return false;
+	}
+}
+
 /**
  * Match media query features.
  *
@@ -108,6 +133,14 @@ static inline bool mq_match_feature(
 
 		return mq_match_feature_range_length_op2(feat->op2,
 				&feat->value2, media->height, unit_ctx);
+
+	} else if (strcmp(lwc_string_data(feat->name), "prefers-color-scheme") == 0) {
+		if (!mq_match_feature_eq_ident_op1(feat->op, &feat->value,
+				media->prefers_color_scheme)) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/* TODO: Look at other feature names. */
