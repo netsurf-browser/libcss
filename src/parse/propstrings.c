@@ -233,6 +233,7 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	SMAP("z-index"),
 
 	SMAP("inherit"),
+	SMAP("unset"),
 	SMAP("important"),
 	SMAP("none"),
 	SMAP("both"),
@@ -453,6 +454,7 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	SMAP("src"),
 	SMAP("local"),
 	SMAP("initial"),
+	SMAP("revert"),
 	SMAP("format"),
 	SMAP("woff"),
 	SMAP("truetype"),
