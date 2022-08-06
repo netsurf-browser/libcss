@@ -12,8 +12,13 @@ Format
 	bits 0-9  : opcode
 
 The 8 bits of flag data are defined as follows:
-	bits 2-7: Must Be Zero (MBZ)
-	bit 1   : value is inherit
+	bits 4-7: Must Be Zero (MBZ)
+	bits 1-3: Generic value
+		000 => no generic value
+		001 => inherit
+		010 => initial
+		011 => revert
+		100 => unset
 	bit 0   : value is important
 
 The 14 bits of value are opcode-specific.
@@ -353,10 +358,11 @@ Opcodes
 					  0000101 => no-close-quote,
 					  other   => rffe.
 
-	If the value is not "normal", "none", or "inherit", then there is
-	a parameter list. Each item is preceded by a <value> word which
-	declares the type of the next item. The list is terminated by a
-	word with all bits set to zero (the encoding for "normal").
+	If the value is not "normal", "none", or a generic value ("inherit",
+	"initial", "unset", or "revert"), then there is a parameter list.
+	Each item is preceded by a <value> word which declares the type of
+	the next item. The list is terminated by a word with all bits set
+	to zero (the encoding for "normal").
 
 	For example,
 		content: open-quote url('http://example.com/')
@@ -385,7 +391,8 @@ Opcodes
 				bits 0-6: 0000000 => none,
 					  other   => rffe.
 
-	If the value is not "none", or "inherit", then there is a parameter
+	If the value is not "none", or a generic value ("inherit",
+	"initial", "unset", or "revert"), then there is a parameter
 	list. Each item is preceded by a <value> word which declares the type
 	of the next item. The list is terminated by a word with all bits set to
 	zero (the encoding for "none").
@@ -401,7 +408,8 @@ Opcodes
 				bits 0-6: 0000000 => none,
 					  other   => rffe.
 
-	If the value is not "none", or "inherit", then there is a parameter
+	If the value is not "none", or a generic value ("inherit",
+	"initial", "unset", or "revert"), then there is a parameter
 	list. Each item is preceded by a <value> word which declares the type
 	of the next item. The list is terminated by a word with all bits set to
 	zero (the encoding for "none").
