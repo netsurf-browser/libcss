@@ -36,7 +36,7 @@ css_error css__parse_border_spacing(css_language *c,
 	const css_token *token;
 	css_fixed length[2] = { 0 };
 	uint32_t unit[2] = { 0 };
-	bool match;
+	enum flag_value flag_value;
 
 	/* length length? | IDENT(inherit) */
 	token = parserutils_vector_peek(vector, *ctx);
@@ -45,16 +45,13 @@ css_error css__parse_border_spacing(css_language *c,
 		return CSS_INVALID;
 	}
 
-	if (token->type == CSS_TOKEN_IDENT &&
-			(lwc_string_caseless_isequal(
-			token->idata, c->strings[INHERIT],
-			&match) == lwc_error_ok && match)) {
+	flag_value = get_css_flag_value(c, token);
+
+	if (flag_value != FLAG_VALUE__NONE) {
 		parserutils_vector_iterate(vector, ctx);
 		/* inherit */
-		error = css__stylesheet_style_appendOPV(result,
-						       CSS_PROP_BORDER_SPACING,
-						       FLAG_INHERIT,
-						       0);
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_BORDER_SPACING);
 	} else {
 		int num_lengths = 0;
 

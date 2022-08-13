@@ -90,7 +90,7 @@ css_error css__parse_voice_family(css_language *c,
 	int orig_ctx = *ctx;
 	css_error error;
 	const css_token *token;
-	bool match;
+	enum flag_value flag_value;
 
 	/* [ IDENT+ | STRING ] [ ',' [ IDENT+ | STRING ] ]* | IDENT(inherit)
 	 *
@@ -105,11 +105,12 @@ css_error css__parse_voice_family(css_language *c,
 		return CSS_INVALID;
 	}
 
-	if (token->type == CSS_TOKEN_IDENT &&
-			(lwc_string_caseless_isequal(
-			token->idata, c->strings[INHERIT],
-			&match) == lwc_error_ok && match)) {
-		error = css_stylesheet_style_inherit(result, CSS_PROP_VOICE_FAMILY);
+	flag_value = get_css_flag_value(c, token);
+
+	if (flag_value != FLAG_VALUE__NONE) {
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_VOICE_FAMILY);
+
 	} else {
 		*ctx = orig_ctx;
 

@@ -41,23 +41,28 @@ css_error css__parse_list_style(css_language *c,
 	css_style *image_style;
 	css_style *position_style;
 	css_style *type_style;
+	enum flag_value flag_value;
 
 	/* Firstly, handle inherit */
 	token = parserutils_vector_peek(vector, *ctx);
 	if (token == NULL)
 		return CSS_INVALID;
 
-	if (is_css_inherit(c, token)) {
-		error = css_stylesheet_style_inherit(result, CSS_PROP_LIST_STYLE_IMAGE);
+	flag_value = get_css_flag_value(c, token);
+
+	if (flag_value != FLAG_VALUE__NONE) {
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_LIST_STYLE_IMAGE);
 		if (error != CSS_OK)
 			return error;
 
-		error = css_stylesheet_style_inherit(result, CSS_PROP_LIST_STYLE_POSITION);
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_LIST_STYLE_POSITION);
 		if (error != CSS_OK)
 			return error;
 
-		error = css_stylesheet_style_inherit(result, CSS_PROP_LIST_STYLE_TYPE);
-
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_LIST_STYLE_TYPE);
 		if (error == CSS_OK)
 			parserutils_vector_iterate(vector, ctx);
 

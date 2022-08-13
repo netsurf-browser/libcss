@@ -57,15 +57,23 @@ css_error css__parse_pause(css_language *c,
 			error = css__parse_pause_after(c, vector, ctx, result);
 		} else {
 			/* second token - might be useful */
-			if (is_css_inherit(c, token)) {
-				/* another bogus inherit */
+			enum flag_value flag_value;
+
+			flag_value = get_css_flag_value(c, token);
+
+			if (flag_value != FLAG_VALUE__NONE) {
+				/* another generic property reset value
+				 * which is bogus */
 				error = CSS_INVALID;
 			} else {
 				error = css__parse_pause_after(c, vector, ctx, result);
 				if (error == CSS_OK) {
 					/* second token parsed */
-					if (is_css_inherit(c, first_token)) {
-						/* valid second token after inherit */
+					flag_value = get_css_flag_value(c, first_token);
+
+					if (flag_value != FLAG_VALUE__NONE) {
+						/* valid second token after
+						 * generic property reset value */
 						error = CSS_INVALID;
 					}
 				} else {
