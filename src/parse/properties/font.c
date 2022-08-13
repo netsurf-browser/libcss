@@ -243,6 +243,7 @@ css_error css__parse_font(css_language *c,
 	css_style *size_style;
 	css_style *line_height_style;
 	css_style *family_style;
+	enum flag_value flag_value;
 	int svw;
 
 	/* Firstly, handle inherit */
@@ -250,28 +251,36 @@ css_error css__parse_font(css_language *c,
 	if (token == NULL)
 		return CSS_INVALID;
 
-	if (is_css_inherit(c, token)) {
-		error = css_stylesheet_style_inherit(result, CSS_PROP_FONT_STYLE);
+	flag_value = get_css_flag_value(c, token);
+
+	if (flag_value != FLAG_VALUE__NONE) {
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_FONT_STYLE);
 		if (error != CSS_OK)
 			return error;
 
-		error = css_stylesheet_style_inherit(result, CSS_PROP_FONT_VARIANT);
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_FONT_VARIANT);
 		if (error != CSS_OK)
 			return error;
 
-		error = css_stylesheet_style_inherit(result, CSS_PROP_FONT_WEIGHT);
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_FONT_WEIGHT);
 		if (error != CSS_OK)
 			return error;
 
-		error = css_stylesheet_style_inherit(result, CSS_PROP_FONT_SIZE);
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_FONT_SIZE);
 		if (error != CSS_OK)
 			return error;
 
-		error = css_stylesheet_style_inherit(result, CSS_PROP_LINE_HEIGHT);
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_LINE_HEIGHT);
 		if (error != CSS_OK)
 			return error;
 
-		error = css_stylesheet_style_inherit(result, CSS_PROP_FONT_FAMILY);
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_FONT_FAMILY);
 		if (error == CSS_OK)
 			parserutils_vector_iterate(vector, ctx);
 

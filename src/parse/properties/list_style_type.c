@@ -49,10 +49,26 @@ css_error css__parse_list_style_type(css_language *c,
 		return CSS_INVALID;
 	}
 
-	if ((lwc_string_caseless_isequal(
+	if (ident->type == CSS_TOKEN_IDENT &&
+			(lwc_string_caseless_isequal(
 			ident->idata, c->strings[INHERIT],
 			&match) == lwc_error_ok && match)) {
 		flags |= FLAG_INHERIT;
+	} else if (ident->type == CSS_TOKEN_IDENT &&
+			(lwc_string_caseless_isequal(
+			ident->idata, c->strings[INITIAL],
+			&match) == lwc_error_ok && match)) {
+		flags = FLAG_INITIAL;
+	} else if (ident->type == CSS_TOKEN_IDENT &&
+			(lwc_string_caseless_isequal(
+			ident->idata, c->strings[REVERT],
+			&match) == lwc_error_ok && match)) {
+		flags = FLAG_REVERT;
+	} else if (ident->type == CSS_TOKEN_IDENT &&
+			(lwc_string_caseless_isequal(
+			ident->idata, c->strings[UNSET],
+			&match) == lwc_error_ok && match)) {
+		flags = FLAG_UNSET;
 	} else {
 		error = css__parse_list_style_type_value(c, ident, &value);
 		if (error != CSS_OK) {

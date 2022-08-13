@@ -44,29 +44,30 @@ css_error css__parse_flex(css_language *c,
 	css_style *basis_style;
 	bool short_auto = false;
 	bool short_none = false;
+	enum flag_value flag_value;
 	bool match;
 
 	/* Firstly, handle inherit */
 	token = parserutils_vector_peek(vector, *ctx);
 	if (token == NULL) 
 		return CSS_INVALID;
-		
-	if (is_css_inherit(c, token)) {
-		error = css_stylesheet_style_inherit(result,
+
+	flag_value = get_css_flag_value(c, token);
+
+	if (flag_value != FLAG_VALUE__NONE) {
+		error = css_stylesheet_style_flag_value(result, flag_value,
 				CSS_PROP_FLEX_GROW);
-		if (error != CSS_OK) 
+		if (error != CSS_OK)
 			return error;
 
-		error = css_stylesheet_style_inherit(result,
+		error = css_stylesheet_style_flag_value(result, flag_value,
 				CSS_PROP_FLEX_SHRINK);
-
-		if (error != CSS_OK) 
+		if (error != CSS_OK)
 			return error;
 
-		error = css_stylesheet_style_inherit(result,
+		error = css_stylesheet_style_flag_value(result, flag_value,
 				CSS_PROP_FLEX_BASIS);
-
-		if (error == CSS_OK) 
+		if (error == CSS_OK)
 			parserutils_vector_iterate(vector, ctx);
 
 		return error;

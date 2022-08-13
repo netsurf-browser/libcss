@@ -37,6 +37,7 @@ css_error css__parse_border_color(css_language *c,
 	uint16_t side_val[4];
 	uint32_t side_color[4];
 	uint32_t side_count = 0;
+	enum flag_value flag_value;
 	css_error error;
 
 	/* Firstly, handle inherit */
@@ -44,20 +45,26 @@ css_error css__parse_border_color(css_language *c,
 	if (token == NULL)
 		return CSS_INVALID;
 
-	if (is_css_inherit(c, token)) {
-		error = css_stylesheet_style_inherit(result, CSS_PROP_BORDER_TOP_COLOR);
+	flag_value = get_css_flag_value(c, token);
+
+	if (flag_value != FLAG_VALUE__NONE) {
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_BORDER_TOP_COLOR);
 		if (error != CSS_OK)
 			return error;
 
-		error = css_stylesheet_style_inherit(result, CSS_PROP_BORDER_RIGHT_COLOR);
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_BORDER_RIGHT_COLOR);
 		if (error != CSS_OK)
 			return error;
 
-		error = css_stylesheet_style_inherit(result, CSS_PROP_BORDER_BOTTOM_COLOR);
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_BORDER_BOTTOM_COLOR);
 		if (error != CSS_OK)
 			return error;
 
-		error = css_stylesheet_style_inherit(result, CSS_PROP_BORDER_LEFT_COLOR);
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_BORDER_LEFT_COLOR);
 		if (error == CSS_OK)
 			parserutils_vector_iterate(vector, ctx);
 

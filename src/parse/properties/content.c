@@ -35,6 +35,7 @@ css_error css__parse_content(css_language *c,
 	int orig_ctx = *ctx;
 	css_error error;
 	const css_token *token;
+	enum flag_value flag_value;
 	bool match;
 
 	/* IDENT(normal, none, inherit) | [ ... ]+ */
@@ -44,12 +45,11 @@ css_error css__parse_content(css_language *c,
 		return CSS_INVALID;
 	}
 
+	flag_value = get_css_flag_value(c, token);
 
-	if ((token->type == CSS_TOKEN_IDENT) &&
-	    (lwc_string_caseless_isequal(token->idata,
-					 c->strings[INHERIT],
-					 &match) == lwc_error_ok && match)) {
-		error = css_stylesheet_style_inherit(result, CSS_PROP_CONTENT);
+	if (flag_value != FLAG_VALUE__NONE) {
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_CONTENT);
 	} else if ((token->type == CSS_TOKEN_IDENT) &&
 		   (lwc_string_caseless_isequal(token->idata,
 						c->strings[NORMAL],

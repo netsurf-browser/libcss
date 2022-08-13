@@ -54,14 +54,32 @@ css_error css__parse_play_during(css_language *c,
 				token->idata, c->strings[INHERIT],
 				&match) == lwc_error_ok && match)) {
 			flags |= FLAG_INHERIT;
+
+		} else if ((lwc_string_caseless_isequal(
+				token->idata, c->strings[INITIAL],
+				&match) == lwc_error_ok && match)) {
+			flags |= FLAG_INITIAL;
+
+		} else if ((lwc_string_caseless_isequal(
+				token->idata, c->strings[REVERT],
+				&match) == lwc_error_ok && match)) {
+			flags |= FLAG_REVERT;
+
+		} else if ((lwc_string_caseless_isequal(
+				token->idata, c->strings[UNSET],
+				&match) == lwc_error_ok && match)) {
+			flags |= FLAG_UNSET;
+
 		} else if ((lwc_string_caseless_isequal(
 				token->idata, c->strings[NONE],
 				&match) == lwc_error_ok && match)) {
 			value = PLAY_DURING_NONE;
+
 		} else if ((lwc_string_caseless_isequal(
 				token->idata, c->strings[AUTO],
 				&match) == lwc_error_ok && match)) {
 			value = PLAY_DURING_AUTO;
+
 		} else {
 			*ctx = orig_ctx;
 			return CSS_INVALID;

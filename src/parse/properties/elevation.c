@@ -55,6 +55,24 @@ css_error css__parse_elevation(css_language *c,
 		flags = FLAG_INHERIT;
 	} else if (token->type == CSS_TOKEN_IDENT &&
 		(lwc_string_caseless_isequal(
+			token->idata, c->strings[INITIAL],
+			&match) == lwc_error_ok && match)) {
+		parserutils_vector_iterate(vector, ctx);
+		flags = FLAG_INITIAL;
+	} else if (token->type == CSS_TOKEN_IDENT &&
+		(lwc_string_caseless_isequal(
+			token->idata, c->strings[REVERT],
+			&match) == lwc_error_ok && match)) {
+		parserutils_vector_iterate(vector, ctx);
+		flags = FLAG_REVERT;
+	} else if (token->type == CSS_TOKEN_IDENT &&
+		(lwc_string_caseless_isequal(
+			token->idata, c->strings[UNSET],
+			&match) == lwc_error_ok && match)) {
+		parserutils_vector_iterate(vector, ctx);
+		flags = FLAG_UNSET;
+	} else if (token->type == CSS_TOKEN_IDENT &&
+		(lwc_string_caseless_isequal(
 			token->idata, c->strings[BELOW],
 			&match) == lwc_error_ok && match)) {
 		parserutils_vector_iterate(vector, ctx);

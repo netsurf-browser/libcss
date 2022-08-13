@@ -41,23 +41,28 @@ css_error css__parse_outline(css_language *c,
 	css_style *color_style;
 	css_style *style_style;
 	css_style *width_style;
+	enum flag_value flag_value;
 
 	/* Firstly, handle inherit */
 	token = parserutils_vector_peek(vector, *ctx);
 	if (token == NULL)
 		return CSS_INVALID;
 
-	if (is_css_inherit(c, token)) {
-		error = css_stylesheet_style_inherit(result, CSS_PROP_OUTLINE_COLOR);
+	flag_value = get_css_flag_value(c, token);
+
+	if (flag_value != FLAG_VALUE__NONE) {
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_OUTLINE_COLOR);
 		if (error != CSS_OK)
 			return error;
 
-		error = css_stylesheet_style_inherit(result, CSS_PROP_OUTLINE_STYLE);
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_OUTLINE_STYLE);
 		if (error != CSS_OK)
 			return error;
 
-		error = css_stylesheet_style_inherit(result, CSS_PROP_OUTLINE_WIDTH);
-
+		error = css_stylesheet_style_flag_value(result, flag_value,
+				CSS_PROP_OUTLINE_WIDTH);
 		if (error == CSS_OK)
 			parserutils_vector_iterate(vector, ctx);
 
