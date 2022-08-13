@@ -18,9 +18,20 @@ typedef uint32_t css_code_t;
 
 typedef enum css_properties_e opcode_t;
 
+enum flag_value {
+	FLAG_VALUE__NONE   = 0,
+	FLAG_VALUE_INHERIT = 1,
+	FLAG_VALUE_INITIAL = 2,
+	FLAG_VALUE_REVERT  = 3,
+	FLAG_VALUE_UNSET   = 4,
+};
+
 enum flag {
-	FLAG_IMPORTANT			= (1<<0),
-	FLAG_INHERIT			= (1<<1)
+	FLAG_IMPORTANT = (1 << 0),
+	FLAG_INHERIT   = (FLAG_VALUE_INHERIT << 1),
+	FLAG_INITIAL   = (FLAG_VALUE_INITIAL << 1),
+	FLAG_REVERT    = (FLAG_VALUE_REVERT  << 1),
+	FLAG_UNSET     = (FLAG_VALUE_UNSET   << 1),
 };
 
 
@@ -95,12 +106,22 @@ static inline uint16_t getValue(css_code_t OPV)
 
 static inline bool isImportant(css_code_t OPV)
 {
-	return getFlags(OPV) & 0x1;
+	return getFlags(OPV) & FLAG_IMPORTANT;
+}
+
+static inline enum flag_value getFlagValue(css_code_t OPV)
+{
+	return (getFlags(OPV) >> 1) & 0x7;
+}
+
+static inline bool hasFlagValue(css_code_t OPV)
+{
+	return getFlagValue(OPV) != FLAG_VALUE__NONE;
 }
 
 static inline bool isInherit(css_code_t OPV)
 {
-	return getFlags(OPV) & 0x2;
+	return getFlagValue(OPV) == FLAG_VALUE_INHERIT;
 }
 
 #endif
