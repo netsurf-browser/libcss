@@ -87,7 +87,7 @@ void css__make_style_important(css_style *style)
 		offset++;
 
 		/* Advance past any property-specific data */
-		if (isInherit(opv) == false) {
+		if (hasFlagValue(opv) == false) {
 			switch (op) {
 			case CSS_PROP_AZIMUTH:
 				if ((value & ~AZIMUTH_BEHIND) == AZIMUTH_ANGLE)
