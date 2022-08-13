@@ -230,12 +230,44 @@ static inline css_error css__stylesheet_style_appendOPV(css_style *style,
 			buildOPV(opcode, flags, value));
 }
 
-/** Helper function to set inherit flag */
+/** Helper function to set inherit generic value */
 static inline css_error css_stylesheet_style_inherit(css_style *style,
 		opcode_t opcode)
 {
 	return css__stylesheet_style_append(style,
 			buildOPV(opcode, FLAG_INHERIT, 0));
+}
+
+/** Helper function to set initial generic value */
+static inline css_error css_stylesheet_style_initial(css_style *style,
+		opcode_t opcode)
+{
+	return css__stylesheet_style_append(style,
+			buildOPV(opcode, FLAG_INITIAL, 0));
+}
+
+/** Helper function to set inherit generic value */
+static inline css_error css_stylesheet_style_revert(css_style *style,
+		opcode_t opcode)
+{
+	return css__stylesheet_style_append(style,
+			buildOPV(opcode, FLAG_REVERT, 0));
+}
+
+/** Helper function to set initial generic value */
+static inline css_error css_stylesheet_style_unset(css_style *style,
+		opcode_t opcode)
+{
+	return css__stylesheet_style_append(style,
+			buildOPV(opcode, FLAG_UNSET, 0));
+}
+
+/** Helper function to set initial generic value */
+static inline css_error css_stylesheet_style_flag_value(css_style *style,
+		enum flag_value flag_value, opcode_t opcode)
+{
+	return css__stylesheet_style_append(style,
+			buildOPV(opcode, flag_value << 1, 0));
 }
 
 css_error css__stylesheet_selector_create(css_stylesheet *sheet,
