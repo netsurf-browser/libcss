@@ -169,18 +169,38 @@ void output_ident(FILE *outputf, bool only_ident, struct keyval *parseid, struct
 			"if (");
 		if (!only_ident) {
 			fprintf(outputf,
-			"(token->type == CSS_TOKEN_IDENT) && ");
+			"(token->type == CSS_TOKEN_IDENT) &&\n\t\t\t");
 		}
 		fprintf(outputf,
-			"(lwc_string_caseless_isequal(token->idata, c->strings[%s], &match) == lwc_error_ok && match)) {\n",
+			"(lwc_string_caseless_isequal(\n"
+			"\t\t\ttoken->idata, c->strings[%s],\n"
+			"\t\t\t&match) == lwc_error_ok && match)) {\n",
 			ckv->key);
 		if (strcmp(ckv->key,"INHERIT") == 0) {
 		fprintf(outputf,
-			"\t\t\terror = css_stylesheet_style_inherit(result, %s);\n",
+			"\t\terror = css_stylesheet_style_inherit(result,\n"
+			"\t\t\t\t%s);\n\n",
+			parseid->val);
+		} else if (strcmp(ckv->key,"INITIAL") == 0) {
+		fprintf(outputf,
+			"\t\terror = css_stylesheet_style_initial(result,\n"
+			"\t\t\t\t%s);\n\n",
+			parseid->val);
+		} else if (strcmp(ckv->key,"REVERT") == 0) {
+		fprintf(outputf,
+			"\t\terror = css_stylesheet_style_revert(result,\n"
+			"\t\t\t\t%s);\n\n",
+			parseid->val);
+		} else if (strcmp(ckv->key,"UNSET") == 0) {
+		fprintf(outputf,
+			"\t\terror = css_stylesheet_style_unset(result,\n"
+			"\t\t\t\t%s);\n\n",
 			parseid->val);
 		} else {
 		fprintf(outputf,
-			"\t\t\terror = css__stylesheet_style_appendOPV(result, %s, %s);\n",
+			"\t\terror = css__stylesheet_style_appendOPV(result,\n"
+			"\t\t\t\t%s,\n"
+			"\t\t\t\t%s);\n\n",
 			parseid->val,
 			ckv->val);
 		}
@@ -466,9 +486,21 @@ void output_wrap(FILE *outputf, struct keyval *parseid, struct keyval_list *WRAP
 }
 
 char str_INHERIT[] = "INHERIT";
+char str_INITIAL[] = "INITIAL";
+char str_REVERT[] = "REVERT";
+char str_UNSET[] = "UNSET";
 
 struct keyval ident_inherit = {
 	.key = str_INHERIT,
+};
+struct keyval ident_initial = {
+	.key = str_INITIAL,
+};
+struct keyval ident_unset = {
+	.key = str_UNSET,
+};
+struct keyval ident_revert = {
+	.key = str_REVERT,
 };
 
 int main(int argc, char **argv)
@@ -554,6 +586,12 @@ int main(int argc, char **argv)
 				curlist = &base;
 			} else if (strcmp(rkv->val, str_INHERIT) == 0) {
 				IDENT.item[IDENT.count++] = &ident_inherit;
+			} else if (strcmp(rkv->val, str_INITIAL) == 0) {
+				IDENT.item[IDENT.count++] = &ident_initial;
+			} else if (strcmp(rkv->val, str_REVERT) == 0) {
+				IDENT.item[IDENT.count++] = &ident_revert;
+			} else if (strcmp(rkv->val, str_UNSET) == 0) {
+				IDENT.item[IDENT.count++] = &ident_unset;
 			}
 		} else if (strcmp(rkv->key, "IDENT_LIST") == 0) {
 			if (rkv->val[0] == '(') {
