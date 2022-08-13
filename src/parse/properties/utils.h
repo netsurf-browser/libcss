@@ -19,6 +19,35 @@ static inline bool is_css_inherit(css_language *c, const css_token *token)
 			&match) == lwc_error_ok && match));
 }
 
+static inline enum flag_value get_css_flag_value(
+		css_language *c,
+		const css_token *token)
+{
+	if (token->type == CSS_TOKEN_IDENT) {
+		bool match;
+
+		if (lwc_string_caseless_isequal(
+				token->idata, c->strings[INHERIT],
+				&match) == lwc_error_ok && match) {
+			return FLAG_VALUE_INHERIT;
+		} else if (lwc_string_caseless_isequal(
+				token->idata, c->strings[INITIAL],
+				&match) == lwc_error_ok && match) {
+			return FLAG_VALUE_INITIAL;
+		} else if (lwc_string_caseless_isequal(
+				token->idata, c->strings[REVERT],
+				&match) == lwc_error_ok && match) {
+			return FLAG_VALUE_REVERT;
+		} else if (lwc_string_caseless_isequal(
+				token->idata, c->strings[UNSET],
+				&match) == lwc_error_ok && match) {
+			return FLAG_VALUE_UNSET;
+		}
+	}
+
+	return FLAG_VALUE__NONE;
+}
+
 enum border_side_e { BORDER_SIDE_TOP = 0, BORDER_SIDE_RIGHT = 1, BORDER_SIDE_BOTTOM = 2, BORDER_SIDE_LEFT = 3 };
 
 /**
