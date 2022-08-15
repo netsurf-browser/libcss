@@ -21,7 +21,7 @@ css_error css__cascade_font_variant(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case FONT_VARIANT_NORMAL:
 			value = CSS_FONT_VARIANT_NORMAL;
@@ -33,7 +33,7 @@ css_error css__cascade_font_variant(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_font_variant(state->computed, value);
 	}
 

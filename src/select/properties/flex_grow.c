@@ -20,7 +20,7 @@ css_error css__cascade_flex_grow(uint32_t opv, css_style *style,
 	uint16_t value = CSS_FLEX_GROW_INHERIT;
 	css_fixed flex_grow = 0;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		value = CSS_FLEX_GROW_SET;
 
 		flex_grow = *((css_fixed *) style->bytecode);
@@ -28,7 +28,7 @@ css_error css__cascade_flex_grow(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_flex_grow(state->computed, value, flex_grow);
 	}
 

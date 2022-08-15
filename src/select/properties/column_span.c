@@ -21,7 +21,7 @@ css_error css__cascade_column_span(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case COLUMN_SPAN_NONE:
 			value = CSS_COLUMN_SPAN_NONE;
@@ -33,7 +33,7 @@ css_error css__cascade_column_span(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_column_span(state->computed, value);
 	}
 

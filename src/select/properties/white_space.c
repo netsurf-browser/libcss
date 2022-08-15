@@ -21,7 +21,7 @@ css_error css__cascade_white_space(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case WHITE_SPACE_NORMAL:
 			value = CSS_WHITE_SPACE_NORMAL;
@@ -42,7 +42,7 @@ css_error css__cascade_white_space(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_white_space(state->computed, value);
 	}
 

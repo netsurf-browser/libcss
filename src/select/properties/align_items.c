@@ -21,7 +21,7 @@ css_error css__cascade_align_items(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case ALIGN_ITEMS_STRETCH:
 			value = CSS_ALIGN_ITEMS_STRETCH;
@@ -42,7 +42,7 @@ css_error css__cascade_align_items(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_align_items(state->computed, value);
 	}
 

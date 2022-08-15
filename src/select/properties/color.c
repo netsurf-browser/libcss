@@ -17,11 +17,11 @@
 css_error css__cascade_color(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
-	bool inherit = isInherit(opv);
+	enum flag_value flag_value = getFlagValue(opv);
 	uint16_t value = CSS_COLOR_INHERIT;
 	css_color color = 0;
 
-	if (inherit == false) {
+	if (flag_value == FLAG_VALUE__NONE) {
 		switch (getValue(opv)) {
 		case COLOR_TRANSPARENT:
 			value = CSS_COLOR_COLOR;
@@ -29,7 +29,7 @@ css_error css__cascade_color(uint32_t opv, css_style *style,
 		case COLOR_CURRENT_COLOR:
 			/* color: currentColor always computes to inherit */
 			value = CSS_COLOR_INHERIT;
-			inherit = true;
+			flag_value = FLAG_VALUE_INHERIT;
 			break;
 		case COLOR_SET:
 			value = CSS_COLOR_COLOR;
@@ -40,7 +40,7 @@ css_error css__cascade_color(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			inherit)) {
+			flag_value)) {
 		return set_color(state->computed, value, color);
 	}
 

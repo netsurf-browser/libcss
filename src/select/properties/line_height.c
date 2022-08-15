@@ -21,7 +21,7 @@ css_error css__cascade_line_height(uint32_t opv, css_style *style,
 	css_fixed val = 0;
 	uint32_t unit = UNIT_PX;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case LINE_HEIGHT_NUMBER:
 			value = CSS_LINE_HEIGHT_NUMBER;
@@ -44,7 +44,7 @@ css_error css__cascade_line_height(uint32_t opv, css_style *style,
 	unit = css__to_css_unit(unit);
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_line_height(state->computed, value, val, unit);
 	}
 

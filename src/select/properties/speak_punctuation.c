@@ -19,7 +19,7 @@ css_error css__cascade_speak_punctuation(
 {
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case SPEAK_PUNCTUATION_CODE:
 		case SPEAK_PUNCTUATION_NONE:
@@ -29,7 +29,7 @@ css_error css__cascade_speak_punctuation(
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		/** \todo speak-punctuation */
 	}
 

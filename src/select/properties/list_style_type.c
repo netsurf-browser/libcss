@@ -21,7 +21,7 @@ css_error css__cascade_list_style_type(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case LIST_STYLE_TYPE_DISC:
 			value = CSS_LIST_STYLE_TYPE_DISC;
@@ -183,7 +183,7 @@ css_error css__cascade_list_style_type(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_list_style_type(state->computed, value);
 	}
 

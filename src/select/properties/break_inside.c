@@ -21,7 +21,7 @@ css_error css__cascade_break_inside(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case BREAK_INSIDE_AUTO:
 			value = CSS_BREAK_INSIDE_AUTO;
@@ -39,7 +39,7 @@ css_error css__cascade_break_inside(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_break_inside(state->computed, value);
 	}
 

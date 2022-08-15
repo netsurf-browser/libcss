@@ -17,17 +17,18 @@
 css_error css__cascade_column_rule_color(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
-	bool inherit = isInherit(opv);
+	enum flag_value flag_value = getFlagValue(opv);
 	uint16_t value = CSS_COLUMN_RULE_COLOR_INHERIT;
 	css_color color = 0;
 
-	if (isInherit(opv) == false) {
+	if (flag_value == FLAG_VALUE__NONE) {
 		switch (getValue(opv)) {
 		case COLUMN_RULE_COLOR_TRANSPARENT:
 			value = CSS_COLUMN_RULE_COLOR_COLOR;
 			break;
 		case COLUMN_RULE_COLOR_CURRENT_COLOR:
 			value = CSS_COLUMN_RULE_COLOR_CURRENT_COLOR;
+			flag_value = FLAG_VALUE_INHERIT;
 			break;
 		case COLUMN_RULE_COLOR_SET:
 			value = CSS_COLUMN_RULE_COLOR_COLOR;
@@ -38,7 +39,7 @@ css_error css__cascade_column_rule_color(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			inherit)) {
+			flag_value)) {
 		return set_column_rule_color(state->computed, value, color);
 	}
 

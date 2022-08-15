@@ -21,7 +21,7 @@ css_error css__cascade_vertical_align(uint32_t opv, css_style *style,
 	css_fixed length = 0;
 	uint32_t unit = UNIT_PX;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case VERTICAL_ALIGN_SET:
 			value = CSS_VERTICAL_ALIGN_SET;
@@ -61,7 +61,7 @@ css_error css__cascade_vertical_align(uint32_t opv, css_style *style,
 	unit = css__to_css_unit(unit);
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_vertical_align(state->computed, value, length, unit);
 	}
 

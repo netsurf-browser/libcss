@@ -21,7 +21,7 @@ css_error css__cascade_text_align(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case TEXT_ALIGN_LEFT:
 			value = CSS_TEXT_ALIGN_LEFT;
@@ -48,7 +48,7 @@ css_error css__cascade_text_align(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_text_align(state->computed, value);
 	}
 

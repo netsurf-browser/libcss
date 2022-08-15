@@ -20,7 +20,7 @@ css_error css__cascade_outline_color(uint32_t opv, css_style *style,
 	uint16_t value = CSS_OUTLINE_COLOR_INHERIT;
 	css_color color = 0;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case OUTLINE_COLOR_TRANSPARENT:
 			value = CSS_OUTLINE_COLOR_COLOR;
@@ -40,7 +40,7 @@ css_error css__cascade_outline_color(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_outline_color(state->computed, value, color);
 	}
 

@@ -20,7 +20,7 @@ css_error css__cascade_opacity(uint32_t opv, css_style *style,
 	uint16_t value = CSS_OPACITY_INHERIT;
 	css_fixed opacity = 0;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		value = CSS_Z_INDEX_SET;
 
 		opacity = *((css_fixed *) style->bytecode);
@@ -28,7 +28,7 @@ css_error css__cascade_opacity(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_opacity(state->computed, value, opacity);
 	}
 

@@ -21,7 +21,7 @@ css_error css__cascade_table_layout(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case TABLE_LAYOUT_AUTO:
 			value = CSS_TABLE_LAYOUT_AUTO;
@@ -33,7 +33,7 @@ css_error css__cascade_table_layout(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_table_layout(state->computed, value);
 	}
 

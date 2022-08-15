@@ -20,7 +20,7 @@ css_error css__cascade_flex_shrink(uint32_t opv, css_style *style,
 	uint16_t value = CSS_FLEX_SHRINK_INHERIT;
 	css_fixed flex_shrink = 0;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		value = CSS_FLEX_SHRINK_SET;
 
 		flex_shrink = *((css_fixed *) style->bytecode);
@@ -28,7 +28,7 @@ css_error css__cascade_flex_shrink(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_flex_shrink(state->computed, value, flex_shrink);
 	}
 

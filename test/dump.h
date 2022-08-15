@@ -788,8 +788,14 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 			*((*ptr)++) = ' ';
 		*ptr += sprintf(*ptr, "%s: ", opcode_names[op]);
 
-		if (isInherit(opv)) {
+		if (getFlagValue(opv) == FLAG_VALUE_INHERIT) {
 			*ptr += sprintf(*ptr, "inherit");
+		} else if (getFlagValue(opv) == FLAG_VALUE_INITIAL) {
+			*ptr += sprintf(*ptr, "initial");
+		} else if (getFlagValue(opv) == FLAG_VALUE_REVERT) {
+			*ptr += sprintf(*ptr, "revert");
+		} else if (getFlagValue(opv) == FLAG_VALUE_UNSET) {
+			*ptr += sprintf(*ptr, "unset");
 		} else {
 			value = getValue(opv);
 

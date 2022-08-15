@@ -21,7 +21,7 @@ css_error css__cascade_content(uint32_t opv, css_style *style,
 	css_computed_content_item *content = NULL;
 	uint32_t n_contents = 0;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		uint32_t v = getValue(opv);
 
 		if (v == CONTENT_NORMAL) {
@@ -140,7 +140,7 @@ css_error css__cascade_content(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		css_error error;
 
 		error = set_content(state->computed, value, content);

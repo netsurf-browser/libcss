@@ -21,7 +21,7 @@ css_error css__cascade_flex_direction(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case FLEX_DIRECTION_ROW:
 			value = CSS_FLEX_DIRECTION_ROW;
@@ -39,7 +39,7 @@ css_error css__cascade_flex_direction(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_flex_direction(state->computed, value);
 	}
 

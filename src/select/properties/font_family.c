@@ -21,7 +21,7 @@ css_error css__cascade_font_family(uint32_t opv, css_style *style,
 	lwc_string **fonts = NULL;
 	uint32_t n_fonts = 0;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		uint32_t v = getValue(opv);
 
 		while (v != FONT_FAMILY_END) {
@@ -134,7 +134,7 @@ css_error css__cascade_font_family(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		css_error error;
 
 		error = set_font_family(state->computed, value, fonts);

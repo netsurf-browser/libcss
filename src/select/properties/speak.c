@@ -19,7 +19,7 @@ css_error css__cascade_speak(uint32_t opv, css_style *style,
 {
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case SPEAK_NORMAL:
 		case SPEAK_NONE:
@@ -30,7 +30,7 @@ css_error css__cascade_speak(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		/** \todo speak */
 	}
 

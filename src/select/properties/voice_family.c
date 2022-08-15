@@ -21,7 +21,7 @@ css_error css__cascade_voice_family(uint32_t opv, css_style *style,
 	lwc_string **voices = NULL;
 	uint32_t n_voices = 0;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		uint32_t v = getValue(opv);
 
 		while (v != VOICE_FAMILY_END) {
@@ -92,7 +92,7 @@ css_error css__cascade_voice_family(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		/** \todo voice-family */
 		if (n_voices > 0)
 			free(voices);

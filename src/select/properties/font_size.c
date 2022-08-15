@@ -21,7 +21,7 @@ css_error css__cascade_font_size(uint32_t opv, css_style *style,
 	css_fixed size = 0;
 	uint32_t unit = UNIT_PX;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case FONT_SIZE_DIMENSION:
 			value = CSS_FONT_SIZE_DIMENSION;
@@ -65,7 +65,7 @@ css_error css__cascade_font_size(uint32_t opv, css_style *style,
 	unit = css__to_css_unit(unit);
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_font_size(state->computed, value, size, unit);
 	}
 

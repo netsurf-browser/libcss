@@ -21,7 +21,7 @@ css_error css__cascade_unicode_bidi(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case UNICODE_BIDI_NORMAL:
 			value = CSS_UNICODE_BIDI_NORMAL;
@@ -36,7 +36,7 @@ css_error css__cascade_unicode_bidi(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_unicode_bidi(state->computed, value);
 	}
 

@@ -21,7 +21,7 @@ css_error css__cascade_box_sizing(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case BOX_SIZING_CONTENT_BOX:
 			value = CSS_BOX_SIZING_CONTENT_BOX;
@@ -33,7 +33,7 @@ css_error css__cascade_box_sizing(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_box_sizing(state->computed, value);
 	}
 
