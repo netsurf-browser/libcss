@@ -21,7 +21,7 @@ css_error css__cascade_caption_side(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case CAPTION_SIDE_TOP:
 			value = CSS_CAPTION_SIDE_TOP;
@@ -33,7 +33,7 @@ css_error css__cascade_caption_side(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_caption_side(state->computed, value);
 	}
 

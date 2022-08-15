@@ -20,7 +20,7 @@ css_error css__cascade_pitch(uint32_t opv, css_style *style,
 	css_fixed freq = 0;
 	uint32_t unit = UNIT_HZ;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case PITCH_FREQUENCY:
 			freq = *((css_fixed *) style->bytecode);
@@ -41,7 +41,7 @@ css_error css__cascade_pitch(uint32_t opv, css_style *style,
 	unit = css__to_css_unit(unit);
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		/** \todo pitch */
 	}
 

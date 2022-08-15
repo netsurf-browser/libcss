@@ -17,11 +17,11 @@
 css_error css__cascade_writing_mode(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
-	bool inherit = isInherit(opv);
+	enum flag_value flag_value = getFlagValue(opv);
 	uint16_t writing_mode = CSS_WRITING_MODE_INHERIT;
 	UNUSED(style);
 
-	if (inherit == false) {
+	if (flag_value == FLAG_VALUE__NONE) {
 		switch (getValue(opv)) {
 		case WRITING_MODE_HORIZONTAL_TB:
 			writing_mode = CSS_WRITING_MODE_HORIZONTAL_TB;
@@ -36,7 +36,7 @@ css_error css__cascade_writing_mode(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			inherit)) {
+			flag_value)) {
 		return set_writing_mode(state->computed, writing_mode);
 	}
 

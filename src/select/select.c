@@ -1294,7 +1294,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		 * value. */
 		if (prop->set == false ||
 				(parent == NULL &&
-				prop->inherit == true)) {
+				prop->explicit_default == FLAG_VALUE_INHERIT)) {
 			error = set_initial(&state, i,
 					CSS_PSEUDO_ELEMENT_NONE, parent);
 			if (error != CSS_OK)
@@ -1548,7 +1548,8 @@ css_error set_hint(css_select_state *state, css_hint *hint)
 	existing->specificity = 0;
 	existing->origin = CSS_ORIGIN_AUTHOR;
 	existing->important = 0;
-	existing->inherit = (hint->status == 0);
+	existing->explicit_default = (hint->status == 0) ?
+			FLAG_VALUE_INHERIT : FLAG_VALUE__NONE;
 
 	return CSS_OK;
 }
@@ -2600,7 +2601,7 @@ css_error cascade_style(const css_style *style, css_select_state *state)
 }
 
 bool css__outranks_existing(uint16_t op, bool important, css_select_state *state,
-		bool inherit)
+		enum flag_value explicit_default)
 {
 	prop_state *existing = &state->props[op][state->current_pseudo];
 	bool outranks = false;
@@ -2695,7 +2696,7 @@ bool css__outranks_existing(uint16_t op, bool important, css_select_state *state
 		existing->specificity = state->current_specificity;
 		existing->origin = state->current_origin;
 		existing->important = important;
-		existing->inherit = inherit;
+		existing->explicit_default = explicit_default;
 	}
 
 	return outranks;

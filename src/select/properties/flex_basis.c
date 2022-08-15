@@ -21,7 +21,7 @@ css_error css__cascade_flex_basis(uint32_t opv, css_style *style,
 	css_fixed length = 0;
 	uint32_t unit = UNIT_PX;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case FLEX_BASIS_AUTO:
 			value = CSS_FLEX_BASIS_AUTO;
@@ -42,7 +42,7 @@ css_error css__cascade_flex_basis(uint32_t opv, css_style *style,
 	unit = css__to_css_unit(unit);
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_flex_basis(state->computed, value, length, unit);
 	}
 

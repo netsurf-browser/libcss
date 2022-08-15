@@ -20,7 +20,7 @@ css_error css__cascade_column_count(uint32_t opv, css_style *style,
 	uint16_t value = CSS_COLUMN_COUNT_INHERIT;
 	css_fixed count = 0;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case COLUMN_COUNT_SET:
 			value = CSS_COLUMN_COUNT_SET;
@@ -34,7 +34,7 @@ css_error css__cascade_column_count(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_column_count(state->computed, value, count);
 	}
 

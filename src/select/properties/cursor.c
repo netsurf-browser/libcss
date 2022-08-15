@@ -21,7 +21,7 @@ css_error css__cascade_cursor(uint32_t opv, css_style *style,
 	lwc_string **uris = NULL;
 	uint32_t n_uris = 0;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		uint32_t v = getValue(opv);
 
 		while (v == CURSOR_URI) {
@@ -124,7 +124,7 @@ css_error css__cascade_cursor(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		css_error error;
 
 		error = set_cursor(state->computed, value, uris);

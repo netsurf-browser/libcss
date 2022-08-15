@@ -24,11 +24,11 @@ typedef struct reject_item {
 } reject_item;
 
 typedef struct prop_state {
-	uint32_t specificity;		/* Specificity of property in result */
-	unsigned int set       : 1,	/* Whether property is set in result */
-	             origin    : 2,	/* Origin of property in result */
-	             important : 1,	/* Importance of property in result */
-	             inherit   : 1;	/* Property is set to inherit */
+	uint32_t specificity;                 /* Specificity of property in result */
+	unsigned int    set              : 1, /* Whether property is set in result */
+	                origin           : 2, /* Origin of property in result */
+	                important        : 1; /* Importance of property in result */
+	enum flag_value explicit_default : 3; /* Property is set to inherit */
 } prop_state;
 
 
@@ -98,7 +98,7 @@ static inline void advance_bytecode(css_style *style, uint32_t n_bytes)
 }
 
 bool css__outranks_existing(uint16_t op, bool important,
-		css_select_state *state, bool inherit);
+		css_select_state *state, enum flag_value explicit_default);
 
 #endif
 

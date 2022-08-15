@@ -23,7 +23,7 @@ css_error css__cascade_text_decoration(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		if (getValue(opv) == TEXT_DECORATION_NONE) {
 			value = CSS_TEXT_DECORATION_NONE;
 		} else {
@@ -41,7 +41,7 @@ css_error css__cascade_text_decoration(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_text_decoration(state->computed, value);
 	}
 

@@ -20,7 +20,7 @@ css_error css__cascade_z_index(uint32_t opv, css_style *style,
 	uint16_t value = CSS_Z_INDEX_INHERIT;
 	css_fixed index = 0;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case Z_INDEX_SET:
 			value = CSS_Z_INDEX_SET;
@@ -35,7 +35,7 @@ css_error css__cascade_z_index(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_z_index(state->computed, value, index);
 	}
 

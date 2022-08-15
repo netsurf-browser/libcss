@@ -21,7 +21,7 @@ css_error css__cascade_font_weight(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case FONT_WEIGHT_NORMAL:
 			value = CSS_FONT_WEIGHT_NORMAL;
@@ -66,7 +66,7 @@ css_error css__cascade_font_weight(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_font_weight(state->computed, value);
 	}
 

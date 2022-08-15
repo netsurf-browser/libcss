@@ -33,7 +33,7 @@ css_error css__cascade_bg_border_color(uint32_t opv, css_style *style,
 	assert(CSS_BACKGROUND_COLOR_CURRENT_COLOR ==
 	       (enum css_background_color_e)CSS_BORDER_COLOR_CURRENT_COLOR);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case BACKGROUND_COLOR_TRANSPARENT:
 			value = CSS_BACKGROUND_COLOR_COLOR;
@@ -50,7 +50,7 @@ css_error css__cascade_bg_border_color(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return fun(state->computed, value, color);
 	}
 
@@ -65,7 +65,7 @@ css_error css__cascade_uri_none(uint32_t opv, css_style *style,
 	uint16_t value = CSS_BACKGROUND_IMAGE_INHERIT;
 	lwc_string *uri = NULL;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case BACKGROUND_IMAGE_NONE:
 			value = CSS_BACKGROUND_IMAGE_NONE;
@@ -80,7 +80,7 @@ css_error css__cascade_uri_none(uint32_t opv, css_style *style,
 
 	/** \todo lose fun != NULL once all properties have set routines */
 	if (fun != NULL && css__outranks_existing(getOpcode(opv),
-			isImportant(opv), state, isInherit(opv))) {
+			isImportant(opv), state, getFlagValue(opv))) {
 		return fun(state->computed, value, uri);
 	}
 
@@ -95,7 +95,7 @@ css_error css__cascade_border_style(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case BORDER_STYLE_NONE:
 			value = CSS_BORDER_STYLE_NONE;
@@ -131,7 +131,7 @@ css_error css__cascade_border_style(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return fun(state->computed, value);
 	}
 
@@ -147,7 +147,7 @@ css_error css__cascade_border_width(uint32_t opv, css_style *style,
 	css_fixed length = 0;
 	uint32_t unit = UNIT_PX;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case BORDER_WIDTH_SET:
 			value = CSS_BORDER_WIDTH_WIDTH;
@@ -171,7 +171,7 @@ css_error css__cascade_border_width(uint32_t opv, css_style *style,
 	unit = css__to_css_unit(unit);
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return fun(state->computed, value, length, unit);
 	}
 
@@ -187,7 +187,7 @@ css_error css__cascade_length_auto(uint32_t opv, css_style *style,
 	css_fixed length = 0;
 	uint32_t unit = UNIT_PX;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case BOTTOM_SET:
 			value = CSS_BOTTOM_SET;
@@ -205,7 +205,7 @@ css_error css__cascade_length_auto(uint32_t opv, css_style *style,
 	unit = css__to_css_unit(unit);
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return fun(state->computed, value, length, unit);
 	}
 
@@ -221,7 +221,7 @@ css_error css__cascade_length_normal(uint32_t opv, css_style *style,
 	css_fixed length = 0;
 	uint32_t unit = UNIT_PX;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case LETTER_SPACING_SET:
 			value = CSS_LETTER_SPACING_SET;
@@ -239,7 +239,7 @@ css_error css__cascade_length_normal(uint32_t opv, css_style *style,
 	unit = css__to_css_unit(unit);
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return fun(state->computed, value, length, unit);
 	}
 
@@ -255,7 +255,7 @@ css_error css__cascade_length_none(uint32_t opv, css_style *style,
 	css_fixed length = 0;
 	uint32_t unit = UNIT_PX;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case MAX_HEIGHT_SET:
 			value = CSS_MAX_HEIGHT_SET;
@@ -273,7 +273,7 @@ css_error css__cascade_length_none(uint32_t opv, css_style *style,
 	unit = css__to_css_unit(unit);
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return fun(state->computed, value, length, unit);
 	}
 
@@ -289,7 +289,7 @@ css_error css__cascade_length(uint32_t opv, css_style *style,
 	css_fixed length = 0;
 	uint32_t unit = UNIT_PX;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		value = CSS_MIN_HEIGHT_SET;
 		length = *((css_fixed *) style->bytecode);
 		advance_bytecode(style, sizeof(length));
@@ -301,7 +301,7 @@ css_error css__cascade_length(uint32_t opv, css_style *style,
 
 	/** \todo lose fun != NULL once all properties have set routines */
 	if (fun != NULL && css__outranks_existing(getOpcode(opv),
-			isImportant(opv), state, isInherit(opv))) {
+			isImportant(opv), state, getFlagValue(opv))) {
 		return fun(state->computed, value, length, unit);
 	}
 
@@ -317,7 +317,7 @@ css_error css__cascade_number(uint32_t opv, css_style *style,
 
 	/** \todo values */
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		value = 0;
 		length = *((css_fixed *) style->bytecode);
 		advance_bytecode(style, sizeof(length));
@@ -325,7 +325,7 @@ css_error css__cascade_number(uint32_t opv, css_style *style,
 
 	/** \todo lose fun != NULL once all properties have set routines */
 	if (fun != NULL && css__outranks_existing(getOpcode(opv),
-			isImportant(opv), state, isInherit(opv))) {
+			isImportant(opv), state, getFlagValue(opv))) {
 		return fun(state->computed, value, length);
 	}
 
@@ -340,7 +340,7 @@ css_error css__cascade_page_break_after_before_inside(uint32_t opv,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case PAGE_BREAK_AFTER_AUTO:
 			value = CSS_PAGE_BREAK_AFTER_AUTO;
@@ -362,7 +362,7 @@ css_error css__cascade_page_break_after_before_inside(uint32_t opv,
 
 	/** \todo lose fun != NULL */
 	if (fun != NULL && css__outranks_existing(getOpcode(opv),
-			isImportant(opv), state, isInherit(opv))) {
+			isImportant(opv), state, getFlagValue(opv))) {
 		return fun(state->computed, value);
 	}
 
@@ -377,7 +377,7 @@ css_error css__cascade_break_after_before_inside(uint32_t opv,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case BREAK_AFTER_AUTO:
 			value = CSS_BREAK_AFTER_AUTO;
@@ -411,7 +411,7 @@ css_error css__cascade_break_after_before_inside(uint32_t opv,
 
 	/** \todo lose fun != NULL */
 	if (fun != NULL && css__outranks_existing(getOpcode(opv),
-			isImportant(opv), state, isInherit(opv))) {
+			isImportant(opv), state, getFlagValue(opv))) {
 		return fun(state->computed, value);
 	}
 
@@ -427,7 +427,7 @@ css_error css__cascade_counter_increment_reset(uint32_t opv, css_style *style,
 	css_computed_counter *counters = NULL;
 	uint32_t n_counters = 0;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case COUNTER_INCREMENT_NAMED:
 		{
@@ -490,7 +490,7 @@ css_error css__cascade_counter_increment_reset(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		css_error error;
 
 		error = fun(state->computed, value, counters);

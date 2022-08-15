@@ -21,7 +21,7 @@ css_error css__cascade_align_content(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case ALIGN_CONTENT_STRETCH:
 			value = CSS_ALIGN_CONTENT_STRETCH;
@@ -48,7 +48,7 @@ css_error css__cascade_align_content(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_align_content(state->computed, value);
 	}
 

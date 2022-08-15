@@ -23,7 +23,7 @@ css_error css__cascade_background_position(uint32_t opv, css_style *style,
 	uint32_t hunit = UNIT_PX;
 	uint32_t vunit = UNIT_PX;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		value = CSS_BACKGROUND_POSITION_SET;
 
 		switch (getValue(opv) & 0xf0) {
@@ -73,7 +73,7 @@ css_error css__cascade_background_position(uint32_t opv, css_style *style,
 	vunit = css__to_css_unit(vunit);
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_background_position(state->computed, value,
 				hlength, hunit, vlength, vunit);
 	}

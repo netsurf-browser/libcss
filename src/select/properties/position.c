@@ -21,7 +21,7 @@ css_error css__cascade_position(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case POSITION_STATIC:
 			value = CSS_POSITION_STATIC;
@@ -39,7 +39,7 @@ css_error css__cascade_position(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_position(state->computed, value);
 	}
 

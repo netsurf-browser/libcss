@@ -22,7 +22,7 @@ css_error css__cascade_clip(uint32_t opv, css_style *style,
 			CSS_UNIT_PX, CSS_UNIT_PX, CSS_UNIT_PX, CSS_UNIT_PX,
 			false, false, false, false };
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv) & CLIP_SHAPE_MASK) {
 		case CLIP_SHAPE_RECT:
 			if (getValue(opv) & CLIP_RECT_TOP_AUTO) {
@@ -71,7 +71,7 @@ css_error css__cascade_clip(uint32_t opv, css_style *style,
 	rect.lunit = css__to_css_unit(rect.lunit);
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_clip(state->computed, value, &rect);
 	}
 

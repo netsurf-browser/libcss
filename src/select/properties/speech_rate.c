@@ -19,7 +19,7 @@ css_error css__cascade_speech_rate(uint32_t opv, css_style *style,
 {
 	css_fixed rate = 0;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case SPEECH_RATE_SET:
 			rate = *((css_fixed *) style->bytecode);
@@ -38,7 +38,7 @@ css_error css__cascade_speech_rate(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		/** \todo speech-rate */
 	}
 

@@ -21,7 +21,7 @@ css_error css__cascade_flex_wrap(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case FLEX_WRAP_NOWRAP:
 			value = CSS_FLEX_WRAP_NOWRAP;
@@ -36,7 +36,7 @@ css_error css__cascade_flex_wrap(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_flex_wrap(state->computed, value);
 	}
 

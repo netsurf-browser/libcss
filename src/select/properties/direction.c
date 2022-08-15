@@ -21,7 +21,7 @@ css_error css__cascade_direction(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case DIRECTION_LTR:
 			value = CSS_DIRECTION_LTR;
@@ -33,7 +33,7 @@ css_error css__cascade_direction(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_direction(state->computed, value);
 	}
 

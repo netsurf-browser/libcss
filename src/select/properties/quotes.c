@@ -21,7 +21,7 @@ css_error css__cascade_quotes(uint32_t opv, css_style *style,
 	lwc_string **quotes = NULL;
 	uint32_t n_quotes = 0;
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		uint32_t v = getValue(opv);
 
 		value = CSS_QUOTES_STRING;
@@ -75,7 +75,7 @@ css_error css__cascade_quotes(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		css_error error;
 
 		error = set_quotes(state->computed, value, quotes);

@@ -21,7 +21,7 @@ css_error css__cascade_background_repeat(uint32_t opv, css_style *style,
 
 	UNUSED(style);
 
-	if (isInherit(opv) == false) {
+	if (hasFlagValue(opv) == false) {
 		switch (getValue(opv)) {
 		case BACKGROUND_REPEAT_NO_REPEAT:
 			value = CSS_BACKGROUND_REPEAT_NO_REPEAT;
@@ -39,7 +39,7 @@ css_error css__cascade_background_repeat(uint32_t opv, css_style *style,
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
-			isInherit(opv))) {
+			getFlagValue(opv))) {
 		return set_background_repeat(state->computed, value);
 	}
 
