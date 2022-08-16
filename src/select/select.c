@@ -1292,7 +1292,8 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		/* If the property is still unset or it's set to inherit
 		 * and we're the root element, then set it to its initial
 		 * value. */
-		if (prop->set == false ||
+		if (prop->explicit_default == FLAG_VALUE_INITIAL ||
+				prop->set == false ||
 				(parent == NULL &&
 				prop->explicit_default == FLAG_VALUE_INHERIT)) {
 			error = set_initial(&state, i,
@@ -1316,7 +1317,8 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 
 			/* If the property is still unset then set it
 			 * to its initial value. */
-			if (prop->set == false) {
+			if (prop->explicit_default == FLAG_VALUE_INITIAL ||
+					prop->set == false) {
 				error = set_initial(&state, i, j, parent);
 				if (error != CSS_OK)
 					goto cleanup;
@@ -1566,7 +1568,8 @@ css_error set_initial(css_select_state *state,
 	 * If the node is tree root and we're dealing with the base element,
 	 * everything should be defaulted.
 	 */
-	if (prop_dispatch[prop].inherited == false ||
+	if (state->props[prop][pseudo].explicit_default == FLAG_VALUE_INITIAL ||
+			prop_dispatch[prop].inherited == false ||
 			(pseudo == CSS_PSEUDO_ELEMENT_NONE && parent == NULL)) {
 		error = prop_dispatch[prop].initial(state);
 		if (error != CSS_OK)
