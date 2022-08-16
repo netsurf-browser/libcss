@@ -1286,8 +1286,15 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	state.current_pseudo = CSS_PSEUDO_ELEMENT_NONE;
 	state.computed = state.results->styles[CSS_PSEUDO_ELEMENT_NONE];
 	for (i = 0; i < CSS_N_PROPERTIES; i++) {
-		const prop_state *prop =
-				&state.props[i][CSS_PSEUDO_ELEMENT_NONE];
+		prop_state *prop = &state.props[i][CSS_PSEUDO_ELEMENT_NONE];
+
+		if (prop->explicit_default == FLAG_VALUE_UNSET) {
+			if (prop_dispatch[i].inherited == true) {
+				prop->explicit_default = FLAG_VALUE_INHERIT;
+			} else {
+				prop->explicit_default = FLAG_VALUE_INITIAL;
+			}
+		}
 
 		/* If the property is still unset or it's set to inherit
 		 * and we're the root element, then set it to its initial
@@ -1313,7 +1320,15 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 			continue;
 
 		for (i = 0; i < CSS_N_PROPERTIES; i++) {
-			const prop_state *prop = &state.props[i][j];
+			prop_state *prop = &state.props[i][j];
+
+			if (prop->explicit_default == FLAG_VALUE_UNSET) {
+				if (prop_dispatch[i].inherited == true) {
+					prop->explicit_default = FLAG_VALUE_INHERIT;
+				} else {
+					prop->explicit_default = FLAG_VALUE_INITIAL;
+				}
+			}
 
 			/* If the property is still unset then set it
 			 * to its initial value. */
