@@ -32,6 +32,21 @@ css_error css__initial_left(css_select_state *state)
 	return set_left(state->computed, CSS_LEFT_AUTO, 0, CSS_UNIT_PX);
 }
 
+css_error css__copy_left(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_fixed length = 0;
+	css_unit unit = CSS_UNIT_PX;
+	uint8_t type = get_left(from, &length, &unit);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_left(to, type, length, unit);
+}
+
 css_error css__compose_left(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -40,10 +55,8 @@ css_error css__compose_left(const css_computed_style *parent,
 	css_unit unit = CSS_UNIT_PX;
 	uint8_t type = get_left(child, &length, &unit);
 
-	if (type == CSS_LEFT_INHERIT) {
-		type = get_left(parent, &length, &unit);
-	}
-
-	return set_left(result, type, length, unit);
+	return css__copy_left(
+			type == CSS_LEFT_INHERIT ? parent : child,
+			result);
 }
 

@@ -51,16 +51,25 @@ css_error css__initial_column_fill(css_select_state *state)
 	return set_column_fill(state->computed, CSS_COLUMN_FILL_BALANCE);
 }
 
+css_error css__copy_column_fill(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_column_fill(to, get_column_fill(from));
+}
+
 css_error css__compose_column_fill(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_column_fill(child);
 
-	if (type == CSS_COLUMN_FILL_INHERIT) {
-		type = get_column_fill(parent);
-	}
-
-	return set_column_fill(result, type);
+	return css__copy_column_fill(
+			type == CSS_COLUMN_FILL_INHERIT ? parent : child,
+			result);
 }
 

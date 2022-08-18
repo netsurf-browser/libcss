@@ -57,16 +57,25 @@ css_error css__initial_position(css_select_state *state)
 	return set_position(state->computed, CSS_POSITION_STATIC);
 }
 
+css_error css__copy_position(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_position(to, get_position(from));
+}
+
 css_error css__compose_position(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_position(child);
 
-	if (type == CSS_POSITION_INHERIT) {
-		type = get_position(parent);
-	}
-
-	return set_position(result, type);
+	return css__copy_position(
+			type == CSS_POSITION_INHERIT ? parent : child,
+			result);
 }
 

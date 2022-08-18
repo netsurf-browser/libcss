@@ -31,16 +31,25 @@ css_error css__initial_border_top_style(css_select_state *state)
 	return set_border_top_style(state->computed, CSS_BORDER_STYLE_NONE);
 }
 
+css_error css__copy_border_top_style(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_border_top_style(to, get_border_top_style(from));
+}
+
 css_error css__compose_border_top_style(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_border_top_style(child);
 
-	if (type == CSS_BORDER_STYLE_INHERIT) {
-		type = get_border_top_style(parent);
-	}
-
-	return set_border_top_style(result, type);
+	return css__copy_border_top_style(
+			type == CSS_BORDER_STYLE_INHERIT ? parent : child,
+			result);
 }
 

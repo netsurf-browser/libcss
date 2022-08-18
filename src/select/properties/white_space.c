@@ -60,16 +60,25 @@ css_error css__initial_white_space(css_select_state *state)
 	return set_white_space(state->computed, CSS_WHITE_SPACE_NORMAL);
 }
 
+css_error css__copy_white_space(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_white_space(to, get_white_space(from));
+}
+
 css_error css__compose_white_space(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_white_space(child);
 
-	if (type == CSS_WHITE_SPACE_INHERIT) {
-		type = get_white_space(parent);
-	}
-
-	return set_white_space(result, type);
+	return css__copy_white_space(
+			type == CSS_WHITE_SPACE_INHERIT ? parent : child,
+			result);
 }
 

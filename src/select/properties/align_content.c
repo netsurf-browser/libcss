@@ -66,16 +66,25 @@ css_error css__initial_align_content(css_select_state *state)
 	return set_align_content(state->computed, CSS_ALIGN_CONTENT_STRETCH);
 }
 
+css_error css__copy_align_content(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_align_content(to, get_align_content(from));
+}
+
 css_error css__compose_align_content(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_align_content(child);
 
-	if (type == CSS_ALIGN_CONTENT_INHERIT) {
-		type = get_align_content(parent);
-	}
-
-	return set_align_content(result, type);
+	return css__copy_align_content(
+			type == CSS_ALIGN_CONTENT_INHERIT ? parent : child,
+			result);
 }
 

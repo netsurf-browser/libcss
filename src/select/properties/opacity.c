@@ -46,6 +46,20 @@ css_error css__initial_opacity(css_select_state *state)
 	return set_opacity(state->computed, CSS_OPACITY_SET, INTTOFIX(1));
 }
 
+css_error css__copy_opacity(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_fixed opacity = 0;
+	uint8_t type = get_opacity(from, &opacity);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_opacity(to, type, opacity);
+}
+
 css_error css__compose_opacity(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -53,10 +67,8 @@ css_error css__compose_opacity(const css_computed_style *parent,
 	css_fixed opacity = 0;
 	uint8_t type = get_opacity(child, &opacity);
 
-	if (type == CSS_OPACITY_INHERIT) {
-		type = get_opacity(parent, &opacity);
-	}
-
-	return set_opacity(result, type, opacity);
+	return css__copy_opacity(
+			type == CSS_OPACITY_INHERIT ? parent : child,
+			result);
 }
 

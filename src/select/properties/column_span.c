@@ -51,16 +51,25 @@ css_error css__initial_column_span(css_select_state *state)
 	return set_column_span(state->computed, CSS_COLUMN_SPAN_NONE);
 }
 
+css_error css__copy_column_span(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_column_span(to, get_column_span(from));
+}
+
 css_error css__compose_column_span(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_column_span(child);
 
-	if (type == CSS_COLUMN_SPAN_INHERIT) {
-		type = get_column_span(parent);
-	}
-
-	return set_column_span(result, type);
+	return css__copy_column_span(
+			type == CSS_COLUMN_SPAN_INHERIT ? parent : child,
+			result);
 }
 

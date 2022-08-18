@@ -32,6 +32,21 @@ css_error css__initial_bottom(css_select_state *state)
 	return set_bottom(state->computed, CSS_BOTTOM_AUTO, 0, CSS_UNIT_PX);
 }
 
+css_error css__copy_bottom(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_fixed length = 0;
+	css_unit unit = CSS_UNIT_PX;
+	uint8_t type = get_bottom(from, &length, &unit);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_bottom(to, type, length, unit);
+}
+
 css_error css__compose_bottom(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -40,10 +55,8 @@ css_error css__compose_bottom(const css_computed_style *parent,
 	css_unit unit = CSS_UNIT_PX;
 	uint8_t type = get_bottom(child, &length, &unit);
 
-	if (type == CSS_BOTTOM_INHERIT) {
-		type = get_bottom(parent, &length, &unit);
-	}
-
-	return set_bottom(result, type, length, unit);
+	return css__copy_bottom(
+			type == CSS_BOTTOM_INHERIT ? parent : child,
+			result);
 }
 

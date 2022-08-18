@@ -58,6 +58,20 @@ css_error css__initial_outline_color(css_select_state *state)
 	return set_outline_color(state->computed, CSS_OUTLINE_COLOR_INVERT, 0);
 }
 
+css_error css__copy_outline_color(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_color color = 0;
+	uint8_t type = get_outline_color(from, &color);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_outline_color(to, type, color);
+}
+
 css_error css__compose_outline_color(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -65,9 +79,7 @@ css_error css__compose_outline_color(const css_computed_style *parent,
 	css_color color = 0;
 	uint8_t type = get_outline_color(child, &color);
 
-	if (type == CSS_OUTLINE_COLOR_INHERIT) {
-		type = get_outline_color(parent, &color);
-	}
-
-	return set_outline_color(result, type, color);
+	return css__copy_outline_color(
+			type == CSS_OUTLINE_COLOR_INHERIT ? parent : child,
+			result);
 }

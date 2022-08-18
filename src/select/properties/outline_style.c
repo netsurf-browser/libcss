@@ -31,16 +31,25 @@ css_error css__initial_outline_style(css_select_state *state)
 	return set_outline_style(state->computed, CSS_OUTLINE_STYLE_NONE);
 }
 
+css_error css__copy_outline_style(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_outline_style(to, get_outline_style(from));
+}
+
 css_error css__compose_outline_style(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_outline_style(child);
 
-	if (type == CSS_OUTLINE_STYLE_INHERIT) {
-		type = get_outline_style(parent);
-	}
-
-	return set_outline_style(result, type);
+	return css__copy_outline_style(
+			type == CSS_OUTLINE_STYLE_INHERIT ? parent : child,
+			result);
 }
 

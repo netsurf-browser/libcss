@@ -53,6 +53,20 @@ css_error css__initial_z_index(css_select_state *state)
 	return set_z_index(state->computed, CSS_Z_INDEX_AUTO, 0);
 }
 
+css_error css__copy_z_index(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	int32_t index = 0;
+	uint8_t type = get_z_index(from, &index);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_z_index(to, type, index);
+}
+
 css_error css__compose_z_index(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -60,10 +74,8 @@ css_error css__compose_z_index(const css_computed_style *parent,
 	int32_t index = 0;
 	uint8_t type = get_z_index(child, &index);
 
-	if (type == CSS_Z_INDEX_INHERIT) {
-		type = get_z_index(parent, &index);
-	}
-
-	return set_z_index(result, type, index);
+	return css__copy_z_index(
+			type == CSS_Z_INDEX_INHERIT ? parent : child,
+			result);
 }
 

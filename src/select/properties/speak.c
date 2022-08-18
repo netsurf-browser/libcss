@@ -53,6 +53,16 @@ css_error css__initial_speak(css_select_state *state)
 	return CSS_OK;
 }
 
+css_error css__copy_speak(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	UNUSED(from);
+	UNUSED(to);
+
+	return CSS_OK;
+}
+
 css_error css__compose_speak(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)

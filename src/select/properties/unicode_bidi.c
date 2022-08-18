@@ -54,16 +54,25 @@ css_error css__initial_unicode_bidi(css_select_state *state)
 	return set_unicode_bidi(state->computed, CSS_UNICODE_BIDI_NORMAL);
 }
 
+css_error css__copy_unicode_bidi(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_unicode_bidi(to, get_unicode_bidi(from));
+}
+
 css_error css__compose_unicode_bidi(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_unicode_bidi(child);
 
-	if (type == CSS_UNICODE_BIDI_INHERIT) {
-		type = get_unicode_bidi(parent);
-	}
-
-	return set_unicode_bidi(result, type);
+	return css__copy_unicode_bidi(
+			type == CSS_UNICODE_BIDI_INHERIT ? parent : child,
+			result);
 }
 

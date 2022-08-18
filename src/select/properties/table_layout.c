@@ -51,16 +51,25 @@ css_error css__initial_table_layout(css_select_state *state)
 	return set_table_layout(state->computed, CSS_TABLE_LAYOUT_AUTO);
 }
 
+css_error css__copy_table_layout(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_table_layout(to, get_table_layout(from));
+}
+
 css_error css__compose_table_layout(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_table_layout(child);
 
-	if (type == CSS_TABLE_LAYOUT_INHERIT) {
-		type = get_table_layout(parent);
-	}
-
-	return set_table_layout(result, type);
+	return css__copy_table_layout(
+			type == CSS_TABLE_LAYOUT_INHERIT ? parent : child,
+			result);
 }
 

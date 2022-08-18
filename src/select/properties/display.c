@@ -99,16 +99,25 @@ css_error css__initial_display(css_select_state *state)
 	return set_display(state->computed, CSS_DISPLAY_INLINE);
 }
 
+css_error css__copy_display(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_display(to, get_display(from));
+}
+
 css_error css__compose_display(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_display(child);
 
-	if (type == CSS_DISPLAY_INHERIT) {
-		type = get_display(parent);
-	}
-
-	return set_display(result, type);
+	return css__copy_display(
+			type == CSS_DISPLAY_INHERIT ? parent : child,
+			result);
 }
 

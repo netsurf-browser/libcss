@@ -33,17 +33,30 @@ css_error css__initial_column_width(css_select_state *state)
 			INTTOFIX(1), CSS_UNIT_EM);
 }
 
+css_error css__copy_column_width(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_fixed length = 0;
+	css_unit unit = CSS_UNIT_PX;
+	uint8_t type = get_column_width(from, &length, &unit);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_column_width(to, type, length, unit);
+}
+
 css_error css__compose_column_width(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
-	css_fixed length = INTTOFIX(1);
-	css_unit unit = CSS_UNIT_EM;
+	css_fixed length = 0;
+	css_unit unit = CSS_UNIT_PX;
 	uint8_t type = get_column_width(child, &length, &unit);
 
-	if (type == CSS_COLUMN_WIDTH_INHERIT) {
-		type = get_column_width(parent, &length, &unit);
-	}
-
-	return set_column_width(result, type, length, unit);
+	return css__copy_column_width(
+			type == CSS_COLUMN_WIDTH_INHERIT ? parent : child,
+			result);
 }
