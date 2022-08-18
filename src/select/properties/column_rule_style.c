@@ -33,16 +33,25 @@ css_error css__initial_column_rule_style(css_select_state *state)
 			CSS_COLUMN_RULE_STYLE_NONE);
 }
 
+css_error css__copy_column_rule_style(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_column_rule_style(to, get_column_rule_style(from));
+}
+
 css_error css__compose_column_rule_style(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_column_rule_style(child);
 
-	if (type == CSS_COLUMN_RULE_STYLE_INHERIT) {
-		type = get_column_rule_style(parent);
-	}
-
-	return set_column_rule_style(result, type);
+	return css__copy_column_rule_style(
+			type == CSS_COLUMN_RULE_STYLE_INHERIT ? parent : child,
+			result);
 }
 

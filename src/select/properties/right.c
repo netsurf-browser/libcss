@@ -32,6 +32,21 @@ css_error css__initial_right(css_select_state *state)
 	return set_right(state->computed, CSS_RIGHT_AUTO, 0, CSS_UNIT_PX);
 }
 
+css_error css__copy_right(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_fixed length = 0;
+	css_unit unit = CSS_UNIT_PX;
+	uint8_t type = get_right(from, &length, &unit);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_right(to, type, length, unit);
+}
+
 css_error css__compose_right(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -40,10 +55,8 @@ css_error css__compose_right(const css_computed_style *parent,
 	css_unit unit = CSS_UNIT_PX;
 	uint8_t type = get_right(child, &length, &unit);
 
-	if (type == CSS_RIGHT_INHERIT) {
-		type = get_right(parent, &length, &unit);
-	}
-
-	return set_right(result, type, length, unit);
+	return css__copy_right(
+			type == CSS_RIGHT_INHERIT ? parent : child,
+			result);
 }
 

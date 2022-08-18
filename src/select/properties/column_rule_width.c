@@ -34,6 +34,21 @@ css_error css__initial_column_rule_width(css_select_state *state)
 			CSS_COLUMN_RULE_WIDTH_MEDIUM, 0, CSS_UNIT_PX);
 }
 
+css_error css__copy_column_rule_width(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_fixed length = 0;
+	css_unit unit = CSS_UNIT_PX;
+	uint8_t type = get_column_rule_width(from, &length, &unit);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_column_rule_width(to, type, length, unit);
+}
+
 css_error css__compose_column_rule_width(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -42,10 +57,8 @@ css_error css__compose_column_rule_width(const css_computed_style *parent,
 	css_unit unit = CSS_UNIT_PX;
 	uint8_t type = get_column_rule_width(child, &length, &unit);
 
-	if (type == CSS_COLUMN_RULE_WIDTH_INHERIT) {
-		type = get_column_rule_width(parent, &length, &unit);
-	}
-
-	return set_column_rule_width(result, type, length, unit);
+	return css__copy_column_rule_width(
+			type == CSS_COLUMN_RULE_WIDTH_INHERIT ? parent : child,
+			result);
 }
 

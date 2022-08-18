@@ -33,6 +33,21 @@ css_error css__initial_border_left_width(css_select_state *state)
 			0, CSS_UNIT_PX);
 }
 
+css_error css__copy_border_left_width(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_fixed length = 0;
+	css_unit unit = CSS_UNIT_PX;
+	uint8_t type = get_border_left_width(from, &length, &unit);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_border_left_width(to, type, length, unit);
+}
+
 css_error css__compose_border_left_width(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -41,10 +56,8 @@ css_error css__compose_border_left_width(const css_computed_style *parent,
 	css_unit unit = CSS_UNIT_PX;
 	uint8_t type = get_border_left_width(child, &length, &unit);
 
-	if (type == CSS_BORDER_WIDTH_INHERIT) {
-		type = get_border_left_width(parent, &length, &unit);
-	}
-
-	return set_border_left_width(result, type, length, unit);
+	return css__copy_border_left_width(
+			type == CSS_BORDER_WIDTH_INHERIT ? parent : child,
+			result);
 }
 

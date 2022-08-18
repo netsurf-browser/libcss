@@ -31,6 +31,20 @@ css_error css__initial_widows(css_select_state *state)
 	return set_widows(state->computed, CSS_WIDOWS_SET, 2);
 }
 
+css_error css__copy_widows(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	int32_t count = 0;
+	uint8_t type = get_widows(from, &count);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_widows(to, type, count);
+}
+
 css_error css__compose_widows(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -38,10 +52,8 @@ css_error css__compose_widows(const css_computed_style *parent,
 	int32_t count = 0;
 	uint8_t type = get_widows(child, &count);
 
-	if (type == CSS_WIDOWS_INHERIT) {
-		type = get_widows(parent, &count);
-	}
-
-	return set_widows(result, type, count);
+	return css__copy_widows(
+			type == CSS_WIDOWS_INHERIT ? parent : child,
+			result);
 }
 

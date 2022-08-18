@@ -32,16 +32,25 @@ css_error css__initial_break_before(css_select_state *state)
 	return set_break_before(state->computed, CSS_BREAK_BEFORE_AUTO);
 }
 
+css_error css__copy_break_before(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_break_before(to, get_break_before(from));
+}
+
 css_error css__compose_break_before(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_break_before(child);
 
-	if (type == CSS_BREAK_BEFORE_INHERIT) {
-		type = get_break_before(parent);
-	}
-
-	return set_break_before(result, type);
+	return css__copy_break_before(
+			type == CSS_BREAK_BEFORE_INHERIT ? parent : child,
+			result);
 }
 

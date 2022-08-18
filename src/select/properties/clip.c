@@ -93,6 +93,22 @@ css_error css__initial_clip(css_select_state *state)
 	return set_clip(state->computed, CSS_CLIP_AUTO, &rect);
 }
 
+css_error css__copy_clip(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_computed_clip_rect rect = { 0, 0, 0, 0,
+			CSS_UNIT_PX, CSS_UNIT_PX, CSS_UNIT_PX, CSS_UNIT_PX,
+			false, false, false, false };
+	uint8_t type = get_clip(from, &rect);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_clip(to, type, &rect);
+}
+
 css_error css__compose_clip(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -102,9 +118,7 @@ css_error css__compose_clip(const css_computed_style *parent,
 			false, false, false, false };
 	uint8_t type = get_clip(child, &rect);
 
-	if (type == CSS_CLIP_INHERIT) {
-		type = get_clip(parent, &rect);
-	}
-
-	return set_clip(result, type, &rect);
+	return css__copy_clip(
+			type == CSS_CLIP_INHERIT ? parent : child,
+			result);
 }

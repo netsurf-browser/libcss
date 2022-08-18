@@ -18,6 +18,7 @@
   css_error css__cascade_##pname (uint32_t opv, css_style *style, css_select_state *state); \
   css_error css__set_##pname##_from_hint(const css_hint *hint, css_computed_style *style); \
   css_error css__initial_##pname (css_select_state *state);                  \
+  css_error css__copy_##pname (const css_computed_style *from, css_computed_style *to); \
   css_error css__compose_##pname (const css_computed_style *parent, const css_computed_style *child, css_computed_style *result); \
   uint32_t destroy_##pname (void *bytecode)
 

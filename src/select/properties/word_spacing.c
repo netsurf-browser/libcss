@@ -33,6 +33,21 @@ css_error css__initial_word_spacing(css_select_state *state)
 			0, CSS_UNIT_PX);
 }
 
+css_error css__copy_word_spacing(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_fixed length = 0;
+	css_unit unit = CSS_UNIT_PX;
+	uint8_t type = get_word_spacing(from, &length, &unit);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_word_spacing(to, type, length, unit);
+}
+
 css_error css__compose_word_spacing(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -41,9 +56,7 @@ css_error css__compose_word_spacing(const css_computed_style *parent,
 	css_unit unit = CSS_UNIT_PX;
 	uint8_t type = get_word_spacing(child, &length, &unit);
 
-	if (type == CSS_WORD_SPACING_INHERIT) {
-		type = get_word_spacing(parent, &length, &unit);
-	}
-
-	return set_word_spacing(result, type, length, unit);
+	return css__copy_word_spacing(
+			type == CSS_WORD_SPACING_INHERIT ? parent : child,
+			result);
 }

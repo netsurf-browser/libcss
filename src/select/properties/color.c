@@ -66,6 +66,20 @@ css_error css__initial_color(css_select_state *state)
 	return css__set_color_from_hint(&hint, state->computed);
 }
 
+css_error css__copy_color(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_color color;
+	uint8_t type = get_color(from, &color);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_color(to, type, color);
+}
+
 css_error css__compose_color(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -73,10 +87,8 @@ css_error css__compose_color(const css_computed_style *parent,
 	css_color color;
 	uint8_t type = get_color(child, &color);
 
-	if (type == CSS_COLOR_INHERIT) {
-		type = get_color(parent, &color);
-	}
-
-	return set_color(result, type, color);
+	return css__copy_color(
+			type == CSS_COLOR_INHERIT ? parent : child,
+			result);
 }
 

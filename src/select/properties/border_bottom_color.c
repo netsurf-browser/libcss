@@ -33,6 +33,20 @@ css_error css__initial_border_bottom_color(css_select_state *state)
 			CSS_BORDER_COLOR_CURRENT_COLOR, 0);
 }
 
+css_error css__copy_border_bottom_color(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_color color;
+	uint8_t type = get_border_bottom_color(from, &color);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_border_bottom_color(to, type, color);
+}
+
 css_error css__compose_border_bottom_color(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -40,10 +54,8 @@ css_error css__compose_border_bottom_color(const css_computed_style *parent,
 	css_color color;
 	uint8_t type = get_border_bottom_color(child, &color);
 
-	if (type == CSS_BORDER_COLOR_INHERIT) {
-		type = get_border_bottom_color(parent, &color);
-	}
-
-	return set_border_bottom_color(result, type, color);
+	return css__copy_border_bottom_color(
+			type == CSS_BORDER_COLOR_INHERIT ? parent : child,
+			result);
 }
 

@@ -54,16 +54,25 @@ css_error css__initial_visibility(css_select_state *state)
 	return set_visibility(state->computed, CSS_VISIBILITY_VISIBLE);
 }
 
+css_error css__copy_visibility(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_visibility(to, get_visibility(from));
+}
+
 css_error css__compose_visibility(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_visibility(child);
 
-	if (type == CSS_VISIBILITY_INHERIT) {
-		type = get_visibility(parent);
-	}
-
-	return set_visibility(result, type);
+	return css__copy_visibility(
+			type == CSS_VISIBILITY_INHERIT ? parent : child,
+			result);
 }
 

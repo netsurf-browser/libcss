@@ -55,16 +55,25 @@ css_error css__initial_writing_mode(css_select_state *state)
 			CSS_WRITING_MODE_HORIZONTAL_TB);
 }
 
+css_error css__copy_writing_mode(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_writing_mode(to, get_writing_mode(from));
+}
+
 css_error css__compose_writing_mode(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
-	uint8_t writing_mode = get_writing_mode(child);
+	uint8_t type = get_writing_mode(child);
 
-	if (writing_mode == CSS_WRITING_MODE_INHERIT) {
-		writing_mode = get_writing_mode(parent);
-	}
-
-	return set_writing_mode(result, writing_mode);
+	return css__copy_writing_mode(
+			type == CSS_WRITING_MODE_INHERIT ? parent : child,
+			result);
 }
 

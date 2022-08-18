@@ -51,17 +51,25 @@ css_error css__initial_box_sizing(css_select_state *state)
 	return set_box_sizing(state->computed, CSS_BOX_SIZING_CONTENT_BOX);
 }
 
-css_error css__compose_box_sizing(
-		const css_computed_style *parent,
+css_error css__copy_box_sizing(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_box_sizing(to, get_box_sizing(from));
+}
+
+css_error css__compose_box_sizing(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_box_sizing(child);
 
-	if (type == CSS_BOX_SIZING_INHERIT) {
-		type = get_box_sizing(parent);
-	}
-
-	return set_box_sizing(result, type);
+	return css__copy_box_sizing(
+			type == CSS_BOX_SIZING_INHERIT ? parent : child,
+			result);
 }
 

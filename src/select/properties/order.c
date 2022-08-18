@@ -46,6 +46,20 @@ css_error css__initial_order(css_select_state *state)
 	return set_order(state->computed, CSS_ORDER_SET, 0);
 }
 
+css_error css__copy_order(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	int32_t order = 0;
+	uint8_t type = get_order(from, &order);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_order(to, type, order);
+}
+
 css_error css__compose_order(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -53,10 +67,8 @@ css_error css__compose_order(const css_computed_style *parent,
 	int32_t order = 0;
 	uint8_t type = get_order(child, &order);
 
-	if (type == CSS_ORDER_INHERIT) {
-		type = get_order(parent, &order);
-	}
-
-	return set_order(result, type, order);
+	return css__copy_order(
+			type == CSS_ORDER_INHERIT ? parent : child,
+			result);
 }
 

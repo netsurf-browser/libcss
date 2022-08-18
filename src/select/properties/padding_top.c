@@ -32,6 +32,21 @@ css_error css__initial_padding_top(css_select_state *state)
 	return set_padding_top(state->computed, CSS_PADDING_SET, 0, CSS_UNIT_PX);
 }
 
+css_error css__copy_padding_top(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_fixed length = 0;
+	css_unit unit = CSS_UNIT_PX;
+	uint8_t type = get_padding_top(from, &length, &unit);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_padding_top(to, type, length, unit);
+}
+
 css_error css__compose_padding_top(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -40,10 +55,8 @@ css_error css__compose_padding_top(const css_computed_style *parent,
 	css_unit unit = CSS_UNIT_PX;
 	uint8_t type = get_padding_top(child, &length, &unit);
 
-	if (type == CSS_PADDING_INHERIT) {
-		type = get_padding_top(parent, &length, &unit);
-	}
-
-	return set_padding_top(result, type, length, unit);
+	return css__copy_padding_top(
+			type == CSS_PADDING_INHERIT ? parent : child,
+			result);
 }
 

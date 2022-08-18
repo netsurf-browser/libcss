@@ -52,6 +52,20 @@ css_error css__initial_column_count(css_select_state *state)
 	return set_column_count(state->computed, CSS_COLUMN_COUNT_AUTO, 0);
 }
 
+css_error css__copy_column_count(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	int32_t count = 0;
+	uint8_t type = get_column_count(from, &count);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_column_count(to, type, count);
+}
+
 css_error css__compose_column_count(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -59,9 +73,7 @@ css_error css__compose_column_count(const css_computed_style *parent,
 	int32_t count = 0;
 	uint8_t type = get_column_count(child, &count);
 
-	if (type == CSS_COLUMN_COUNT_INHERIT) {
-		type = get_column_count(parent, &count);
-	}
-
-	return set_column_count(result, type, count);
+	return css__copy_column_count(
+			type == CSS_COLUMN_COUNT_INHERIT ? parent : child,
+			result);
 }

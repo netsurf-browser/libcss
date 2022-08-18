@@ -39,6 +39,20 @@ css_error css__initial_list_style_image(css_select_state *state)
 			CSS_LIST_STYLE_IMAGE_NONE, NULL);
 }
 
+css_error css__copy_list_style_image(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	lwc_string *url;
+	uint8_t type = get_list_style_image(from, &url);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_list_style_image(to, type, url);
+}
+
 css_error css__compose_list_style_image(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -46,10 +60,8 @@ css_error css__compose_list_style_image(const css_computed_style *parent,
 	lwc_string *url;
 	uint8_t type = get_list_style_image(child, &url);
 
-	if (type == CSS_LIST_STYLE_IMAGE_INHERIT) {
-		type = get_list_style_image(parent, &url);
-	}
-
-	return set_list_style_image(result, type, url);
+	return css__copy_list_style_image(
+			type == CSS_LIST_STYLE_IMAGE_INHERIT ? parent : child,
+			result);
 }
 

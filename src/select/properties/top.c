@@ -32,6 +32,21 @@ css_error css__initial_top(css_select_state *state)
 	return set_top(state->computed, CSS_TOP_AUTO, 0, CSS_UNIT_PX);
 }
 
+css_error css__copy_top(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_fixed length = 0;
+	css_unit unit = CSS_UNIT_PX;
+	uint8_t type = get_top(from, &length, &unit);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_top(to, type, length, unit);
+}
+
 css_error css__compose_top(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -40,10 +55,8 @@ css_error css__compose_top(const css_computed_style *parent,
 	css_unit unit = CSS_UNIT_PX;
 	uint8_t type = get_top(child, &length, &unit);
 
-	if (type == CSS_TOP_INHERIT) {
-		type = get_top(parent, &length, &unit);
-	}
-
-	return set_top(result, type, length, unit);
+	return css__copy_top(
+			type == CSS_TOP_INHERIT ? parent : child,
+			result);
 }
 

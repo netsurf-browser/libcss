@@ -64,16 +64,25 @@ css_error css__initial_justify_content(css_select_state *state)
 			CSS_JUSTIFY_CONTENT_FLEX_START);
 }
 
+css_error css__copy_justify_content(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_justify_content(to, get_justify_content(from));
+}
+
 css_error css__compose_justify_content(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_justify_content(child);
 
-	if (type == CSS_JUSTIFY_CONTENT_INHERIT) {
-		type = get_justify_content(parent);
-	}
-
-	return set_justify_content(result, type);
+	return css__copy_justify_content(
+			type == CSS_JUSTIFY_CONTENT_INHERIT ? parent : child,
+			result);
 }
 

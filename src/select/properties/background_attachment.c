@@ -52,16 +52,25 @@ css_error css__initial_background_attachment(css_select_state *state)
 			CSS_BACKGROUND_ATTACHMENT_SCROLL);
 }
 
+css_error css__copy_background_attachment(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_background_attachment(to, get_background_attachment(from));
+}
+
 css_error css__compose_background_attachment(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_background_attachment(child);
 
-	if (type == CSS_BACKGROUND_ATTACHMENT_INHERIT) {
-		type = get_background_attachment(parent);
-	}
-
-	return set_background_attachment(result, type);
+	return css__copy_background_attachment(
+			type == CSS_BACKGROUND_ATTACHMENT_INHERIT ? parent : child,
+			result);
 }
 

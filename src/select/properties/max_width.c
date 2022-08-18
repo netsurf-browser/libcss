@@ -32,6 +32,21 @@ css_error css__initial_max_width(css_select_state *state)
 	return set_max_width(state->computed, CSS_MAX_WIDTH_NONE, 0, CSS_UNIT_PX);
 }
 
+css_error css__copy_max_width(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_fixed length = 0;
+	css_unit unit = CSS_UNIT_PX;
+	uint8_t type = get_max_width(from, &length, &unit);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_max_width(to, type, length, unit);
+}
+
 css_error css__compose_max_width(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -40,10 +55,8 @@ css_error css__compose_max_width(const css_computed_style *parent,
 	css_unit unit = CSS_UNIT_PX;
 	uint8_t type = get_max_width(child, &length, &unit);
 
-	if (type == CSS_MAX_WIDTH_INHERIT) {
-		type = get_max_width(parent, &length, &unit);
-	}
-
-	return set_max_width(result, type, length, unit);
+	return css__copy_max_width(
+			type == CSS_MAX_WIDTH_INHERIT ? parent : child,
+			result);
 }
 

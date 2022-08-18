@@ -46,6 +46,20 @@ css_error css__initial_flex_shrink(css_select_state *state)
 	return set_flex_shrink(state->computed, CSS_FLEX_SHRINK_SET, INTTOFIX(1));
 }
 
+css_error css__copy_flex_shrink(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_fixed flex_shrink = 0;
+	uint8_t type = get_flex_shrink(from, &flex_shrink);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_flex_shrink(to, type, flex_shrink);
+}
+
 css_error css__compose_flex_shrink(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -53,10 +67,8 @@ css_error css__compose_flex_shrink(const css_computed_style *parent,
 	css_fixed flex_shrink = 0;
 	uint8_t type = get_flex_shrink(child, &flex_shrink);
 
-	if (type == CSS_FLEX_SHRINK_INHERIT) {
-		type = get_flex_shrink(parent, &flex_shrink);
-	}
-
-	return set_flex_shrink(result, type, flex_shrink);
+	return css__copy_flex_shrink(
+			type == CSS_FLEX_SHRINK_INHERIT ? parent : child,
+			result);
 }
 

@@ -201,15 +201,24 @@ css_error css__initial_list_style_type(css_select_state *state)
 	return set_list_style_type(state->computed, CSS_LIST_STYLE_TYPE_DISC);
 }
 
+css_error css__copy_list_style_type(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_list_style_type(to, get_list_style_type(from));
+}
+
 css_error css__compose_list_style_type(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_list_style_type(child);
 
-	if (type == CSS_LIST_STYLE_TYPE_INHERIT) {
-		type = get_list_style_type(parent);
-	}
-
-	return set_list_style_type(result, type);
+	return css__copy_list_style_type(
+			type == CSS_LIST_STYLE_TYPE_INHERIT ? parent : child,
+			result);
 }

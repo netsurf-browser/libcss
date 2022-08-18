@@ -62,6 +62,21 @@ css_error css__initial_flex_basis(css_select_state *state)
 			CSS_UNIT_PX);
 }
 
+css_error css__copy_flex_basis(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_fixed length = 0;
+	css_unit unit = CSS_UNIT_PX;
+	uint8_t type = get_flex_basis(from, &length, &unit);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_flex_basis(to, type, length, unit);
+}
+
 css_error css__compose_flex_basis(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
@@ -70,10 +85,8 @@ css_error css__compose_flex_basis(const css_computed_style *parent,
 	css_unit unit = CSS_UNIT_PX;
 	uint8_t type = get_flex_basis(child, &length, &unit);
 
-	if (type == CSS_FLEX_BASIS_INHERIT) {
-		type = get_flex_basis(parent, &length, &unit);
-	}
-
-	return set_flex_basis(result, type, length, unit);
+	return css__copy_flex_basis(
+			type == CSS_FLEX_BASIS_INHERIT ? parent : child,
+			result);
 }
 

@@ -59,16 +59,25 @@ css_error css__initial_text_decoration(css_select_state *state)
 	return set_text_decoration(state->computed, CSS_TEXT_DECORATION_NONE);
 }
 
+css_error css__copy_text_decoration(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_text_decoration(to, get_text_decoration(from));
+}
+
 css_error css__compose_text_decoration(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_text_decoration(child);
 
-	if (type == CSS_TEXT_DECORATION_INHERIT) {
-		type = get_text_decoration(parent);
-	}
-
-	return set_text_decoration(result, type);
+	return css__copy_text_decoration(
+			type == CSS_TEXT_DECORATION_INHERIT ? parent : child,
+			result);
 }
 

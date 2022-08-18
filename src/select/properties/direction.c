@@ -51,16 +51,25 @@ css_error css__initial_direction(css_select_state *state)
 	return set_direction(state->computed, CSS_DIRECTION_LTR);
 }
 
+css_error css__copy_direction(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_direction(to, get_direction(from));
+}
+
 css_error css__compose_direction(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_direction(child);
 
-	if (type == CSS_DIRECTION_INHERIT) {
-		type = get_direction(parent);
-	}
-
-	return set_direction(result, type);
+	return css__copy_direction(
+			type == CSS_DIRECTION_INHERIT ? parent : child,
+			result);
 }
 

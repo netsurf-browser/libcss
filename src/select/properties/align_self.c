@@ -63,16 +63,25 @@ css_error css__initial_align_self(css_select_state *state)
 	return set_align_self(state->computed, CSS_ALIGN_SELF_AUTO);
 }
 
+css_error css__copy_align_self(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_align_self(to, get_align_self(from));
+}
+
 css_error css__compose_align_self(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_align_self(child);
 
-	if (type == CSS_ALIGN_SELF_INHERIT) {
-		type = get_align_self(parent);
-	}
-
-	return set_align_self(result, type);
+	return css__copy_align_self(
+			type == CSS_ALIGN_SELF_INHERIT ? parent : child,
+			result);
 }
 
