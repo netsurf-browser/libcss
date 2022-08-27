@@ -1019,6 +1019,15 @@ static void css_select__finalise_selection_state(
 	if (state->element.name != NULL){
 		lwc_string_unref(state->element.name);
 	}
+
+	for (size_t i = 0; i < CSS_ORIGIN_AUTHOR; i++) {
+		for (size_t j = 0; j < CSS_PSEUDO_ELEMENT_COUNT; j++) {
+			if (state->revert[i].style[j] == NULL) {
+				continue;
+			}
+			css_computed_style_destroy(state->revert[i].style[j]);
+		}
+	}
 }
 
 
@@ -1164,6 +1173,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		css_select_handler *handler, void *pw,
 		css_select_results **result)
 {
+	css_origin origin = CSS_ORIGIN_UA;
 	uint32_t i, j, nhints;
 	css_error error;
 	css_select_state state;
@@ -1242,8 +1252,28 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	/* Iterate through the top-level stylesheets, selecting styles
 	 * from those which apply to our current media requirements and
 	 * are not disabled */
+	if (ctx->n_sheets > 0) {
+		origin = ctx->sheets[0].origin;
+	}
 	for (i = 0; i < ctx->n_sheets; i++) {
 		const css_select_sheet s = ctx->sheets[i];
+
+		if (s.origin != origin) {
+			for (j = 0; j < CSS_PSEUDO_ELEMENT_COUNT; j++) {
+				if (state.results->styles[j] == NULL) {
+					continue;
+				}
+				error = css__computed_style_clone(
+						state.results->styles[j],
+						&state.revert[origin].style[j]);
+				if (error != CSS_OK) {
+					goto cleanup;
+				}
+				memcpy(state.revert[origin].props,
+				       state.props, sizeof(state.props));
+			}
+			origin = s.origin;
+		}
 
 		if (mq__list_match(s.media, unit_ctx, media, &ctx->str) &&
 				s.sheet->disabled == false) {

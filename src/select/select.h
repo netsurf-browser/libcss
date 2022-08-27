@@ -58,6 +58,11 @@ struct css_node_data {
 	css_node_flags flags;
 };
 
+struct revert_data {
+	prop_state props[CSS_N_PROPERTIES][CSS_PSEUDO_ELEMENT_COUNT];
+	css_computed_style *style[CSS_PSEUDO_ELEMENT_COUNT];
+};
+
 /**
  * Selection state
  */
@@ -66,6 +71,9 @@ typedef struct css_select_state {
 	const css_media *media;		/* Currently active media spec */
 	const css_unit_ctx *unit_ctx;	/* Unit conversion context. */
 	css_select_results *results;	/* Result set to populate */
+
+	/** UA and user styles for handling revert property value. */
+	struct revert_data revert[CSS_ORIGIN_AUTHOR];
 
 	css_pseudo_element current_pseudo;	/* Current pseudo element */
 	css_computed_style *computed;	/* Computed style to populate */
