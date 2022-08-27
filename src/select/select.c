@@ -1144,8 +1144,7 @@ failed:
 	return error;
 }
 
-
-static css_error css__select_revert_property(
+static css_error css__select_revert_property_to_origin(
 		css_select_state *select_state,
 		prop_state *prop_state,
 		css_origin origin,
@@ -1165,6 +1164,44 @@ static css_error css__select_revert_property(
 	return CSS_OK;
 }
 
+static css_error css__select_revert_property(
+		css_select_state *select_state,
+		prop_state *prop_state,
+		enum css_pseudo_element pseudo,
+		enum css_properties_e property)
+{
+	css_error error;
+
+	switch (prop_state->origin) {
+	case CSS_ORIGIN_AUTHOR:
+		error = css__select_revert_property_to_origin(
+				select_state, prop_state, CSS_ORIGIN_USER,
+				pseudo, property);
+		if (error != CSS_OK) {
+			return error;
+		}
+		if (prop_state->explicit_default != FLAG_VALUE_REVERT) {
+			break;
+		}
+		/* Fall-through */
+	case CSS_ORIGIN_USER:
+		error = css__select_revert_property_to_origin(
+				select_state, prop_state, CSS_ORIGIN_UA,
+				pseudo, property);
+		if (error != CSS_OK) {
+			return error;
+		}
+		if (prop_state->explicit_default != FLAG_VALUE_REVERT) {
+			break;
+		}
+		/* Fall-through */
+	case CSS_ORIGIN_UA:
+		prop_state->explicit_default = FLAG_VALUE_UNSET;
+		break;
+	}
+
+	return CSS_OK;
+}
 
 /**
  * Select a style for the given node
@@ -1340,30 +1377,10 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 		prop_state *prop = &state.props[i][CSS_PSEUDO_ELEMENT_NONE];
 
 		if (prop->explicit_default == FLAG_VALUE_REVERT) {
-			switch (prop->origin) {
-			case CSS_ORIGIN_AUTHOR:
-				error = css__select_revert_property(&state,
-					prop, CSS_ORIGIN_USER, 0, i);
-				if (error != CSS_OK) {
-					goto cleanup;
-				}
-				if (prop->explicit_default != FLAG_VALUE_REVERT) {
-					break;
-				}
-				/* Fall-through */
-			case CSS_ORIGIN_USER:
-				error = css__select_revert_property(&state,
-						prop, CSS_ORIGIN_UA, 0, i);
-				if (error != CSS_OK) {
-					goto cleanup;
-				}
-				if (prop->explicit_default != FLAG_VALUE_REVERT) {
-					break;
-				}
-				/* Fall-through */
-			case CSS_ORIGIN_UA:
-				prop->explicit_default = FLAG_VALUE_UNSET;
-				break;
+			error = css__select_revert_property(&state, prop,
+					CSS_PSEUDO_ELEMENT_NONE, i);
+			if (error != CSS_OK) {
+				goto cleanup;
 			}
 		}
 
@@ -1402,32 +1419,10 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 			prop_state *prop = &state.props[i][j];
 
 			if (prop->explicit_default == FLAG_VALUE_REVERT) {
-				switch (prop->origin) {
-				case CSS_ORIGIN_AUTHOR:
-					error = css__select_revert_property(
-							&state, prop,
-							CSS_ORIGIN_USER, j, i);
-					if (error != CSS_OK) {
-						goto cleanup;
-					}
-					if (prop->explicit_default != FLAG_VALUE_REVERT) {
-						break;
-					}
-					/* Fall-through */
-				case CSS_ORIGIN_USER:
-					error = css__select_revert_property(
-							&state, prop,
-							CSS_ORIGIN_UA, j, i);
-					if (error != CSS_OK) {
-						goto cleanup;
-					}
-					if (prop->explicit_default != FLAG_VALUE_REVERT) {
-						break;
-					}
-					/* Fall-through */
-				case CSS_ORIGIN_UA:
-					prop->explicit_default = FLAG_VALUE_UNSET;
-					break;
+				error = css__select_revert_property(&state,
+						prop, j, i);
+				if (error != CSS_OK) {
+					goto cleanup;
 				}
 			}
 
