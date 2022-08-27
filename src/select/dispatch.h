@@ -23,6 +23,8 @@ extern struct prop_table {
 	css_error (*set_from_hint)(const css_hint *hint,
 			css_computed_style *style);
 	css_error (*initial)(css_select_state *state);
+	css_error (*copy)(const css_computed_style *from,
+			css_computed_style *to);
 	css_error (*compose)(const css_computed_style *parent,
 			const css_computed_style *child,
 			css_computed_style *result);
