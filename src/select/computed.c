@@ -233,6 +233,37 @@ css_error css__computed_style_initialise(css_computed_style *style,
 }
 
 /**
+ * Clone a computed style
+ *
+ * \param orig       Style to copy
+ * \param clone_out  Returns cloned style on success
+ * \return CSS_OK on success.
+ */
+css_error css__computed_style_clone(
+		const css_computed_style *orig,
+		css_computed_style **clone_out)
+{
+	css_error error;
+	css_computed_style *clone;
+
+	error = css__computed_style_create(&clone);
+	if (error != CSS_OK) {
+		return error;
+	}
+
+	for (size_t i = 0; i < CSS_N_PROPERTIES; i++) {
+		error = prop_dispatch[i].copy(orig, clone);
+		if (error != CSS_OK) {
+			css_computed_style_destroy(clone);
+			return error;
+		}
+	}
+
+	*clone_out = clone;
+	return CSS_OK;
+}
+
+/**
  * Compose two computed styles
  *
  * \param parent             Parent style
