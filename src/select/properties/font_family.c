@@ -182,42 +182,41 @@ css_error css__initial_font_family(css_select_state *state)
 	return css__set_font_family_from_hint(&hint, state->computed);
 }
 
+css_error css__copy_font_family(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_error error;
+	lwc_string **copy = NULL;
+	lwc_string **font_family = NULL;
+	uint8_t type = get_font_family(from, &font_family);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	error = css__copy_lwc_string_array(false, font_family, &copy);
+	if (error != CSS_OK) {
+		return CSS_NOMEM;
+	}
+
+	error = set_font_family(to, type, copy);
+	if (error != CSS_OK) {
+		free(copy);
+	}
+
+	return error;
+}
+
 css_error css__compose_font_family(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
-	css_error error;
-	lwc_string **names = NULL;
-	uint8_t type = get_font_family(child, &names);
+	lwc_string **font_family = NULL;
+	uint8_t type = get_font_family(child, &font_family);
 
-	if (type == CSS_FONT_FAMILY_INHERIT || result != child) {
-		size_t n_names = 0;
-		lwc_string **copy = NULL;
-
-		if (type == CSS_FONT_FAMILY_INHERIT)
-			type = get_font_family(parent, &names);
-
-		if (names != NULL) {
-			lwc_string **i;
-
-			for (i = names; (*i) != NULL; i++)
-				n_names++;
-
-			copy = malloc((n_names + 1) * sizeof(lwc_string *));
-			if (copy == NULL)
-				return CSS_NOMEM;
-
-			memcpy(copy, names, (n_names + 1) *
-					sizeof(lwc_string *));
-		}
-
-		error = set_font_family(result, type, copy);
-		if (error != CSS_OK && copy != NULL)
-			free(copy);
-
-		return error;
-	}
-
-	return CSS_OK;
+	return css__copy_font_family(
+			type == CSS_FONT_FAMILY_INHERIT ? parent : child,
+			result);
 }
 

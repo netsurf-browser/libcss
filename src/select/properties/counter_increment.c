@@ -48,38 +48,40 @@ css_error css__initial_counter_increment(css_select_state *state)
 			CSS_COUNTER_INCREMENT_NONE, NULL);
 }
 
+css_error css__copy_counter_increment(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	css_error error;
+	css_computed_counter *copy = NULL;
+	const css_computed_counter *counter_increment = NULL;
+	uint8_t type = get_counter_increment(from, &counter_increment);
+
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	error = css__copy_computed_counter_array(false, counter_increment, &copy);
+	if (error != CSS_OK) {
+		return CSS_NOMEM;
+	}
+
+	error = set_counter_increment(to, type, copy);
+	if (error != CSS_OK) {
+		free(copy);
+	}
+
+	return error;
+}
+
 css_error css__compose_counter_increment(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
-	css_error error;
-	css_computed_counter *copy = NULL;
-	const css_computed_counter *items = NULL;
-	uint8_t type = get_counter_increment(child, &items);
+	const css_computed_counter *counter_increment = NULL;
+	uint8_t type = get_counter_increment(child, &counter_increment);
 
-	if (type == CSS_COUNTER_INCREMENT_INHERIT) {
-		type = get_counter_increment(parent, &items);
-	}
-
-	if (type == CSS_COUNTER_INCREMENT_NAMED && items != NULL) {
-		size_t n_items = 0;
-		const css_computed_counter *i;
-
-		for (i = items; i->name != NULL; i++)
-			n_items++;
-
-		copy = malloc((n_items + 1) *
-				sizeof(css_computed_counter));
-		if (copy == NULL)
-			return CSS_NOMEM;
-
-		memcpy(copy, items, (n_items + 1) *
-				sizeof(css_computed_counter));
-	}
-
-	error = set_counter_increment(result, type, copy);
-	if (error != CSS_OK && copy != NULL)
-		free(copy);
-
-	return error;
+	return css__copy_counter_increment(
+			type == CSS_COUNTER_INCREMENT_INHERIT ? parent : child,
+			result);
 }
