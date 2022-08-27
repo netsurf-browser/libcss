@@ -66,15 +66,24 @@ css_error css__initial_text_align(css_select_state *state)
 	return set_text_align(state->computed, CSS_TEXT_ALIGN_DEFAULT);
 }
 
+css_error css__copy_text_align(
+		const css_computed_style *from,
+		css_computed_style *to)
+{
+	if (from == to) {
+		return CSS_OK;
+	}
+
+	return set_text_align(to, get_text_align(from));
+}
+
 css_error css__compose_text_align(const css_computed_style *parent,
 		const css_computed_style *child,
 		css_computed_style *result)
 {
 	uint8_t type = get_text_align(child);
 
-	if (type == CSS_TEXT_ALIGN_INHERIT) {
-		type = get_text_align(parent);
-	} else if (type == CSS_TEXT_ALIGN_INHERIT_IF_NON_MAGIC) {
+	if (type == CSS_TEXT_ALIGN_INHERIT_IF_NON_MAGIC) {
 		/* This is purely for the benefit of HTML tables */
 		type = get_text_align(parent);
 
@@ -83,10 +92,15 @@ css_error css__compose_text_align(const css_computed_style *parent,
 		 * inherit as normal. */
 		if (type == CSS_TEXT_ALIGN_LIBCSS_LEFT ||
 				type == CSS_TEXT_ALIGN_LIBCSS_CENTER ||
-				type == CSS_TEXT_ALIGN_LIBCSS_RIGHT)
+				type == CSS_TEXT_ALIGN_LIBCSS_RIGHT) {
 			type = CSS_TEXT_ALIGN_DEFAULT;
+		}
+
+		return set_text_align(result, type);
 	}
 
-	return set_text_align(result, type);
+	return css__copy_text_align(
+			type == CSS_TEXT_ALIGN_INHERIT ? parent : child,
+			result);
 }
 
