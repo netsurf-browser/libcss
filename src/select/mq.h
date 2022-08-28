@@ -145,12 +145,13 @@ static inline bool mq_match_feature(
 	} else if (lwc_string_isequal(feat->name,
 			str->prefers_color_scheme, &match) == lwc_error_ok &&
 			match == true) {
-		if (!mq_match_feature_eq_ident_op1(feat->op, &feat->value,
-				media->prefers_color_scheme)) {
-			return false;
+		if (mq_match_feature_eq_ident_op1(feat->op, &feat->value,
+				media->prefers_color_scheme) ||
+		    feat->op == CSS_MQ_FEATURE_OP_BOOL) {
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	/* TODO: Look at other feature names. */
