@@ -10,6 +10,7 @@
 #define css_select_mq_h_
 
 #include "select/helpers.h"
+#include "select/strings.h"
 #include "select/unit.h"
 
 static inline bool mq_match_feature_range_length_op1(
@@ -114,10 +115,15 @@ static inline bool mq_match_feature_eq_ident_op1(
 static inline bool mq_match_feature(
 		const css_mq_feature *feat,
 		const css_unit_ctx *unit_ctx,
-		const css_media *media)
+		const css_media *media,
+		const css_select_strings *str)
 {
+	bool match;
+
 	/* TODO: Use interned string for comparison. */
-	if (strcmp(lwc_string_data(feat->name), "width") == 0) {
+	if (lwc_string_isequal(feat->name,
+			str->width, &match) == lwc_error_ok &&
+			match == true) {
 		if (!mq_match_feature_range_length_op1(feat->op, &feat->value,
 					media->width, unit_ctx)) {
 			return false;
@@ -125,7 +131,9 @@ static inline bool mq_match_feature(
 		return mq_match_feature_range_length_op2(feat->op2,
 				&feat->value2, media->width, unit_ctx);
 
-	} else if (strcmp(lwc_string_data(feat->name), "height") == 0) {
+	} else if (lwc_string_isequal(feat->name,
+			str->height, &match) == lwc_error_ok &&
+			match == true) {
 		if (!mq_match_feature_range_length_op1(feat->op, &feat->value,
 				media->height, unit_ctx)) {
 			return false;
@@ -134,7 +142,9 @@ static inline bool mq_match_feature(
 		return mq_match_feature_range_length_op2(feat->op2,
 				&feat->value2, media->height, unit_ctx);
 
-	} else if (strcmp(lwc_string_data(feat->name), "prefers-color-scheme") == 0) {
+	} else if (lwc_string_isequal(feat->name,
+			str->prefers_color_scheme, &match) == lwc_error_ok &&
+			match == true) {
 		if (!mq_match_feature_eq_ident_op1(feat->op, &feat->value,
 				media->prefers_color_scheme)) {
 			return false;
@@ -159,7 +169,8 @@ static inline bool mq_match_feature(
 static inline bool mq_match_condition(
 		const css_mq_cond *cond,
 		const css_unit_ctx *unit_ctx,
-		const css_media *media)
+		const css_media *media,
+		const css_select_strings *str)
 {
 	bool matched = !cond->op;
 
@@ -168,12 +179,12 @@ static inline bool mq_match_condition(
 		if (cond->parts[i]->type == CSS_MQ_FEATURE) {
 			part_matched = mq_match_feature(
 					cond->parts[i]->data.feat,
-					unit_ctx, media);
+					unit_ctx, media, str);
 		} else {
 			assert(cond->parts[i]->type == CSS_MQ_COND);
 			part_matched = mq_match_condition(
 					cond->parts[i]->data.cond,
-					unit_ctx, media);
+					unit_ctx, media, str);
 		}
 
 		if (cond->op) {
@@ -208,14 +219,15 @@ static inline bool mq_match_condition(
 static inline bool mq__list_match(
 		const css_mq_query *m,
 		const css_unit_ctx *unit_ctx,
-		const css_media *media)
+		const css_media *media,
+		const css_select_strings *str)
 {
 	for (; m != NULL; m = m->next) {
 		/* Check type */
 		if (!!(m->type & media->type) != m->negate_type) {
 			if (m->cond == NULL ||
 					mq_match_condition(m->cond,
-							unit_ctx, media)) {
+							unit_ctx, media, str)) {
 				/* We have a match, no need to look further. */
 				return true;
 			}
@@ -236,7 +248,8 @@ static inline bool mq__list_match(
 static inline bool mq_rule_good_for_media(
 		const css_rule *rule,
 		const css_unit_ctx *unit_ctx,
-		const css_media *media)
+		const css_media *media,
+		const css_select_strings *str)
 {
 	bool applies = true;
 	const css_rule *ancestor = rule;
@@ -245,7 +258,8 @@ static inline bool mq_rule_good_for_media(
 		const css_rule_media *m = (const css_rule_media *) ancestor;
 
 		if (ancestor->type == CSS_RULE_MEDIA) {
-			applies = mq__list_match(m->media, unit_ctx, media);
+			applies = mq__list_match(m->media,
+					unit_ctx, media, str);
 			if (applies == false) {
 				break;
 			}
