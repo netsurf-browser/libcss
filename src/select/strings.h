@@ -39,6 +39,10 @@ typedef struct {
 	lwc_string *first_letter;
 	lwc_string *before;
 	lwc_string *after;
+
+	lwc_string *width;
+	lwc_string *height;
+	lwc_string *prefers_color_scheme;
 } css_select_strings;
 
 css_error css_select_strings_intern(css_select_strings *str);
