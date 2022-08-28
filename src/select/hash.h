@@ -15,6 +15,7 @@
 #include <libcss/functypes.h>
 
 #include "select/bloom.h"
+#include "select/strings.h"
 
 /* Ugh. We need this to avoid circular includes. Happy! */
 struct css_selector;
@@ -25,7 +26,7 @@ struct css_hash_selection_requirments {
 	css_qname qname;		/* Element name, or universal "*" */
 	lwc_string *class;		/* Name of class, or NULL */
 	lwc_string *id;			/* Name of id, or NULL */
-	lwc_string *uni;		/* Universal element string "*" */
+	const css_select_strings *str;  /* Selection strings */
 	const css_media *media;		/* Media spec we're selecting for */
 	const css_unit_ctx *unit_ctx;	/* Document unit conversion context. */
 	const css_bloom *node_bloom;	/* Node's bloom filter */

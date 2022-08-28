@@ -124,7 +124,8 @@ static css_error cascade_style(const css_style *style, css_select_state *state);
 static css_error select_font_faces_from_sheet(
 		const css_stylesheet *sheet,
 		css_origin origin,
-		css_select_font_faces_state *state);
+		css_select_font_faces_state *state,
+		const css_select_strings *str);
 
 #ifdef DEBUG_CHAIN_MATCHING
 static void dump_chain(const css_selector *selector);
@@ -1244,7 +1245,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	for (i = 0; i < ctx->n_sheets; i++) {
 		const css_select_sheet s = ctx->sheets[i];
 
-		if (mq__list_match(s.media, unit_ctx, media) &&
+		if (mq__list_match(s.media, unit_ctx, media, &ctx->str) &&
 				s.sheet->disabled == false) {
 			error = select_from_sheet(ctx, s.sheet,
 					s.origin, &state);
@@ -1425,10 +1426,10 @@ css_error css_select_font_faces(css_select_ctx *ctx,
 	for (i = 0; i < ctx->n_sheets; i++) {
 		const css_select_sheet s = ctx->sheets[i];
 
-		if (mq__list_match(s.media, unit_ctx, media) &&
+		if (mq__list_match(s.media, unit_ctx, media, &ctx->str) &&
 				s.sheet->disabled == false) {
 			error = select_font_faces_from_sheet(s.sheet,
-					s.origin, &state);
+					s.origin, &state, &ctx->str);
 			if (error != CSS_OK)
 				goto cleanup;
 		}
@@ -1599,7 +1600,8 @@ css_error select_from_sheet(css_select_ctx *ctx, const css_stylesheet *sheet,
 			if (import->sheet != NULL &&
 					mq__list_match(import->media,
 							state->unit_ctx,
-							state->media)) {
+							state->media,
+							&ctx->str)) {
 				/* It's applicable, so process it */
 				if (sp >= IMPORT_STACK_SIZE)
 					return CSS_NOMEM;
@@ -1640,10 +1642,11 @@ css_error select_from_sheet(css_select_ctx *ctx, const css_stylesheet *sheet,
 
 static css_error _select_font_face_from_rule(
 		const css_rule_font_face *rule, css_origin origin,
-		css_select_font_faces_state *state)
+		css_select_font_faces_state *state,
+		const css_select_strings *str)
 {
 	if (mq_rule_good_for_media((const css_rule *) rule,
-			state->unit_ctx, state->media)) {
+			state->unit_ctx, state->media, str)) {
 		bool correct_family = false;
 
 		if (lwc_string_isequal(
@@ -1687,7 +1690,8 @@ static css_error _select_font_face_from_rule(
 static css_error select_font_faces_from_sheet(
 		const css_stylesheet *sheet,
 		css_origin origin,
-		css_select_font_faces_state *state)
+		css_select_font_faces_state *state,
+		const css_select_strings *str)
 {
 	const css_stylesheet *s = sheet;
 	const css_rule *rule = s->rule_list;
@@ -1709,7 +1713,8 @@ static css_error select_font_faces_from_sheet(
 			if (import->sheet != NULL &&
 					mq__list_match(import->media,
 							state->unit_ctx,
-							state->media)) {
+							state->media,
+							str)) {
 				/* It's applicable, so process it */
 				if (sp >= IMPORT_STACK_SIZE)
 					return CSS_NOMEM;
@@ -1727,8 +1732,7 @@ static css_error select_font_faces_from_sheet(
 
 			error = _select_font_face_from_rule(
 					(const css_rule_font_face *) rule,
-					origin,
-					state);
+					origin, state, str);
 
 			if (error != CSS_OK)
 				return error;
@@ -1858,7 +1862,7 @@ css_error match_selectors_in_sheet(css_select_ctx *ctx,
 	req.media = state->media;
 	req.unit_ctx = state->unit_ctx;
 	req.node_bloom = state->node_data->bloom;
-	req.uni = ctx->str.universal;
+	req.str = &ctx->str;
 
 	/* Find hash chain that applies to current node */
 	req.qname = state->element;
