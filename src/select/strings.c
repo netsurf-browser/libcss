@@ -177,6 +177,24 @@ css_error css_select_strings_intern(css_select_strings *str)
 	if (error != lwc_error_ok)
 		return css_error_from_lwc_error(error);
 
+	error = lwc_intern_string(
+			"width", SLEN("width"),
+			&str->width);
+	if (error != lwc_error_ok)
+		return css_error_from_lwc_error(error);
+
+	error = lwc_intern_string(
+			"height", SLEN("height"),
+			&str->height);
+	if (error != lwc_error_ok)
+		return css_error_from_lwc_error(error);
+
+	error = lwc_intern_string(
+			"prefers-color-scheme", SLEN("prefers-color-scheme"),
+			&str->prefers_color_scheme);
+	if (error != lwc_error_ok)
+		return css_error_from_lwc_error(error);
+
 	return CSS_OK;
 }
 
@@ -236,4 +254,11 @@ void css_select_strings_unref(css_select_strings *str)
 		lwc_string_unref(str->before);
 	if (str->after != NULL)
 		lwc_string_unref(str->after);
+
+	if (str->width != NULL)
+		lwc_string_unref(str->width);
+	if (str->height != NULL)
+		lwc_string_unref(str->height);
+	if (str->prefers_color_scheme != NULL)
+		lwc_string_unref(str->prefers_color_scheme);
 }
