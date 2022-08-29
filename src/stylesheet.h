@@ -188,6 +188,8 @@ struct css_stylesheet {
 	bool quirks_allowed;			/**< Quirks permitted */
 	bool quirks_used;			/**< Quirks actually used */
 
+	bool uses_revert;			/**< Uses 'revert' property value */
+
 	bool inline_style;			/**< Is an inline style */
 
 	size_t size;				/**< Size, in bytes */
@@ -226,6 +228,9 @@ css_error css__stylesheet_merge_style(css_style *target, css_style *style);
 static inline css_error css__stylesheet_style_appendOPV(css_style *style,
 		opcode_t opcode, uint8_t flags, uint16_t value)
 {
+	if ((flags & (0x7 << 1)) == FLAG_REVERT) {
+		style->sheet->uses_revert = true;
+	}
 	return css__stylesheet_style_append(style,
 			buildOPV(opcode, flags, value));
 }
@@ -250,6 +255,7 @@ static inline css_error css_stylesheet_style_initial(css_style *style,
 static inline css_error css_stylesheet_style_revert(css_style *style,
 		opcode_t opcode)
 {
+	style->sheet->uses_revert = true;
 	return css__stylesheet_style_append(style,
 			buildOPV(opcode, FLAG_REVERT, 0));
 }
