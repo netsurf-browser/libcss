@@ -53,6 +53,8 @@ struct css_select_ctx {
 
 	void *pw;	/**< Client's private selection context */
 
+	bool uses_revert;  /**< A sheet used revert property value */
+
 	css_select_strings str;
 
 	/* Interned default style */
@@ -354,6 +356,8 @@ css_error css_select_ctx_insert_sheet(css_select_ctx *ctx,
 	ctx->sheets[index].sheet = sheet;
 	ctx->sheets[index].origin = origin;
 	ctx->sheets[index].media = mq;
+
+	ctx->uses_revert |= sheet->uses_revert;
 
 	ctx->n_sheets++;
 
@@ -1289,10 +1293,14 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 #endif
 
 	/* Not sharing; need to select. */
-	state.revert = calloc(CSS_ORIGIN_AUTHOR, sizeof(*state.revert));
-	if (state.revert == NULL) {
-		error = CSS_NOMEM;
-		goto cleanup;
+	if (ctx->uses_revert ||
+			(inline_style != NULL && inline_style->uses_revert)) {
+		/* Need to track UA and USER origin styles for revert. */
+		state.revert = calloc(CSS_ORIGIN_AUTHOR, sizeof(*state.revert));
+		if (state.revert == NULL) {
+			error = CSS_NOMEM;
+			goto cleanup;
+		}
 	}
 
 	/* Base element style is guaranteed to exist
@@ -1326,7 +1334,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	for (i = 0; i < ctx->n_sheets; i++) {
 		const css_select_sheet s = ctx->sheets[i];
 
-		if (s.origin != origin) {
+		if (state.revert != NULL && s.origin != origin) {
 			for (j = 0; j < CSS_PSEUDO_ELEMENT_COUNT; j++) {
 				if (state.results->styles[j] == NULL) {
 					continue;
