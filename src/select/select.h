@@ -73,7 +73,7 @@ typedef struct css_select_state {
 	css_select_results *results;	/* Result set to populate */
 
 	/** UA and user styles for handling revert property value. */
-	struct revert_data revert[CSS_ORIGIN_AUTHOR];
+	struct revert_data *revert; /* Length: CSS_ORIGIN_AUTHOR */
 
 	css_pseudo_element current_pseudo;	/* Current pseudo element */
 	css_computed_style *computed;	/* Computed style to populate */
