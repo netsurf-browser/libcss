@@ -1020,13 +1020,17 @@ static void css_select__finalise_selection_state(
 		lwc_string_unref(state->element.name);
 	}
 
-	for (size_t i = 0; i < CSS_ORIGIN_AUTHOR; i++) {
-		for (size_t j = 0; j < CSS_PSEUDO_ELEMENT_COUNT; j++) {
-			if (state->revert[i].style[j] == NULL) {
-				continue;
+	if (state->revert != NULL) {
+		for (size_t i = 0; i < CSS_ORIGIN_AUTHOR; i++) {
+			for (size_t j = 0; j < CSS_PSEUDO_ELEMENT_COUNT; j++) {
+				if (state->revert[i].style[j] == NULL) {
+					continue;
+				}
+				css_computed_style_destroy(
+						state->revert[i].style[j]);
 			}
-			css_computed_style_destroy(state->revert[i].style[j]);
 		}
+		free(state->revert);
 	}
 }
 
@@ -1284,8 +1288,14 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	printf("style:\t%s\tSELECTED\n", lwc_string_data(state.element.name));
 #endif
 
-	/* Not sharing; need to select.
-	 * Base element style is guaranteed to exist
+	/* Not sharing; need to select. */
+	state.revert = calloc(CSS_ORIGIN_AUTHOR, sizeof(*state.revert));
+	if (state.revert == NULL) {
+		error = CSS_NOMEM;
+		goto cleanup;
+	}
+
+	/* Base element style is guaranteed to exist
 	 */
 	error = css__computed_style_create(
 			&state.results->styles[CSS_PSEUDO_ELEMENT_NONE]);
