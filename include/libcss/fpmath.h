@@ -99,10 +99,12 @@ css_float_to_fixed(const float a) {
 	float xx = a * (float) (1 << CSS_RADIX_POINT);
 
 	if (xx < INT_MIN)
-		xx = INT_MIN;
+		return INT_MIN;
 
-	if (xx > INT_MAX)
-		xx = INT_MAX;
+	/* Conversion from int to float changes value from
+	 * 2147483647 to 2147483648, so we use >= instead of >. */
+	if (xx >= (float)INT_MAX)
+		return INT_MAX;
 
 	return (css_fixed) xx;
 }
