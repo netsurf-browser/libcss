@@ -1161,6 +1161,14 @@ static css_error css__select_revert_property_to_origin(
 {
 	css_error error;
 
+	if (select_state->results->styles[pseudo] == NULL) {
+		return CSS_OK;
+	}
+
+	if (select_state->revert[origin].style[pseudo] == NULL) {
+		return prop_dispatch[property].initial(select_state);
+	}
+
 	error = prop_dispatch[property].copy(
 			select_state->revert[origin].style[pseudo],
 			select_state->results->styles[pseudo]);
