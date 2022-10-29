@@ -926,6 +926,8 @@ uint8_t css_computed_display(const css_computed_style *style,
 			return CSS_DISPLAY_TABLE;
 		} else if (display == CSS_DISPLAY_INLINE_FLEX) {
 			return CSS_DISPLAY_FLEX;
+		} else if (display == CSS_DISPLAY_INLINE_GRID) {
+			return CSS_DISPLAY_GRID;
 		} else if (display == CSS_DISPLAY_INLINE ||
 				display == CSS_DISPLAY_RUN_IN ||
 				display == CSS_DISPLAY_TABLE_ROW_GROUP ||
