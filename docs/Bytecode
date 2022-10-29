@@ -491,6 +491,8 @@ Opcodes
 		f     => none,
 		10    => flex,
 		11    => inline-flex,
+		12    => grid,
+		13    => inline-grid
 		other => Reserved for future expansion.
 
 21 - elevation
