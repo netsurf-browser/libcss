@@ -1603,6 +1603,12 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	case CSS_DISPLAY_INLINE_FLEX:
 		wrote = snprintf(ptr, *len, "display: inline-flex\n");
 		break;
+	case CSS_DISPLAY_GRID:
+		wrote = snprintf(ptr, *len, "display: grid\n");
+		break;
+	case CSS_DISPLAY_INLINE_GRID:
+		wrote = snprintf(ptr, *len, "display: inline-grid\n");
+		break;
 	default:
 		wrote = 0;
 		break;
