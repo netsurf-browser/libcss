@@ -406,7 +406,7 @@ class CSSGroup:
 
         bin_size = 32 # We're using uint32_t as concrete bins.
         bits_array = []
-        props = sorted(self.props, key=(lambda x: x.bits_size), reverse=True)
+        props = sorted(self.props, key=(lambda x: (x.bits_size, x.name)), reverse=True)
 
         for p in props:
             for b in bits_array:
