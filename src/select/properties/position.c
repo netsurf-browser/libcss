@@ -35,6 +35,9 @@ css_error css__cascade_position(uint32_t opv, css_style *style,
 		case POSITION_FIXED:
 			value = CSS_POSITION_FIXED;
 			break;
+		case POSITION_STICKY:
+			value = CSS_POSITION_STICKY;
+			break;
 		}
 	}
 

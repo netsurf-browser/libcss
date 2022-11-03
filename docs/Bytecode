@@ -876,6 +876,7 @@ Opcodes
 		1     => relative,
 		2     => absolute,
 		3     => fixed,
+		4     => sticky,
 		other => Reserved for future expansion.
 
 4a - quotes

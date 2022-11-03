@@ -763,7 +763,8 @@ enum css_position_e {
 	CSS_POSITION_STATIC			= 0x1,
 	CSS_POSITION_RELATIVE			= 0x2,
 	CSS_POSITION_ABSOLUTE			= 0x3,
-	CSS_POSITION_FIXED			= 0x4
+	CSS_POSITION_FIXED			= 0x4,
+	CSS_POSITION_STICKY			= 0x5
 };
 
 enum css_quotes_e {
