@@ -29,8 +29,8 @@ def shift_star(value_type, prop_name):
     `lwc_string **str_array`
     """
     star_i = value_type.find('*')
-    v_type = value_type if star_i is -1 else value_type[:star_i]
-    v_name = prop_name if star_i is -1 else value_type[star_i:] + prop_name
+    v_type = value_type if star_i == -1 else value_type[:star_i]
+    v_name = prop_name if star_i == -1 else value_type[star_i:] + prop_name
     return (v_type, v_name)
 
 class Text:
@@ -233,7 +233,7 @@ class CSSProperty:
                 for x in values:
                     if x[0] == v[0]:
                         value = CSSValue(*x)
-                        if len(v) is 2:
+                        if len(v) == 2:
                             value.defaults = v[1]
                         if len(vals) > 1:
                             value.suffix = '_' + string.ascii_lowercase[i]
@@ -348,7 +348,7 @@ class CSSProperty:
         bits_len = sum([ x['size'] for x in bits ])
         comment = '/* {}bit{}: {} : {} */'.format(
             bits_len,
-            ('' if bits_len is 1 else 's'),
+            ('' if bits_len == 1 else 's'),
             ''.join([ b['letter'] * b['size'] for b in bits ]),
             ' | '.join([ b['name'] for b in bits ]))
         rev_bits = list(reversed(bits))
@@ -431,9 +431,9 @@ class CSSGroup:
 
     def get_idot_grp(self):
         """Make parameters for accessing bits and values in this group."""
-        i_dot = '' if self.name is 'page' else 'i.'
-        grp = '' if self.name is 'style' else '->{}{}'.format(
-            '' if self.name is 'page' else i_dot, self.name)
+        i_dot = '' if self.name == 'page' else 'i.'
+        grp = '' if self.name == 'style' else '->{}{}'.format(
+            '' if self.name == 'page' else i_dot, self.name)
         return (i_dot, grp)
 
     def make_computed_h(self):
@@ -441,9 +441,9 @@ class CSSGroup:
         t = Text()
         t.append()
 
-        typedef = 'typedef ' if self.name is 'page' else ''
+        typedef = 'typedef ' if self.name == 'page' else ''
         t.append('{}struct css_computed_{}{} {{'.format(
-            typedef, self.name, '' if self.name is 'page' else '_i'))
+            typedef, self.name, '' if self.name == 'page' else '_i'))
 
         t.comment()
         commented = []
@@ -490,18 +490,18 @@ class CSSGroup:
         t.append()
         t.append(self.make_value_declaration(for_commented=False))
 
-        if self.name is 'style':
+        if self.name == 'style':
             t.append()
             for g in css_groups:
-                if g.name is not 'style' and g.name is not 'page':
+                if g.name != 'style' and g.name != 'page':
                     t.append('css_computed_{0} *{0};'.format(g.name))
 
         t.indent(-1)
         t.append('}}{};'.format(
             ' css_computed_' + self.name if typedef else ''))
 
-        if self.name is not 'page':
-            typedef = 'typedef ' if self.name is not 'style' else ''
+        if self.name != 'page':
+            typedef = 'typedef ' if self.name != 'style' else ''
             t.append()
             t.append('{}struct css_computed_{} {{'.format(
                      typedef, self.name))
@@ -529,12 +529,12 @@ class CSSGroup:
         t = Text()
         i_dot, grp = self.get_idot_grp()
 
-        if self.name is not 'style':
+        if self.name != 'style':
             t.append('static const css_computed_{0} default_{0} = {{'.format(
                 self.name))
             t.indent(1)
 
-            if self.name is not 'page':
+            if self.name != 'page':
                 t.append('.i = {')
                 t.indent(1)
 
@@ -555,7 +555,7 @@ class CSSGroup:
             t.append(',\n'.join(
                 self.make_value_declaration(False, True)).split('\n'))
 
-            if self.name is not 'page':
+            if self.name != 'page':
                 t.indent(-1)
                 t.append('},')
                 t.append(',\n'.join(
@@ -611,7 +611,7 @@ class CSSGroup:
             t.append('uint32_t *bits;')
             t.append()
 
-            if self.name is not 'style':
+            if self.name != 'style':
                 t.append('ENSURE_{};'.format(self.name.upper()))
                 t.append()
 
@@ -636,7 +636,7 @@ class CSSGroup:
                 old_n = 'old_' + v.name + v.suffix
                 old_t, old_n_shift = shift_star(v.type, old_n)
 
-                if v.name is 'string':
+                if v.name == 'string':
                     t.append('{} {} = style{}->{}{};'.format(
                         old_t, old_n_shift,
                         grp, i_dot, p.name + v.suffix))
@@ -658,9 +658,9 @@ class CSSGroup:
                     t.append('lwc_string_unref({});'.format(old_n))
                     t.indent(-1)
 
-                elif v.name is 'string_arr' or v.name is 'counter_arr':
-                    iter_var = 's' if v.name is 'string_arr' else 'c'
-                    iter_deref = '*s' if v.name is 'string_arr' else 'c->name'
+                elif v.name == 'string_arr' or v.name == 'counter_arr':
+                    iter_var = 's' if v.name == 'string_arr' else 'c'
+                    iter_deref = '*s' if v.name == 'string_arr' else 'c->name'
                     t.append('{} {} = style{}->{};'.format(
                         old_t, old_n_shift,
                         grp, p.name + v.suffix))
@@ -731,7 +731,7 @@ class CSSGroup:
             t.append('{')
             t.indent(1)
 
-            if self.name is not 'style':
+            if self.name != 'style':
                 t.append('if (style{} != NULL) {{'.format(grp))
                 t.indent(1)
 
@@ -754,7 +754,7 @@ class CSSGroup:
                 t.append('*{} = style{}->{}{};'.format(
                     v.name + v.suffix, grp, this_idot, p.name + v.suffix))
             for i, v in enumerate(list(reversed(shift_list))):
-                if i is 0:
+                if i == 0:
                     t.append('*{} = bits >> {};'.format(v[0], v[1]))
                 else:
                     t.append('*{} = (bits & 0x{:x}) >> {};'.format(
@@ -767,7 +767,7 @@ class CSSGroup:
             t.append()
             t.append('return (bits & {});'.format(type_mask))
 
-            if self.name is not 'style':
+            if self.name != 'style':
                 t.indent(-1)
                 t.append('}')
                 t.append()
