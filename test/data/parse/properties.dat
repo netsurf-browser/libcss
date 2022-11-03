@@ -3289,6 +3289,14 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 |   0x000c0049
 #reset
 
+#data
+* { position: sticky; }
+#errors
+#expected
+| 1 *
+|   0x00100049
+#reset
+
 ##
 ## 4a - quotes
 ##

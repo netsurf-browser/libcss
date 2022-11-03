@@ -2725,6 +2725,9 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	case CSS_POSITION_FIXED:
 		wrote = snprintf(ptr, *len, "position: fixed\n");
 		break;
+	case CSS_POSITION_STICKY:
+		wrote = snprintf(ptr, *len, "position: sticky\n");
+		break;
 	default:
 		wrote = 0;
 		break;
