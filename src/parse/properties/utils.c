@@ -1362,16 +1362,17 @@ cleanup:
 static css_error
 css__parse_calc_sum(css_language *c,
 		const parserutils_vector *vector, int *ctx,
-		css_style *result);
+		parserutils_buffer *result);
 
 static css_error
 css__parse_calc_number(
 		const parserutils_vector *vector, int *ctx,
-		css_style *result)
+		parserutils_buffer *result)
 {
 	const css_token *token;
 	css_fixed num;
 	size_t consumed;
+	css_code_t push = CALC_PUSH_NUMBER;
 
 	/* Consume the number token */
 	token = parserutils_vector_iterate(vector, ctx);
@@ -1386,13 +1387,18 @@ css__parse_calc_number(
 		return CSS_INVALID;
 	}
 
-	return css__stylesheet_style_vappend(result, 2, (css_code_t) CALC_PUSH_NUMBER, (css_code_t)num);
+	return css_error_from_parserutils_error(
+		parserutils_buffer_appendv(result, 2,
+			&push, sizeof(push),
+			&num, sizeof(num)
+		)
+	);
 }
 
 static css_error
 css__parse_calc_value(css_language *c,
 		const parserutils_vector *vector, int *ctx,
-		css_style *result)
+		parserutils_buffer *result)
 {
 	css_error error;
 	int orig_ctx = *ctx;
@@ -1426,6 +1432,7 @@ css__parse_calc_value(css_language *c,
 	{
 		css_fixed length = 0;
 		uint32_t unit = 0;
+		css_code_t push = CALC_PUSH_VALUE;
 		*ctx = orig_ctx;
 
 		error = css__parse_unit_specifier(c, vector, ctx, UNIT_CALC_NUMBER, &length, &unit);
@@ -1434,7 +1441,14 @@ css__parse_calc_value(css_language *c,
 			return error;
 		}
 
-		error = css__stylesheet_style_vappend(result, 3, (css_code_t) CALC_PUSH_VALUE, length, unit);
+		error = css_error_from_parserutils_error(
+			parserutils_buffer_appendv(result, 3,
+				&push, sizeof(push),
+				&length, sizeof(length),
+				&unit, sizeof(unit)
+			)
+		);
+
 	}
 		break;
 
@@ -1455,12 +1469,11 @@ css__parse_calc_value(css_language *c,
 static css_error
 css__parse_calc_product(css_language *c,
 		const parserutils_vector *vector, int *ctx,
-		css_style *result)
+		parserutils_buffer *result)
 {
 	css_error error = CSS_OK;
 	const css_token *token;
-	bool multiplication;
-
+	css_code_t operator;
 
 	/* First parse a value */
 	error = css__parse_calc_value(c, vector, ctx, result);
@@ -1480,9 +1493,9 @@ css__parse_calc_product(css_language *c,
 				tokenIsChar(token, '-'))
 			break;
 		else if (tokenIsChar(token, '*'))
-			multiplication = true;
+			operator = CALC_MULTIPLY;
 		else if (tokenIsChar(token, '/'))
-			multiplication = false;
+			operator = CALC_DIVIDE;
 		else {
 			error = CSS_INVALID;
 			break;
@@ -1492,7 +1505,7 @@ css__parse_calc_product(css_language *c,
 
 		consumeWhitespace(vector, ctx);
 
-		if (multiplication) {
+		if (operator == CALC_MULTIPLY) {
 			/* parse another value */
 			error = css__parse_calc_value(c, vector, ctx, result);
 		} else {
@@ -1502,8 +1515,9 @@ css__parse_calc_product(css_language *c,
 			break;
 
 		/* emit the multiplication/division operator */
-		error = css__stylesheet_style_append(result,
-					(css_code_t) (multiplication ? CALC_MULTIPLY : CALC_DIVIDE));
+		error = css_error_from_parserutils_error(
+			parserutils_buffer_append(result, (const uint8_t *)&operator, sizeof(operator))
+		);
 	} while (1);
 	/* We've fallen off, either we had an error or we're left with ')' */
 	return error;
@@ -1513,12 +1527,11 @@ css__parse_calc_product(css_language *c,
 css_error
 css__parse_calc_sum(css_language *c,
 		const parserutils_vector *vector, int *ctx,
-		css_style *result)
+		parserutils_buffer *result)
 {
 	css_error error = CSS_OK;
 	const css_token *token;
-	bool addition;
-
+	css_code_t operator;
 
 	/* First parse a product */
 	error = css__parse_calc_product(c, vector, ctx, result);
@@ -1535,9 +1548,9 @@ css__parse_calc_sum(css_language *c,
 		} else if (tokenIsChar(token, ')'))
 			break;
 		else if (tokenIsChar(token, '+'))
-			addition = true;
+			operator = CALC_ADD;
 		else if (tokenIsChar(token, '-'))
-			addition = false;
+			operator = CALC_SUBTRACT;
 		else {
 			error = CSS_INVALID;
 			break;
@@ -1552,7 +1565,9 @@ css__parse_calc_sum(css_language *c,
 			break;
 
 		/* emit the addition/subtraction operator */
-		error = css__stylesheet_style_append(result, (css_code_t) (addition ? CALC_ADD : CALC_SUBTRACT));
+		error = css_error_from_parserutils_error(
+			parserutils_buffer_append(result, (const uint8_t *)&operator, sizeof(operator))
+		);
 	} while (1);
 	/* We've fallen off, either we had an error or we're left with ')' */
 	return error;
@@ -1569,6 +1584,10 @@ css_error css__parse_calc(css_language *c,
 	const css_token *token;
 	css_error error = CSS_OK;
 	css_style *calc_style = NULL;
+	parserutils_buffer *calc_buffer = NULL;
+	lwc_string *calc_expr = NULL;
+	uint32_t expr_index = 0;
+	css_code_t finish = CALC_FINISH;
 
 	consumeWhitespace(vector, ctx);
 
@@ -1578,6 +1597,12 @@ css_error css__parse_calc(css_language *c,
 		return CSS_INVALID;
 	}
 
+	if (parserutils_buffer_create(&calc_buffer) != PARSERUTILS_OK) {
+		/* Since &calc_buffer is valid, the only error case is NONMEM */
+		*ctx = orig_ctx;
+		return CSS_NOMEM;
+	}
+
 	error = css__stylesheet_style_create(c->sheet, &calc_style);
 	if (error != CSS_OK)
 		goto cleanup;
@@ -1585,12 +1610,12 @@ css_error css__parse_calc(css_language *c,
 	error = css__stylesheet_style_append(calc_style, property);
 	if (error != CSS_OK)
 		goto cleanup;
-	
+
 	error = css__stylesheet_style_append(calc_style, (css_code_t) unit);
 	if (error != CSS_OK)
 		goto cleanup;
 
-	error = css__parse_calc_sum(c, vector, ctx, calc_style);
+	error = css__parse_calc_sum(c, vector, ctx, calc_buffer);
 	if (error != CSS_OK)
 		goto cleanup;
 
@@ -1602,17 +1627,35 @@ css_error css__parse_calc(css_language *c,
 		goto cleanup;
 	}
 
+	/* Append the indicator that the calc is finished */
+	error = css_error_from_parserutils_error(
+		parserutils_buffer_append(calc_buffer, (const uint8_t *)&finish, sizeof(finish))
+	);
+	if (error != CSS_OK)
+		goto cleanup;
+
 	/* Swallow that close paren */
 	parserutils_vector_iterate(vector, ctx);
 
-	/* Append the indicator that the calc is finished */
-	error = css__stylesheet_style_append(calc_style, (css_code_t) CALC_FINISH);
+	/* Create the lwc string representing the calculation and store it in */
+	error = css_error_from_lwc_error(
+		lwc_intern_string((const char *)calc_buffer->data, calc_buffer->length, &calc_expr)
+	);
 	if (error != CSS_OK)
 		goto cleanup;
+
+	/* This always takes ownership of calc_expr, so we should not use after this */
+	error = css__stylesheet_string_add(calc_style->sheet, calc_expr, &expr_index);
+	if (error != CSS_OK)
+		goto cleanup;
+
+	css__stylesheet_style_append(calc_style, (css_code_t) expr_index);
 
 	error = css__stylesheet_merge_style(result, calc_style);
 cleanup:
 	css__stylesheet_style_destroy(calc_style);
+	parserutils_buffer_destroy(calc_buffer);
+	/* We do not need to clean up calc_expr, it will never leak */
 	if (error != CSS_OK) {
 		*ctx = orig_ctx;
 	}
