@@ -803,15 +803,23 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 		} else if (getFlagValue(opv) == FLAG_VALUE_UNSET) {
 			*ptr += sprintf(*ptr, "unset");
 		} else if (isCalc(opv)) {
+			lwc_string *calc_expr = NULL;
+			const uint8_t *codeptr = NULL;
+			css_code_t calc_opcode;
+			uint32_t unit, snum;
 			/* First entry is a unit */
-			uint32_t unit = *((uint32_t *)bytecode);
+			unit = *((uint32_t *)bytecode);
 			ADVANCE(sizeof(unit));
+			/* Second entry is an lwc_string of the expression */
+			snum = *((uint32_t *)bytecode);
+			ADVANCE(sizeof(snum));
+			css__stylesheet_string_get(style->sheet, snum, &calc_expr);
+			codeptr = (const uint8_t *)lwc_string_data(calc_expr);
 			*ptr += sprintf(*ptr, "/* -> ");
 			dump_unit(0, unit, ptr);
 			*ptr += sprintf(*ptr, " */ calc(");
-			css_code_t calc_opcode;
-			while ((calc_opcode = *((css_code_t *)bytecode)) != CALC_FINISH) {
-				ADVANCE(sizeof(calc_opcode));
+			while ((calc_opcode = *((css_code_t *)codeptr)) != CALC_FINISH) {
+				codeptr += sizeof(calc_opcode);
 				switch (calc_opcode) {
 				case CALC_ADD:
 					*ptr += sprintf(*ptr, "+ ");
@@ -826,17 +834,17 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					*ptr += sprintf(*ptr, "/ ");
 					break;
 				case CALC_PUSH_VALUE: {
-					css_fixed num = *((css_fixed *)bytecode);
-					ADVANCE(sizeof(num));
-					uint32_t unit = *((uint32_t *)bytecode);
-					ADVANCE(sizeof(unit));
+					css_fixed num = *((css_fixed *)codeptr);
+					codeptr += sizeof(num);
+					uint32_t unit = *((uint32_t *)codeptr);
+					codeptr += sizeof(unit);
 					dump_unit(num, unit, ptr);
 					*ptr += sprintf(*ptr, " ");
 					break;
 				}
 				case CALC_PUSH_NUMBER: {
-					css_fixed num = *((css_fixed *)bytecode);
-					ADVANCE(sizeof(num));
+					css_fixed num = *((css_fixed *)codeptr);
+					codeptr += sizeof(num);
 					dump_number(num, ptr);
 					*ptr += sprintf(*ptr, " ");
 					break;
@@ -846,7 +854,6 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					break;
 				}
 			}
-			ADVANCE(sizeof(calc_opcode));
 			*ptr += sprintf(*ptr, "=)");
 		} else {
 			value = getValue(opv);
