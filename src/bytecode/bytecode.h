@@ -14,6 +14,8 @@
 #include <libcss/types.h>
 #include <libcss/properties.h>
 
+#include "bytecode/opcodes.h"
+
 typedef uint32_t css_code_t;
 
 typedef enum css_properties_e opcode_t;
@@ -139,8 +141,7 @@ static inline bool isInherit(css_code_t OPV)
 
 static inline bool isCalc(css_code_t OPV)
 {
-	/* Note, this relies on all _CALC values being the same ultimately */
-	return getValue(OPV) == 0x7f;
+	return getValue(OPV) == VALUE_IS_CALC;
 }
 
 #endif
