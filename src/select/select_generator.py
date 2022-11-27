@@ -707,10 +707,71 @@ class CSSGroup:
 
         return t.to_string()
 
+    def print_propget(self, t, p):
+        i_dot, grp = self.get_idot_grp()
+
+        vals = p.get_param_values(pointer=True)
+        params = ', '.join([ 'css_computed_style *style' ]
+                           + [ ' '.join(x) for x in vals ])
+        t.append('static inline uint8_t get_{}(const {})'.format(
+            p.name, params))
+        t.append('{')
+        t.indent(1)
+
+        if self.name != 'style':
+            t.append('if (style{} != NULL) {{'.format(grp))
+            t.indent(1)
+
+        t.append('uint32_t bits = style{}->{}bits[{}_INDEX];'.format(
+            grp, i_dot, p.name.upper()))
+        t.append('bits &= {}_MASK;'.format(p.name.upper()))
+        t.append('bits >>= {}_SHIFT;'.format(p.name.upper()))
+        t.append()
+
+        type_mask, shift_list, bits_comment = p.get_bits()
+        t.append(bits_comment)
+
+        if p.condition:
+            t.append('if ((bits & {}) == {}) {{'.format(
+                type_mask, p.condition))
+            t.indent(1)
+
+        for v in p.values:
+            this_idot = '' if v.is_ptr and v.name != 'string' else i_dot
+            t.append('*{} = style{}->{}{};'.format(
+                v.name + v.suffix, grp, this_idot, p.name + v.suffix))
+        for i, v in enumerate(list(reversed(shift_list))):
+            if i == 0:
+                t.append('*{} = bits >> {};'.format(v[0], v[1]))
+            else:
+                t.append('*{} = (bits & 0x{:x}) >> {};'.format(
+                    v[0], v[2], v[1]).lower())
+
+        if p.condition:
+            t.indent(-1)
+            t.append('}')
+
+        t.append()
+        t.append('return (bits & {});'.format(type_mask))
+
+        if self.name != 'style':
+            t.indent(-1)
+            t.append('}')
+            t.append()
+            t.append('/* Initial value */')
+            for v in p.values:
+                t.append('*{} = {};'.format(v.name + v.suffix, v.defaults))
+                if v.bits is not None:
+                    t.append('*{} = {};'.format(
+                        v.bits['name'] + v.suffix, v.bits['defaults']))
+                t.append('return {};'.format(p.defaults))
+
+        t.indent(-1)
+        t.append('}')
+
     def make_propget_h(self):
         """Output this group's property functions for the propget.h file."""
         t = Text()
-        i_dot, grp = self.get_idot_grp()
 
         for p in sorted(self.props, key=(lambda x: x.name)):
             defines, undefs = p.def_undefs
@@ -720,67 +781,9 @@ class CSSGroup:
 
             if p.name in overrides['get']:
                 t.append(overrides['get'][p.name], pre_formatted=True)
-                t.append(undefs)
-                continue
+            else:
+                self.print_propget(t, p)
 
-            vals = p.get_param_values(pointer=True)
-            params = ', '.join([ 'css_computed_style *style' ]
-                               + [ ' '.join(x) for x in vals ])
-            t.append('static inline uint8_t get_{}(const {})'.format(
-                p.name, params))
-            t.append('{')
-            t.indent(1)
-
-            if self.name != 'style':
-                t.append('if (style{} != NULL) {{'.format(grp))
-                t.indent(1)
-
-            t.append('uint32_t bits = style{}->{}bits[{}_INDEX];'.format(
-                grp, i_dot, p.name.upper()))
-            t.append('bits &= {}_MASK;'.format(p.name.upper()))
-            t.append('bits >>= {}_SHIFT;'.format(p.name.upper()))
-            t.append()
-
-            type_mask, shift_list, bits_comment = p.get_bits()
-            t.append(bits_comment)
-
-            if p.condition:
-                t.append('if ((bits & {}) == {}) {{'.format(
-                    type_mask, p.condition))
-                t.indent(1)
-
-            for v in p.values:
-                this_idot = '' if v.is_ptr and v.name != 'string' else i_dot
-                t.append('*{} = style{}->{}{};'.format(
-                    v.name + v.suffix, grp, this_idot, p.name + v.suffix))
-            for i, v in enumerate(list(reversed(shift_list))):
-                if i == 0:
-                    t.append('*{} = bits >> {};'.format(v[0], v[1]))
-                else:
-                    t.append('*{} = (bits & 0x{:x}) >> {};'.format(
-                        v[0], v[2], v[1]).lower())
-
-            if p.condition:
-                t.indent(-1)
-                t.append('}')
-
-            t.append()
-            t.append('return (bits & {});'.format(type_mask))
-
-            if self.name != 'style':
-                t.indent(-1)
-                t.append('}')
-                t.append()
-                t.append('/* Initial value */')
-                for v in p.values:
-                    t.append('*{} = {};'.format(v.name + v.suffix, v.defaults))
-                    if v.bits is not None:
-                        t.append('*{} = {};'.format(
-                            v.bits['name'] + v.suffix, v.bits['defaults']))
-                t.append('return {};'.format(p.defaults))
-
-            t.indent(-1)
-            t.append('}')
             t.append(undefs)
 
         return t.to_string()
