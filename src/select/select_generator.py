@@ -707,14 +707,15 @@ class CSSGroup:
 
         return t.to_string()
 
-    def print_propget(self, t, p):
+    def print_propget(self, t, p, only_bits=False):
         i_dot, grp = self.get_idot_grp()
 
-        vals = p.get_param_values(pointer=True)
+        vals = [] if only_bits else p.get_param_values(pointer=True)
         params = ', '.join([ 'css_computed_style *style' ]
                            + [ ' '.join(x) for x in vals ])
-        t.append('static inline uint8_t get_{}(const {})'.format(
-            p.name, params))
+        underscore_bits = '_bits' if only_bits else ''
+        t.append('static inline uint8_t get_{}{}(const {})'.format(
+            p.name, underscore_bits, params))
         t.append('{')
         t.indent(1)
 
@@ -731,27 +732,29 @@ class CSSGroup:
         type_mask, shift_list, bits_comment = p.get_bits()
         t.append(bits_comment)
 
-        if p.condition:
-            t.append('if ((bits & {}) == {}) {{'.format(
-                type_mask, p.condition))
-            t.indent(1)
+        if only_bits == False:
 
-        for v in p.values:
-            this_idot = '' if v.is_ptr and v.name != 'string' else i_dot
-            t.append('*{} = style{}->{}{};'.format(
-                v.name + v.suffix, grp, this_idot, p.name + v.suffix))
-        for i, v in enumerate(list(reversed(shift_list))):
-            if i == 0:
-                t.append('*{} = bits >> {};'.format(v[0], v[1]))
-            else:
-                t.append('*{} = (bits & 0x{:x}) >> {};'.format(
-                    v[0], v[2], v[1]).lower())
+            if p.condition:
+                t.append('if ((bits & {}) == {}) {{'.format(
+                    type_mask, p.condition))
+                t.indent(1)
 
-        if p.condition:
-            t.indent(-1)
-            t.append('}')
+            for v in p.values:
+                this_idot = '' if v.is_ptr and v.name != 'string' else i_dot
+                t.append('*{} = style{}->{}{};'.format(
+                    v.name + v.suffix, grp, this_idot, p.name + v.suffix))
+            for i, v in enumerate(list(reversed(shift_list))):
+                if i == 0:
+                    t.append('*{} = bits >> {};'.format(v[0], v[1]))
+                else:
+                    t.append('*{} = (bits & 0x{:x}) >> {};'.format(
+                        v[0], v[2], v[1]).lower())
 
-        t.append()
+            if p.condition:
+                t.indent(-1)
+                t.append('}')
+            t.append()
+
         t.append('return (bits & {});'.format(type_mask))
 
         if self.name != 'style':
@@ -778,6 +781,8 @@ class CSSGroup:
 
             t.append()
             t.append(defines)
+
+            self.print_propget(t, p, True)
 
             if p.name in overrides['get']:
                 t.append(overrides['get'][p.name], pre_formatted=True)
