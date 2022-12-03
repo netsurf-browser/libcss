@@ -322,18 +322,16 @@ class CSSProperty:
         """
         vals = []
         for v in self.values:
+            star = '*' if pointer else ''
             vt, vn = shift_star(v.type, v.name)
-            vn += v.suffix
+            vn = star + vn + v.suffix
             if pointer:
-                vn = '*' + vn
                 if v.name == 'counter_arr' or v.name == 'content_item':
                     vt = 'const ' + vt
             vals.append((vt, vn))
             if v.bits is not None:
-                bt, bn = shift_star(v.bits['type'], v.bits['name'])
-                bn += v.suffix
-                if pointer:
-                    bn = '*' + bn
+                bt = v.bits['type']
+                bn = star + v.bits['name'] + v.suffix
                 vals.append((bt, bn))
         return vals
 
