@@ -299,7 +299,7 @@ static inline uint8_t get_border_bottom_width_bits(const css_computed_style
 	return (bits & 0x7);
 }
 static inline uint8_t get_border_bottom_width(const css_computed_style *style,
-		css_fixed *length, css_unit *unit)
+		css_fixed_or_calc *length, css_unit *unit)
 {
 	uint32_t bits = style->i.bits[BORDER_BOTTOM_WIDTH_INDEX];
 	bits &= BORDER_BOTTOM_WIDTH_MASK;
@@ -650,8 +650,8 @@ static inline uint8_t get_bottom_bits(const css_computed_style *style)
 	/* 7bits: uuuuutt : unit | type */
 	return (bits & 0x3);
 }
-static inline uint8_t get_bottom(const css_computed_style *style, css_fixed
-		*length, css_unit *unit)
+static inline uint8_t get_bottom(const css_computed_style *style,
+		css_fixed_or_calc *length, css_unit *unit)
 {
 	uint32_t bits = style->i.bits[BOTTOM_INDEX];
 	bits &= BOTTOM_MASK;

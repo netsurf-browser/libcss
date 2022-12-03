@@ -5,8 +5,8 @@
  * Copyright 2017 The NetSurf Project
  */
 
-/** Default values are 'initial value', unless the property is inherited,
- *  in which case it is 'inherit'. */
+#include "select/propget.h"
+
 
 #define ALIGN_CONTENT_INDEX 10
 #define ALIGN_CONTENT_SHIFT 20
@@ -222,15 +222,26 @@ static inline css_error set_border_bottom_style(css_computed_style *style,
 #define BORDER_BOTTOM_WIDTH_MASK 0xff
 
 static inline css_error set_border_bottom_width(css_computed_style *style,
-		uint8_t type, css_fixed length, css_unit unit)
+		uint8_t type, css_fixed_or_calc length, css_unit unit)
 {
+	uint32_t orig_bits = get_border_bottom_width_bits(style);
+	
+	/* 8bits: uuuuuttt : unit | type */
+	if ((orig_bits & 0x7) == CSS_BORDER_WIDTH_WIDTH) {
+		if ((orig_bits & 0xf8) >> 3 == CSS_UNIT_CALC) {
+			lwc_string_unref(style->i.border_bottom_width.calc);
+		}
+	}
+	
 	uint32_t *bits = &style->i.bits[BORDER_BOTTOM_WIDTH_INDEX];
 	
 	/* 8bits: uuuuuttt : unit | type */
 	*bits = (*bits & ~BORDER_BOTTOM_WIDTH_MASK) | ((((uint32_t)type & 0x7)
 			| (unit << 3)) << BORDER_BOTTOM_WIDTH_SHIFT);
 	
-	style->i.border_bottom_width = length;
+	if (unit == CSS_UNIT_CALC) {
+		style->i.border_bottom_width.calc = lwc_string_ref(length.calc);
+	}
 	
 	return CSS_OK;
 }
@@ -469,15 +480,26 @@ static inline css_error set_border_top_width(css_computed_style *style, uint8_t
 #define BOTTOM_MASK 0x3f800
 
 static inline css_error set_bottom(css_computed_style *style, uint8_t type,
-		css_fixed length, css_unit unit)
+		css_fixed_or_calc length, css_unit unit)
 {
+	uint32_t orig_bits = get_bottom_bits(style);
+	
+	/* 7bits: uuuuutt : unit | type */
+	if ((orig_bits & 0x3) == CSS_BOTTOM_SET) {
+		if ((orig_bits & 0x7c) >> 2 == CSS_UNIT_CALC) {
+			lwc_string_unref(style->i.bottom.calc);
+		}
+	}
+	
 	uint32_t *bits = &style->i.bits[BOTTOM_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~BOTTOM_MASK) | ((((uint32_t)type & 0x3) | (unit <<
 			2)) << BOTTOM_SHIFT);
 	
-	style->i.bottom = length;
+	if (unit == CSS_UNIT_CALC) {
+		style->i.bottom.calc = lwc_string_ref(length.calc);
+	}
 	
 	return CSS_OK;
 }

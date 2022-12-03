@@ -5,6 +5,11 @@
  * Copyright 2017 The NetSurf Project
  */
 
+typedef union {
+	css_fixed value;
+	lwc_string *calc;
+} css_fixed_or_calc;
+
 
 struct css_computed_style_i {
 /*
@@ -209,7 +214,7 @@ struct css_computed_style_i {
 	css_fixed background_position_a;
 	css_fixed background_position_b;
 	css_color border_bottom_color;
-	css_fixed border_bottom_width;
+	css_fixed_or_calc border_bottom_width;
 	css_color border_left_color;
 	css_fixed border_left_width;
 	css_color border_right_color;
@@ -218,7 +223,7 @@ struct css_computed_style_i {
 	css_fixed border_spacing_b;
 	css_color border_top_color;
 	css_fixed border_top_width;
-	css_fixed bottom;
+	css_fixed_or_calc bottom;
 	css_fixed clip_a;
 	css_fixed clip_b;
 	css_fixed clip_c;

@@ -30,6 +30,12 @@ static css_error compute_absolute_border_side_width(css_computed_style *style,
 				css_fixed *len, css_unit *unit),
 		css_error (*set)(css_computed_style *style, uint8_t type,
 				css_fixed len, css_unit unit));
+static css_error compute_absolute_border_side_width_calc(css_computed_style *style,
+		const css_hint_length *ex_size,
+		uint8_t (*get)(const css_computed_style *style,
+				css_fixed_or_calc *len, css_unit *unit),
+		css_error (*set)(css_computed_style *style, uint8_t type,
+				css_fixed_or_calc len, css_unit unit));
 static css_error compute_absolute_sides(css_computed_style *style,
 		const css_hint_length *ex_size);
 static css_error compute_absolute_clip(css_computed_style *style,
@@ -48,6 +54,12 @@ static css_error compute_absolute_length(css_computed_style *style,
 				css_fixed *len, css_unit *unit),
 		css_error (*set)(css_computed_style *style, uint8_t type,
 				css_fixed len, css_unit unit));
+static css_error compute_absolute_length_calc(css_computed_style *style,
+		const css_hint_length *ex_size,
+		uint8_t (*get)(const css_computed_style *style,
+				css_fixed_or_calc *len, css_unit *unit),
+		css_error (*set)(css_computed_style *style, uint8_t type,
+				css_fixed_or_calc len, css_unit unit));
 static css_error compute_absolute_length_pair(css_computed_style *style,
 		const css_hint_length *ex_size,
 		uint8_t (*get)(const css_computed_style *style,
@@ -419,7 +431,18 @@ uint8_t css_computed_border_right_width(const css_computed_style *style,
 uint8_t css_computed_border_bottom_width(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	return get_border_bottom_width(style, length, unit);
+	css_fixed_or_calc temp;
+	uint8_t type = get_border_bottom_width(style, &temp, unit);
+
+	if (type == CSS_BORDER_WIDTH_WIDTH) {
+		if (*unit == CSS_UNIT_CALC) {
+			/* TODO */
+		} else {
+			*length = temp.value;
+		}
+	}
+
+	return type;
 }
 
 uint8_t css_computed_border_left_width(const css_computed_style *style,
@@ -472,7 +495,7 @@ uint8_t css_computed_top(const css_computed_style *style,
 			*unit = CSS_UNIT_PX;
 		} else if (top == CSS_TOP_AUTO) {
 			/* Top is auto => -bottom */
-			*length = -style->i.bottom;
+			*length = -style->i.bottom.value;
 			*unit = (css_unit) (bottom >> 2);
 		}
 
@@ -1448,7 +1471,7 @@ css_error compute_absolute_border_width(css_computed_style *style,
 	if (error != CSS_OK)
 		return error;
 
-	error = compute_absolute_border_side_width(style, ex_size,
+	error = compute_absolute_border_side_width_calc(style, ex_size,
 			get_border_bottom_width,
 			set_border_bottom_width);
 	if (error != CSS_OK)
@@ -1498,6 +1521,51 @@ css_error compute_absolute_border_side_width(css_computed_style *style,
 	case CSS_BORDER_WIDTH_WIDTH:
 		if (unit == CSS_UNIT_EX) {
 			length = FMUL(length, ex_size->value);
+			unit = ex_size->unit;
+		}
+		break;
+	default:
+		return CSS_INVALID;
+	}
+
+	return set(style, CSS_BORDER_WIDTH_WIDTH, length, unit);
+}
+
+/**
+ * Compute an absolute border side width
+ *
+ * \param style      Style to process
+ * \param ex_size    Ex size, in ems
+ * \param get        Function to read length
+ * \param set        Function to write length
+ * \return CSS_OK on success
+ */
+css_error compute_absolute_border_side_width_calc(css_computed_style *style,
+		const css_hint_length *ex_size,
+		uint8_t (*get)(const css_computed_style *style,
+				css_fixed_or_calc *len, css_unit *unit),
+		css_error (*set)(css_computed_style *style, uint8_t type,
+				css_fixed_or_calc len, css_unit unit))
+{
+	css_fixed_or_calc length;
+	css_unit unit;
+
+	switch (get(style, &length, &unit)) {
+	case CSS_BORDER_WIDTH_THIN:
+		length.value = INTTOFIX(1);
+		unit = CSS_UNIT_PX;
+		break;
+	case CSS_BORDER_WIDTH_MEDIUM:
+		length.value = INTTOFIX(2);
+		unit = CSS_UNIT_PX;
+		break;
+	case CSS_BORDER_WIDTH_THICK:
+		length.value = INTTOFIX(4);
+		unit = CSS_UNIT_PX;
+		break;
+	case CSS_BORDER_WIDTH_WIDTH:
+		if (unit == CSS_UNIT_EX) {
+			length.value = FMUL(length.value, ex_size->value);
 			unit = ex_size->unit;
 		}
 		break;
@@ -1613,7 +1681,7 @@ css_error compute_absolute_sides(css_computed_style *style,
 	if (error != CSS_OK)
 		return error;
 
-	error = compute_absolute_length(style, ex_size,
+	error = compute_absolute_length_calc(style, ex_size,
 			get_bottom, set_bottom);
 	if (error != CSS_OK)
 		return error;
@@ -1751,6 +1819,38 @@ css_error compute_absolute_length(css_computed_style *style,
 
 	if (type == CSS_WIDTH_SET && unit == CSS_UNIT_EX) {
 		length = FMUL(length, ex_size->value);
+		unit = ex_size->unit;
+
+		return set(style, type, length, unit);
+	}
+
+	return CSS_OK;
+}
+
+/**
+ * Compute the absolute value of length
+ *
+ * \param style      Style to process
+ * \param ex_size    Ex size, in ems
+ * \param get        Function to read length
+ * \param set        Function to write length
+ * \return CSS_OK on success
+ */
+css_error compute_absolute_length_calc(css_computed_style *style,
+		const css_hint_length *ex_size,
+		uint8_t (*get)(const css_computed_style *style,
+				css_fixed_or_calc *len, css_unit *unit),
+		css_error (*set)(css_computed_style *style, uint8_t type,
+				css_fixed_or_calc len, css_unit unit))
+{
+	css_unit unit = CSS_UNIT_PX;
+	css_fixed_or_calc length;
+	uint8_t type;
+
+	type = get(style, &length, &unit);
+
+	if (type == CSS_WIDTH_SET && unit == CSS_UNIT_EX) {
+		length.value = FMUL(length.value, ex_size->value);
 		unit = ex_size->unit;
 
 		return set(style, type, length, unit);
