@@ -263,7 +263,6 @@ struct css_computed_style_i {
 	css_fixed width;
 	css_fixed word_spacing;
 	int32_t z_index;
-	
 };
 
 struct css_computed_style {
