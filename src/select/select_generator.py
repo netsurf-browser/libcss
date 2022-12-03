@@ -524,10 +524,7 @@ class CSSGroup:
             t.append('{')
             t.indent(1)
 
-            t.append('uint32_t *bits;')
-            t.append()
-
-            t.append('bits = &style->i.bits[{}_INDEX];'.format(p.name.upper()))
+            t.append('uint32_t *bits = &style->i.bits[{}_INDEX];'.format(p.name.upper()))
             t.append()
 
             type_mask, shift_list, bits_comment = p.get_bits()

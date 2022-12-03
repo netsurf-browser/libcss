@@ -15,9 +15,7 @@
 static inline css_error set_align_content(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[ALIGN_CONTENT_INDEX];
+	uint32_t *bits = &style->i.bits[ALIGN_CONTENT_INDEX];
 	
 	/* 3bits: ttt : type */
 	*bits = (*bits & ~ALIGN_CONTENT_MASK) | (((uint32_t)type & 0x7) <<
@@ -35,9 +33,7 @@ static inline css_error set_align_content(css_computed_style *style, uint8_t
 
 static inline css_error set_align_items(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[ALIGN_ITEMS_INDEX];
+	uint32_t *bits = &style->i.bits[ALIGN_ITEMS_INDEX];
 	
 	/* 3bits: ttt : type */
 	*bits = (*bits & ~ALIGN_ITEMS_MASK) | (((uint32_t)type & 0x7) <<
@@ -55,9 +51,7 @@ static inline css_error set_align_items(css_computed_style *style, uint8_t type)
 
 static inline css_error set_align_self(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[ALIGN_SELF_INDEX];
+	uint32_t *bits = &style->i.bits[ALIGN_SELF_INDEX];
 	
 	/* 3bits: ttt : type */
 	*bits = (*bits & ~ALIGN_SELF_MASK) | (((uint32_t)type & 0x7) <<
@@ -76,9 +70,7 @@ static inline css_error set_align_self(css_computed_style *style, uint8_t type)
 static inline css_error set_background_attachment(css_computed_style *style,
 		uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BACKGROUND_ATTACHMENT_INDEX];
+	uint32_t *bits = &style->i.bits[BACKGROUND_ATTACHMENT_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~BACKGROUND_ATTACHMENT_MASK) | (((uint32_t)type & 0x3)
@@ -97,9 +89,7 @@ static inline css_error set_background_attachment(css_computed_style *style,
 static inline css_error set_background_color(css_computed_style *style, uint8_t
 		type, css_color color)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BACKGROUND_COLOR_INDEX];
+	uint32_t *bits = &style->i.bits[BACKGROUND_COLOR_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~BACKGROUND_COLOR_MASK) | (((uint32_t)type & 0x3) <<
@@ -120,9 +110,7 @@ static inline css_error set_background_color(css_computed_style *style, uint8_t
 static inline css_error set_background_image(css_computed_style *style, uint8_t
 		type, lwc_string *string)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BACKGROUND_IMAGE_INDEX];
+	uint32_t *bits = &style->i.bits[BACKGROUND_IMAGE_INDEX];
 	
 	/* 1bit: t : type */
 	*bits = (*bits & ~BACKGROUND_IMAGE_MASK) | (((uint32_t)type & 0x1) <<
@@ -153,9 +141,7 @@ static inline css_error set_background_position(css_computed_style *style,
 		uint8_t type, css_fixed length_a, css_unit unit_a, css_fixed
 		length_b, css_unit unit_b)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BACKGROUND_POSITION_INDEX];
+	uint32_t *bits = &style->i.bits[BACKGROUND_POSITION_INDEX];
 	
 	/* 11bits: aaaaabbbbbt : unit_a | unit_b | type */
 	*bits = (*bits & ~BACKGROUND_POSITION_MASK) | ((((uint32_t)type & 0x1)
@@ -179,9 +165,7 @@ static inline css_error set_background_position(css_computed_style *style,
 static inline css_error set_background_repeat(css_computed_style *style,
 		uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BACKGROUND_REPEAT_INDEX];
+	uint32_t *bits = &style->i.bits[BACKGROUND_REPEAT_INDEX];
 	
 	/* 3bits: ttt : type */
 	*bits = (*bits & ~BACKGROUND_REPEAT_MASK) | (((uint32_t)type & 0x7) <<
@@ -200,9 +184,7 @@ static inline css_error set_background_repeat(css_computed_style *style,
 static inline css_error set_border_bottom_color(css_computed_style *style,
 		uint8_t type, css_color color)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BORDER_BOTTOM_COLOR_INDEX];
+	uint32_t *bits = &style->i.bits[BORDER_BOTTOM_COLOR_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~BORDER_BOTTOM_COLOR_MASK) | (((uint32_t)type & 0x3)
@@ -223,9 +205,7 @@ static inline css_error set_border_bottom_color(css_computed_style *style,
 static inline css_error set_border_bottom_style(css_computed_style *style,
 		uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BORDER_BOTTOM_STYLE_INDEX];
+	uint32_t *bits = &style->i.bits[BORDER_BOTTOM_STYLE_INDEX];
 	
 	/* 4bits: tttt : type */
 	*bits = (*bits & ~BORDER_BOTTOM_STYLE_MASK) | (((uint32_t)type & 0xf)
@@ -244,9 +224,7 @@ static inline css_error set_border_bottom_style(css_computed_style *style,
 static inline css_error set_border_bottom_width(css_computed_style *style,
 		uint8_t type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BORDER_BOTTOM_WIDTH_INDEX];
+	uint32_t *bits = &style->i.bits[BORDER_BOTTOM_WIDTH_INDEX];
 	
 	/* 8bits: uuuuuttt : unit | type */
 	*bits = (*bits & ~BORDER_BOTTOM_WIDTH_MASK) | ((((uint32_t)type & 0x7)
@@ -267,9 +245,7 @@ static inline css_error set_border_bottom_width(css_computed_style *style,
 static inline css_error set_border_collapse(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BORDER_COLLAPSE_INDEX];
+	uint32_t *bits = &style->i.bits[BORDER_COLLAPSE_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~BORDER_COLLAPSE_MASK) | (((uint32_t)type & 0x3) <<
@@ -288,9 +264,7 @@ static inline css_error set_border_collapse(css_computed_style *style, uint8_t
 static inline css_error set_border_left_color(css_computed_style *style,
 		uint8_t type, css_color color)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BORDER_LEFT_COLOR_INDEX];
+	uint32_t *bits = &style->i.bits[BORDER_LEFT_COLOR_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~BORDER_LEFT_COLOR_MASK) | (((uint32_t)type & 0x3) <<
@@ -311,9 +285,7 @@ static inline css_error set_border_left_color(css_computed_style *style,
 static inline css_error set_border_left_style(css_computed_style *style,
 		uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BORDER_LEFT_STYLE_INDEX];
+	uint32_t *bits = &style->i.bits[BORDER_LEFT_STYLE_INDEX];
 	
 	/* 4bits: tttt : type */
 	*bits = (*bits & ~BORDER_LEFT_STYLE_MASK) | (((uint32_t)type & 0xf) <<
@@ -332,9 +304,7 @@ static inline css_error set_border_left_style(css_computed_style *style,
 static inline css_error set_border_left_width(css_computed_style *style,
 		uint8_t type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BORDER_LEFT_WIDTH_INDEX];
+	uint32_t *bits = &style->i.bits[BORDER_LEFT_WIDTH_INDEX];
 	
 	/* 8bits: uuuuuttt : unit | type */
 	*bits = (*bits & ~BORDER_LEFT_WIDTH_MASK) | ((((uint32_t)type & 0x7) | (
@@ -355,9 +325,7 @@ static inline css_error set_border_left_width(css_computed_style *style,
 static inline css_error set_border_right_color(css_computed_style *style,
 		uint8_t type, css_color color)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BORDER_RIGHT_COLOR_INDEX];
+	uint32_t *bits = &style->i.bits[BORDER_RIGHT_COLOR_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~BORDER_RIGHT_COLOR_MASK) | (((uint32_t)type & 0x3) <<
@@ -378,9 +346,7 @@ static inline css_error set_border_right_color(css_computed_style *style,
 static inline css_error set_border_right_style(css_computed_style *style,
 		uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BORDER_RIGHT_STYLE_INDEX];
+	uint32_t *bits = &style->i.bits[BORDER_RIGHT_STYLE_INDEX];
 	
 	/* 4bits: tttt : type */
 	*bits = (*bits & ~BORDER_RIGHT_STYLE_MASK) | (((uint32_t)type & 0xf) <<
@@ -399,9 +365,7 @@ static inline css_error set_border_right_style(css_computed_style *style,
 static inline css_error set_border_right_width(css_computed_style *style,
 		uint8_t type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BORDER_RIGHT_WIDTH_INDEX];
+	uint32_t *bits = &style->i.bits[BORDER_RIGHT_WIDTH_INDEX];
 	
 	/* 8bits: uuuuuttt : unit | type */
 	*bits = (*bits & ~BORDER_RIGHT_WIDTH_MASK) | ((((uint32_t)type & 0x7) |
@@ -423,9 +387,7 @@ static inline css_error set_border_spacing(css_computed_style *style, uint8_t
 		type, css_fixed length_a, css_unit unit_a, css_fixed length_b,
 		css_unit unit_b)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BORDER_SPACING_INDEX];
+	uint32_t *bits = &style->i.bits[BORDER_SPACING_INDEX];
 	
 	/* 11bits: aaaaabbbbbt : unit_a | unit_b | type */
 	*bits = (*bits & ~BORDER_SPACING_MASK) | ((((uint32_t)type & 0x1) | (
@@ -448,9 +410,7 @@ static inline css_error set_border_spacing(css_computed_style *style, uint8_t
 static inline css_error set_border_top_color(css_computed_style *style, uint8_t
 		type, css_color color)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BORDER_TOP_COLOR_INDEX];
+	uint32_t *bits = &style->i.bits[BORDER_TOP_COLOR_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~BORDER_TOP_COLOR_MASK) | (((uint32_t)type & 0x3) <<
@@ -471,9 +431,7 @@ static inline css_error set_border_top_color(css_computed_style *style, uint8_t
 static inline css_error set_border_top_style(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BORDER_TOP_STYLE_INDEX];
+	uint32_t *bits = &style->i.bits[BORDER_TOP_STYLE_INDEX];
 	
 	/* 4bits: tttt : type */
 	*bits = (*bits & ~BORDER_TOP_STYLE_MASK) | (((uint32_t)type & 0xf) <<
@@ -492,9 +450,7 @@ static inline css_error set_border_top_style(css_computed_style *style, uint8_t
 static inline css_error set_border_top_width(css_computed_style *style, uint8_t
 		type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BORDER_TOP_WIDTH_INDEX];
+	uint32_t *bits = &style->i.bits[BORDER_TOP_WIDTH_INDEX];
 	
 	/* 8bits: uuuuuttt : unit | type */
 	*bits = (*bits & ~BORDER_TOP_WIDTH_MASK) | ((((uint32_t)type & 0x7) | (
@@ -515,9 +471,7 @@ static inline css_error set_border_top_width(css_computed_style *style, uint8_t
 static inline css_error set_bottom(css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BOTTOM_INDEX];
+	uint32_t *bits = &style->i.bits[BOTTOM_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~BOTTOM_MASK) | ((((uint32_t)type & 0x3) | (unit <<
@@ -537,9 +491,7 @@ static inline css_error set_bottom(css_computed_style *style, uint8_t type,
 
 static inline css_error set_box_sizing(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BOX_SIZING_INDEX];
+	uint32_t *bits = &style->i.bits[BOX_SIZING_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~BOX_SIZING_MASK) | (((uint32_t)type & 0x3) <<
@@ -557,9 +509,7 @@ static inline css_error set_box_sizing(css_computed_style *style, uint8_t type)
 
 static inline css_error set_break_after(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BREAK_AFTER_INDEX];
+	uint32_t *bits = &style->i.bits[BREAK_AFTER_INDEX];
 	
 	/* 4bits: tttt : type */
 	*bits = (*bits & ~BREAK_AFTER_MASK) | (((uint32_t)type & 0xf) <<
@@ -578,9 +528,7 @@ static inline css_error set_break_after(css_computed_style *style, uint8_t type)
 static inline css_error set_break_before(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BREAK_BEFORE_INDEX];
+	uint32_t *bits = &style->i.bits[BREAK_BEFORE_INDEX];
 	
 	/* 4bits: tttt : type */
 	*bits = (*bits & ~BREAK_BEFORE_MASK) | (((uint32_t)type & 0xf) <<
@@ -599,9 +547,7 @@ static inline css_error set_break_before(css_computed_style *style, uint8_t
 static inline css_error set_break_inside(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[BREAK_INSIDE_INDEX];
+	uint32_t *bits = &style->i.bits[BREAK_INSIDE_INDEX];
 	
 	/* 4bits: tttt : type */
 	*bits = (*bits & ~BREAK_INSIDE_MASK) | (((uint32_t)type & 0xf) <<
@@ -620,9 +566,7 @@ static inline css_error set_break_inside(css_computed_style *style, uint8_t
 static inline css_error set_caption_side(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[CAPTION_SIDE_INDEX];
+	uint32_t *bits = &style->i.bits[CAPTION_SIDE_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~CAPTION_SIDE_MASK) | (((uint32_t)type & 0x3) <<
@@ -640,9 +584,7 @@ static inline css_error set_caption_side(css_computed_style *style, uint8_t
 
 static inline css_error set_clear(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[CLEAR_INDEX];
+	uint32_t *bits = &style->i.bits[CLEAR_INDEX];
 	
 	/* 3bits: ttt : type */
 	*bits = (*bits & ~CLEAR_MASK) | (((uint32_t)type & 0x7) << CLEAR_SHIFT);
@@ -703,9 +645,7 @@ static inline css_error set_clip(
 static inline css_error set_color(css_computed_style *style, uint8_t type,
 		css_color color)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[COLOR_INDEX];
+	uint32_t *bits = &style->i.bits[COLOR_INDEX];
 	
 	/* 1bit: t : type */
 	*bits = (*bits & ~COLOR_MASK) | (((uint32_t)type & 0x1) << COLOR_SHIFT);
@@ -725,9 +665,7 @@ static inline css_error set_color(css_computed_style *style, uint8_t type,
 static inline css_error set_column_count(css_computed_style *style, uint8_t
 		type, int32_t integer)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[COLUMN_COUNT_INDEX];
+	uint32_t *bits = &style->i.bits[COLUMN_COUNT_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~COLUMN_COUNT_MASK) | (((uint32_t)type & 0x3) <<
@@ -747,9 +685,7 @@ static inline css_error set_column_count(css_computed_style *style, uint8_t
 
 static inline css_error set_column_fill(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[COLUMN_FILL_INDEX];
+	uint32_t *bits = &style->i.bits[COLUMN_FILL_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~COLUMN_FILL_MASK) | (((uint32_t)type & 0x3) <<
@@ -768,9 +704,7 @@ static inline css_error set_column_fill(css_computed_style *style, uint8_t type)
 static inline css_error set_column_gap(css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[COLUMN_GAP_INDEX];
+	uint32_t *bits = &style->i.bits[COLUMN_GAP_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~COLUMN_GAP_MASK) | ((((uint32_t)type & 0x3) | (unit
@@ -791,9 +725,7 @@ static inline css_error set_column_gap(css_computed_style *style, uint8_t type,
 static inline css_error set_column_rule_color(css_computed_style *style,
 		uint8_t type, css_color color)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[COLUMN_RULE_COLOR_INDEX];
+	uint32_t *bits = &style->i.bits[COLUMN_RULE_COLOR_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~COLUMN_RULE_COLOR_MASK) | (((uint32_t)type & 0x3) <<
@@ -814,9 +746,7 @@ static inline css_error set_column_rule_color(css_computed_style *style,
 static inline css_error set_column_rule_style(css_computed_style *style,
 		uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[COLUMN_RULE_STYLE_INDEX];
+	uint32_t *bits = &style->i.bits[COLUMN_RULE_STYLE_INDEX];
 	
 	/* 4bits: tttt : type */
 	*bits = (*bits & ~COLUMN_RULE_STYLE_MASK) | (((uint32_t)type & 0xf) <<
@@ -835,9 +765,7 @@ static inline css_error set_column_rule_style(css_computed_style *style,
 static inline css_error set_column_rule_width(css_computed_style *style,
 		uint8_t type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[COLUMN_RULE_WIDTH_INDEX];
+	uint32_t *bits = &style->i.bits[COLUMN_RULE_WIDTH_INDEX];
 	
 	/* 8bits: uuuuuttt : unit | type */
 	*bits = (*bits & ~COLUMN_RULE_WIDTH_MASK) | ((((uint32_t)type & 0x7) | (
@@ -857,9 +785,7 @@ static inline css_error set_column_rule_width(css_computed_style *style,
 
 static inline css_error set_column_span(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[COLUMN_SPAN_INDEX];
+	uint32_t *bits = &style->i.bits[COLUMN_SPAN_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~COLUMN_SPAN_MASK) | (((uint32_t)type & 0x3) <<
@@ -878,9 +804,7 @@ static inline css_error set_column_span(css_computed_style *style, uint8_t type)
 static inline css_error set_column_width(css_computed_style *style, uint8_t
 		type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[COLUMN_WIDTH_INDEX];
+	uint32_t *bits = &style->i.bits[COLUMN_WIDTH_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~COLUMN_WIDTH_MASK) | ((((uint32_t)type & 0x3) | (unit
@@ -984,9 +908,7 @@ static inline css_error set_content(
 static inline css_error set_counter_increment(css_computed_style *style,
 		uint8_t type, css_computed_counter *counter_arr)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[COUNTER_INCREMENT_INDEX];
+	uint32_t *bits = &style->i.bits[COUNTER_INCREMENT_INDEX];
 	
 	/* 1bit: t : type */
 	*bits = (*bits & ~COUNTER_INCREMENT_MASK) | (((uint32_t)type & 0x1) <<
@@ -1022,9 +944,7 @@ static inline css_error set_counter_increment(css_computed_style *style,
 static inline css_error set_counter_reset(css_computed_style *style, uint8_t
 		type, css_computed_counter *counter_arr)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[COUNTER_RESET_INDEX];
+	uint32_t *bits = &style->i.bits[COUNTER_RESET_INDEX];
 	
 	/* 1bit: t : type */
 	*bits = (*bits & ~COUNTER_RESET_MASK) | (((uint32_t)type & 0x1) <<
@@ -1060,9 +980,7 @@ static inline css_error set_counter_reset(css_computed_style *style, uint8_t
 static inline css_error set_cursor(css_computed_style *style, uint8_t type,
 		lwc_string **string_arr)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[CURSOR_INDEX];
+	uint32_t *bits = &style->i.bits[CURSOR_INDEX];
 	
 	/* 5bits: ttttt : type */
 	*bits = (*bits & ~CURSOR_MASK) | (((uint32_t)type & 0x1f) <<
@@ -1097,9 +1015,7 @@ static inline css_error set_cursor(css_computed_style *style, uint8_t type,
 
 static inline css_error set_direction(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[DIRECTION_INDEX];
+	uint32_t *bits = &style->i.bits[DIRECTION_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~DIRECTION_MASK) | (((uint32_t)type & 0x3) <<
@@ -1117,9 +1033,7 @@ static inline css_error set_direction(css_computed_style *style, uint8_t type)
 
 static inline css_error set_display(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[DISPLAY_INDEX];
+	uint32_t *bits = &style->i.bits[DISPLAY_INDEX];
 	
 	/* 5bits: ttttt : type */
 	*bits = (*bits & ~DISPLAY_MASK) | (((uint32_t)type & 0x1f) <<
@@ -1137,9 +1051,7 @@ static inline css_error set_display(css_computed_style *style, uint8_t type)
 
 static inline css_error set_empty_cells(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[EMPTY_CELLS_INDEX];
+	uint32_t *bits = &style->i.bits[EMPTY_CELLS_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~EMPTY_CELLS_MASK) | (((uint32_t)type & 0x3) <<
@@ -1158,9 +1070,7 @@ static inline css_error set_empty_cells(css_computed_style *style, uint8_t type)
 static inline css_error set_flex_basis(css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[FLEX_BASIS_INDEX];
+	uint32_t *bits = &style->i.bits[FLEX_BASIS_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~FLEX_BASIS_MASK) | ((((uint32_t)type & 0x3) | (unit
@@ -1181,9 +1091,7 @@ static inline css_error set_flex_basis(css_computed_style *style, uint8_t type,
 static inline css_error set_flex_direction(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[FLEX_DIRECTION_INDEX];
+	uint32_t *bits = &style->i.bits[FLEX_DIRECTION_INDEX];
 	
 	/* 3bits: ttt : type */
 	*bits = (*bits & ~FLEX_DIRECTION_MASK) | (((uint32_t)type & 0x7) <<
@@ -1202,9 +1110,7 @@ static inline css_error set_flex_direction(css_computed_style *style, uint8_t
 static inline css_error set_flex_grow(css_computed_style *style, uint8_t type,
 		css_fixed fixed)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[FLEX_GROW_INDEX];
+	uint32_t *bits = &style->i.bits[FLEX_GROW_INDEX];
 	
 	/* 1bit: t : type */
 	*bits = (*bits & ~FLEX_GROW_MASK) | (((uint32_t)type & 0x1) <<
@@ -1225,9 +1131,7 @@ static inline css_error set_flex_grow(css_computed_style *style, uint8_t type,
 static inline css_error set_flex_shrink(css_computed_style *style, uint8_t
 		type, css_fixed fixed)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[FLEX_SHRINK_INDEX];
+	uint32_t *bits = &style->i.bits[FLEX_SHRINK_INDEX];
 	
 	/* 1bit: t : type */
 	*bits = (*bits & ~FLEX_SHRINK_MASK) | (((uint32_t)type & 0x1) <<
@@ -1247,9 +1151,7 @@ static inline css_error set_flex_shrink(css_computed_style *style, uint8_t
 
 static inline css_error set_flex_wrap(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[FLEX_WRAP_INDEX];
+	uint32_t *bits = &style->i.bits[FLEX_WRAP_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~FLEX_WRAP_MASK) | (((uint32_t)type & 0x3) <<
@@ -1267,9 +1169,7 @@ static inline css_error set_flex_wrap(css_computed_style *style, uint8_t type)
 
 static inline css_error set_float(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[FLOAT_INDEX];
+	uint32_t *bits = &style->i.bits[FLOAT_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~FLOAT_MASK) | (((uint32_t)type & 0x3) << FLOAT_SHIFT);
@@ -1287,9 +1187,7 @@ static inline css_error set_float(css_computed_style *style, uint8_t type)
 static inline css_error set_font_family(css_computed_style *style, uint8_t
 		type, lwc_string **string_arr)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[FONT_FAMILY_INDEX];
+	uint32_t *bits = &style->i.bits[FONT_FAMILY_INDEX];
 	
 	/* 3bits: ttt : type */
 	*bits = (*bits & ~FONT_FAMILY_MASK) | (((uint32_t)type & 0x7) <<
@@ -1325,9 +1223,7 @@ static inline css_error set_font_family(css_computed_style *style, uint8_t
 static inline css_error set_font_size(css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[FONT_SIZE_INDEX];
+	uint32_t *bits = &style->i.bits[FONT_SIZE_INDEX];
 	
 	/* 9bits: uuuuutttt : unit | type */
 	*bits = (*bits & ~FONT_SIZE_MASK) | ((((uint32_t)type & 0xf) | (unit <<
@@ -1347,9 +1243,7 @@ static inline css_error set_font_size(css_computed_style *style, uint8_t type,
 
 static inline css_error set_font_style(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[FONT_STYLE_INDEX];
+	uint32_t *bits = &style->i.bits[FONT_STYLE_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~FONT_STYLE_MASK) | (((uint32_t)type & 0x3) <<
@@ -1368,9 +1262,7 @@ static inline css_error set_font_style(css_computed_style *style, uint8_t type)
 static inline css_error set_font_variant(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[FONT_VARIANT_INDEX];
+	uint32_t *bits = &style->i.bits[FONT_VARIANT_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~FONT_VARIANT_MASK) | (((uint32_t)type & 0x3) <<
@@ -1388,9 +1280,7 @@ static inline css_error set_font_variant(css_computed_style *style, uint8_t
 
 static inline css_error set_font_weight(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[FONT_WEIGHT_INDEX];
+	uint32_t *bits = &style->i.bits[FONT_WEIGHT_INDEX];
 	
 	/* 4bits: tttt : type */
 	*bits = (*bits & ~FONT_WEIGHT_MASK) | (((uint32_t)type & 0xf) <<
@@ -1409,9 +1299,7 @@ static inline css_error set_font_weight(css_computed_style *style, uint8_t type)
 static inline css_error set_height(css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[HEIGHT_INDEX];
+	uint32_t *bits = &style->i.bits[HEIGHT_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~HEIGHT_MASK) | ((((uint32_t)type & 0x3) | (unit <<
@@ -1432,9 +1320,7 @@ static inline css_error set_height(css_computed_style *style, uint8_t type,
 static inline css_error set_justify_content(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[JUSTIFY_CONTENT_INDEX];
+	uint32_t *bits = &style->i.bits[JUSTIFY_CONTENT_INDEX];
 	
 	/* 3bits: ttt : type */
 	*bits = (*bits & ~JUSTIFY_CONTENT_MASK) | (((uint32_t)type & 0x7) <<
@@ -1453,9 +1339,7 @@ static inline css_error set_justify_content(css_computed_style *style, uint8_t
 static inline css_error set_left(css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[LEFT_INDEX];
+	uint32_t *bits = &style->i.bits[LEFT_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~LEFT_MASK) | ((((uint32_t)type & 0x3) | (unit << 2))
@@ -1476,9 +1360,7 @@ static inline css_error set_left(css_computed_style *style, uint8_t type,
 static inline css_error set_letter_spacing(css_computed_style *style, uint8_t
 		type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[LETTER_SPACING_INDEX];
+	uint32_t *bits = &style->i.bits[LETTER_SPACING_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~LETTER_SPACING_MASK) | ((((uint32_t)type & 0x3) | (
@@ -1499,9 +1381,7 @@ static inline css_error set_letter_spacing(css_computed_style *style, uint8_t
 static inline css_error set_line_height(css_computed_style *style, uint8_t
 		type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[LINE_HEIGHT_INDEX];
+	uint32_t *bits = &style->i.bits[LINE_HEIGHT_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~LINE_HEIGHT_MASK) | ((((uint32_t)type & 0x3) | (unit
@@ -1522,9 +1402,7 @@ static inline css_error set_line_height(css_computed_style *style, uint8_t
 static inline css_error set_list_style_image(css_computed_style *style, uint8_t
 		type, lwc_string *string)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[LIST_STYLE_IMAGE_INDEX];
+	uint32_t *bits = &style->i.bits[LIST_STYLE_IMAGE_INDEX];
 	
 	/* 1bit: t : type */
 	*bits = (*bits & ~LIST_STYLE_IMAGE_MASK) | (((uint32_t)type & 0x1) <<
@@ -1554,9 +1432,7 @@ static inline css_error set_list_style_image(css_computed_style *style, uint8_t
 static inline css_error set_list_style_position(css_computed_style *style,
 		uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[LIST_STYLE_POSITION_INDEX];
+	uint32_t *bits = &style->i.bits[LIST_STYLE_POSITION_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~LIST_STYLE_POSITION_MASK) | (((uint32_t)type & 0x3)
@@ -1575,9 +1451,7 @@ static inline css_error set_list_style_position(css_computed_style *style,
 static inline css_error set_list_style_type(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[LIST_STYLE_TYPE_INDEX];
+	uint32_t *bits = &style->i.bits[LIST_STYLE_TYPE_INDEX];
 	
 	/* 6bits: tttttt : type */
 	*bits = (*bits & ~LIST_STYLE_TYPE_MASK) | (((uint32_t)type & 0x3f) <<
@@ -1596,9 +1470,7 @@ static inline css_error set_list_style_type(css_computed_style *style, uint8_t
 static inline css_error set_margin_bottom(css_computed_style *style, uint8_t
 		type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[MARGIN_BOTTOM_INDEX];
+	uint32_t *bits = &style->i.bits[MARGIN_BOTTOM_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~MARGIN_BOTTOM_MASK) | ((((uint32_t)type & 0x3) | (
@@ -1619,9 +1491,7 @@ static inline css_error set_margin_bottom(css_computed_style *style, uint8_t
 static inline css_error set_margin_left(css_computed_style *style, uint8_t
 		type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[MARGIN_LEFT_INDEX];
+	uint32_t *bits = &style->i.bits[MARGIN_LEFT_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~MARGIN_LEFT_MASK) | ((((uint32_t)type & 0x3) | (unit
@@ -1642,9 +1512,7 @@ static inline css_error set_margin_left(css_computed_style *style, uint8_t
 static inline css_error set_margin_right(css_computed_style *style, uint8_t
 		type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[MARGIN_RIGHT_INDEX];
+	uint32_t *bits = &style->i.bits[MARGIN_RIGHT_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~MARGIN_RIGHT_MASK) | ((((uint32_t)type & 0x3) | (unit
@@ -1665,9 +1533,7 @@ static inline css_error set_margin_right(css_computed_style *style, uint8_t
 static inline css_error set_margin_top(css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[MARGIN_TOP_INDEX];
+	uint32_t *bits = &style->i.bits[MARGIN_TOP_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~MARGIN_TOP_MASK) | ((((uint32_t)type & 0x3) | (unit
@@ -1688,9 +1554,7 @@ static inline css_error set_margin_top(css_computed_style *style, uint8_t type,
 static inline css_error set_max_height(css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[MAX_HEIGHT_INDEX];
+	uint32_t *bits = &style->i.bits[MAX_HEIGHT_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~MAX_HEIGHT_MASK) | ((((uint32_t)type & 0x3) | (unit
@@ -1711,9 +1575,7 @@ static inline css_error set_max_height(css_computed_style *style, uint8_t type,
 static inline css_error set_max_width(css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[MAX_WIDTH_INDEX];
+	uint32_t *bits = &style->i.bits[MAX_WIDTH_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~MAX_WIDTH_MASK) | ((((uint32_t)type & 0x3) | (unit <<
@@ -1734,9 +1596,7 @@ static inline css_error set_max_width(css_computed_style *style, uint8_t type,
 static inline css_error set_min_height(css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[MIN_HEIGHT_INDEX];
+	uint32_t *bits = &style->i.bits[MIN_HEIGHT_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~MIN_HEIGHT_MASK) | ((((uint32_t)type & 0x3) | (unit
@@ -1757,9 +1617,7 @@ static inline css_error set_min_height(css_computed_style *style, uint8_t type,
 static inline css_error set_min_width(css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[MIN_WIDTH_INDEX];
+	uint32_t *bits = &style->i.bits[MIN_WIDTH_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~MIN_WIDTH_MASK) | ((((uint32_t)type & 0x3) | (unit <<
@@ -1780,9 +1638,7 @@ static inline css_error set_min_width(css_computed_style *style, uint8_t type,
 static inline css_error set_opacity(css_computed_style *style, uint8_t type,
 		css_fixed fixed)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[OPACITY_INDEX];
+	uint32_t *bits = &style->i.bits[OPACITY_INDEX];
 	
 	/* 1bit: t : type */
 	*bits = (*bits & ~OPACITY_MASK) | (((uint32_t)type & 0x1) <<
@@ -1803,9 +1659,7 @@ static inline css_error set_opacity(css_computed_style *style, uint8_t type,
 static inline css_error set_order(css_computed_style *style, uint8_t type,
 		int32_t integer)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[ORDER_INDEX];
+	uint32_t *bits = &style->i.bits[ORDER_INDEX];
 	
 	/* 1bit: t : type */
 	*bits = (*bits & ~ORDER_MASK) | (((uint32_t)type & 0x1) << ORDER_SHIFT);
@@ -1825,9 +1679,7 @@ static inline css_error set_order(css_computed_style *style, uint8_t type,
 static inline css_error set_orphans(css_computed_style *style, uint8_t type,
 		int32_t integer)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[ORPHANS_INDEX];
+	uint32_t *bits = &style->i.bits[ORPHANS_INDEX];
 	
 	/* 1bit: t : type */
 	*bits = (*bits & ~ORPHANS_MASK) | (((uint32_t)type & 0x1) <<
@@ -1848,9 +1700,7 @@ static inline css_error set_orphans(css_computed_style *style, uint8_t type,
 static inline css_error set_outline_color(css_computed_style *style, uint8_t
 		type, css_color color)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[OUTLINE_COLOR_INDEX];
+	uint32_t *bits = &style->i.bits[OUTLINE_COLOR_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~OUTLINE_COLOR_MASK) | (((uint32_t)type & 0x3) <<
@@ -1871,9 +1721,7 @@ static inline css_error set_outline_color(css_computed_style *style, uint8_t
 static inline css_error set_outline_style(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[OUTLINE_STYLE_INDEX];
+	uint32_t *bits = &style->i.bits[OUTLINE_STYLE_INDEX];
 	
 	/* 4bits: tttt : type */
 	*bits = (*bits & ~OUTLINE_STYLE_MASK) | (((uint32_t)type & 0xf) <<
@@ -1892,9 +1740,7 @@ static inline css_error set_outline_style(css_computed_style *style, uint8_t
 static inline css_error set_outline_width(css_computed_style *style, uint8_t
 		type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[OUTLINE_WIDTH_INDEX];
+	uint32_t *bits = &style->i.bits[OUTLINE_WIDTH_INDEX];
 	
 	/* 8bits: uuuuuttt : unit | type */
 	*bits = (*bits & ~OUTLINE_WIDTH_MASK) | ((((uint32_t)type & 0x7) | (
@@ -1914,9 +1760,7 @@ static inline css_error set_outline_width(css_computed_style *style, uint8_t
 
 static inline css_error set_overflow_x(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[OVERFLOW_X_INDEX];
+	uint32_t *bits = &style->i.bits[OVERFLOW_X_INDEX];
 	
 	/* 3bits: ttt : type */
 	*bits = (*bits & ~OVERFLOW_X_MASK) | (((uint32_t)type & 0x7) <<
@@ -1934,9 +1778,7 @@ static inline css_error set_overflow_x(css_computed_style *style, uint8_t type)
 
 static inline css_error set_overflow_y(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[OVERFLOW_Y_INDEX];
+	uint32_t *bits = &style->i.bits[OVERFLOW_Y_INDEX];
 	
 	/* 3bits: ttt : type */
 	*bits = (*bits & ~OVERFLOW_Y_MASK) | (((uint32_t)type & 0x7) <<
@@ -1955,9 +1797,7 @@ static inline css_error set_overflow_y(css_computed_style *style, uint8_t type)
 static inline css_error set_padding_bottom(css_computed_style *style, uint8_t
 		type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[PADDING_BOTTOM_INDEX];
+	uint32_t *bits = &style->i.bits[PADDING_BOTTOM_INDEX];
 	
 	/* 6bits: uuuuut : unit | type */
 	*bits = (*bits & ~PADDING_BOTTOM_MASK) | ((((uint32_t)type & 0x1) | (
@@ -1978,9 +1818,7 @@ static inline css_error set_padding_bottom(css_computed_style *style, uint8_t
 static inline css_error set_padding_left(css_computed_style *style, uint8_t
 		type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[PADDING_LEFT_INDEX];
+	uint32_t *bits = &style->i.bits[PADDING_LEFT_INDEX];
 	
 	/* 6bits: uuuuut : unit | type */
 	*bits = (*bits & ~PADDING_LEFT_MASK) | ((((uint32_t)type & 0x1) | (unit
@@ -2001,9 +1839,7 @@ static inline css_error set_padding_left(css_computed_style *style, uint8_t
 static inline css_error set_padding_right(css_computed_style *style, uint8_t
 		type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[PADDING_RIGHT_INDEX];
+	uint32_t *bits = &style->i.bits[PADDING_RIGHT_INDEX];
 	
 	/* 6bits: uuuuut : unit | type */
 	*bits = (*bits & ~PADDING_RIGHT_MASK) | ((((uint32_t)type & 0x1) | (
@@ -2024,9 +1860,7 @@ static inline css_error set_padding_right(css_computed_style *style, uint8_t
 static inline css_error set_padding_top(css_computed_style *style, uint8_t
 		type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[PADDING_TOP_INDEX];
+	uint32_t *bits = &style->i.bits[PADDING_TOP_INDEX];
 	
 	/* 6bits: uuuuut : unit | type */
 	*bits = (*bits & ~PADDING_TOP_MASK) | ((((uint32_t)type & 0x1) | (unit
@@ -2047,9 +1881,7 @@ static inline css_error set_padding_top(css_computed_style *style, uint8_t
 static inline css_error set_page_break_after(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[PAGE_BREAK_AFTER_INDEX];
+	uint32_t *bits = &style->i.bits[PAGE_BREAK_AFTER_INDEX];
 	
 	/* 3bits: ttt : type */
 	*bits = (*bits & ~PAGE_BREAK_AFTER_MASK) | (((uint32_t)type & 0x7) <<
@@ -2068,9 +1900,7 @@ static inline css_error set_page_break_after(css_computed_style *style, uint8_t
 static inline css_error set_page_break_before(css_computed_style *style,
 		uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[PAGE_BREAK_BEFORE_INDEX];
+	uint32_t *bits = &style->i.bits[PAGE_BREAK_BEFORE_INDEX];
 	
 	/* 3bits: ttt : type */
 	*bits = (*bits & ~PAGE_BREAK_BEFORE_MASK) | (((uint32_t)type & 0x7) <<
@@ -2089,9 +1919,7 @@ static inline css_error set_page_break_before(css_computed_style *style,
 static inline css_error set_page_break_inside(css_computed_style *style,
 		uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[PAGE_BREAK_INSIDE_INDEX];
+	uint32_t *bits = &style->i.bits[PAGE_BREAK_INSIDE_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~PAGE_BREAK_INSIDE_MASK) | (((uint32_t)type & 0x3) <<
@@ -2109,9 +1937,7 @@ static inline css_error set_page_break_inside(css_computed_style *style,
 
 static inline css_error set_position(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[POSITION_INDEX];
+	uint32_t *bits = &style->i.bits[POSITION_INDEX];
 	
 	/* 3bits: ttt : type */
 	*bits = (*bits & ~POSITION_MASK) | (((uint32_t)type & 0x7) <<
@@ -2130,9 +1956,7 @@ static inline css_error set_position(css_computed_style *style, uint8_t type)
 static inline css_error set_quotes(css_computed_style *style, uint8_t type,
 		lwc_string **string_arr)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[QUOTES_INDEX];
+	uint32_t *bits = &style->i.bits[QUOTES_INDEX];
 	
 	/* 1bit: t : type */
 	*bits = (*bits & ~QUOTES_MASK) | (((uint32_t)type & 0x1) <<
@@ -2168,9 +1992,7 @@ static inline css_error set_quotes(css_computed_style *style, uint8_t type,
 static inline css_error set_right(css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[RIGHT_INDEX];
+	uint32_t *bits = &style->i.bits[RIGHT_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~RIGHT_MASK) | ((((uint32_t)type & 0x3) | (unit << 2))
@@ -2191,9 +2013,7 @@ static inline css_error set_right(css_computed_style *style, uint8_t type,
 static inline css_error set_table_layout(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[TABLE_LAYOUT_INDEX];
+	uint32_t *bits = &style->i.bits[TABLE_LAYOUT_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~TABLE_LAYOUT_MASK) | (((uint32_t)type & 0x3) <<
@@ -2211,9 +2031,7 @@ static inline css_error set_table_layout(css_computed_style *style, uint8_t
 
 static inline css_error set_text_align(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[TEXT_ALIGN_INDEX];
+	uint32_t *bits = &style->i.bits[TEXT_ALIGN_INDEX];
 	
 	/* 4bits: tttt : type */
 	*bits = (*bits & ~TEXT_ALIGN_MASK) | (((uint32_t)type & 0xf) <<
@@ -2232,9 +2050,7 @@ static inline css_error set_text_align(css_computed_style *style, uint8_t type)
 static inline css_error set_text_decoration(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[TEXT_DECORATION_INDEX];
+	uint32_t *bits = &style->i.bits[TEXT_DECORATION_INDEX];
 	
 	/* 5bits: ttttt : type */
 	*bits = (*bits & ~TEXT_DECORATION_MASK) | (((uint32_t)type & 0x1f) <<
@@ -2253,9 +2069,7 @@ static inline css_error set_text_decoration(css_computed_style *style, uint8_t
 static inline css_error set_text_indent(css_computed_style *style, uint8_t
 		type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[TEXT_INDENT_INDEX];
+	uint32_t *bits = &style->i.bits[TEXT_INDENT_INDEX];
 	
 	/* 6bits: uuuuut : unit | type */
 	*bits = (*bits & ~TEXT_INDENT_MASK) | ((((uint32_t)type & 0x1) | (unit
@@ -2276,9 +2090,7 @@ static inline css_error set_text_indent(css_computed_style *style, uint8_t
 static inline css_error set_text_transform(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[TEXT_TRANSFORM_INDEX];
+	uint32_t *bits = &style->i.bits[TEXT_TRANSFORM_INDEX];
 	
 	/* 3bits: ttt : type */
 	*bits = (*bits & ~TEXT_TRANSFORM_MASK) | (((uint32_t)type & 0x7) <<
@@ -2297,9 +2109,7 @@ static inline css_error set_text_transform(css_computed_style *style, uint8_t
 static inline css_error set_top(css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[TOP_INDEX];
+	uint32_t *bits = &style->i.bits[TOP_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~TOP_MASK) | ((((uint32_t)type & 0x3) | (unit << 2))
@@ -2320,9 +2130,7 @@ static inline css_error set_top(css_computed_style *style, uint8_t type,
 static inline css_error set_unicode_bidi(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[UNICODE_BIDI_INDEX];
+	uint32_t *bits = &style->i.bits[UNICODE_BIDI_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~UNICODE_BIDI_MASK) | (((uint32_t)type & 0x3) <<
@@ -2341,9 +2149,7 @@ static inline css_error set_unicode_bidi(css_computed_style *style, uint8_t
 static inline css_error set_vertical_align(css_computed_style *style, uint8_t
 		type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[VERTICAL_ALIGN_INDEX];
+	uint32_t *bits = &style->i.bits[VERTICAL_ALIGN_INDEX];
 	
 	/* 9bits: uuuuutttt : unit | type */
 	*bits = (*bits & ~VERTICAL_ALIGN_MASK) | ((((uint32_t)type & 0xf) | (
@@ -2363,9 +2169,7 @@ static inline css_error set_vertical_align(css_computed_style *style, uint8_t
 
 static inline css_error set_visibility(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[VISIBILITY_INDEX];
+	uint32_t *bits = &style->i.bits[VISIBILITY_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~VISIBILITY_MASK) | (((uint32_t)type & 0x3) <<
@@ -2383,9 +2187,7 @@ static inline css_error set_visibility(css_computed_style *style, uint8_t type)
 
 static inline css_error set_white_space(css_computed_style *style, uint8_t type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[WHITE_SPACE_INDEX];
+	uint32_t *bits = &style->i.bits[WHITE_SPACE_INDEX];
 	
 	/* 3bits: ttt : type */
 	*bits = (*bits & ~WHITE_SPACE_MASK) | (((uint32_t)type & 0x7) <<
@@ -2404,9 +2206,7 @@ static inline css_error set_white_space(css_computed_style *style, uint8_t type)
 static inline css_error set_widows(css_computed_style *style, uint8_t type,
 		int32_t integer)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[WIDOWS_INDEX];
+	uint32_t *bits = &style->i.bits[WIDOWS_INDEX];
 	
 	/* 1bit: t : type */
 	*bits = (*bits & ~WIDOWS_MASK) | (((uint32_t)type & 0x1) <<
@@ -2427,9 +2227,7 @@ static inline css_error set_widows(css_computed_style *style, uint8_t type,
 static inline css_error set_width(css_computed_style *style, uint8_t type,
 		css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[WIDTH_INDEX];
+	uint32_t *bits = &style->i.bits[WIDTH_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~WIDTH_MASK) | ((((uint32_t)type & 0x3) | (unit << 2))
@@ -2450,9 +2248,7 @@ static inline css_error set_width(css_computed_style *style, uint8_t type,
 static inline css_error set_word_spacing(css_computed_style *style, uint8_t
 		type, css_fixed length, css_unit unit)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[WORD_SPACING_INDEX];
+	uint32_t *bits = &style->i.bits[WORD_SPACING_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~WORD_SPACING_MASK) | ((((uint32_t)type & 0x3) | (unit
@@ -2473,9 +2269,7 @@ static inline css_error set_word_spacing(css_computed_style *style, uint8_t
 static inline css_error set_writing_mode(css_computed_style *style, uint8_t
 		type)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[WRITING_MODE_INDEX];
+	uint32_t *bits = &style->i.bits[WRITING_MODE_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~WRITING_MODE_MASK) | (((uint32_t)type & 0x3) <<
@@ -2494,9 +2288,7 @@ static inline css_error set_writing_mode(css_computed_style *style, uint8_t
 static inline css_error set_z_index(css_computed_style *style, uint8_t type,
 		int32_t integer)
 {
-	uint32_t *bits;
-	
-	bits = &style->i.bits[Z_INDEX_INDEX];
+	uint32_t *bits = &style->i.bits[Z_INDEX_INDEX];
 	
 	/* 2bits: tt : type */
 	*bits = (*bits & ~Z_INDEX_MASK) | (((uint32_t)type & 0x3) <<
