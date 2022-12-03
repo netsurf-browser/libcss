@@ -109,7 +109,9 @@ typedef enum css_unit {
 	CSS_UNIT_S                  = 0x1a,
 
 	CSS_UNIT_HZ                 = 0x1b,
-	CSS_UNIT_KHZ                = 0x1c
+	CSS_UNIT_KHZ                = 0x1c,
+
+	CSS_UNIT_CALC               = 0x1d  /**< Un-resolved calc() */
 } css_unit;
 
 /**
