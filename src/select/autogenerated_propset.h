@@ -5,8 +5,8 @@
  * Copyright 2017 The NetSurf Project
  */
 
-/** Default values are 'initial value', unless the property is inherited,
- *  in which case it is 'inherit'. */
+#include "select/propget.h"
+
 
 #define ALIGN_CONTENT_INDEX 10
 #define ALIGN_CONTENT_SHIFT 20

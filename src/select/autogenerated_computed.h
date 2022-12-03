@@ -5,6 +5,11 @@
  * Copyright 2017 The NetSurf Project
  */
 
+typedef union {
+	css_fixed value;
+	lwc_string *calc;
+} css_fixed_or_calc;
+
 
 struct css_computed_style_i {
 /*

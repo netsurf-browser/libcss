@@ -167,6 +167,7 @@ class CSSValue:
         self.size = size #  `None` means sizeof(ptr)
         self.defaults = defaults
         self.suffix = ''
+        self.calc = False
         self.bits = None if bits_size is None else {
             'name': bits_name,
             'type': bits_type,
@@ -223,6 +224,13 @@ class CSSProperty:
 
     def make_values(self, vals):
         """Make list of values for this property."""
+        self.has_calc = False
+
+        if vals is not None and any(len(val) > 2 and val[2] == 'calc' for val in vals):
+            self.has_calc = True
+
+        print(f"name: {self.name}, {vals}, has calc: {self.has_calc}")
+
         if vals is None:
             return []
         elif type(vals) is str:
@@ -233,8 +241,10 @@ class CSSProperty:
                 for x in values:
                     if x[0] == v[0]:
                         value = CSSValue(*x)
-                        if len(v) == 2:
+                        if len(v) > 1 and v[1] != None:
                             value.defaults = v[1]
+                        if len(v) > 2 and v[2] == 'calc':
+                            value.calc = True
                         if len(vals) > 1:
                             value.suffix = '_' + string.ascii_lowercase[i]
                         val_list.append(value)
@@ -322,13 +332,14 @@ class CSSProperty:
         """
         vals = []
         for v in self.values:
+            or_calc = '_or_calc' if v.calc else ''
             star = '*' if pointer else ''
             vt, vn = shift_star(v.type, v.name)
             vn = star + vn + v.suffix
             if pointer:
                 if v.name == 'counter_arr' or v.name == 'content_item':
                     vt = 'const ' + vt
-            vals.append((vt, vn))
+            vals.append((vt + or_calc, vn))
             if v.bits is not None:
                 bt = v.bits['type']
                 bn = star + v.bits['name'] + v.suffix
@@ -522,6 +533,25 @@ class CSSGroup:
             t.append('{')
             t.indent(1)
 
+            # Ensure any existing calc() values are freed
+            if p.has_calc:
+                t.append('uint32_t orig_bits = get_{}_bits(style);'.format(p.name))
+                t.append()
+
+                type_mask, shift_list, bits_comment = p.get_bits()
+                t.append(bits_comment)
+                t.append('if ((orig_bits & {}) == {}) {{'.format(type_mask, p.condition))
+                t.indent(1)
+                for i, v in enumerate(list(reversed(shift_list))):
+                    t.append('if ((orig_bits & 0x{:x}) >> {} == CSS_UNIT_CALC) {{'.format(v[2], v[1]))
+                    t.indent(1)
+                    t.append('lwc_string_unref(style->i.{}.calc);'.format(p.name))
+                    t.indent(-1)
+                    t.append('}')
+                t.indent(-1)
+                t.append('}')
+                t.append()
+
             t.append('uint32_t *bits = &style->i.bits[{}_INDEX];'.format(p.name.upper()))
             t.append()
 
@@ -597,8 +627,17 @@ class CSSGroup:
                     t.append('}')
 
                 elif not v.is_ptr:
-                    t.append('style->i.{} = {};'.format(
-                        p.name + v.suffix, v.name + v.suffix))
+                    if p.has_calc:
+                        t.append('if (unit == CSS_UNIT_CALC) {')
+                        t.append('\tstyle->i.{}.calc = lwc_string_ref({}.calc);'.format(
+                                 p.name + v.suffix, v.name + v.suffix))
+                        t.append('} else {')
+                        t.append('\tstyle->i.{}.value = {}.value;'.format(
+                                 p.name + v.suffix, v.name + v.suffix))
+                        t.append('}')
+                    else:
+                        t.append('style->i.{} = {};'.format(
+                            p.name + v.suffix, v.name + v.suffix))
 
                 else:
                     raise ValueError('Cannot handle value ' + v.name +'!')
@@ -638,6 +677,7 @@ class CSSGroup:
                 t.indent(1)
 
             for v in p.values:
+                print(f"name: {p.name}, has_calc: {p.has_calc}, v.name: {v.name}")
                 i_dot = '' if v.is_ptr and v.name != 'string' else 'i.'
                 t.append('*{} = style->{}{};'.format(
                     v.name + v.suffix, i_dot, p.name + v.suffix))
@@ -690,9 +730,12 @@ class CSSGroup:
         r = []
         for p in sorted(self.props, key=(lambda x: x.name)):
             if bool(p.comments) == for_commented:
+                if (p.values == None or len(p.values) == 0):
+                    continue
                 for v in p.values:
+                    or_calc = '_or_calc' if v.calc else ''
                     v_type, v_name = shift_star(v.type, p.name)
-                    r.append('{} {}{};'.format(v_type, v_name, v.suffix))
+                    r.append('{} {}{};'.format(v_type + or_calc, v_name, v.suffix))
         return r
 
     def make_text(self, filename):
