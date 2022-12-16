@@ -130,6 +130,8 @@ css_float_to_fixed(const float a) {
 
 /* truncate a fixed point value */
 #define TRUNCATEFIX(a) (a & ~((1 << CSS_RADIX_POINT)- 1 ))
+/* get fractional component of a fixed point value */
+#define FIXFRAC(a) (a & ((1 << CSS_RADIX_POINT)- 1 ))
 
 /* Useful values */
 #define F_PI_2	0x00000648	/* 1.5708 (PI/2) */
