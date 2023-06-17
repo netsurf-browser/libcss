@@ -29,10 +29,10 @@
  */
 
 css_error css__parse_flex(css_language *c,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		css_style *result)
 {
-	int orig_ctx = *ctx;
+	int32_t orig_ctx = *ctx;
 	int prev_ctx;
 	const css_token *token;
 	css_error error;

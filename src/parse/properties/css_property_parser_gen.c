@@ -106,7 +106,7 @@ void output_header(FILE *outputf, const char *descriptor, struct keyval *parser_
 		" *		   If the input is invalid, then \\a *ctx remains unchanged.\n"
 		" */\n"
 		"css_error css__parse_%s(css_language *c,\n"
-		"		const parserutils_vector *vector, int *ctx,\n"
+		"		const parserutils_vector *vector, int32_t *ctx,\n"
 		"		css_style *result%s)\n"
 		"{\n",
 		descriptor,
@@ -120,7 +120,7 @@ void output_header(FILE *outputf, const char *descriptor, struct keyval *parser_
 void output_token_type_check(FILE *outputf, bool do_token_check, struct keyval_list *IDENT, struct keyval_list *URI, struct keyval_list *NUMBER)
 {
 	fprintf(outputf,
-		"	int orig_ctx = *ctx;\n"
+		"	int32_t orig_ctx = *ctx;\n"
 		"	css_error error;\n"
 		"	const css_token *token;\n"
 		"	bool match;\n\n"

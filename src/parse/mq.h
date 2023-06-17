@@ -88,7 +88,7 @@ css_error css_parse_media_query(lwc_string **strings,
 		css_mq_query **media_out);
 
 css_error css__mq_parse_media_list(lwc_string **strings,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		css_mq_query **media);
 
 void css__mq_query_destroy(css_mq_query *media);

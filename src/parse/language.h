@@ -64,7 +64,7 @@ css_error css__language_destroy(css_language *language);
  * \param vector  The vector to consume from
  * \param ctx     The vector's context
  */
-static inline void consumeWhitespace(const parserutils_vector *vector, int *ctx)
+static inline void consumeWhitespace(const parserutils_vector *vector, int32_t *ctx)
 {
 	const css_token *token = NULL;
 

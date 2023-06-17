@@ -41,7 +41,7 @@ static bool font_rule_font_family_reserved(css_language *c,
 }
 
 static css_error font_face_parse_font_family(css_language *c,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		css_font_face *font_face)
 {
 	css_error error;
@@ -60,7 +60,7 @@ static css_error font_face_parse_font_family(css_language *c,
 }
 
 static css_error font_face_src_parse_format(css_language *c,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		css_font_face_format *format)
 {
 	bool match;
@@ -120,7 +120,7 @@ static css_error font_face_src_parse_format(css_language *c,
 }
 
 static css_error font_face_src_parse_spec_or_name(css_language *c,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		lwc_string **location,
 		css_font_face_location_type *location_type,
 		css_font_face_format *format)
@@ -194,10 +194,10 @@ static css_error font_face_src_parse_spec_or_name(css_language *c,
 }
 
 static css_error font_face_parse_src(css_language *c,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 	     	css_font_face *font_face)
 {
-	int orig_ctx = *ctx;
+	int32_t orig_ctx = *ctx;
 	css_error error = CSS_OK;
 	const css_token *token;
 	css_font_face_src *srcs = NULL, *new_srcs = NULL;
@@ -258,10 +258,10 @@ cleanup:
 }
 
 static css_error font_face_parse_font_style(css_language *c,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		css_font_face *font_face)
 {
-	int orig_ctx = *ctx;
+	int32_t orig_ctx = *ctx;
 	css_error error = CSS_OK;
 	const css_token *token;
 	enum css_font_style_e style = 0;
@@ -299,10 +299,10 @@ static css_error font_face_parse_font_style(css_language *c,
 }
 
 static css_error font_face_parse_font_weight(css_language *c,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		css_font_face *font_face)
 {
-	int orig_ctx = *ctx;
+	int32_t orig_ctx = *ctx;
 	css_error error = CSS_OK;
 	const css_token *token;
 	enum css_font_weight_e weight = 0;
@@ -374,7 +374,7 @@ static css_error font_face_parse_font_weight(css_language *c,
  */
 css_error css__parse_font_descriptor(css_language *c,
 		const css_token *descriptor, const parserutils_vector *vector,
-		int *ctx, css_rule_font_face *rule)
+		int32_t *ctx, css_rule_font_face *rule)
 {
 	css_font_face *font_face = rule->font_face;
 	css_error error;

@@ -28,10 +28,10 @@
  *		   If the input is invalid, then \a *ctx remains unchanged.
  */
 css_error css__parse_border(css_language *c,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		css_style *result)
 {
-	int orig_ctx = *ctx;
+	int32_t orig_ctx = *ctx;
 	css_error error;
 
 	error = css__parse_border_side(c, vector, ctx, result, BORDER_SIDE_TOP);

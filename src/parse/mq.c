@@ -79,11 +79,11 @@ void css__mq_query_destroy(css_mq_query *media)
 }
 
 static css_error mq_parse_condition(lwc_string **strings,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		bool permit_or, css_mq_cond **cond);
 
 static css_error mq_parse_ratio(
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		const css_token *numerator, css_fixed *ratio)
 {
 	const css_token *token;
@@ -260,7 +260,7 @@ static css_error mq_parse_range__convert_to_level_4(
 }
 
 static css_error mq_parse_range(lwc_string **strings,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		const css_token *name_or_value,
 		css_mq_feature **feature)
 {
@@ -443,7 +443,7 @@ static css_error mq_parse_range(lwc_string **strings,
 }
 
 static css_error mq_parse_media_feature(lwc_string **strings,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		css_mq_feature **feature)
 {
 	const css_token *name_or_value, *token;
@@ -565,7 +565,7 @@ static css_error mq_parse_media_feature(lwc_string **strings,
  * CSS Syntax Module Level 3: 8.2
  */
 static css_error mq_parse_consume_any_value(lwc_string **strings,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		bool until, const char until_char)
 {
 	const css_token *token;
@@ -627,7 +627,7 @@ static css_error mq_parse_consume_any_value(lwc_string **strings,
 }
 
 static css_error mq_parse_general_enclosed(lwc_string **strings,
-		const parserutils_vector *vector, int *ctx)
+		const parserutils_vector *vector, int32_t *ctx)
 {
 	const css_token *token;
 	css_error error;
@@ -671,7 +671,7 @@ static css_error mq_parse_general_enclosed(lwc_string **strings,
 }
 
 static css_error mq_parse_media_in_parens(lwc_string **strings,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		css_mq_cond_or_feature **cond_or_feature)
 {
 	const css_token *token;
@@ -754,7 +754,7 @@ static css_error mq_parse_media_in_parens(lwc_string **strings,
 }
 
 static css_error mq_parse_condition(lwc_string **strings,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		bool permit_or, css_mq_cond **cond)
 {
 	const css_token *token;
@@ -959,7 +959,7 @@ static css_error mq_parse_type(lwc_string **strings, lwc_string *type,
 }
 
 static css_error mq_parse_media_query(lwc_string **strings,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		css_mq_query **query)
 {
 	const css_token *token;
@@ -984,7 +984,7 @@ static css_error mq_parse_media_query(lwc_string **strings,
 			lwc_string_caseless_isequal(token->idata,
 				strings[NOT], &match) == lwc_error_ok &&
 				match) {
-		int old_ctx = *ctx;
+		int32_t old_ctx = *ctx;
 
 		parserutils_vector_iterate(vector, ctx);
 		consumeWhitespace(vector, ctx);
@@ -1100,7 +1100,7 @@ static css_error css__mq_parse__create_not_all(
 }
 
 css_error css__mq_parse_media_list(lwc_string **strings,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		css_mq_query **media)
 {
 	css_mq_query *result = NULL, *last = NULL;
@@ -1162,7 +1162,7 @@ static css_error css_parse_media_query_handle_event(
 		const parserutils_vector *tokens,
 		void *pw)
 {
-	int idx = 0;
+	int32_t idx = 0;
 	css_error err;
 	css_mq_query *media;
 	const css_token *tok;

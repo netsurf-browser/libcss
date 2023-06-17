@@ -126,10 +126,10 @@ css_error css__parse_list_style_type_value(css_language *c, const css_token *ide
  *		   If the input is invalid, then \a *ctx remains unchanged.
  */
 css_error css__parse_border_side(css_language *c,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		css_style *result, enum border_side_e side)
 {
-	int orig_ctx = *ctx;
+	int32_t orig_ctx = *ctx;
 	int prev_ctx;
 	const css_token *token;
 	css_error error = CSS_OK;
@@ -366,10 +366,10 @@ static void HSL_to_RGB(css_fixed hue, css_fixed sat, css_fixed lit, uint8_t *r, 
  *                 If the input is invalid, then \a *ctx remains unchanged.
  */
 css_error css__parse_colour_specifier(css_language *c,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		uint16_t *value, uint32_t *result)
 {
-	int orig_ctx = *ctx;
+	int32_t orig_ctx = *ctx;
 	const css_token *token;
 	bool match;
 	css_error error;
@@ -913,11 +913,11 @@ css_error css__parse_hash_colour(lwc_string *data, uint32_t *result)
  *                 If the input is invalid, then \a *ctx remains unchanged.
  */
 css_error css__parse_unit_specifier(css_language *c,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		uint32_t default_unit,
 		css_fixed *length, uint32_t *unit)
 {
-	int orig_ctx = *ctx;
+	int32_t orig_ctx = *ctx;
 	const css_token *token;
 	css_fixed num;
 	size_t consumed = 0;
@@ -938,7 +938,7 @@ css_error css__parse_unit_specifier(css_language *c,
 	if (token->type == CSS_TOKEN_DIMENSION) {
 		size_t len = lwc_string_length(token->idata);
 		const char *data = lwc_string_data(token->idata);
-		css_unit temp_unit = CSS_UNIT_PX;
+		uint32_t temp_unit = CSS_UNIT_PX;
 
 		error = css__parse_unit_keyword(data + consumed, len - consumed,
 				&temp_unit);
@@ -947,7 +947,7 @@ css_error css__parse_unit_specifier(css_language *c,
 			return error;
 		}
 
-		*unit = (uint32_t) temp_unit;
+		*unit = temp_unit;
 	} else if (token->type == CSS_TOKEN_NUMBER) {
 		/* Non-zero values are permitted in quirks mode */
 		if (num != 0) {
@@ -966,8 +966,8 @@ css_error css__parse_unit_specifier(css_language *c,
 			 * dimensions separated from their units by whitespace
 			 * (e.g. "0 px")
 			 */
-			int temp_ctx = *ctx;
-			css_unit temp_unit;
+			int32_t temp_ctx = *ctx;
+			uint32_t temp_unit;
 
 			consumeWhitespace(vector, &temp_ctx);
 
@@ -981,7 +981,7 @@ css_error css__parse_unit_specifier(css_language *c,
 				if (error == CSS_OK) {
 					c->sheet->quirks_used = true;
 					*ctx = temp_ctx;
-					*unit = (uint32_t) temp_unit;
+					*unit = temp_unit;
 				}
 			}
 		}
@@ -1103,7 +1103,7 @@ css_error css__parse_unit_keyword(const char *ptr, size_t len, uint32_t *unit)
  *                 The resulting string's reference is passed to the caller
  */
 css_error css__ident_list_or_string_to_string(css_language *c,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		bool (*reserved)(css_language *c, const css_token *ident),
 		lwc_string **result)
 {
@@ -1141,11 +1141,11 @@ css_error css__ident_list_or_string_to_string(css_language *c,
  *                 The resulting string's reference is passed to the caller
  */
 css_error css__ident_list_to_string(css_language *c,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		bool (*reserved)(css_language *c, const css_token *ident),
 		lwc_string **result)
 {
-	int orig_ctx = *ctx;
+	int32_t orig_ctx = *ctx;
 	const css_token *token;
 	css_error error = CSS_OK;
 	parserutils_buffer *buffer;
@@ -1229,12 +1229,12 @@ cleanup:
  *                 If the input is invalid, then \a *ctx remains unchanged.
  */
 css_error css__comma_list_to_style(css_language *c,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		bool (*reserved)(css_language *c, const css_token *ident),
 		css_code_t (*get_value)(css_language *c, const css_token *token, bool first),
 		css_style *result)
 {
-	int orig_ctx = *ctx;
+	int32_t orig_ctx = *ctx;
 	int prev_ctx = orig_ctx;
 	const css_token *token;
 	bool first = true;

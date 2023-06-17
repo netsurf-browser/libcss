@@ -25,10 +25,10 @@
  *                 If the input is invalid, then \a *ctx remains unchanged.
  */
 css_error css__parse_important(css_language *c,
-		const parserutils_vector *vector, int *ctx,
+		const parserutils_vector *vector, int32_t *ctx,
 		uint8_t *result)
 {
-	int orig_ctx = *ctx;
+	int32_t orig_ctx = *ctx;
 	bool match = false;
 	const css_token *token;
 

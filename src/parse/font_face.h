@@ -17,6 +17,6 @@
 
 css_error css__parse_font_descriptor(css_language *c,
 		const css_token *descriptor, const parserutils_vector *vector,
-		int *ctx, struct css_rule_font_face *rule);
+		int32_t *ctx, struct css_rule_font_face *rule);
 
 #endif
