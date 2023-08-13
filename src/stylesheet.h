@@ -272,8 +272,12 @@ static inline css_error css_stylesheet_style_unset(css_style *style,
 static inline css_error css_stylesheet_style_flag_value(css_style *style,
 		enum flag_value flag_value, opcode_t opcode)
 {
+	enum flag flag = flag_value << 1;
+	if (flag == FLAG_REVERT) {
+		style->sheet->uses_revert = true;
+	}
 	return css__stylesheet_style_append(style,
-			buildOPV(opcode, flag_value << 1, 0));
+			buildOPV(opcode, flag, 0));
 }
 
 css_error css__stylesheet_selector_create(css_stylesheet *sheet,
