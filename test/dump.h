@@ -492,6 +492,7 @@ static const char *opcode_names[] = {
 	"justify-content",
 	"order",
 	"fill-opacity",
+	"stroke-opacity",
 };
 
 static void dump_css_fixed(css_fixed f, char **ptr)
@@ -1823,6 +1824,17 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 			case CSS_PROP_FILL_OPACITY:
 				switch (value) {
 				case FILL_OPACITY_SET:
+				{
+					css_fixed val = *((css_fixed *) bytecode);
+					ADVANCE(sizeof(val));
+					dump_number(val, ptr);
+				}
+					break;
+				}
+				break;
+			case CSS_PROP_STROKE_OPACITY:
+				switch (value) {
+				case STROKE_OPACITY_SET:
 				{
 					css_fixed val = *((css_fixed *) bytecode);
 					ADVANCE(sizeof(val));

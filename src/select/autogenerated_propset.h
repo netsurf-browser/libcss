@@ -104,8 +104,8 @@ static inline css_error set_background_color(css_computed_style *style, uint8_t
 #undef BACKGROUND_COLOR_MASK
 
 #define BACKGROUND_IMAGE_INDEX 14
-#define BACKGROUND_IMAGE_SHIFT 17
-#define BACKGROUND_IMAGE_MASK 0x20000
+#define BACKGROUND_IMAGE_SHIFT 16
+#define BACKGROUND_IMAGE_MASK 0x10000
 
 static inline css_error set_background_image(css_computed_style *style, uint8_t
 		type, lwc_string *string)
@@ -639,8 +639,8 @@ static inline css_error set_clip(
 #undef CLIP_MASK
 
 #define COLOR_INDEX 14
-#define COLOR_SHIFT 18
-#define COLOR_MASK 0x40000
+#define COLOR_SHIFT 17
+#define COLOR_MASK 0x20000
 
 static inline css_error set_color(css_computed_style *style, uint8_t type,
 		css_color color)
@@ -902,8 +902,8 @@ static inline css_error set_content(
 #undef CONTENT_MASK
 
 #define COUNTER_INCREMENT_INDEX 14
-#define COUNTER_INCREMENT_SHIFT 19
-#define COUNTER_INCREMENT_MASK 0x80000
+#define COUNTER_INCREMENT_SHIFT 18
+#define COUNTER_INCREMENT_MASK 0x40000
 
 static inline css_error set_counter_increment(css_computed_style *style,
 		uint8_t type, css_computed_counter *counter_arr)
@@ -938,8 +938,8 @@ static inline css_error set_counter_increment(css_computed_style *style,
 #undef COUNTER_INCREMENT_MASK
 
 #define COUNTER_RESET_INDEX 14
-#define COUNTER_RESET_SHIFT 20
-#define COUNTER_RESET_MASK 0x100000
+#define COUNTER_RESET_SHIFT 19
+#define COUNTER_RESET_MASK 0x80000
 
 static inline css_error set_counter_reset(css_computed_style *style, uint8_t
 		type, css_computed_counter *counter_arr)
@@ -1064,8 +1064,8 @@ static inline css_error set_empty_cells(css_computed_style *style, uint8_t type)
 #undef EMPTY_CELLS_MASK
 
 #define FILL_OPACITY_INDEX 14
-#define FILL_OPACITY_SHIFT 21
-#define FILL_OPACITY_MASK 0x200000
+#define FILL_OPACITY_SHIFT 20
+#define FILL_OPACITY_MASK 0x100000
 
 static inline css_error set_fill_opacity(css_computed_style *style, uint8_t
 		type, css_fixed fixed)
@@ -1125,8 +1125,8 @@ static inline css_error set_flex_direction(css_computed_style *style, uint8_t
 #undef FLEX_DIRECTION_MASK
 
 #define FLEX_GROW_INDEX 14
-#define FLEX_GROW_SHIFT 22
-#define FLEX_GROW_MASK 0x400000
+#define FLEX_GROW_SHIFT 21
+#define FLEX_GROW_MASK 0x200000
 
 static inline css_error set_flex_grow(css_computed_style *style, uint8_t type,
 		css_fixed fixed)
@@ -1146,8 +1146,8 @@ static inline css_error set_flex_grow(css_computed_style *style, uint8_t type,
 #undef FLEX_GROW_MASK
 
 #define FLEX_SHRINK_INDEX 14
-#define FLEX_SHRINK_SHIFT 23
-#define FLEX_SHRINK_MASK 0x800000
+#define FLEX_SHRINK_SHIFT 22
+#define FLEX_SHRINK_MASK 0x400000
 
 static inline css_error set_flex_shrink(css_computed_style *style, uint8_t
 		type, css_fixed fixed)
@@ -1417,8 +1417,8 @@ static inline css_error set_line_height(css_computed_style *style, uint8_t
 #undef LINE_HEIGHT_MASK
 
 #define LIST_STYLE_IMAGE_INDEX 14
-#define LIST_STYLE_IMAGE_SHIFT 24
-#define LIST_STYLE_IMAGE_MASK 0x1000000
+#define LIST_STYLE_IMAGE_SHIFT 23
+#define LIST_STYLE_IMAGE_MASK 0x800000
 
 static inline css_error set_list_style_image(css_computed_style *style, uint8_t
 		type, lwc_string *string)
@@ -1653,8 +1653,8 @@ static inline css_error set_min_width(css_computed_style *style, uint8_t type,
 #undef MIN_WIDTH_MASK
 
 #define OPACITY_INDEX 14
-#define OPACITY_SHIFT 25
-#define OPACITY_MASK 0x2000000
+#define OPACITY_SHIFT 24
+#define OPACITY_MASK 0x1000000
 
 static inline css_error set_opacity(css_computed_style *style, uint8_t type,
 		css_fixed fixed)
@@ -1674,8 +1674,8 @@ static inline css_error set_opacity(css_computed_style *style, uint8_t type,
 #undef OPACITY_MASK
 
 #define ORDER_INDEX 14
-#define ORDER_SHIFT 26
-#define ORDER_MASK 0x4000000
+#define ORDER_SHIFT 25
+#define ORDER_MASK 0x2000000
 
 static inline css_error set_order(css_computed_style *style, uint8_t type,
 		int32_t integer)
@@ -1694,8 +1694,8 @@ static inline css_error set_order(css_computed_style *style, uint8_t type,
 #undef ORDER_MASK
 
 #define ORPHANS_INDEX 14
-#define ORPHANS_SHIFT 27
-#define ORPHANS_MASK 0x8000000
+#define ORPHANS_SHIFT 26
+#define ORPHANS_MASK 0x4000000
 
 static inline css_error set_orphans(css_computed_style *style, uint8_t type,
 		int32_t integer)
@@ -1970,9 +1970,9 @@ static inline css_error set_position(css_computed_style *style, uint8_t type)
 #undef POSITION_SHIFT
 #undef POSITION_MASK
 
-#define QUOTES_INDEX 13
-#define QUOTES_SHIFT 0
-#define QUOTES_MASK 0x1
+#define QUOTES_INDEX 14
+#define QUOTES_SHIFT 27
+#define QUOTES_MASK 0x8000000
 
 static inline css_error set_quotes(css_computed_style *style, uint8_t type,
 		lwc_string **string_arr)
@@ -2026,6 +2026,27 @@ static inline css_error set_right(css_computed_style *style, uint8_t type,
 #undef RIGHT_INDEX
 #undef RIGHT_SHIFT
 #undef RIGHT_MASK
+
+#define STROKE_OPACITY_INDEX 13
+#define STROKE_OPACITY_SHIFT 0
+#define STROKE_OPACITY_MASK 0x1
+
+static inline css_error set_stroke_opacity(css_computed_style *style, uint8_t
+		type, css_fixed fixed)
+{
+	uint32_t *bits = &style->i.bits[STROKE_OPACITY_INDEX];
+	
+	/* 1bit: t : type */
+	*bits = (*bits & ~STROKE_OPACITY_MASK) | (((uint32_t)type & 0x1) <<
+			STROKE_OPACITY_SHIFT);
+	
+	style->i.stroke_opacity = fixed;
+	
+	return CSS_OK;
+}
+#undef STROKE_OPACITY_INDEX
+#undef STROKE_OPACITY_SHIFT
+#undef STROKE_OPACITY_MASK
 
 #define TABLE_LAYOUT_INDEX 10
 #define TABLE_LAYOUT_SHIFT 10

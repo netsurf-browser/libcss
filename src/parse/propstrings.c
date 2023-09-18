@@ -215,6 +215,7 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	SMAP("speak"),
 	SMAP("speech-rate"),
 	SMAP("stress"),
+	SMAP("stroke-opacity"),
 	SMAP("table-layout"),
 	SMAP("text-align"),
 	SMAP("text-decoration"),

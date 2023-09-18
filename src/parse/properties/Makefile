@@ -62,6 +62,7 @@ DIR_SOURCES :=				\
 	play_during.c			\
 	properties.c			\
 	quotes.c			\
+	stroke_opacity.c		\
 	text_decoration.c		\
 	utils.c				\
 	voice_family.c

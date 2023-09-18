@@ -2820,6 +2820,30 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	ptr += wrote;
 	*len -= wrote;
 
+	/* stroke-opacity */
+	val = css_computed_stroke_opacity(style, &len1);
+	switch (val) {
+	case CSS_STROKE_OPACITY_INHERIT:
+		wrote = snprintf(ptr, *len, "stroke-opacity: inherit\n");
+		break;
+	case CSS_STROKE_OPACITY_SET:
+		wrote = snprintf(ptr, *len, "stroke-opacity: ");
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = dump_css_fixed(len1, ptr, *len);
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = snprintf(ptr, *len, "\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
 	/* table-layout */
 	val = css_computed_table_layout(style);
 	switch (val) {

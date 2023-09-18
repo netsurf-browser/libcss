@@ -37,3 +37,43 @@
 | *
 |  fill-opacity: 1
 #reset
+
+#data
+* { stroke-opacity: inherit; }
+#errors
+#expected
+| *
+|  stroke-opacity: inherit
+#reset
+
+#data
+* { stroke-opacity: revert; }
+#errors
+#expected
+| *
+|  stroke-opacity: revert
+#reset
+
+#data
+* { stroke-opacity: 0.00000; }
+#errors
+#expected
+| *
+|  stroke-opacity: 0
+#reset
+
+#data
+* { stroke-opacity: -0.5; }
+#errors
+#expected
+| *
+|  stroke-opacity: 0
+#reset
+
+#data
+* { stroke-opacity: 5; }
+#errors
+#expected
+| *
+|  stroke-opacity: 1
+#reset

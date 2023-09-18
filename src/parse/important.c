@@ -351,6 +351,11 @@ void css__make_style_important(css_style *style)
 					offset++; /* value */
 				break;
 
+			case CSS_PROP_STROKE_OPACITY:
+				if (value == STROKE_OPACITY_SET)
+					offset++; /* value */
+				break;
+
 			case CSS_PROP_ORDER:
 				if (value == ORDER_SET)
 					offset++; /* value */

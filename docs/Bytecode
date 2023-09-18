@@ -1392,4 +1392,13 @@ Opcodes
 			bit 7 clear => Reserved for future expansion
 				bits 0-6: MBZ
 
-7d-3ff - Reserved for future expansion.
+7d - stroke-opacity
+	<value> (14bits) :
+		bits 8-13: MBZ
+		bits 0-7 :
+			bit 7 set => number follows
+				bits 0-6: MBZ
+			bit 7 clear => Reserved for future expansion
+				bits 0-6: MBZ
+
+7e-3ff - Reserved for future expansion.

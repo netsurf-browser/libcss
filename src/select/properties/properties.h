@@ -130,6 +130,7 @@ PROPERTY_FUNCS(speak_punctuation);
 PROPERTY_FUNCS(speak);
 PROPERTY_FUNCS(speech_rate);
 PROPERTY_FUNCS(stress);
+PROPERTY_FUNCS(stroke_opacity);
 PROPERTY_FUNCS(table_layout);
 PROPERTY_FUNCS(text_align);
 PROPERTY_FUNCS(text_decoration);

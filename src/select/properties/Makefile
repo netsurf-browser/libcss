@@ -108,6 +108,7 @@ speak_header.c \
 speak_numeral.c \
 speak_punctuation.c \
 stress.c \
+stroke_opacity.c \
 table_layout.c \
 text_align.c \
 text_decoration.c \

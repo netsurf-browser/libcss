@@ -96,6 +96,7 @@ struct css_computed_style_i {
  * page_break_inside                2             
  * position                         3             
  * right                            2 + 5           4
+ * stroke_opacity                   1               4
  * table_layout                     2             
  * text_align                       4             
  * text_decoration                  5             
@@ -141,9 +142,9 @@ struct css_computed_style_i {
  * quotes                           1             sizeof(ptr)
  * 
  * ---                            ---             ---
- *                                463 bits        232 + 8sizeof(ptr) bytes
+ *                                464 bits        236 + 8sizeof(ptr) bytes
  *                                ===================
- *                                290 + 8sizeof(ptr) bytes
+ *                                294 + 8sizeof(ptr) bytes
  * 
  * Bit allocations:
  * 
@@ -193,13 +194,13 @@ struct css_computed_style_i {
  * 12 bbbbbbbbbbbaaaaaaaaaaavvvvvvvvvw
  * border_spacing; background_position; vertical_align; widows
  * 
- * 13 bbbbpppaaagggooovvvjjjffflllcccq
+ * 13 bbbbpppaaagggooovvvjjjffflllcccs
  * border_bottom_style; position; page_break_before; page_break_after;
  * overflow_y; overflow_x; justify_content; font_family; flex_direction; clear;
- * quotes
+ * stroke_opacity
  * 
- * 14 bbaaorplfeicuCk.................
- * background_color; background_attachment; orphans; order; opacity;
+ * 14 bbaaqorplfeicuCk................
+ * background_color; background_attachment; quotes; orphans; order; opacity;
  * list_style_image; flex_shrink; flex_grow; fill_opacity; counter_reset;
  * counter_increment; color; background_image
  */
@@ -258,6 +259,7 @@ struct css_computed_style_i {
 	css_fixed padding_right;
 	css_fixed padding_top;
 	css_fixed right;
+	css_fixed stroke_opacity;
 	css_fixed text_indent;
 	css_fixed top;
 	css_fixed vertical_align;
