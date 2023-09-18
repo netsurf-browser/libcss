@@ -1,4 +1,5 @@
 # Sources
+.PHONY: select_generator
 select_generator:
 	python3 src/select/select_generator.py
 
