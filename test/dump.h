@@ -491,6 +491,7 @@ static const char *opcode_names[] = {
 	"flex-wrap",
 	"justify-content",
 	"order",
+	"fill-opacity",
 };
 
 static void dump_css_fixed(css_fixed f, char **ptr)
@@ -1816,6 +1817,17 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					break;
 				case EMPTY_CELLS_HIDE:
 					*ptr += sprintf(*ptr, "hide");
+					break;
+				}
+				break;
+			case CSS_PROP_FILL_OPACITY:
+				switch (value) {
+				case FILL_OPACITY_SET:
+				{
+					css_fixed val = *((css_fixed *) bytecode);
+					ADVANCE(sizeof(val));
+					dump_number(val, ptr);
+				}
 					break;
 				}
 				break;

@@ -148,6 +148,7 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	SMAP("display"),
 	SMAP("elevation"),
 	SMAP("empty-cells"),
+	SMAP("fill-opacity"),
 	SMAP("flex"),
 	SMAP("flex-basis"),
 	SMAP("flex-direction"),

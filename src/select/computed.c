@@ -810,6 +810,12 @@ uint8_t css_computed_opacity(const css_computed_style *style,
 	return get_opacity(style, opacity);
 }
 
+uint8_t css_computed_fill_opacity(const css_computed_style *style,
+		css_fixed *fill_opacity)
+{
+	return get_fill_opacity(style, fill_opacity);
+}
+
 uint8_t css_computed_text_transform(const css_computed_style *style)
 {
 	return get_text_transform(style);

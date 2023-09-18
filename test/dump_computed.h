@@ -1635,6 +1635,30 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	ptr += wrote;
 	*len -= wrote;
 
+	/* fill-opacity */
+	val = css_computed_fill_opacity(style, &len1);
+	switch (val) {
+	case CSS_FILL_OPACITY_INHERIT:
+		wrote = snprintf(ptr, *len, "fill-opacity: inherit\n");
+		break;
+	case CSS_FILL_OPACITY_SET:
+		wrote = snprintf(ptr, *len, "fill-opacity: ");
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = dump_css_fixed(len1, ptr, *len);
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = snprintf(ptr, *len, "\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
 	/* flex-basis */
 	val = css_computed_flex_basis(style, &len1, &unit1);
 	switch (val) {

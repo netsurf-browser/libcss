@@ -95,6 +95,7 @@ style = {
     ('min_height', 2, 'length', 'CSS_MIN_HEIGHT_SET'),
     ('min_width', 2, 'length', 'CSS_MIN_WIDTH_SET'),
     ('opacity', 1, 'fixed', 'CSS_OPACITY_SET'),
+    ('fill_opacity', 1, 'fixed', 'CSS_FILL_OPACITY_SET'),
     ('order', 1, 'integer', 'CSS_ORDER_SET'),
     ('padding_top', 1, 'length', 'CSS_PADDING_SET'),
     ('padding_right', 1, 'length', 'CSS_PADDING_SET'),

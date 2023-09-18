@@ -346,6 +346,11 @@ void css__make_style_important(css_style *style)
 					offset++; /* value */
 				break;
 
+			case CSS_PROP_FILL_OPACITY:
+				if (value == FILL_OPACITY_SET)
+					offset++; /* value */
+				break;
+
 			case CSS_PROP_ORDER:
 				if (value == ORDER_SET)
 					offset++; /* value */

@@ -52,6 +52,7 @@ struct css_computed_style_i {
  * direction                        2             
  * display                          5             
  * empty_cells                      2             
+ * fill_opacity                     1               4
  * flex_basis                       2 + 5           4
  * flex_direction                   3             
  * flex_grow                        1               4
@@ -140,9 +141,9 @@ struct css_computed_style_i {
  * quotes                           1             sizeof(ptr)
  * 
  * ---                            ---             ---
- *                                462 bits        228 + 8sizeof(ptr) bytes
+ *                                463 bits        232 + 8sizeof(ptr) bytes
  *                                ===================
- *                                286 + 8sizeof(ptr) bytes
+ *                                290 + 8sizeof(ptr) bytes
  * 
  * Bit allocations:
  * 
@@ -197,10 +198,10 @@ struct css_computed_style_i {
  * overflow_y; overflow_x; justify_content; font_family; flex_direction; clear;
  * quotes
  * 
- * 14 bbaaorplfecuCk..................
+ * 14 bbaaorplfeicuCk.................
  * background_color; background_attachment; orphans; order; opacity;
- * list_style_image; flex_shrink; flex_grow; counter_reset; counter_increment;
- * color; background_image
+ * list_style_image; flex_shrink; flex_grow; fill_opacity; counter_reset;
+ * counter_increment; color; background_image
  */
 	uint32_t bits[15];
 	
@@ -229,6 +230,7 @@ struct css_computed_style_i {
 	css_color column_rule_color;
 	css_fixed column_rule_width;
 	css_fixed column_width;
+	css_fixed fill_opacity;
 	css_fixed flex_basis;
 	css_fixed flex_grow;
 	css_fixed flex_shrink;

@@ -24,3 +24,4 @@ multicol.dat			Multi-column layout property tests
 flexbox.dat			Flexbox properties and shorthands tests
 units.dat			Length unit tests
 dodgy-media-block.dat		Media block with incomplete ruleset
+svg.dat			SVG property tests

@@ -514,5 +514,9 @@ struct prop_table prop_dispatch[CSS_N_PROPERTIES] = {
 	{
 		PROPERTY_FUNCS(order),
 		0,
+	},
+	{
+		PROPERTY_FUNCS(fill_opacity),
+		0,
 	}
 };

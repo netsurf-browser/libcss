@@ -138,6 +138,7 @@ enum css_properties_e {
 	CSS_PROP_FLEX_WRAP			= 0x079,
 	CSS_PROP_JUSTIFY_CONTENT		= 0x07a,
 	CSS_PROP_ORDER				= 0x07b,
+	CSS_PROP_FILL_OPACITY			= 0x07c,
 
 	CSS_N_PROPERTIES
 };
@@ -449,6 +450,11 @@ enum css_empty_cells_e {
 	CSS_EMPTY_CELLS_INHERIT			= 0x0,
 	CSS_EMPTY_CELLS_SHOW			= 0x1,
 	CSS_EMPTY_CELLS_HIDE			= 0x2
+};
+
+enum css_fill_opacity_e {
+	CSS_FILL_OPACITY_INHERIT		= 0x0,
+	CSS_FILL_OPACITY_SET			= 0x1
 };
 
 enum css_flex_basis_e {

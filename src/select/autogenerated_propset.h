@@ -104,8 +104,8 @@ static inline css_error set_background_color(css_computed_style *style, uint8_t
 #undef BACKGROUND_COLOR_MASK
 
 #define BACKGROUND_IMAGE_INDEX 14
-#define BACKGROUND_IMAGE_SHIFT 18
-#define BACKGROUND_IMAGE_MASK 0x40000
+#define BACKGROUND_IMAGE_SHIFT 17
+#define BACKGROUND_IMAGE_MASK 0x20000
 
 static inline css_error set_background_image(css_computed_style *style, uint8_t
 		type, lwc_string *string)
@@ -639,8 +639,8 @@ static inline css_error set_clip(
 #undef CLIP_MASK
 
 #define COLOR_INDEX 14
-#define COLOR_SHIFT 19
-#define COLOR_MASK 0x80000
+#define COLOR_SHIFT 18
+#define COLOR_MASK 0x40000
 
 static inline css_error set_color(css_computed_style *style, uint8_t type,
 		css_color color)
@@ -902,8 +902,8 @@ static inline css_error set_content(
 #undef CONTENT_MASK
 
 #define COUNTER_INCREMENT_INDEX 14
-#define COUNTER_INCREMENT_SHIFT 20
-#define COUNTER_INCREMENT_MASK 0x100000
+#define COUNTER_INCREMENT_SHIFT 19
+#define COUNTER_INCREMENT_MASK 0x80000
 
 static inline css_error set_counter_increment(css_computed_style *style,
 		uint8_t type, css_computed_counter *counter_arr)
@@ -938,8 +938,8 @@ static inline css_error set_counter_increment(css_computed_style *style,
 #undef COUNTER_INCREMENT_MASK
 
 #define COUNTER_RESET_INDEX 14
-#define COUNTER_RESET_SHIFT 21
-#define COUNTER_RESET_MASK 0x200000
+#define COUNTER_RESET_SHIFT 20
+#define COUNTER_RESET_MASK 0x100000
 
 static inline css_error set_counter_reset(css_computed_style *style, uint8_t
 		type, css_computed_counter *counter_arr)
@@ -1062,6 +1062,27 @@ static inline css_error set_empty_cells(css_computed_style *style, uint8_t type)
 #undef EMPTY_CELLS_INDEX
 #undef EMPTY_CELLS_SHIFT
 #undef EMPTY_CELLS_MASK
+
+#define FILL_OPACITY_INDEX 14
+#define FILL_OPACITY_SHIFT 21
+#define FILL_OPACITY_MASK 0x200000
+
+static inline css_error set_fill_opacity(css_computed_style *style, uint8_t
+		type, css_fixed fixed)
+{
+	uint32_t *bits = &style->i.bits[FILL_OPACITY_INDEX];
+	
+	/* 1bit: t : type */
+	*bits = (*bits & ~FILL_OPACITY_MASK) | (((uint32_t)type & 0x1) <<
+			FILL_OPACITY_SHIFT);
+	
+	style->i.fill_opacity = fixed;
+	
+	return CSS_OK;
+}
+#undef FILL_OPACITY_INDEX
+#undef FILL_OPACITY_SHIFT
+#undef FILL_OPACITY_MASK
 
 #define FLEX_BASIS_INDEX 7
 #define FLEX_BASIS_SHIFT 4

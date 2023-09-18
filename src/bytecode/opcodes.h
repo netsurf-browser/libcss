@@ -351,6 +351,11 @@ enum op_empty_cells {
 	EMPTY_CELLS_HIDE		= 0x0001
 };
 
+enum op_fill_opacity {
+	FILL_OPACITY_SET		= 0x0080
+};
+
+
 enum op_flex_basis {
 	FLEX_BASIS_AUTO			= 0x0000,
 	FLEX_BASIS_CONTENT		= 0x0001,

@@ -140,8 +140,8 @@ static inline uint8_t get_background_color(const css_computed_style *style,
 #undef BACKGROUND_COLOR_MASK
 
 #define BACKGROUND_IMAGE_INDEX 14
-#define BACKGROUND_IMAGE_SHIFT 18
-#define BACKGROUND_IMAGE_MASK 0x40000
+#define BACKGROUND_IMAGE_SHIFT 17
+#define BACKGROUND_IMAGE_MASK 0x20000
 static inline uint8_t get_background_image_bits(const css_computed_style *style)
 {
 	uint32_t bits = style->i.bits[BACKGROUND_IMAGE_INDEX];
@@ -878,8 +878,8 @@ static inline uint8_t get_clip(
 #undef CLIP_MASK
 
 #define COLOR_INDEX 14
-#define COLOR_SHIFT 19
-#define COLOR_MASK 0x80000
+#define COLOR_SHIFT 18
+#define COLOR_MASK 0x40000
 static inline uint8_t get_color_bits(const css_computed_style *style)
 {
 	uint32_t bits = style->i.bits[COLOR_INDEX];
@@ -1166,8 +1166,8 @@ static inline uint8_t get_content(const css_computed_style *style, const
 #undef CONTENT_MASK
 
 #define COUNTER_INCREMENT_INDEX 14
-#define COUNTER_INCREMENT_SHIFT 20
-#define COUNTER_INCREMENT_MASK 0x100000
+#define COUNTER_INCREMENT_SHIFT 19
+#define COUNTER_INCREMENT_MASK 0x80000
 static inline uint8_t get_counter_increment_bits(const css_computed_style
 		*style)
 {
@@ -1195,8 +1195,8 @@ static inline uint8_t get_counter_increment(const css_computed_style *style,
 #undef COUNTER_INCREMENT_MASK
 
 #define COUNTER_RESET_INDEX 14
-#define COUNTER_RESET_SHIFT 21
-#define COUNTER_RESET_MASK 0x200000
+#define COUNTER_RESET_SHIFT 20
+#define COUNTER_RESET_MASK 0x100000
 static inline uint8_t get_counter_reset_bits(const css_computed_style *style)
 {
 	uint32_t bits = style->i.bits[COUNTER_RESET_INDEX];
@@ -1327,6 +1327,36 @@ static inline uint8_t get_empty_cells(const css_computed_style *style)
 #undef EMPTY_CELLS_INDEX
 #undef EMPTY_CELLS_SHIFT
 #undef EMPTY_CELLS_MASK
+
+#define FILL_OPACITY_INDEX 14
+#define FILL_OPACITY_SHIFT 21
+#define FILL_OPACITY_MASK 0x200000
+static inline uint8_t get_fill_opacity_bits(const css_computed_style *style)
+{
+	uint32_t bits = style->i.bits[FILL_OPACITY_INDEX];
+	bits &= FILL_OPACITY_MASK;
+	bits >>= FILL_OPACITY_SHIFT;
+	
+	/* 1bit: t : type */
+	return (bits & 0x1);
+}
+static inline uint8_t get_fill_opacity(const css_computed_style *style,
+		css_fixed *fixed)
+{
+	uint32_t bits = style->i.bits[FILL_OPACITY_INDEX];
+	bits &= FILL_OPACITY_MASK;
+	bits >>= FILL_OPACITY_SHIFT;
+	
+	/* 1bit: t : type */
+	if ((bits & 0x1) == CSS_FILL_OPACITY_SET) {
+		*fixed = style->i.fill_opacity;
+	}
+	
+	return (bits & 0x1);
+}
+#undef FILL_OPACITY_INDEX
+#undef FILL_OPACITY_SHIFT
+#undef FILL_OPACITY_MASK
 
 #define FLEX_BASIS_INDEX 7
 #define FLEX_BASIS_SHIFT 4

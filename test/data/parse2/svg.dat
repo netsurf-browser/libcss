@@ -1,0 +1,39 @@
+#data
+* { fill-opacity: inherit; }
+#errors
+#expected
+| *
+|  fill-opacity: inherit
+#reset
+
+#data
+* { fill-opacity: revert; }
+#errors
+#expected
+| *
+|  fill-opacity: revert
+#reset
+
+#data
+* { fill-opacity: 0.867; }
+#errors
+#expected
+| *
+|  fill-opacity: 0.867
+#reset
+
+#data
+* { fill-opacity: -0.5; }
+#errors
+#expected
+| *
+|  fill-opacity: 0
+#reset
+
+#data
+* { fill-opacity: 5; }
+#errors
+#expected
+| *
+|  fill-opacity: 1
+#reset
