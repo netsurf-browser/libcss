@@ -14,6 +14,8 @@
 #include <libcss/types.h>
 #include <libcss/properties.h>
 
+#include "bytecode/opcodes.h"
+
 typedef uint32_t css_code_t;
 
 typedef enum css_properties_e opcode_t;
@@ -34,6 +36,15 @@ enum flag {
 	FLAG_UNSET     = (FLAG_VALUE_UNSET   << 1),
 };
 
+enum calc_opcodes {
+	CALC_PUSH_NUMBER = 'N',
+	CALC_PUSH_VALUE  = 'V',
+	CALC_ADD         = '+',
+	CALC_SUBTRACT    = '-',
+	CALC_MULTIPLY    = '*',
+	CALC_DIVIDE      = '/',
+	CALC_FINISH      = '=',
+};
 
 typedef enum unit {
 	UNIT_LENGTH = (1u << 8),
@@ -76,6 +87,10 @@ typedef enum unit {
 	UNIT_DPI  = (1 << 13) + 0,
 	UNIT_DPCM = (1 << 13) + 1,
 	UNIT_DPPX = (1 << 13) + 2,
+
+	/* These are special only to the CALC bytecodes */
+	UNIT_CALC_ANY = (1 << 20),
+	UNIT_CALC_NUMBER = (1 << 20) + 1,
 } unit;
 
 typedef uint32_t colour;
@@ -122,6 +137,11 @@ static inline bool hasFlagValue(css_code_t OPV)
 static inline bool isInherit(css_code_t OPV)
 {
 	return getFlagValue(OPV) == FLAG_VALUE_INHERIT;
+}
+
+static inline bool isCalc(css_code_t OPV)
+{
+	return getValue(OPV) == VALUE_IS_CALC;
 }
 
 #endif

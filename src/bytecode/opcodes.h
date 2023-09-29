@@ -10,6 +10,8 @@
 
 #include <inttypes.h>
 
+#define VALUE_IS_CALC 0x007f
+
 enum op_align_content {
 	ALIGN_CONTENT_STRETCH		= 0x0000,
 	ALIGN_CONTENT_FLEX_START	= 0x0001,
@@ -119,6 +121,7 @@ enum op_border_style {
 };
 
 enum op_border_width {
+	BORDER_WIDTH_CALC		= VALUE_IS_CALC,
 	BORDER_WIDTH_SET		= 0x0080,
 	BORDER_WIDTH_THIN		= 0x0000,
 	BORDER_WIDTH_MEDIUM		= 0x0001,
@@ -126,6 +129,7 @@ enum op_border_width {
 };
 
 enum op_bottom {
+	BOTTOM_CALC			= VALUE_IS_CALC,
 	BOTTOM_SET			= 0x0080,
 	BOTTOM_AUTO			= 0x0000
 };
@@ -198,6 +202,7 @@ enum op_color {
 
 enum op_column_count {
 	COLUMN_COUNT_AUTO		= 0x0000,
+	COLUMN_COUNT_CALC		= VALUE_IS_CALC,
 	COLUMN_COUNT_SET		= 0x0080
 };
 
@@ -208,6 +213,7 @@ enum op_column_fill {
 
 enum op_column_gap {
 	COLUMN_GAP_NORMAL		= 0x0000,
+	COLUMN_GAP_CALC			= VALUE_IS_CALC,
 	COLUMN_GAP_SET			= 0x0080
 };
 
@@ -231,6 +237,7 @@ enum op_column_rule_style {
 };
 
 enum op_column_rule_width {
+	COLUMN_RULE_WIDTH_CALC		= BORDER_WIDTH_CALC,
 	COLUMN_RULE_WIDTH_SET		= BORDER_WIDTH_SET,
 	COLUMN_RULE_WIDTH_THIN		= BORDER_WIDTH_THIN,
 	COLUMN_RULE_WIDTH_MEDIUM	= BORDER_WIDTH_MEDIUM,
@@ -244,6 +251,7 @@ enum op_column_span {
 
 enum op_column_width {
 	COLUMN_WIDTH_AUTO		= 0x0000,
+	COLUMN_WIDTH_CALC		= VALUE_IS_CALC,
 	COLUMN_WIDTH_SET		= 0x0080
 };
 
@@ -354,6 +362,7 @@ enum op_empty_cells {
 enum op_flex_basis {
 	FLEX_BASIS_AUTO			= 0x0000,
 	FLEX_BASIS_CONTENT		= 0x0001,
+	FLEX_BASIS_CALC			= VALUE_IS_CALC,
 	FLEX_BASIS_SET			= 0x0080
 };
 
@@ -365,10 +374,12 @@ enum op_flex_direction {
 };
 
 enum op_flex_grow {
+	FLEX_GROW_CALC			= VALUE_IS_CALC,
 	FLEX_GROW_SET			= 0x0080
 };
 
 enum op_flex_shrink {
+	FLEX_SHRINK_CALC		= VALUE_IS_CALC,
 	FLEX_SHRINK_SET			= 0x0080
 };
 
@@ -398,6 +409,7 @@ enum op_font_family {
 };
 
 enum op_font_size {
+	FONT_SIZE_CALC			= VALUE_IS_CALC,
 	FONT_SIZE_DIMENSION		= 0x0080,
 
 	FONT_SIZE_XX_SMALL		= 0x0000,
@@ -439,6 +451,7 @@ enum op_font_weight {
 };
 
 enum op_height {
+	HEIGHT_CALC			= VALUE_IS_CALC,
 	HEIGHT_SET			= 0x0080,
 	HEIGHT_AUTO			= 0x0000
 };
@@ -453,16 +466,19 @@ enum op_justify_content {
 };
 
 enum op_left {
+	LEFT_CALC			= BOTTOM_CALC,
 	LEFT_SET			= BOTTOM_SET,
 	LEFT_AUTO			= BOTTOM_AUTO
 };
 
 enum op_letter_spacing {
+	LETTER_SPACING_CALC		= VALUE_IS_CALC,
 	LETTER_SPACING_SET		= 0x0080,
 	LETTER_SPACING_NORMAL		= 0x0000
 };
 
 enum op_line_height {
+	LINE_HEIGHT_CALC		= VALUE_IS_CALC,
 	LINE_HEIGHT_NUMBER		= 0x0080,
 	LINE_HEIGHT_DIMENSION		= 0x0081,
 	LINE_HEIGHT_NORMAL		= 0x0000
@@ -534,26 +550,31 @@ enum op_list_style_type {
 };
 
 enum op_margin {
+	MARGIN_CALC			= VALUE_IS_CALC,
 	MARGIN_SET			= 0x0080,
 	MARGIN_AUTO			= 0x0000
 };
 
 enum op_max_height {
+	MAX_HEIGHT_CALC			= VALUE_IS_CALC,
 	MAX_HEIGHT_SET			= 0x0080,
 	MAX_HEIGHT_NONE			= 0x0000
 };
 
 enum op_max_width {
+	MAX_WIDTH_CALC			= VALUE_IS_CALC,
 	MAX_WIDTH_SET			= 0x0080,
 	MAX_WIDTH_NONE			= 0x0000
 };
 
 enum op_min_height {
+	MIN_HEIGHT_CALC			= VALUE_IS_CALC,
 	MIN_HEIGHT_SET			= 0x0080,
 	MIN_HEIGHT_AUTO			= 0x0000
 };
 
 enum op_min_width {
+	MIN_WIDTH_CALC			= VALUE_IS_CALC,
 	MIN_WIDTH_SET			= 0x0080,
 	MIN_WIDTH_AUTO			= 0x0000
 };
@@ -563,10 +584,12 @@ enum op_opacity {
 };
 
 enum op_order {
+	ORDER_CALC			= VALUE_IS_CALC,
 	ORDER_SET			= 0x0080
 };
 
 enum op_orphans {
+	ORPHANS_CALC			= VALUE_IS_CALC,
 	ORPHANS_SET			= 0x0080
 };
 
@@ -605,6 +628,7 @@ enum op_overflow {
 };
 
 enum op_padding {
+	PADDING_CALC			= VALUE_IS_CALC,
 	PADDING_SET			= 0x0080
 };
 
@@ -630,18 +654,22 @@ enum op_page_break_inside {
 };
 
 enum op_pause_after {
+	PAUSE_AFTER_CALC		= VALUE_IS_CALC,
 	PAUSE_AFTER_SET			= 0x0080
 };
 
 enum op_pause_before {
+	PAUSE_BEFORE_CALC		= VALUE_IS_CALC,
 	PAUSE_BEFORE_SET		= 0x0080
 };
 
 enum op_pitch_range {
+	PITCH_RANGE_CALC		= VALUE_IS_CALC,
 	PITCH_RANGE_SET			= 0x0080
 };
 
 enum op_pitch {
+	PITCH_CALC			= VALUE_IS_CALC,
 	PITCH_FREQUENCY			= 0x0080,
 
 	PITCH_X_LOW			= 0x0000,
@@ -676,6 +704,7 @@ enum op_quotes {
 };
 
 enum op_richness {
+	RICHNESS_CALC			= VALUE_IS_CALC,
 	RICHNESS_SET			= 0x0080
 };
 
@@ -706,6 +735,7 @@ enum op_speak {
 };
 
 enum op_speech_rate {
+	SPEECH_RATE_CALC		= VALUE_IS_CALC,
 	SPEECH_RATE_SET			= 0x0080,
 
 	SPEECH_RATE_X_SLOW		= 0x0000,
@@ -718,6 +748,7 @@ enum op_speech_rate {
 };
 
 enum op_stress {
+	STRESS_CALC			= VALUE_IS_CALC,
 	STRESS_SET			= 0x0080
 };
 
@@ -746,6 +777,7 @@ enum op_text_decoration {
 };
 
 enum op_text_indent {
+	TEXT_INDENT_CALC		= VALUE_IS_CALC,
 	TEXT_INDENT_SET			= 0x0080
 };
 
@@ -757,6 +789,7 @@ enum op_text_transform {
 };
 
 enum op_top {
+	TOP_CALC			= BOTTOM_CALC,
 	TOP_SET				= BOTTOM_SET,
 	TOP_AUTO			= BOTTOM_AUTO
 };
@@ -768,6 +801,7 @@ enum op_unicode_bidi {
 };
 
 enum op_vertical_align {
+	VERTICAL_ALIGN_CALC		= VALUE_IS_CALC,
 	VERTICAL_ALIGN_SET		= 0x0080,
 
 	VERTICAL_ALIGN_BASELINE		= 0x0000,
@@ -798,6 +832,7 @@ enum op_voice_family {
 };
 
 enum op_volume {
+	VOLUME_CALC			= VALUE_IS_CALC,
 	VOLUME_NUMBER			= 0x0080,
 	VOLUME_DIMENSION		= 0x0081,
 
@@ -818,16 +853,19 @@ enum op_white_space {
 };
 
 enum op_widows {
+	WIDOWS_CALC			= VALUE_IS_CALC,
 	WIDOWS_SET			= 0x0080
 };
 
 enum op_width {
+	WIDTH_CALC			= VALUE_IS_CALC,
 	WIDTH_SET			= 0x0080,
 
 	WIDTH_AUTO			= 0x0000
 };
 
 enum op_word_spacing {
+	WORD_SPACING_CALC		= VALUE_IS_CALC,
 	WORD_SPACING_SET		= 0x0080,
 
 	WORD_SPACING_NORMAL		= 0x0000
@@ -840,6 +878,7 @@ enum op_writing_mode {
 };
 
 enum op_z_index {
+	Z_INDEX_CALC			= VALUE_IS_CALC,
 	Z_INDEX_SET			= 0x0080,
 
 	Z_INDEX_AUTO			= 0x0000
