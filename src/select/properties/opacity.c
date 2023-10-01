@@ -21,7 +21,7 @@ css_error css__cascade_opacity(uint32_t opv, css_style *style,
 	css_fixed opacity = 0;
 
 	if (hasFlagValue(opv) == false) {
-		value = CSS_Z_INDEX_SET;
+		value = CSS_OPACITY_SET;
 
 		opacity = *((css_fixed *) style->bytecode);
 		advance_bytecode(style, sizeof(opacity));
