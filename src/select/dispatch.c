@@ -517,10 +517,10 @@ struct prop_table prop_dispatch[CSS_N_PROPERTIES] = {
 	},
 	{
 		PROPERTY_FUNCS(fill_opacity),
-		0,
+		1,
 	},
 	{
 		PROPERTY_FUNCS(stroke_opacity),
-		0,
+		1,
 	}
 };
