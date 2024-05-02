@@ -493,6 +493,9 @@ static const char *opcode_names[] = {
 	"order",
 	"fill-opacity",
 	"stroke-opacity",
+	"fill",
+	"stroke",
+	"stroke-width",
 };
 
 static void dump_css_fixed(css_fixed f, char **ptr)
@@ -1010,6 +1013,28 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					*ptr += sprintf(*ptr, "currentColor");
 					break;
 				case BACKGROUND_COLOR_SET:
+				{
+					uint32_t colour =
+						*((uint32_t *) bytecode);
+					ADVANCE(sizeof(colour));
+					*ptr += sprintf(*ptr, "#%08x", colour);
+				}
+					break;
+				}
+				break;
+			case CSS_PROP_FILL:
+			case CSS_PROP_STROKE:
+				switch (value) {
+				case PAINT_NONE:
+					*ptr += sprintf(*ptr, "none");
+					break;
+				case PAINT_CONTEXT_FILL:
+					*ptr += sprintf(*ptr, "context-fill");
+					break;
+				case PAINT_CONTEXT_STROKE:
+					*ptr += sprintf(*ptr, "context-stroke");
+					break;
+				case PAINT_COLOR_SET:
 				{
 					uint32_t colour =
 						*((uint32_t *) bytecode);
@@ -2342,6 +2367,7 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 			case CSS_PROP_PAUSE_AFTER:
 			case CSS_PROP_PAUSE_BEFORE:
 			case CSS_PROP_TEXT_INDENT:
+			case CSS_PROP_STROKE_WIDTH:
 				assert(TEXT_INDENT_SET ==
 						(enum op_text_indent)
 						PADDING_SET);
@@ -2351,6 +2377,9 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 				assert(TEXT_INDENT_SET ==
 						(enum op_text_indent)
 						PAUSE_BEFORE_SET);
+				assert(TEXT_INDENT_SET ==
+						(enum op_text_indent)
+						STROKE_WIDTH_SET);
 
 				switch (value) {
 				case TEXT_INDENT_SET:

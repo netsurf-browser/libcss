@@ -1410,5 +1410,36 @@ Opcodes
 			bit 7 clear => Reserved for future expansion
 				bits 0-6: MBZ
 
-7e-3ff - Reserved for future expansion.
+7e - fill
+	<value> (14bits) :
+		bit 8-13: MBZ
+		bit 7 set => colour follows.
+			bits 0-6: MBZ
+		bit 7 clear => keyword colour:
+			bits 0-6: 0000000 => none,
+				  0000001 => context-fill,
+				  0000002 => context-stroke,
+				  other   => rffe.
+
+7f - stroke
+	<value> (14bits) :
+		bit 8-13: MBZ
+		bit 7 set => colour follows.
+			bits 0-6: MBZ
+		bit 7 clear => keyword colour:
+			bits 0-6: 0000000 => none,
+				  0000001 => context-fill,
+				  0000002 => context-stroke,
+				  other   => rffe.
+
+80 - stroke-width
+	<value> (14bits) :
+		bits 8-13: MBZ
+		bits 0-7 :
+			bit 7 set => length or percentage follows
+				bits 0-6: MBZ
+			bit 7 clear => Reserved for future expansion
+				bits 0-6: MBZ
+
+81-3ff - Reserved for future expansion.
 ```

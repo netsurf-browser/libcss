@@ -140,6 +140,9 @@ enum css_properties_e {
 	CSS_PROP_ORDER				= 0x07b,
 	CSS_PROP_FILL_OPACITY			= 0x07c,
 	CSS_PROP_STROKE_OPACITY			= 0x07d,
+	CSS_PROP_FILL	        		= 0x07e,
+	CSS_PROP_STROKE			        = 0x07f,
+	CSS_PROP_STROKE_WIDTH	        = 0x080,
 
 	CSS_N_PROPERTIES
 };
@@ -734,6 +737,19 @@ enum css_overflow_e {
 enum css_orphans_e {
 	CSS_ORPHANS_INHERIT			= 0x0,
 	CSS_ORPHANS_SET				= 0x1
+};
+
+enum css_paint_e {
+	CSS_PAINT_INHERIT			= 0x0,
+	CSS_PAINT_NONE				= 0x1,
+	CSS_PAINT_CONTEXT_FILL		= 0x2,
+	CSS_PAINT_CONTEXT_STROKE	= 0x3,
+	CSS_PAINT_COLOR				= 0x4,
+};
+
+enum css_stroke_width_e {
+	CSS_STROKE_WIDTH_INHERIT	= 0x0,
+	CSS_STROKE_WIDTH_SET		= 0x1
 };
 
 enum css_padding_e {

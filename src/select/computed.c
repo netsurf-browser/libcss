@@ -928,6 +928,24 @@ uint8_t css_computed_opacity(const css_computed_style *style,
 	return get_opacity(style, opacity);
 }
 
+uint8_t css_computed_fill(const css_computed_style *style,
+		css_color *color)
+{
+	return get_fill(style, color);
+}
+
+uint8_t css_computed_stroke(const css_computed_style *style,
+		css_color *color)
+{
+	return get_stroke(style, color);
+}
+
+uint8_t css_computed_stroke_width(const css_computed_style *style,
+		css_fixed *length, css_unit *unit)
+{
+	return get_stroke_width(style, length, unit);
+}
+
 uint8_t css_computed_fill_opacity(const css_computed_style *style,
 		css_fixed *fill_opacity)
 {

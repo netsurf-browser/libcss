@@ -148,6 +148,7 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	SMAP("display"),
 	SMAP("elevation"),
 	SMAP("empty-cells"),
+	SMAP("fill"),
 	SMAP("fill-opacity"),
 	SMAP("flex"),
 	SMAP("flex-basis"),
@@ -215,7 +216,9 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	SMAP("speak"),
 	SMAP("speech-rate"),
 	SMAP("stress"),
+	SMAP("stroke"),
 	SMAP("stroke-opacity"),
+	SMAP("stroke-width"),
 	SMAP("table-layout"),
 	SMAP("text-align"),
 	SMAP("text-decoration"),
@@ -493,6 +496,8 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	SMAP("inline-grid"),
 	SMAP("sticky"),
 	SMAP("calc"),
+	SMAP("context-fill"),
+	SMAP("context-stroke"),
 
 	/* Named colours */
 	SMAP("aliceblue"),

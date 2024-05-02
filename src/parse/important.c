@@ -111,7 +111,11 @@ void css__make_style_important(css_style *style)
 				if (value == BACKGROUND_COLOR_SET)
 					offset++; /* colour */
 				break;
-
+			case CSS_PROP_FILL:
+			case CSS_PROP_STROKE:
+				if (value == PAINT_COLOR_SET)
+					offset++; /* colour */
+				break;
 			case CSS_PROP_BACKGROUND_IMAGE:
 			case CSS_PROP_CUE_AFTER:
 			case CSS_PROP_CUE_BEFORE:
@@ -334,11 +338,13 @@ void css__make_style_important(css_style *style)
 			case CSS_PROP_PAUSE_AFTER:
 			case CSS_PROP_PAUSE_BEFORE:
 			case CSS_PROP_TEXT_INDENT:
+			case CSS_PROP_STROKE_WIDTH:
 				assert(MIN_HEIGHT_SET == (enum op_min_height)MIN_WIDTH_SET);
 				assert(MIN_HEIGHT_SET == (enum op_min_height)PADDING_SET);
 				assert(MIN_HEIGHT_SET == (enum op_min_height)PAUSE_AFTER_SET);
 				assert(MIN_HEIGHT_SET == (enum op_min_height)PAUSE_BEFORE_SET);
 				assert(MIN_HEIGHT_SET == (enum op_min_height)TEXT_INDENT_SET);
+				assert(MIN_HEIGHT_SET == (enum op_min_height)STROKE_WIDTH_SET);
 
 				if (value == MIN_HEIGHT_SET)
 					offset += 2; /* length + units */

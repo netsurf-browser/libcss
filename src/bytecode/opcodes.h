@@ -363,7 +363,6 @@ enum op_fill_opacity {
 	FILL_OPACITY_SET		= 0x0080
 };
 
-
 enum op_flex_basis {
 	FLEX_BASIS_AUTO			= 0x0000,
 	FLEX_BASIS_CONTENT		= 0x0001,
@@ -632,6 +631,13 @@ enum op_overflow {
 	OVERFLOW_AUTO			= 0x0003
 };
 
+enum op_paint {
+	PAINT_NONE			= 0x0000,
+	PAINT_CONTEXT_FILL	= 0x0001,
+	PAINT_CONTEXT_STROKE= 0x0002,
+	PAINT_COLOR_SET		= 0x0080
+};
+
 enum op_padding {
 	PADDING_CALC			= VALUE_IS_CALC,
 	PADDING_SET			= 0x0080
@@ -759,6 +765,10 @@ enum op_stress {
 
 enum op_stroke_opacity {
 	STROKE_OPACITY_SET		= 0x0080
+};
+
+enum op_stroke_width {
+	STROKE_WIDTH_SET		= 0x0080
 };
 
 enum op_table_layout {

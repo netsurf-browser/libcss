@@ -57,6 +57,40 @@ css_error css__cascade_bg_border_color(uint32_t opv, css_style *style,
 	return CSS_OK;
 }
 
+css_error css__cascade_paint(uint32_t opv, css_style *style,
+		css_select_state *state,
+		css_error (*fun)(css_computed_style *, uint8_t, css_color))
+{
+	uint16_t value = CSS_PAINT_INHERIT;
+	css_color color = 0;
+
+	if (hasFlagValue(opv) == false) {
+		switch (getValue(opv)) {
+		case PAINT_CONTEXT_FILL:
+			value = CSS_PAINT_CONTEXT_FILL;
+			break;
+		case PAINT_CONTEXT_STROKE:
+			value = CSS_PAINT_CONTEXT_STROKE;
+			break;
+		case PAINT_NONE:
+			value = CSS_PAINT_NONE;
+			break;
+		case PAINT_COLOR_SET:
+			value = CSS_PAINT_COLOR;
+			color = *((css_color *) style->bytecode);
+			advance_bytecode(style, sizeof(color));
+			break;
+		}
+	}
+
+	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
+			getFlagValue(opv))) {
+		return fun(state->computed, value, color);
+	}
+
+	return CSS_OK;
+}
+
 css_error css__cascade_uri_none(uint32_t opv, css_style *style,
 		css_select_state *state,
 		css_error (*fun)(css_computed_style *, uint8_t,

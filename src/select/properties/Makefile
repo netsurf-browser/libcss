@@ -50,6 +50,7 @@ direction.c \
 display.c \
 elevation.c \
 empty_cells.c \
+fill.c \
 fill_opacity.c \
 flex_basis.c \
 flex_direction.c \
@@ -108,7 +109,9 @@ speak_header.c \
 speak_numeral.c \
 speak_punctuation.c \
 stress.c \
+stroke.c \
 stroke_opacity.c \
+stroke_width.c \
 table_layout.c \
 text_align.c \
 text_decoration.c \

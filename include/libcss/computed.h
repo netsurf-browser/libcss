@@ -367,6 +367,18 @@ uint8_t css_computed_stroke_opacity(
 		const css_computed_style *style,
 		css_fixed *stroke_opacity);
 
+uint8_t css_computed_fill(
+		const css_computed_style *style,
+		css_color *color);
+
+uint8_t css_computed_stroke(
+		const css_computed_style *style,
+		css_color *color);
+
+uint8_t css_computed_stroke_width(
+		const css_computed_style *style,
+		css_fixed *length, css_unit *unit);
+
 uint8_t css_computed_text_transform(
 		const css_computed_style *style);
 

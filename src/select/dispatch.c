@@ -522,5 +522,17 @@ struct prop_table prop_dispatch[CSS_N_PROPERTIES] = {
 	{
 		PROPERTY_FUNCS(stroke_opacity),
 		1,
-	}
+	},
+	{
+		PROPERTY_FUNCS(fill),
+		1,
+	},
+	{
+		PROPERTY_FUNCS(stroke),
+		1,
+	},
+	{
+		PROPERTY_FUNCS(stroke_width),
+		1,
+	},
 };

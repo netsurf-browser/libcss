@@ -77,3 +77,99 @@
 | *
 |  stroke-opacity: 1
 #reset
+
+#data
+* { fill: none; }
+#errors
+#expected
+| *
+|  fill: none
+#reset
+
+#data
+* { stroke: none; }
+#errors
+#expected
+| *
+|  stroke: none
+#reset
+
+#data
+* { fill: context-fill; }
+#errors
+#expected
+| *
+|  fill: context-fill
+#reset
+
+#data
+* { stroke: context-fill; }
+#errors
+#expected
+| *
+|  stroke: context-fill
+#reset
+
+#data
+* { fill: context-stroke; }
+#errors
+#expected
+| *
+|  fill: context-stroke
+#reset
+
+#data
+* { stroke: context-stroke; }
+#errors
+#expected
+| *
+|  stroke: context-stroke
+#reset
+
+#data
+* { fill: blue; }
+#errors
+#expected
+| *
+|  fill: #ff0000ff
+#reset
+
+#data
+* { stroke: blue; }
+#errors
+#expected
+| *
+|  stroke: #ff0000ff
+#reset
+
+#data
+* { fill: #c0ffee; }
+#errors
+#expected
+| *
+|  fill: #ffc0ffee
+#reset
+
+#data
+* { stroke: #c0ffee; }
+#errors
+#expected
+| *
+|  stroke: #ffc0ffee
+#reset
+
+#data
+* { stroke-width: 100px; }
+#errors
+#expected
+| *
+|  stroke-width: 100px
+#reset
+
+#data
+* { stroke-width: 50%; }
+#errors
+#expected
+| *
+|  stroke-width: 50%
+#reset

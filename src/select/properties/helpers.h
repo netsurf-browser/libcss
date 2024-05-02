@@ -19,6 +19,9 @@ uint32_t generic_destroy_number(void *bytecode);
 css_error css__cascade_bg_border_color(uint32_t opv, css_style *style,
 		css_select_state *state,
 		css_error (*fun)(css_computed_style *, uint8_t, css_color));
+css_error css__cascade_paint(uint32_t opv, css_style *style,
+		css_select_state *state,
+		css_error (*fun)(css_computed_style *, uint8_t, css_color));
 css_error css__cascade_uri_none(uint32_t opv, css_style *style,
 		css_select_state *state,
 		css_error (*fun)(css_computed_style *, uint8_t,
