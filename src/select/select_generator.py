@@ -719,6 +719,21 @@ class CSSGroup:
 
         return t.to_string()
 
+    def print_destroy(self, t, p):
+        if p.has_calc:
+            t.append("set_{}(style, 0, (css_fixed_or_calc)0, CSS_UNIT_PX);".format(p.name))
+        else:
+            t.append("/* set_{}(style, 0, 0, CSS_UNIT_PX); */".format(p.name))
+
+    def make_destroy_inc(self):
+        """Output this group's destructors for the destroy.h file."""
+        t = Text()
+
+        for p in sorted(self.props, key=(lambda x: x.name)):
+            self.print_destroy(t, p)
+
+        return t.to_string()
+
     def make_value_declaration(self, for_commented):
         """Output declarations of values for this group's properties.
 
@@ -746,6 +761,8 @@ class CSSGroup:
             return self.make_propset_h()
         elif filename == 'propget.h':
             return self.make_propget_h()
+        elif filename == 'destroy.inc':
+            return self.make_destroy_inc()
         else:
             raise ValueError()
 

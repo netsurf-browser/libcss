@@ -45,3 +45,6 @@ assets['propget.h'] = {}
 assets['propget.h']['header'] = copyright + ifndef("propget")
 assets['propget.h']['footer'] = '\n#endif\n'
 
+assets['destroy.inc'] = {}
+assets['destroy.inc']['header'] = copyright
+assets['destroy.inc']['footer'] = ''
