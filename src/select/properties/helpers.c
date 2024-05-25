@@ -226,6 +226,49 @@ css_error css__cascade_length_auto(uint32_t opv, css_style *style,
 	return CSS_OK;
 }
 
+css_error css__cascade_length_auto_calc(uint32_t opv, css_style *style,
+		css_select_state *state,
+		css_error (*fun)(css_computed_style *, uint8_t, css_fixed_or_calc,
+				css_unit))
+{
+	uint16_t value = CSS_BOTTOM_INHERIT;
+	css_fixed_or_calc length = (css_fixed_or_calc)0;
+	uint32_t unit = CSS_UNIT_PX;
+	uint32_t snum = 0;
+
+	if (hasFlagValue(opv) == false) {
+		switch (getValue(opv)) {
+		case BOTTOM_SET:
+			value = CSS_BOTTOM_SET;
+			length.value = *((css_fixed *) style->bytecode);
+			advance_bytecode(style, sizeof(length.value));
+			unit = css__to_css_unit(*((uint32_t *) style->bytecode));
+			advance_bytecode(style, sizeof(unit));
+			break;
+		case BOTTOM_AUTO:
+			value = CSS_BOTTOM_AUTO;
+			break;
+		case BOTTOM_CALC:
+			advance_bytecode(style, sizeof(unit)); // TODO: Skip unit, not sure what to do
+			snum = *((uint32_t *) style->bytecode);
+			advance_bytecode(style, sizeof(snum));
+			unit = CSS_UNIT_CALC;
+			css__stylesheet_string_get(style->sheet, snum, &length.calc);
+			return CSS_OK;
+		default:
+			assert(0 && "Invalid value");
+			break;
+		}
+	}
+
+	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
+			getFlagValue(opv))) {
+		return fun(state->computed, value, length, unit);
+	}
+
+	return CSS_OK;
+}
+
 css_error css__cascade_length_normal(uint32_t opv, css_style *style,
 		css_select_state *state,
 		css_error (*fun)(css_computed_style *, uint8_t, css_fixed,

@@ -48,6 +48,12 @@ static css_error compute_absolute_length(css_computed_style *style,
 				css_fixed *len, css_unit *unit),
 		css_error (*set)(css_computed_style *style, uint8_t type,
 				css_fixed len, css_unit unit));
+static css_error compute_absolute_length_calc(css_computed_style *style,
+		const css_hint_length *ex_size,
+		uint8_t (*get)(const css_computed_style *style,
+				css_fixed_or_calc *len, css_unit *unit),
+		css_error (*set)(css_computed_style *style, uint8_t type,
+				css_fixed_or_calc len, css_unit unit));
 static css_error compute_absolute_length_pair(css_computed_style *style,
 		const css_hint_length *ex_size,
 		uint8_t (*get)(const css_computed_style *style,
@@ -731,7 +737,13 @@ uint8_t css_computed_width(
 uint8_t css_computed_width_static(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
-	return get_width(style, length, unit);
+	css_fixed_or_calc length_;
+	uint8_t ret = get_width(style, &length_, unit);
+	if (ret == CSS_WIDTH_SET) {
+		assert(*unit != CSS_UNIT_CALC);
+		*length = length_.value;
+	}
+	return ret;
 }
 
 uint8_t css_computed_empty_cells(const css_computed_style *style)
@@ -1316,7 +1328,7 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 		return error;
 
 	/* Fix up width */
-	error = compute_absolute_length(style, &ex_size.data.length,
+	error = compute_absolute_length_calc(style, &ex_size.data.length,
 			get_width, set_width);
 	if (error != CSS_OK)
 		return error;
@@ -1803,6 +1815,38 @@ css_error compute_absolute_length(css_computed_style *style,
 
 	if (type == CSS_WIDTH_SET && unit == CSS_UNIT_EX) {
 		length = FMUL(length, ex_size->value);
+		unit = ex_size->unit;
+
+		return set(style, type, length, unit);
+	}
+
+	return CSS_OK;
+}
+
+/**
+ * Compute the absolute value of length
+ *
+ * \param style      Style to process
+ * \param ex_size    Ex size, in ems
+ * \param get        Function to read length
+ * \param set        Function to write length
+ * \return CSS_OK on success
+ */
+css_error compute_absolute_length_calc(css_computed_style *style,
+		const css_hint_length *ex_size,
+		uint8_t (*get)(const css_computed_style *style,
+				css_fixed_or_calc *len, css_unit *unit),
+		css_error (*set)(css_computed_style *style, uint8_t type,
+				css_fixed_or_calc len, css_unit unit))
+{
+	css_unit unit = CSS_UNIT_PX;
+	css_fixed_or_calc length;
+	uint8_t type;
+
+	type = get(style, &length, &unit);
+
+	if (type == CSS_WIDTH_SET && unit == CSS_UNIT_EX) {
+		length.value = FMUL(length.value, ex_size->value);
 		unit = ex_size->unit;
 
 		return set(style, type, length, unit);
