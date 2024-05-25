@@ -33,7 +33,7 @@ css_error css__parse_content(css_language *c,
 		css_style *result)
 {
 	int32_t orig_ctx = *ctx;
-	css_error error;
+	css_error error = CSS_INVALID;
 	const css_token *token;
 	enum flag_value flag_value;
 	bool match;
@@ -42,7 +42,7 @@ css_error css__parse_content(css_language *c,
 	token = parserutils_vector_iterate(vector, ctx);
 	if (token == NULL) {
 		*ctx = orig_ctx;
-		return CSS_INVALID;
+		return error;
 	}
 
 	flag_value = get_css_flag_value(c, token);
