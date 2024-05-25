@@ -10,7 +10,13 @@ copyright = '''\
  *                http://www.opensource.org/licenses/mit-license.php
  * Copyright 2017 The NetSurf Project
  */
+
 '''
+
+def ifndef(name):
+	name = name.upper()
+	name = f"CSS_COMPUTED_{name}_H_"
+	return f"#ifndef {name}\n#define {name}\n"
 
 include_propget = '''\
 
@@ -28,14 +34,14 @@ typedef union {
 assets = {}
 
 assets['computed.h'] = {}
-assets['computed.h']['header'] = copyright + calc_unions
-assets['computed.h']['footer'] = ''
+assets['computed.h']['header'] = copyright + ifndef("computed") + calc_unions
+assets['computed.h']['footer'] = '\n#endif\n'
 
 assets['propset.h'] = {}
-assets['propset.h']['header'] = copyright + include_propget
-assets['propset.h']['footer'] = ''
+assets['propset.h']['header'] = copyright + ifndef("propset") + include_propget
+assets['propset.h']['footer'] = '\n#endif\n'
 
 assets['propget.h'] = {}
-assets['propget.h']['header'] = copyright
-assets['propget.h']['footer'] = ''
+assets['propget.h']['header'] = copyright + ifndef("propget")
+assets['propget.h']['footer'] = '\n#endif\n'
 
