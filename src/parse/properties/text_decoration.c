@@ -35,7 +35,7 @@ css_error css__parse_text_decoration(css_language *c,
 	css_error error = CSS_INVALID;
 	const css_token *token;
 	enum flag_value flag_value;
-	bool match;
+	bool match = false;
 
 	/* IDENT([ underline || overline || line-through || blink ])
 	 * | IDENT (none, inherit) */
