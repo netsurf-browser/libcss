@@ -59,6 +59,13 @@ css_error css__cascade_font_size(uint32_t opv, css_style *style,
 		case FONT_SIZE_SMALLER:
 			value = CSS_FONT_SIZE_SMALLER;
 			break;
+		case FONT_SIZE_CALC:
+			advance_bytecode(style, sizeof(unit));
+			advance_bytecode(style, sizeof(unit)); // TODO
+			break;
+		default:
+			assert(0 && "Invalid value");
+			break;
 		}
 	}
 

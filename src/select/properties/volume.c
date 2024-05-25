@@ -40,6 +40,13 @@ css_error css__cascade_volume(uint32_t opv, css_style *style,
 		case VOLUME_X_LOUD:
 			/** \todo convert to public values */
 			break;
+		case VOLUME_CALC:
+			advance_bytecode(style, sizeof(unit));
+			advance_bytecode(style, sizeof(unit)); // TODO
+			break;
+		default:
+			assert(0 && "Invalid value");
+			break;
 		}
 	}
 

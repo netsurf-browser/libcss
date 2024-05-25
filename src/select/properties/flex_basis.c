@@ -36,6 +36,13 @@ css_error css__cascade_flex_basis(uint32_t opv, css_style *style,
 			unit = *((uint32_t *) style->bytecode);
 			advance_bytecode(style, sizeof(unit));
 			break;
+		case FLEX_BASIS_CALC:
+			advance_bytecode(style, sizeof(unit));
+			advance_bytecode(style, sizeof(unit)); // TODO
+			break;
+		default:
+			assert(0 && "Invalid value");
+			break;
 		}
 	}
 

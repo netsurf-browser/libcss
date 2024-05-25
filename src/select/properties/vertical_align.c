@@ -55,6 +55,13 @@ css_error css__cascade_vertical_align(uint32_t opv, css_style *style,
 		case VERTICAL_ALIGN_TEXT_BOTTOM:
 			value = CSS_VERTICAL_ALIGN_TEXT_BOTTOM;
 			break;
+		case VERTICAL_ALIGN_CALC:
+			advance_bytecode(style, sizeof(unit));
+			advance_bytecode(style, sizeof(unit)); // TODO
+			break;
+		default:
+			assert(0 && "Invalid value");
+			break;
 		}
 	}
 

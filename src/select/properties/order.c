@@ -21,10 +21,21 @@ css_error css__cascade_order(uint32_t opv, css_style *style,
 	css_fixed order = 0;
 
 	if (hasFlagValue(opv) == false) {
-		value = CSS_ORDER_SET;
+		switch (getValue(opv)) {
+		case ORDER_SET:
+			value = CSS_ORDER_SET;
 
-		order = FIXTOINT(*((css_fixed *) style->bytecode));
-		advance_bytecode(style, sizeof(order));
+			order = FIXTOINT(*((css_fixed *) style->bytecode));
+			advance_bytecode(style, sizeof(order));
+			break;
+		case ORDER_CALC:
+			advance_bytecode(style, sizeof(unit));
+			advance_bytecode(style, sizeof(unit)); // TODO
+			break;
+		default:
+			assert(0 && "Invalid value");
+			break;
+		}
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,

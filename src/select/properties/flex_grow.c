@@ -21,10 +21,21 @@ css_error css__cascade_flex_grow(uint32_t opv, css_style *style,
 	css_fixed flex_grow = 0;
 
 	if (hasFlagValue(opv) == false) {
-		value = CSS_FLEX_GROW_SET;
+		switch (getValue(opv)) {
+		case FLEX_GROW_SET:
+			value = CSS_FLEX_GROW_SET;
 
-		flex_grow = *((css_fixed *) style->bytecode);
-		advance_bytecode(style, sizeof(flex_grow));
+			flex_grow = *((css_fixed *) style->bytecode);
+			advance_bytecode(style, sizeof(flex_grow));
+			break;
+		case FLEX_GROW_CALC:
+			advance_bytecode(style, sizeof(unit));
+			advance_bytecode(style, sizeof(unit)); // TODO
+			break;
+		default:
+			assert(0 && "Invalid value");
+			break;
+		}
 	}
 
 	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,

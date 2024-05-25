@@ -165,6 +165,13 @@ css_error css__cascade_border_width(uint32_t opv, css_style *style,
 		case BORDER_WIDTH_THICK:
 			value = CSS_BORDER_WIDTH_THICK;
 			break;
+		case BORDER_WIDTH_CALC:
+			advance_bytecode(style, sizeof(unit));
+			advance_bytecode(style, sizeof(unit)); // TODO
+			break;
+		default:
+			assert(0 && "Invalid value");
+			break;
 		}
 	}
 
@@ -198,6 +205,13 @@ css_error css__cascade_length_auto(uint32_t opv, css_style *style,
 			break;
 		case BOTTOM_AUTO:
 			value = CSS_BOTTOM_AUTO;
+			break;
+		case BOTTOM_CALC:
+			advance_bytecode(style, sizeof(unit));
+			advance_bytecode(style, sizeof(unit)); // TODO
+			break;
+		default:
+			assert(0 && "Invalid value");
 			break;
 		}
 	}
@@ -233,6 +247,13 @@ css_error css__cascade_length_normal(uint32_t opv, css_style *style,
 		case LETTER_SPACING_NORMAL:
 			value = CSS_LETTER_SPACING_NORMAL;
 			break;
+		case LETTER_SPACING_CALC:
+			advance_bytecode(style, sizeof(unit));
+			advance_bytecode(style, sizeof(unit)); // TODO
+			break;
+		default:
+			assert(0 && "Invalid value");
+			break;
 		}
 	}
 
@@ -267,6 +288,13 @@ css_error css__cascade_length_none(uint32_t opv, css_style *style,
 		case MAX_HEIGHT_NONE:
 			value = CSS_MAX_HEIGHT_NONE;
 			break;
+		case MAX_HEIGHT_CALC:
+			advance_bytecode(style, sizeof(unit));
+			advance_bytecode(style, sizeof(unit)); // TODO
+			break;
+		default:
+			assert(0 && "Invalid value");
+			break;
 		}
 	}
 
@@ -290,11 +318,22 @@ css_error css__cascade_length(uint32_t opv, css_style *style,
 	uint32_t unit = UNIT_PX;
 
 	if (hasFlagValue(opv) == false) {
-		value = CSS_MIN_HEIGHT_SET;
-		length = *((css_fixed *) style->bytecode);
-		advance_bytecode(style, sizeof(length));
-		unit = *((uint32_t *) style->bytecode);
-		advance_bytecode(style, sizeof(unit));
+		switch (getValue(opv)) {
+		case MIN_HEIGHT_SET:
+			value = CSS_MIN_HEIGHT_SET;
+			length = *((css_fixed *) style->bytecode);
+			advance_bytecode(style, sizeof(length));
+			unit = *((uint32_t *) style->bytecode);
+			advance_bytecode(style, sizeof(unit));
+			break;
+		case MIN_HEIGHT_CALC:
+			advance_bytecode(style, sizeof(unit));
+			advance_bytecode(style, sizeof(unit)); // TODO
+			break;
+		default:
+			assert(0 && "Invalid value");
+			break;
+		}
 	}
 
 	unit = css__to_css_unit(unit);
@@ -318,9 +357,20 @@ css_error css__cascade_number(uint32_t opv, css_style *style,
 	/** \todo values */
 
 	if (hasFlagValue(opv) == false) {
-		value = 0;
-		length = *((css_fixed *) style->bytecode);
-		advance_bytecode(style, sizeof(length));
+		switch (getValue(opv)) {
+		case ORPHANS_SET:
+			value = 0;
+			length = *((css_fixed *) style->bytecode);
+			advance_bytecode(style, sizeof(length));
+			break;
+		case ORPHANS_CALC:
+			advance_bytecode(style, sizeof(unit));
+			advance_bytecode(style, sizeof(unit)); // TODO
+			break;
+		default:
+			assert(0 && "Invalid value");
+			break;
+		}
 	}
 
 	/** \todo lose fun != NULL once all properties have set routines */

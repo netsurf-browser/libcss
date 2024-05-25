@@ -38,6 +38,13 @@ css_error css__cascade_line_height(uint32_t opv, css_style *style,
 		case LINE_HEIGHT_NORMAL:
 			value = CSS_LINE_HEIGHT_NORMAL;
 			break;
+		case LINE_HEIGHT_CALC:
+			advance_bytecode(style, sizeof(unit));
+			advance_bytecode(style, sizeof(unit)); // TODO
+			break;
+		default:
+			assert(0 && "Invalid value");
+			break;
 		}
 	}
 

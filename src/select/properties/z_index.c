@@ -31,6 +31,13 @@ css_error css__cascade_z_index(uint32_t opv, css_style *style,
 		case Z_INDEX_AUTO:
 			value = CSS_Z_INDEX_AUTO;
 			break;
+		case Z_INDEX_CALC:
+			advance_bytecode(style, sizeof(unit));
+			advance_bytecode(style, sizeof(unit)); // TODO
+			break;
+		default:
+			assert(0 && "Invalid value");
+			break;
 		}
 	}
 
