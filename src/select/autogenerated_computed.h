@@ -5,6 +5,9 @@
  * Copyright 2017 The NetSurf Project
  */
 
+#ifndef CSS_COMPUTED_COMPUTED_H_
+#define CSS_COMPUTED_COMPUTED_H_
+
 typedef union {
 	css_fixed value;
 	lwc_string *calc;
@@ -269,7 +272,7 @@ struct css_computed_style_i {
 	css_fixed top;
 	css_fixed vertical_align;
 	int32_t widows;
-	css_fixed width;
+	css_fixed_or_calc width;
 	css_fixed word_spacing;
 	int32_t z_index;
 };
@@ -288,3 +291,5 @@ struct css_computed_style {
 	uint32_t count;
 	uint32_t bin;
 };
+
+#endif

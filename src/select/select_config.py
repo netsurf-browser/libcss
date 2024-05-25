@@ -104,7 +104,7 @@ style = {
     ('padding_bottom', 1, 'length', 'CSS_PADDING_SET'),
     ('text_indent', 1, 'length', 'CSS_TEXT_INDENT_SET'),
     ('vertical_align', 4, 'length', 'CSS_VERTICAL_ALIGN_SET'),
-    ('width', 2, 'length', 'CSS_WIDTH_SET'),
+    ('width', 2, (('length', None, 'calc'),), 'CSS_WIDTH_SET'),
     ('z_index', 2, 'integer'),
     # Style group, arrays
     ('font_family', 3, 'string_arr', None, None,

@@ -5,6 +5,9 @@
  * Copyright 2017 The NetSurf Project
  */
 
+#ifndef CSS_COMPUTED_PROPSET_H_
+#define CSS_COMPUTED_PROPSET_H_
+
 #include "select/propget.h"
 
 
@@ -2267,15 +2270,28 @@ static inline css_error set_widows(css_computed_style *style, uint8_t type,
 #define WIDTH_MASK 0xfe000000
 
 static inline css_error set_width(css_computed_style *style, uint8_t type,
-		css_fixed length, css_unit unit)
+		css_fixed_or_calc length, css_unit unit)
 {
+	uint32_t orig_bits = get_width_bits(style);
+	
+	/* 7bits: uuuuutt : unit | type */
+	if ((orig_bits & 0x3) == CSS_WIDTH_SET) {
+		if ((orig_bits & 0x7c) >> 2 == CSS_UNIT_CALC) {
+			lwc_string_unref(style->i.width.calc);
+		}
+	}
+	
 	uint32_t *bits = &style->i.bits[WIDTH_INDEX];
 	
 	/* 7bits: uuuuutt : unit | type */
 	*bits = (*bits & ~WIDTH_MASK) | ((((uint32_t)type & 0x3) | (unit << 2))
 			<< WIDTH_SHIFT);
 	
-	style->i.width = length;
+	if (unit == CSS_UNIT_CALC) {
+		style->i.width.calc = lwc_string_ref(length.calc);
+	} else {
+		style->i.width.value = length.value;
+	}
 	
 	return CSS_OK;
 }
@@ -2343,3 +2359,5 @@ static inline css_error set_z_index(css_computed_style *style, uint8_t type,
 #undef Z_INDEX_INDEX
 #undef Z_INDEX_SHIFT
 #undef Z_INDEX_MASK
+
+#endif

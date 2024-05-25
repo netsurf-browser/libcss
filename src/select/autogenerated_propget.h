@@ -5,6 +5,9 @@
  * Copyright 2017 The NetSurf Project
  */
 
+#ifndef CSS_COMPUTED_PROPGET_H_
+#define CSS_COMPUTED_PROPGET_H_
+
 
 #define ALIGN_CONTENT_INDEX 10
 #define ALIGN_CONTENT_SHIFT 20
@@ -3009,8 +3012,8 @@ static inline uint8_t get_width_bits(const css_computed_style *style)
 	/* 7bits: uuuuutt : unit | type */
 	return (bits & 0x3);
 }
-static inline uint8_t get_width(const css_computed_style *style, css_fixed
-		*length, css_unit *unit)
+static inline uint8_t get_width(const css_computed_style *style,
+		css_fixed_or_calc *length, css_unit *unit)
 {
 	uint32_t bits = style->i.bits[WIDTH_INDEX];
 	bits &= WIDTH_MASK;
@@ -3112,3 +3115,5 @@ static inline uint8_t get_z_index(const css_computed_style *style, int32_t
 #undef Z_INDEX_INDEX
 #undef Z_INDEX_SHIFT
 #undef Z_INDEX_MASK
+
+#endif
