@@ -1350,10 +1350,27 @@ cleanup:
  * <calc-value> = <number> | <dimension> | <percentage> | ( <calc-sum> )
  *
  *
+ * Once a calc() expression is parsed, it generates into the bytecode as
+ * an opV where the V is VALUE_IS_CALC, then a unit kind which is the
+ * expected resolved type for the calc, and a string index.  The string is
+ * another kind of bytecode, essentially it's a sequence of stack machine
+ * operations which are one of the calc_opcodes enum.  They are:
+ *
+ * * CALC_PUSH_NUMBER (N)
+ *   - takes a css_fixed and pushes it onto the operand stack
+ * * CALC_PUSH_VALUE (V)
+ *   - takes a css_fixed and a unit, and pushes them
+ * * CALC_{ADD,SUBTRACT,MULTIPLY,DIVIDE} (+ - * /)
+ *   - pop two values, perform the operation, push the result
+ * * CALC_FINISH (=)
+ *   - pop the top value from the stack and return it.
+ *
+ * As an example:
+ *
  * calc(10px + (4rem / 2)) =>
  *   V 10 px
  *   V 4 rem
- *   V 2 NUMBER
+ *   N 2
  *   /
  *   +
  *   =
