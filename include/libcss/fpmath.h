@@ -155,6 +155,9 @@ css_float_to_fixed(const float a) {
 #define F_300	0x0004b000	/* 300 */
 #define F_400	0x00064000	/* 400 */
 
+/* Fixed point percentage `p` of integer `i`, to an integer */
+#define FPCT_OF_INT_TOINT(p, i) (FIXTOINT(FDIV((p * i), F_100)))
+
 #ifdef __cplusplus
 }
 #endif
