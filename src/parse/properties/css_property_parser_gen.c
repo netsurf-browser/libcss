@@ -50,7 +50,12 @@ struct keyval *get_keyval(char **pos)
 	} else {
 		kvlen = (endpos - *pos);
 	}
+
 	nkeyval = calloc(1, sizeof(struct keyval) + kvlen + 1);
+	if (nkeyval == NULL) {
+		/* allocation failed, cannot proceed */
+		return NULL;
+	}
 
 	memcpy(nkeyval + 1, *pos, kvlen);
 
