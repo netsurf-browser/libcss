@@ -3138,7 +3138,7 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	*len -= wrote;
 
 	/* width */
-	val = css_computed_width(style, &len1, &unit1);
+	val = css_computed_width_static(style, &len1, &unit1);
 	switch (val) {
 	case CSS_WIDTH_INHERIT:
 		wrote = snprintf(ptr, *len, "width: inherit\n");
