@@ -62,7 +62,7 @@ css_error css__cascade_font_size(uint32_t opv, css_style *style,
 		case FONT_SIZE_CALC:
 			advance_bytecode(style, sizeof(unit));
 			advance_bytecode(style, sizeof(unit)); // TODO
-			break;
+			return CSS_OK;
 		default:
 			assert(0 && "Invalid value");
 			break;

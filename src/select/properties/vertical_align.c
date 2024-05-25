@@ -58,7 +58,7 @@ css_error css__cascade_vertical_align(uint32_t opv, css_style *style,
 		case VERTICAL_ALIGN_CALC:
 			advance_bytecode(style, sizeof(unit));
 			advance_bytecode(style, sizeof(unit)); // TODO
-			break;
+			return CSS_OK;
 		default:
 			assert(0 && "Invalid value");
 			break;
