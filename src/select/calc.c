@@ -199,7 +199,8 @@ css_error css_calculator_calculate(css_calculator *calc,
 				   css_unit *unit_out, css_fixed *value_out)
 {
 	css_error ret = CSS_OK;
-	css_code_t *codeptr = (css_code_t *)lwc_string_data(expr);
+	/* Alignment note: lwc string data is always very well aligned */
+	css_code_t *codeptr = (css_code_t *)(void *)lwc_string_data(expr);
 
 	/* Reset the stack before we begin, just in case */
 	calc->stack_ptr = 0;
