@@ -185,3 +185,11 @@
 | *
 |  word-spacing: /* -> 0px */ calc(0.400em 10px + =)
 #reset
+
+#data
+* { width: calc(1em + 1px) !important }
+#errors
+#expected
+| *
+|  width: /* -> 0px */ calc(1em 1px + =) !important
+#reset
