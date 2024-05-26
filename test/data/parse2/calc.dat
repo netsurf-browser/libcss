@@ -36,11 +36,11 @@
 #reset
 
 #data
-* { z-index: calc(50vh + 10px)}
+* { width: calc(50vh + 10px)}
 #errors
 #expected
 | *
-|  z-index: /* -> 0number */ calc(50vh 10px + =)
+|  width: /* -> 0px */ calc(50vh 10px + =)
 #reset
 
 #data
@@ -52,11 +52,11 @@
 #reset
 
 #data
-* { z-index: calc(50vh + 10px / 9)}
+* { z-index: calc(4 + 5 / 9)}
 #errors
 #expected
 | *
-|  z-index: /* -> 0number */ calc(50vh 10px 9 / + =)
+|  z-index: /* -> 0number */ calc(4 5 9 / + =)
 #reset
 
 #data
