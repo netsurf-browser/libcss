@@ -137,8 +137,8 @@ static css_error css__calculator_pop(css_calculator *calc, unit *unit,
  *  - freq to hz
  *  - resolution to dpi
  */
-static css_error css__normalise_unit(css_unit_ctx *unit_ctx,
-				     css_computed_style *style,
+static css_error css__normalise_unit(const css_unit_ctx *unit_ctx,
+				     const css_computed_style *style,
 				     int32_t available, unit *u, css_fixed *v)
 {
 	if (*u & UNIT_LENGTH) {
@@ -179,6 +179,7 @@ static css_error css__normalise_unit(css_unit_ctx *unit_ctx,
 			return CSS_INVALID;
 		}
 		*v = css_multiply_fixed(*v, pct100);
+		*v = css_divide_fixed(*v, INTTOFIX(100));
 		*u = UNIT_PX;
 		return CSS_OK;
 	} else if (*u == UNIT_CALC_NUMBER) {
@@ -191,10 +192,11 @@ static css_error css__normalise_unit(css_unit_ctx *unit_ctx,
 /****************************** Compute ************************************/
 
 /* Exported function, documented in calc.h */
-css_error css_calculator_calculate(css_calculator *calc, css_unit_ctx *unit_ctx,
+css_error css_calculator_calculate(css_calculator *calc,
+				   const css_unit_ctx *unit_ctx,
 				   int32_t available, lwc_string *expr,
-				   css_computed_style *style, unit *unit_out,
-				   css_fixed *value_out)
+				   const css_computed_style *style,
+				   css_unit *unit_out, css_fixed *value_out)
 {
 	css_error ret = CSS_OK;
 	css_code_t *codeptr = (css_code_t *)lwc_string_data(expr);
@@ -207,8 +209,8 @@ css_error css_calculator_calculate(css_calculator *calc, css_unit_ctx *unit_ctx,
 		css_code_t op = *codeptr++;
 		switch (op) {
 		case CALC_PUSH_VALUE: {
-			unit u = (unit)(*codeptr++);
 			css_fixed v = (css_fixed)(*codeptr++);
+			unit u = (unit)(*codeptr++);
 			ret = css__normalise_unit(unit_ctx, style, available,
 						  &u, &v);
 			if (ret != CSS_OK) {
@@ -275,7 +277,7 @@ css_error css_calculator_calculate(css_calculator *calc, css_unit_ctx *unit_ctx,
 		return CSS_INVALID;
 	}
 
-	*unit_out = calc->stack[0].unit;
+	*unit_out = css__to_css_unit(calc->stack[0].unit);
 	*value_out = calc->stack[0].value;
 
 	return CSS_OK;
