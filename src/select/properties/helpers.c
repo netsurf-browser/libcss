@@ -249,12 +249,13 @@ css_error css__cascade_length_auto_calc(uint32_t opv, css_style *style,
 			value = CSS_BOTTOM_AUTO;
 			break;
 		case BOTTOM_CALC:
+			value = CSS_BOTTOM_SET;
 			advance_bytecode(style, sizeof(unit)); // TODO: Skip unit, not sure what to do
 			snum = *((uint32_t *) style->bytecode);
 			advance_bytecode(style, sizeof(snum));
 			unit = CSS_UNIT_CALC;
 			css__stylesheet_string_get(style->sheet, snum, &length.calc);
-			return CSS_OK;
+			break;
 		default:
 			assert(0 && "Invalid value");
 			break;
