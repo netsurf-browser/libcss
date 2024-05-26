@@ -704,7 +704,7 @@ uint8_t css_computed_width(
 {
 	enum css_width_e type;
 	css_unit unit = CSS_UNIT_PX;
-	css_fixed value = 0;
+	css_fixed_or_calc value = {.value = 0};
 
 	type = get_width(style, &value, &unit);
 	switch (type) {
@@ -714,6 +714,10 @@ uint8_t css_computed_width(
 		break;
 	case CSS_WIDTH_SET:
 		switch (unit) {
+		case CSS_UNIT_CALC:
+			/* TODO */
+			type = CSS_WIDTH_AUTO;
+			break;
 		case CSS_UNIT_PCT:
 			if (available_px < 0) {
 				type = CSS_WIDTH_AUTO;
@@ -721,13 +725,13 @@ uint8_t css_computed_width(
 			}
 
 			*px_out = FPCT_OF_INT_TOINT(
-					value,
+					value.value,
 					available_px);
 			break;
 		default:
 			*px_out = FIXTOINT(css_unit_len2device_px(
 					style, unit_ctx,
-					value, unit));
+					value.value, unit));
 			break;
 		}
 		break;
