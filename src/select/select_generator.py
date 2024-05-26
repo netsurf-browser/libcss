@@ -536,7 +536,7 @@ class CSSGroup:
 
             # Ensure any existing calc() values are freed
             if p.has_calc:
-                t.append('uint32_t orig_bits = get_{}_bits(style);'.format(p.name))
+                t.append('uint32_t orig_bits = (style->i.bits[{name}_INDEX] & {name}_MASK) >> {name}_SHIFT;'.format(name=p.name.upper()))
                 t.append()
 
                 type_mask, shift_list, bits_comment = p.get_bits()

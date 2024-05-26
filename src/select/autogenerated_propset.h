@@ -2272,7 +2272,8 @@ static inline css_error set_widows(css_computed_style *style, uint8_t type,
 static inline css_error set_width(css_computed_style *style, uint8_t type,
 		css_fixed_or_calc length, css_unit unit)
 {
-	uint32_t orig_bits = get_width_bits(style);
+	uint32_t orig_bits = (style->i.bits[WIDTH_INDEX] & WIDTH_MASK) >>
+			WIDTH_SHIFT;
 	
 	/* 7bits: uuuuutt : unit | type */
 	if ((orig_bits & 0x3) == CSS_WIDTH_SET) {
