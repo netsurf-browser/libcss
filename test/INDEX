@@ -11,6 +11,7 @@ number		Conversion of numbers to fixed point			number
 parse-auto	Automated parser tests (bytecode)			parse
 parse2-auto	Automated parser tests (om & invalid)			parse2
 select		Automated selection engine tests			select
+select2		Automated selection engine tests (resolved units)	select2
 
 # Regression tests
 

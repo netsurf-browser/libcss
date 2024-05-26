@@ -808,6 +808,7 @@ static css_error get_libcss_node_data(void *pw, void *n,
 
 static css_unit_ctx unit_ctx = {
 	.font_size_default = 16 * (1 << CSS_RADIX_POINT),
+	.device_dpi = 96 * (1 << CSS_RADIX_POINT),
 };
 
 static css_select_handler select_handler = {
@@ -1306,7 +1307,7 @@ static void run_test_select_tree(css_select_ctx *select,
 
 	if (node == ctx->target) {
 		dump_computed_style(sr->styles[ctx->pseudo_element],
-				buf, buflen);
+				buf, buflen, &unit_ctx);
 	}
 
 	if (node->parent == NULL) {

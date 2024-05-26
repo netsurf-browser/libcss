@@ -169,7 +169,7 @@ static size_t dump_css_unit(css_fixed val, css_unit unit, char *ptr, size_t len)
 
 
 static void dump_computed_style(const css_computed_style *style, char *buf,
-		size_t *len)
+		size_t *len, css_unit_ctx *unit_ctx)
 {
 	char *ptr = buf;
 	size_t wrote = 0;
@@ -185,6 +185,11 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	const css_computed_counter *counter = NULL;
 	lwc_string **string_list = NULL;
 	int32_t integer = 0;
+#ifdef USE_DEVICE
+	int pixels = 0;
+#endif
+
+	(void)unit_ctx; /* Avoid unused argument warnings in select.c case */
 
 	/* align-content */
 	val = css_computed_align_content(style);
@@ -3141,7 +3146,11 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	*len -= wrote;
 
 	/* width */
+#ifdef USE_DEVICE
+	val = css_computed_width(style, unit_ctx, 1024, &pixels);
+#else
 	val = css_computed_width_static(style, &len1, &unit1);
+#endif
 	switch (val) {
 	case CSS_WIDTH_INHERIT:
 		wrote = snprintf(ptr, *len, "width: inherit\n");
@@ -3154,9 +3163,19 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 		ptr += wrote;
 		*len -= wrote;
 
+#ifdef USE_DEVICE
+		wrote = dump_css_number(INTTOFIX(pixels), ptr, *len);
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = snprintf(ptr, *len, " pixels");
+		ptr += wrote;
+		*len -= wrote;
+#else
 		wrote = dump_css_unit(len1, unit1, ptr, *len);
 		ptr += wrote;
 		*len -= wrote;
+#endif
 
 		wrote = snprintf(ptr, *len, "\n");
 		break;
