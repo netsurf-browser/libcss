@@ -24,6 +24,9 @@ typedef struct {
 	css_calculator_stack_entry *stack;
 	size_t stack_alloc;
 	size_t stack_ptr;
+#ifndef NDEBUG
+	lwc_string *canary;
+#endif
 } css_calculator;
 
 /**

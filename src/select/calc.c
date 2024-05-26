@@ -11,8 +11,15 @@
 #include "select/helpers.h"
 #include "select/unit.h"
 
+#include "utils/utils.h"
+
 /** The default number of entries on a calculator stack */
 #define DEFAULT_STACK_SIZE 32
+
+#ifndef NDEBUG
+#define CANARY "A css_calculator has leaked"
+#define CANARY_SLEN SLEN(CANARY)
+#endif
 
 /****************************** Allocation **********************************/
 
@@ -24,9 +31,21 @@ css_error css_calculator_create(css_calculator **out)
 		return CSS_NOMEM;
 	}
 
+#ifndef NDEBUG
+	if (lwc_intern_string(CANARY, CANARY_SLEN, &((*out)->canary)) !=
+	    lwc_error_ok) {
+		free(*out);
+		*out = NULL;
+		return CSS_NOMEM;
+	}
+#endif
+
 	(*out)->stack =
 	    calloc(DEFAULT_STACK_SIZE, sizeof(css_calculator_stack_entry));
 	if ((*out)->stack == NULL) {
+#ifndef NDEBUG
+		lwc_string_unref((*out)->canary);
+#endif
 		free(*out);
 		*out = NULL;
 		return CSS_NOMEM;
@@ -51,6 +70,9 @@ void css_calculator_unref(css_calculator *calc)
 {
 	calc->refcount -= 1;
 	if (calc->refcount == 0) {
+#ifndef NDEBUG
+		lwc_string_unref(calc->canary);
+#endif
 		free(calc->stack);
 		free(calc);
 	}
