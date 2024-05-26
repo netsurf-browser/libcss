@@ -1666,7 +1666,11 @@ css_error css__parse_calc(css_language *c,
 	if (error != CSS_OK)
 		goto cleanup;
 
-	css__stylesheet_style_append(calc_style, (css_code_t) expr_index);
+	error = css__stylesheet_style_append(calc_style,
+			(css_code_t) expr_index);
+	if (error != CSS_OK) {
+		goto cleanup;
+	}
 
 	error = css__stylesheet_merge_style(result, calc_style);
 cleanup:
