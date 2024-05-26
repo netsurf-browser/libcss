@@ -23,6 +23,11 @@ include_propget = '''\
 #include "select/propget.h"
 '''
 
+include_calc = '''\
+
+#include "select/calc.h"
+'''
+
 calc_unions = '''\
 
 typedef union {
@@ -34,7 +39,7 @@ typedef union {
 assets = {}
 
 assets['computed.h'] = {}
-assets['computed.h']['header'] = copyright + ifndef("computed") + calc_unions
+assets['computed.h']['header'] = copyright + ifndef("computed") + include_calc + calc_unions
 assets['computed.h']['footer'] = '\n#endif\n'
 
 assets['propset.h'] = {}

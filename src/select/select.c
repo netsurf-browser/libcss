@@ -16,6 +16,7 @@
 #include "bytecode/opcodes.h"
 #include "stylesheet.h"
 #include "select/arena.h"
+#include "select/calc.h"
 #include "select/computed.h"
 #include "select/dispatch.h"
 #include "select/hash.h"
@@ -56,6 +57,8 @@ struct css_select_ctx {
 	bool uses_revert;  /**< A sheet used revert property value */
 
 	css_select_strings str;
+
+	css_calculator *calc; /**< A calculator to hand off to computed styles */
 
 	/* Interned default style */
 	css_computed_style *default_style;
@@ -238,8 +241,15 @@ css_error css_select_ctx_create(css_select_ctx **result)
 	if (c == NULL)
 		return CSS_NOMEM;
 
+	error = css_calculator_create(&c->calc);
+	if (error != CSS_OK) {
+		free(c);
+		return error;
+	}
+
 	error = css_select_strings_intern(&c->str);
 	if (error != CSS_OK) {
+		css_calculator_unref(c->calc);
 		free(c);
 		return error;
 	}
@@ -271,6 +281,8 @@ css_error css_select_ctx_destroy(css_select_ctx *ctx)
 		}
 		free(ctx->sheets);
 	}
+
+	css_calculator_unref(ctx->calc);
 
 	free(ctx);
 
@@ -453,7 +465,7 @@ static css_error css__select_ctx_create_default_style(css_select_ctx *ctx,
 	css_error error;
 
 	/* Need to construct the default style */
-	error = css__computed_style_create(&style);
+	error = css__computed_style_create(&style, ctx->calc);
 	if (error != CSS_OK)
 		return error;
 
@@ -1314,7 +1326,7 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 	/* Base element style is guaranteed to exist
 	 */
 	error = css__computed_style_create(
-			&state.results->styles[CSS_PSEUDO_ELEMENT_NONE]);
+			&state.results->styles[CSS_PSEUDO_ELEMENT_NONE], ctx->calc);
 	if (error != CSS_OK) {
 		goto cleanup;
 	}
@@ -2226,7 +2238,7 @@ css_error match_selector_chain(css_select_ctx *ctx,
 	/* Ensure that the appropriate computed style exists */
 	if (state->results->styles[pseudo] == NULL) {
 		error = css__computed_style_create(
-				&state->results->styles[pseudo]);
+				&state->results->styles[pseudo], ctx->calc);
 		if (error != CSS_OK)
 			return error;
 	}

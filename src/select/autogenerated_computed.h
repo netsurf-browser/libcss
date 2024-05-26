@@ -8,6 +8,8 @@
 #ifndef CSS_COMPUTED_COMPUTED_H_
 #define CSS_COMPUTED_COMPUTED_H_
 
+#include "select/calc.h"
+
 typedef union {
 	css_fixed value;
 	lwc_string *calc;
@@ -290,6 +292,7 @@ struct css_computed_style {
 	struct css_computed_style *next;
 	uint32_t count;
 	uint32_t bin;
+	css_calculator *calc;
 };
 
 #endif
