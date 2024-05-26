@@ -1378,6 +1378,7 @@ cleanup:
 
 static css_error
 css__parse_calc_sum(css_language *c,
+		enum css_properties_e property,
 		const parserutils_vector *vector, int *ctx,
 		parserutils_buffer *result);
 
@@ -1414,6 +1415,7 @@ css__parse_calc_number(
 
 static css_error
 css__parse_calc_value(css_language *c,
+		enum css_properties_e property,
 		const parserutils_vector *vector, int *ctx,
 		parserutils_buffer *result)
 {
@@ -1426,7 +1428,7 @@ css__parse_calc_value(css_language *c,
 	if (tokenIsChar(token, '(')) {
 		parserutils_vector_iterate(vector, ctx);
 		consumeWhitespace(vector, ctx);
-		error = css__parse_calc_sum(c, vector, ctx, result);
+		error = css__parse_calc_sum(c, property, vector, ctx, result);
 		if (error != CSS_OK) {
 			return error;
 		}
@@ -1458,6 +1460,11 @@ css__parse_calc_value(css_language *c,
 			return error;
 		}
 
+		if (!(unit & property_unit_mask[property])) {
+			/* This unit is not valid for this property. */
+			return CSS_INVALID;
+		}
+
 		error = css_error_from_parserutils_error(
 			parserutils_buffer_appendv(result, 3,
 				&push, sizeof(push),
@@ -1485,6 +1492,7 @@ css__parse_calc_value(css_language *c,
  */
 static css_error
 css__parse_calc_product(css_language *c,
+		enum css_properties_e property,
 		const parserutils_vector *vector, int *ctx,
 		parserutils_buffer *result)
 {
@@ -1493,7 +1501,7 @@ css__parse_calc_product(css_language *c,
 	css_code_t operator;
 
 	/* First parse a value */
-	error = css__parse_calc_value(c, vector, ctx, result);
+	error = css__parse_calc_value(c, property, vector, ctx, result);
 	if (error != CSS_OK) {
 		return error;
 	}
@@ -1524,7 +1532,8 @@ css__parse_calc_product(css_language *c,
 
 		if (operator == CALC_MULTIPLY) {
 			/* parse another value */
-			error = css__parse_calc_value(c, vector, ctx, result);
+			error = css__parse_calc_value(c, property, vector,
+					ctx, result);
 		} else {
 			error = css__parse_calc_number(vector, ctx, result);
 		}
@@ -1543,6 +1552,7 @@ css__parse_calc_product(css_language *c,
 
 css_error
 css__parse_calc_sum(css_language *c,
+		enum css_properties_e property,
 		const parserutils_vector *vector, int *ctx,
 		parserutils_buffer *result)
 {
@@ -1551,7 +1561,7 @@ css__parse_calc_sum(css_language *c,
 	css_code_t operator;
 
 	/* First parse a product */
-	error = css__parse_calc_product(c, vector, ctx, result);
+	error = css__parse_calc_product(c, property, vector, ctx, result);
 	if (error != CSS_OK) {
 		return error;
 	}
@@ -1577,7 +1587,7 @@ css__parse_calc_sum(css_language *c,
 		consumeWhitespace(vector, ctx);
 
 		/* parse another product */
-		error = css__parse_calc_product(c, vector, ctx, result);
+		error = css__parse_calc_product(c, property, vector, ctx, result);
 		if (error != CSS_OK)
 			break;
 
@@ -1594,7 +1604,7 @@ css__parse_calc_sum(css_language *c,
 css_error css__parse_calc(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		css_style *result,
-		css_code_t property,
+		css_code_t OPV,
 		uint32_t unit)
 {
 	int orig_ctx = *ctx;
@@ -1605,6 +1615,7 @@ css_error css__parse_calc(css_language *c,
 	lwc_string *calc_expr = NULL;
 	uint32_t expr_index = 0;
 	css_code_t finish = CALC_FINISH;
+	enum css_properties_e property = getOpcode(OPV);
 
 	consumeWhitespace(vector, ctx);
 
@@ -1624,7 +1635,7 @@ css_error css__parse_calc(css_language *c,
 	if (error != CSS_OK)
 		goto cleanup;
 
-	error = css__stylesheet_style_append(calc_style, property);
+	error = css__stylesheet_style_append(calc_style, OPV);
 	if (error != CSS_OK)
 		goto cleanup;
 
@@ -1632,7 +1643,7 @@ css_error css__parse_calc(css_language *c,
 	if (error != CSS_OK)
 		goto cleanup;
 
-	error = css__parse_calc_sum(c, vector, ctx, calc_buffer);
+	error = css__parse_calc_sum(c, property, vector, ctx, calc_buffer);
 	if (error != CSS_OK)
 		goto cleanup;
 

@@ -238,7 +238,7 @@ css_error css__comma_list_to_style(css_language *c,
  * \param[in] vector   Vector of tokens to process
  * \param[in] ctx      Pointer to vector iteration context
  * \param[in] result   Pointer to location to receive resulting style
- * \param[in] property The CSS property we are calculating for
+ * \param[in] OPV      The CSS property we are calculating for
  * \param[in] unit     The kind of unit which we want to come out of this calc()
  * \return CSS_OK on success,
  *         CSS_NOMEM on memory exhaustion,
@@ -250,6 +250,6 @@ css_error css__comma_list_to_style(css_language *c,
 css_error css__parse_calc(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		css_style *result,
-		css_code_t property,
+		css_code_t OPV,
 		uint32_t unit);
 #endif
