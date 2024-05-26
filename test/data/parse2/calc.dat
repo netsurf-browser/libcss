@@ -155,3 +155,33 @@
 #expected
 | *
 #reset
+
+#data
+* { width: calc(50vh + 10hz)}
+#errors
+#expected
+| *
+#reset
+
+#data
+* { width: calc(50% + 10px)}
+#errors
+#expected
+| *
+|  width: /* -> 0px */ calc(50% 10px + =)
+#reset
+
+#data
+* { word-spacing: calc(50% + 10px)}
+#errors
+#expected
+| *
+#reset
+
+#data
+* { word-spacing: calc(0.4em + 10px)}
+#errors
+#expected
+| *
+|  word-spacing: /* -> 0px */ calc(0.400em 10px + =)
+#reset
