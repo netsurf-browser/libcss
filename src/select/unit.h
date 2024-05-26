@@ -39,4 +39,15 @@ css_error css_unit_compute_absolute_font_size(
 		css_fixed font_size_default,
 		css_hint *size);
 
+/**
+ * Convert any angle to degrees.
+ *
+ * It is invalid to call this with a unit which isn't of \ref UNIT_ANGLE
+ *
+ * \param[in] unit The unit the angle is in
+ * \param[in] angle The angle to convert
+ * \return the angle in degrees
+ */
+css_fixed css_unit_angle2deg(const css_unit unit, const css_fixed angle);
+
 #endif
