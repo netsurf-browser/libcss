@@ -721,8 +721,10 @@ uint8_t css_computed_width(
 	case CSS_WIDTH_SET:
 		switch (unit) {
 		case CSS_UNIT_CALC:
-			if (css_calculator_calculate(style->calc, unit_ctx, available_px,
-			                             value.calc, style, &unit, &value.value) == CSS_OK) {
+			if (css_calculator_calculate(
+					style->calc, unit_ctx,
+					available_px, value.calc,
+					style, &unit, &value.value) == CSS_OK) {
 				type = CSS_WIDTH_SET;
 				*px_out = FIXTOINT(value.value);
 			} else {
