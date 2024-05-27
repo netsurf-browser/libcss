@@ -820,7 +820,7 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 			*ptr += sprintf(*ptr, "/* -> ");
 			dump_unit(0, unit, ptr);
 			*ptr += sprintf(*ptr, " */ calc(");
-			while ((calc_opcode = *((css_code_t *)codeptr)) != CALC_FINISH) {
+			while ((calc_opcode = *((css_code_t *)(void *)codeptr)) != CALC_FINISH) {
 				codeptr += sizeof(calc_opcode);
 				switch (calc_opcode) {
 				case CALC_ADD:
@@ -836,16 +836,16 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 					*ptr += sprintf(*ptr, "/ ");
 					break;
 				case CALC_PUSH_VALUE: {
-					css_fixed num = *((css_fixed *)codeptr);
+					css_fixed num = *((css_fixed *)(void *)codeptr);
 					codeptr += sizeof(num);
-					uint32_t unit = *((uint32_t *)codeptr);
+					uint32_t unit = *((uint32_t *)(void *)codeptr);
 					codeptr += sizeof(unit);
 					dump_unit(num, unit, ptr);
 					*ptr += sprintf(*ptr, " ");
 					break;
 				}
 				case CALC_PUSH_NUMBER: {
-					css_fixed num = *((css_fixed *)codeptr);
+					css_fixed num = *((css_fixed *)(void *)codeptr);
 					codeptr += sizeof(num);
 					dump_number(num, ptr);
 					*ptr += sprintf(*ptr, " ");
