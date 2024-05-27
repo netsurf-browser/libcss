@@ -179,7 +179,7 @@ static css_error css__normalise_unit(const css_unit_ctx *unit_ctx,
 			return CSS_INVALID;
 		}
 		*v = css_multiply_fixed(*v, pct100);
-		*v = css_divide_fixed(*v, INTTOFIX(100));
+		*v = css_divide_fixed(*v, F_100);
 		*u = UNIT_PX;
 		return CSS_OK;
 	} else if (*u == UNIT_CALC_NUMBER) {
