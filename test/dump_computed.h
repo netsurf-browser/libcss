@@ -3147,9 +3147,9 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 
 	/* width */
 #ifdef USE_DEVICE
-	val = css_computed_width(style, unit_ctx, 1024, &pixels);
+	val = css_computed_width_px(style, unit_ctx, 1024, &pixels);
 #else
-	val = css_computed_width_static(style, &len1, &unit1);
+	val = css_computed_width(style, &len1, &unit1);
 #endif
 	switch (val) {
 	case CSS_WIDTH_INHERIT:

@@ -702,7 +702,7 @@ uint8_t css_computed_max_width(const css_computed_style *style,
 	return get_max_width(style, length, unit);
 }
 
-uint8_t css_computed_width(
+uint8_t css_computed_width_px(
 		const css_computed_style *style,
 		const css_unit_ctx *unit_ctx,
 		int available_px,
@@ -753,7 +753,7 @@ uint8_t css_computed_width(
 	return type;
 }
 
-uint8_t css_computed_width_static(const css_computed_style *style,
+uint8_t css_computed_width(const css_computed_style *style,
 		css_fixed *length, css_unit *unit)
 {
 	css_fixed_or_calc length_ = {.value = 0};
