@@ -518,7 +518,7 @@ css_fixed css_unit_angle2deg(const css_unit unit, const css_fixed angle)
 	if (unit == CSS_UNIT_GRAD) {
 		return FMUL(angle, FLTTOFIX(0.9));
 	} else if (unit == CSS_UNIT_RAD) {
-		return FDIV(FMUL(angle, INTTOFIX(180)), F_PI);
+		return FDIV(FMUL(angle, F_180), F_PI);
 	} else {
 		/* Must be degrees as DEG/RAD/GRAD are all angle kinds */
 		return angle;
