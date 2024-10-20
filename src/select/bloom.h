@@ -68,7 +68,7 @@ static inline void css_bloom_add_hash(css_bloom bloom[CSS_BLOOM_SIZE],
 	unsigned int bit = hash & 0x1f; /* Top 5 bits */
 	unsigned int index = (hash >> 5) & INDEX_BITS_N; /* Next N bits */
 
-	bloom[index] |= (1 << bit);
+	bloom[index] |= (1u << bit);
 }
 
 
@@ -85,7 +85,7 @@ static inline bool css_bloom_has_hash(const css_bloom bloom[CSS_BLOOM_SIZE],
 	unsigned int bit = hash & 0x1f; /* Top 5 bits */
 	unsigned int index = (hash >> 5) & INDEX_BITS_N; /* Next N bits */
 
-	return (bloom[index] & (1 << bit));
+	return (bloom[index] & (1u << bit));
 }
 
 
