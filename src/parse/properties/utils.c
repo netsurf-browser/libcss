@@ -834,22 +834,58 @@ css_error css__parse_named_colour(css_language *c, lwc_string *data,
 		0xffffff00, /* YELLOW */
 		0xff9acd32  /* YELLOWGREEN */
 	};
+	/** Legacy system colour mapping */
+	static const int deprecatedmap[LAST_DEPRECATEDCOLOUR + 1 - FIRST_DEPRECATEDCOLOUR] = {
+		BUTTONBORDER, /* ACTIVEBORDER */
+		CANVAS, /* ACTIVECAPTION */
+		CANVAS, /* APPWORKSPACE */
+		CANVAS, /* BACKGROUND */
+		BUTTONFACE, /* BUTTONHIGHLIGHT */
+		BUTTONFACE, /* BUTTONSHADOW */
+		CANVASTEXT, /* CAPTIONTEXT */
+		BUTTONBORDER, /* INACTIVEBORDER */
+		CANVAS, /* INACTIVECAPTION */
+		GRAYTEXT, /* INACTIVECAPTIONTEXT */
+		CANVAS, /* INFOBACKGROUND */
+		CANVASTEXT, /* INFOTEXT */
+		CANVAS, /* MENU */
+		CANVASTEXT, /* MENUTEXT */
+		CANVAS, /* SCROLLBAR */
+		BUTTONBORDER, /* THREEDDARKSHADOW */
+		BUTTONFACE, /* THREEDFACE */
+		BUTTONBORDER, /* THREEDHIGHLIGHT */
+		BUTTONBORDER, /* THREEDLIGHTSHADOW */
+		BUTTONBORDER, /* THREEDSHADOW */
+		CANVAS, /* WINDOW */
+		BUTTONBORDER, /* WINDOWFRAME */
+		CANVASTEXT, /* WINDOWTEXT */
+	};
 	int i;
 	bool match;
 
+	/* try to match a named colour */
 	for (i = FIRST_COLOUR; i <= LAST_COLOUR; i++) {
-		if (lwc_string_caseless_isequal(data, c->strings[i],
-				&match) == lwc_error_ok && match)
+		if (lwc_string_caseless_isequal(data, c->strings[i], &match) ==
+		    lwc_error_ok &&
+		    match) {
+			/* Known named colour */
+			*result = colourmap[i - FIRST_COLOUR];
+			return CSS_OK;
+		}
+	}
+
+	/* map deprecated system colours to current system colours */
+	for (i = FIRST_DEPRECATEDCOLOUR; i <= LAST_DEPRECATEDCOLOUR; i++) {
+		if (lwc_string_caseless_isequal(data, c->strings[i], &match) ==
+		    lwc_error_ok &&
+		    match) {
+			/* Known legacy system named colour */
+			data = c->strings[deprecatedmap[i - FIRST_DEPRECATEDCOLOUR]];
 			break;
+		}
 	}
 
-	if (i <= LAST_COLOUR) {
-		/* Known named colour */
-		*result = colourmap[i - FIRST_COLOUR];
-		return CSS_OK;
-	}
-
-	/* We don't know this colour name; ask the client */
+	/* attempt to get client to map colour */
 	if (c->sheet->color != NULL)
 		return c->sheet->color(c->sheet->color_pw, data, result);
 

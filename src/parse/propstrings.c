@@ -493,6 +493,7 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	SMAP("sticky"),
 	SMAP("calc"),
 
+	/* Named colours */
 	SMAP("aliceblue"),
 	SMAP("antiquewhite"),
 	SMAP("aqua"),
@@ -642,7 +643,53 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	SMAP("white"),
 	SMAP("whitesmoke"),
 	SMAP("yellow"),
-	SMAP("yellowgreen")
+	SMAP("yellowgreen"),
+
+	/* CSS Color Module Level 4 system colors */
+	SMAP("accentcolor"),
+	SMAP("accentcolortext"),
+	SMAP("activetext"),
+	SMAP("buttonborder"),
+	SMAP("buttonface"),
+	SMAP("buttontext"),
+	SMAP("canvas"),
+	SMAP("canvastext"),
+	SMAP("field"),
+	SMAP("fieldtext"),
+	SMAP("graytext"),
+	SMAP("highlight"),
+	SMAP("highlighttext"),
+	SMAP("linktext"),
+	SMAP("mark"),
+	SMAP("marktext"),
+	SMAP("selecteditem"),
+	SMAP("selecteditemtext"),
+	SMAP("visitedtext"),
+
+	/* CSS Color Module Level 4 deprecated system colors */
+	SMAP("activeborder"),
+	SMAP("activecaption"),
+	SMAP("appworkspace"),
+	SMAP("background"),
+	SMAP("buttonhighlight"),
+	SMAP("buttonshadow"),
+	SMAP("captiontext"),
+	SMAP("inactiveborder"),
+	SMAP("inactivecaption"),
+	SMAP("inactivecaptiontext"),
+	SMAP("infobackground"),
+	SMAP("infotext"),
+	SMAP("menu"),
+	SMAP("menutext"),
+	SMAP("scrollbar"),
+	SMAP("threeddarkshadow"),
+	SMAP("threedface"),
+	SMAP("threedhighlight"),
+	SMAP("threedlightshadow"),
+	SMAP("threedshadow"),
+	SMAP("window"),
+	SMAP("windowframe"),
+	SMAP("windowtext")
 };
 
 
