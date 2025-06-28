@@ -377,7 +377,7 @@ css_error css__parse_colour_specifier(css_language *c,
 	consumeWhitespace(vector, ctx);
 
 	/* IDENT(<colour name>) |
-	 * HASH(rgb | rrggbb) |
+	 * HASH(rgb | rgba | rrggbb | rrggbbaa) |
 	 * FUNCTION(rgb) [ [ NUMBER | PERCENTAGE ] ',' ] {3} ')'
 	 * FUNCTION(rgba) [ [ NUMBER | PERCENTAGE ] ',' ] {4} ')'
 	 * FUNCTION(hsl) ANGLE ',' PERCENTAGE ',' PERCENTAGE  ')'
@@ -894,7 +894,7 @@ css_error css__parse_named_colour(css_language *c, lwc_string *data,
 }
 
 /**
- * Parse a hash colour (#rgb or #rrggbb)
+ * Parse a hash colour (#rgb, #rgba, #rrggbb or #rrggbbaa)
  *
  * \param data    Pointer to colour string
  * \param result  Pointer to location to receive result (AARRGGBB)
@@ -907,8 +907,18 @@ css_error css__parse_hash_colour(lwc_string *data, uint32_t *result)
 	size_t len = lwc_string_length(data);
 	const char *input = lwc_string_data(data);
 
-	if (len == 3 &&	isHex(input[0]) && isHex(input[1]) &&
-			isHex(input[2])) {
+	switch (len) {
+	case 4:
+		if (!isHex(input[3])) {
+			return CSS_INVALID;
+		}
+		a = charToHex(input[3]);
+		a |= (a << 4);
+		/* Fall through */
+	case 3:
+		if (!isHex(input[0]) || !isHex(input[1]) || !isHex(input[2])) {
+			return CSS_INVALID;
+		}
 		r = charToHex(input[0]);
 		g = charToHex(input[1]);
 		b = charToHex(input[2]);
@@ -916,17 +926,30 @@ css_error css__parse_hash_colour(lwc_string *data, uint32_t *result)
 		r |= (r << 4);
 		g |= (g << 4);
 		b |= (b << 4);
-	} else if (len == 6 && isHex(input[0]) && isHex(input[1]) &&
-			isHex(input[2]) && isHex(input[3]) &&
-			isHex(input[4]) && isHex(input[5])) {
+		break;
+	case 8:
+		if (!isHex(input[6]) || !isHex(input[7])) {
+			return CSS_INVALID;
+		}
+		a = (charToHex(input[6]) << 4);
+		a |= charToHex(input[7]);
+		/* Fall through */
+	case 6:
+		if (!isHex(input[0]) || !isHex(input[1]) ||
+		    !isHex(input[2]) || !isHex(input[3]) ||
+		    !isHex(input[4]) || !isHex(input[5])) {
+			return CSS_INVALID;
+		}
 		r = (charToHex(input[0]) << 4);
 		r |= charToHex(input[1]);
 		g = (charToHex(input[2]) << 4);
 		g |= charToHex(input[3]);
 		b = (charToHex(input[4]) << 4);
 		b |= charToHex(input[5]);
-	} else
+		break;
+	default:
 		return CSS_INVALID;
+	}
 
 	*result = ((unsigned)a << 24) | (r << 16) | (g << 8) | b;
 
