@@ -352,6 +352,244 @@ static void HSL_to_RGB(css_fixed hue, css_fixed sat, css_fixed lit, uint8_t *r, 
 }
 
 /**
+ * Parse a RGB(A) colour specifier
+ *
+ * It's up to the caller to reset the ctx if this fails.
+ *
+ * \param vector  Vector of tokens to process
+ * \param ctx     Pointer to vector iteration context
+ * \param colour_channels Number of colour channels to expect
+ * \param result  Pointer to location to receive result (AARRGGBB)
+ * \return true on success, false on error.
+ */
+static bool parse_rgb(
+		const parserutils_vector *vector,
+		int32_t *ctx,
+		int colour_channels,
+		uint32_t *result)
+{
+	const css_token *token;
+	css_token_type valid = CSS_TOKEN_NUMBER;
+	uint8_t r = 0, g = 0, b = 0, a = 0xff;
+	uint8_t *components[4] = { &r, &g, &b, &a };
+
+	for (int i = 0; i < colour_channels; i++) {
+		uint8_t *component;
+		css_fixed num;
+		size_t consumed = 0;
+		int32_t intval;
+		bool int_only;
+
+		component = components[i];
+
+		consumeWhitespace(vector, ctx);
+
+		token = parserutils_vector_peek(vector, *ctx);
+		if (token == NULL || (token->type !=
+				CSS_TOKEN_NUMBER &&
+				token->type !=
+				CSS_TOKEN_PERCENTAGE))
+			return false;
+
+		if (i == 0)
+			valid = token->type;
+		else if (i < 3 && token->type != valid)
+			return false;
+
+		/* The alpha channel may be a float */
+		if (i < 3)
+			int_only = (valid == CSS_TOKEN_NUMBER);
+		else
+			int_only = false;
+
+		num = css__number_from_lwc_string(token->idata,
+				int_only, &consumed);
+		if (consumed != lwc_string_length(token->idata))
+			return false;
+
+		if (valid == CSS_TOKEN_NUMBER) {
+			if (i == 3) {
+				/* alpha channel */
+				intval = FIXTOINT(
+					FMUL(num, F_255));
+			} else {
+				/* colour channels */
+				intval = FIXTOINT(num);
+			}
+		} else {
+			intval = FIXTOINT(
+				FDIV(FMUL(num, F_255), F_100));
+		}
+
+		if (intval > 255)
+			*component = 255;
+		else if (intval < 0)
+			*component = 0;
+		else
+			*component = intval;
+
+		parserutils_vector_iterate(vector, ctx);
+
+		consumeWhitespace(vector, ctx);
+
+		token = parserutils_vector_peek(vector, *ctx);
+		if (token == NULL)
+			return false;
+
+		if (i != (colour_channels - 1) &&
+				tokenIsChar(token, ',')) {
+			parserutils_vector_iterate(vector, ctx);
+		} else if (i == (colour_channels - 1) &&
+				tokenIsChar(token, ')')) {
+			parserutils_vector_iterate(vector, ctx);
+		} else {
+			return false;
+		}
+	}
+
+	*result = ((unsigned)a << 24) | (r << 16) | (g << 8) | b;
+
+	return true;
+}
+
+/**
+ * Parse a HSL(A) colour specifier (hue, saturation, lightness)
+ *
+ * It's up to the caller to reset the ctx if this fails.
+ *
+ * \param vector  Vector of tokens to process
+ * \param ctx     Pointer to vector iteration context
+ * \param colour_channels Number of colour channels to expect
+ * \param result  Pointer to location to receive result (AARRGGBB)
+ * \return true on success, false on error.
+ */
+static bool parse_hsl(
+		const parserutils_vector *vector,
+		int32_t *ctx,
+		int colour_channels,
+		uint32_t *result)
+{
+	const css_token *token;
+	size_t consumed = 0;
+	css_fixed hue, sat, lit;
+	int32_t alpha = 255;
+	uint8_t r = 0, g = 0, b = 0, a = 0xff;
+
+	/* hue is a number without a unit representing an
+	 * angle (0-360) degrees
+	 */
+	consumeWhitespace(vector, ctx);
+
+	token = parserutils_vector_iterate(vector, ctx);
+	if ((token == NULL) || (token->type != CSS_TOKEN_NUMBER))
+		return false;
+
+	hue = css__number_from_lwc_string(token->idata, false, &consumed);
+	if (consumed != lwc_string_length(token->idata))
+		return false; /* failed to consume the whole string as a number */
+
+	/* Normalise hue to the range [0, 360) */
+	while (hue < 0)
+		hue += F_360;
+	while (hue >= F_360)
+		hue -= F_360;
+
+	consumeWhitespace(vector, ctx);
+
+	token = parserutils_vector_iterate(vector, ctx);
+	if (!tokenIsChar(token, ','))
+		return false;
+
+
+	/* saturation */
+	consumeWhitespace(vector, ctx);
+
+	token = parserutils_vector_iterate(vector, ctx);
+	if ((token == NULL) || (token->type != CSS_TOKEN_PERCENTAGE))
+		return false;
+
+	sat = css__number_from_lwc_string(token->idata, false, &consumed);
+	if (consumed != lwc_string_length(token->idata))
+		return false; /* failed to consume the whole string as a number */
+
+	/* Normalise saturation to the range [0, 100] */
+	if (sat < INTTOFIX(0))
+		sat = INTTOFIX(0);
+	else if (sat > INTTOFIX(100))
+		sat = INTTOFIX(100);
+
+	consumeWhitespace(vector, ctx);
+
+	token = parserutils_vector_iterate(vector, ctx);
+	if (!tokenIsChar(token, ','))
+		return false;
+
+
+	/* lightness */
+	consumeWhitespace(vector, ctx);
+
+	token = parserutils_vector_iterate(vector, ctx);
+	if ((token == NULL) || (token->type != CSS_TOKEN_PERCENTAGE))
+		return false;
+
+	lit = css__number_from_lwc_string(token->idata, false, &consumed);
+	if (consumed != lwc_string_length(token->idata))
+		return false; /* failed to consume the whole string as a number */
+
+	/* Normalise lightness to the range [0, 100] */
+	if (lit < INTTOFIX(0))
+		lit = INTTOFIX(0);
+	else if (lit > INTTOFIX(100))
+		lit = INTTOFIX(100);
+
+	consumeWhitespace(vector, ctx);
+
+	token = parserutils_vector_iterate(vector, ctx);
+
+	if (colour_channels == 6) {
+		/* alpha */
+
+		if (!tokenIsChar(token, ','))
+			return false;
+
+		consumeWhitespace(vector, ctx);
+
+		token = parserutils_vector_iterate(vector, ctx);
+		if ((token == NULL) || (token->type != CSS_TOKEN_NUMBER))
+			return false;
+
+		alpha = css__number_from_lwc_string(token->idata, false, &consumed);
+		if (consumed != lwc_string_length(token->idata))
+			return false; /* failed to consume the whole string as a number */
+
+		alpha = FIXTOINT(FMUL(alpha, F_255));
+
+		consumeWhitespace(vector, ctx);
+
+		token = parserutils_vector_iterate(vector, ctx);
+
+	}
+
+	if (!tokenIsChar(token, ')'))
+		return false;
+
+	/* have a valid HSV entry, convert to RGB */
+	HSL_to_RGB(hue, sat, lit, &r, &g, &b);
+
+	/* apply alpha */
+	if (alpha > 255) {
+		a = 255;
+	} else if (alpha < 0) {
+		a = 0;
+	} else {
+		a = alpha;
+	}
+
+	*result = ((unsigned)a << 24) | (r << 16) | (g << 8) | b;
+	return true;
+}
+
+/**
  * Parse a colour specifier
  *
  * \param c       Parsing context
@@ -440,7 +678,6 @@ css_error css__parse_colour_specifier(css_language *c,
 		else
 			goto invalid;
 	} else if (token->type == CSS_TOKEN_FUNCTION) {
-		uint8_t r = 0, g = 0, b = 0, a = 0xff;
 		int colour_channels = 0;
 
 		if ((lwc_string_caseless_isequal(
@@ -462,203 +699,16 @@ css_error css__parse_colour_specifier(css_language *c,
 		}
 
 		if (colour_channels == 3 || colour_channels == 4) {
-			int i;
-			css_token_type valid = CSS_TOKEN_NUMBER;
-			uint8_t *components[4] = { &r, &g, &b, &a };
-
-			for (i = 0; i < colour_channels; i++) {
-				uint8_t *component;
-				css_fixed num;
-				size_t consumed = 0;
-				int32_t intval;
-				bool int_only;
-
-				component = components[i];
-
-				consumeWhitespace(vector, ctx);
-
-				token = parserutils_vector_peek(vector, *ctx);
-				if (token == NULL || (token->type !=
-						CSS_TOKEN_NUMBER &&
-						token->type !=
-						CSS_TOKEN_PERCENTAGE))
-					goto invalid;
-
-				if (i == 0)
-					valid = token->type;
-				else if (i < 3 && token->type != valid)
-					goto invalid;
-
-				/* The alpha channel may be a float */
-				if (i < 3)
-					int_only = (valid == CSS_TOKEN_NUMBER);
-				else
-					int_only = false;
-
-				num = css__number_from_lwc_string(token->idata,
-						int_only, &consumed);
-				if (consumed != lwc_string_length(token->idata))
-					goto invalid;
-
-				if (valid == CSS_TOKEN_NUMBER) {
-					if (i == 3) {
-						/* alpha channel */
-						intval = FIXTOINT(
-							FMUL(num, F_255));
-					} else {
-						/* colour channels */
-						intval = FIXTOINT(num);
-					}
-				} else {
-					intval = FIXTOINT(
-						FDIV(FMUL(num, F_255), F_100));
-				}
-
-				if (intval > 255)
-					*component = 255;
-				else if (intval < 0)
-					*component = 0;
-				else
-					*component = intval;
-
-				parserutils_vector_iterate(vector, ctx);
-
-				consumeWhitespace(vector, ctx);
-
-				token = parserutils_vector_peek(vector, *ctx);
-				if (token == NULL)
-					goto invalid;
-
-				if (i != (colour_channels - 1) &&
-						tokenIsChar(token, ',')) {
-					parserutils_vector_iterate(vector, ctx);
-				} else if (i == (colour_channels - 1) &&
-						tokenIsChar(token, ')')) {
-					parserutils_vector_iterate(vector, ctx);
-				} else {
-					goto invalid;
-				}
+			if (!parse_rgb(vector, ctx, colour_channels, result)) {
+				goto invalid;
 			}
 		} else if (colour_channels == 5 || colour_channels == 6) {
-			/* hue - saturation - lightness */
-			size_t consumed = 0;
-			css_fixed hue, sat, lit;
-			int32_t alpha = 255;
-
-			/* hue is a number without a unit representing an
-			 * angle (0-360) degrees
-			 */
-			consumeWhitespace(vector, ctx);
-
-			token = parserutils_vector_iterate(vector, ctx);
-			if ((token == NULL) || (token->type != CSS_TOKEN_NUMBER))
+			if (!parse_hsl(vector, ctx, colour_channels, result)) {
 				goto invalid;
-
-			hue = css__number_from_lwc_string(token->idata, false, &consumed);
-			if (consumed != lwc_string_length(token->idata))
-				goto invalid; /* failed to consume the whole string as a number */
-
-			/* Normalise hue to the range [0, 360) */
-			while (hue < 0)
-				hue += F_360;
-			while (hue >= F_360)
-				hue -= F_360;
-
-			consumeWhitespace(vector, ctx);
-
-			token = parserutils_vector_iterate(vector, ctx);
-			if (!tokenIsChar(token, ','))
-				goto invalid;
-
-
-			/* saturation */
-			consumeWhitespace(vector, ctx);
-
-			token = parserutils_vector_iterate(vector, ctx);
-			if ((token == NULL) || (token->type != CSS_TOKEN_PERCENTAGE))
-				goto invalid;
-
-			sat = css__number_from_lwc_string(token->idata, false, &consumed);
-			if (consumed != lwc_string_length(token->idata))
-				goto invalid; /* failed to consume the whole string as a number */
-
-			/* Normalise saturation to the range [0, 100] */
-			if (sat < INTTOFIX(0))
-				sat = INTTOFIX(0);
-			else if (sat > INTTOFIX(100))
-				sat = INTTOFIX(100);
-
-			consumeWhitespace(vector, ctx);
-
-			token = parserutils_vector_iterate(vector, ctx);
-			if (!tokenIsChar(token, ','))
-				goto invalid;
-
-
-			/* lightness */
-			consumeWhitespace(vector, ctx);
-
-			token = parserutils_vector_iterate(vector, ctx);
-			if ((token == NULL) || (token->type != CSS_TOKEN_PERCENTAGE))
-				goto invalid;
-
-			lit = css__number_from_lwc_string(token->idata, false, &consumed);
-			if (consumed != lwc_string_length(token->idata))
-				goto invalid; /* failed to consume the whole string as a number */
-
-			/* Normalise lightness to the range [0, 100] */
-			if (lit < INTTOFIX(0))
-				lit = INTTOFIX(0);
-			else if (lit > INTTOFIX(100))
-				lit = INTTOFIX(100);
-
-			consumeWhitespace(vector, ctx);
-
-			token = parserutils_vector_iterate(vector, ctx);
-
-			if (colour_channels == 6) {
-				/* alpha */
-
-				if (!tokenIsChar(token, ','))
-					goto invalid;
-
-				consumeWhitespace(vector, ctx);
-
-				token = parserutils_vector_iterate(vector, ctx);
-				if ((token == NULL) || (token->type != CSS_TOKEN_NUMBER))
-					goto invalid;
-
-				alpha = css__number_from_lwc_string(token->idata, false, &consumed);
-				if (consumed != lwc_string_length(token->idata))
-					goto invalid; /* failed to consume the whole string as a number */
-
-				alpha = FIXTOINT(FMUL(alpha, F_255));
-
-				consumeWhitespace(vector, ctx);
-
-				token = parserutils_vector_iterate(vector, ctx);
-
 			}
-
-			if (!tokenIsChar(token, ')'))
-				goto invalid;
-
-			/* have a valid HSV entry, convert to RGB */
-			HSL_to_RGB(hue, sat, lit, &r, &g, &b);
-
-			/* apply alpha */
-			if (alpha > 255)
-				a = 255;
-			else if (alpha < 0)
-				a = 0;
-			else
-				a = alpha;
-
 		} else {
 			goto invalid;
 		}
-
-		*result = ((unsigned)a << 24) | (r << 16) | (g << 8) | b;
 	}
 
 	*value = COLOR_SET;
