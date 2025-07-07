@@ -33,6 +33,97 @@
 #reset
 
 #data
+* { color: rgb(255 0 0) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xffff0000
+#reset
+
+#data
+* { color: rgb(255 none none) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xffff0000
+#reset
+
+#data
+* { color: rgb(255 0% none) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xffff0000
+#reset
+
+#data
+* { color: rgb(none 0% 255) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xff0000ff
+#reset
+
+#data
+* { color: rgb(none 0% 255 / none) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xff0000ff
+#reset
+
+#data
+* { color: rgb(none 0% 255 / 0.5) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0x7f0000ff
+#reset
+
+#data
+* { color: rgb(none 0% 255 none) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: rgba(255, 0, 0) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xffff0000
+#reset
+
+#data
+* { color: rgba(none, 0, 0) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: rgba(0, none, 0) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: rgb(255, 0%, 0) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: rgba(255, 0%, 0) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
 * { color: rgb(100%, 0%, 0%) }
 #errors
 #expected
