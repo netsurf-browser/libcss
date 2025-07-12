@@ -487,14 +487,12 @@ static bool parse_rgb(
  *
  * \param vector  Vector of tokens to process
  * \param ctx     Pointer to vector iteration context
- * \param colour_channels Number of colour channels to expect
  * \param result  Pointer to location to receive result (AARRGGBB)
  * \return true on success, false on error.
  */
 static bool parse_hsl(
 		const parserutils_vector *vector,
 		int32_t *ctx,
-		int colour_channels,
 		uint32_t *result)
 {
 	const css_token *token;
@@ -616,12 +614,7 @@ static bool parse_hsl(
 
 	token = parserutils_vector_iterate(vector, ctx);
 
-	if (colour_channels == 6) {
-		/* alpha */
-
-		if (!tokenIsChar(token, ','))
-			return false;
-
+	if (tokenIsChar(token, ',')) {
 		consumeWhitespace(vector, ctx);
 
 		token = parserutils_vector_iterate(vector, ctx);
@@ -773,7 +766,7 @@ css_error css__parse_colour_specifier(css_language *c,
 				goto invalid;
 			}
 		} else if (colour_channels == 5 || colour_channels == 6) {
-			if (!parse_hsl(vector, ctx, colour_channels, result)) {
+			if (!parse_hsl(vector, ctx, result)) {
 				goto invalid;
 			}
 		} else {
