@@ -501,20 +501,62 @@ static bool parse_hsl(
 	size_t consumed = 0;
 	css_fixed hue, sat, lit;
 	int32_t alpha = 255;
+	css_error error;
 	uint8_t r = 0, g = 0, b = 0, a = 0xff;
 
 	/* hue is a number without a unit representing an
-	 * angle (0-360) degrees
+	 * angle (0-360) degrees, or it can be an angle dimension.
 	 */
 	consumeWhitespace(vector, ctx);
 
 	token = parserutils_vector_iterate(vector, ctx);
-	if ((token == NULL) || (token->type != CSS_TOKEN_NUMBER))
+	if ((token == NULL) ||
+			(token->type != CSS_TOKEN_NUMBER &&
+			 token->type != CSS_TOKEN_DIMENSION)) {
 		return false;
+	}
 
 	hue = css__number_from_lwc_string(token->idata, false, &consumed);
-	if (consumed != lwc_string_length(token->idata))
-		return false; /* failed to consume the whole string as a number */
+
+	switch (token->type) {
+	case CSS_TOKEN_NUMBER:
+		if (consumed != lwc_string_length(token->idata)) {
+			return false; /* failed to consume the whole string as a number */
+		}
+		break;
+	case CSS_TOKEN_DIMENSION: {
+		size_t len = lwc_string_length(token->idata);
+		const char *data = lwc_string_data(token->idata);
+		uint32_t unit = UNIT_DEG;
+
+		error = css__parse_unit_keyword(
+				data + consumed,
+				len - consumed,
+				&unit);
+		if (error != CSS_OK) {
+			return false;
+		}
+
+		switch (unit) {
+		case UNIT_DEG:
+			break;
+		case UNIT_RAD:
+			hue = FDIV(FMUL(hue, F_180), F_PI);
+			break;
+		case UNIT_GRAD:
+			hue = FMUL(hue, FLTTOFIX(0.9));
+			break;
+		case UNIT_TURN:
+			hue = FMUL(hue, F_360);
+			break;
+		default:
+			return false;
+		}
+	}
+		break;
+	default:
+		return false; /* unexpected token type */
+	}
 
 	/* Normalise hue to the range [0, 360) */
 	while (hue < 0)
