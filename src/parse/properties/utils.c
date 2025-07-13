@@ -499,6 +499,7 @@ static bool parse_hsl(
 	size_t consumed = 0;
 	css_fixed hue, sat, lit;
 	int32_t alpha = 255;
+	bool legacy = false;
 	css_error error;
 	uint8_t r = 0, g = 0, b = 0, a = 0xff;
 
@@ -564,14 +565,18 @@ static bool parse_hsl(
 
 	consumeWhitespace(vector, ctx);
 
-	token = parserutils_vector_iterate(vector, ctx);
-	if (!tokenIsChar(token, ','))
+	token = parserutils_vector_peek(vector, *ctx);
+	if (token == NULL) {
 		return false;
+	}
 
+	if (tokenIsChar(token, ',')) {
+		parserutils_vector_iterate(vector, ctx);
+		consumeWhitespace(vector, ctx);
+		legacy = true;
+	}
 
 	/* saturation */
-	consumeWhitespace(vector, ctx);
-
 	token = parserutils_vector_iterate(vector, ctx);
 	if ((token == NULL) || (token->type != CSS_TOKEN_PERCENTAGE))
 		return false;
@@ -588,14 +593,16 @@ static bool parse_hsl(
 
 	consumeWhitespace(vector, ctx);
 
-	token = parserutils_vector_iterate(vector, ctx);
-	if (!tokenIsChar(token, ','))
-		return false;
+	if (legacy) {
+		token = parserutils_vector_iterate(vector, ctx);
+		if (token == NULL || !tokenIsChar(token, ',')) {
+			return false;
+		}
 
+		consumeWhitespace(vector, ctx);
+	}
 
 	/* lightness */
-	consumeWhitespace(vector, ctx);
-
 	token = parserutils_vector_iterate(vector, ctx);
 	if ((token == NULL) || (token->type != CSS_TOKEN_PERCENTAGE))
 		return false;
@@ -614,7 +621,8 @@ static bool parse_hsl(
 
 	token = parserutils_vector_iterate(vector, ctx);
 
-	if (tokenIsChar(token, ',')) {
+	if (( legacy && tokenIsChar(token, ',')) ||
+	    (!legacy && tokenIsChar(token, '/'))) {
 		consumeWhitespace(vector, ctx);
 
 		token = parserutils_vector_iterate(vector, ctx);
