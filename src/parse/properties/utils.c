@@ -618,19 +618,27 @@ static bool parse_hsl(
 		consumeWhitespace(vector, ctx);
 
 		token = parserutils_vector_iterate(vector, ctx);
-		if ((token == NULL) || (token->type != CSS_TOKEN_NUMBER))
+		if ((token == NULL) ||
+				(token->type != CSS_TOKEN_NUMBER &&
+				 token->type != CSS_TOKEN_PERCENTAGE)) {
 			return false;
+		}
 
 		alpha = css__number_from_lwc_string(token->idata, false, &consumed);
-		if (consumed != lwc_string_length(token->idata))
-			return false; /* failed to consume the whole string as a number */
+		if (consumed != lwc_string_length(token->idata)) {
+			/* failed to consume the whole string as a number */
+			return false;
+		}
 
-		alpha = FIXTOINT(FMUL(alpha, F_255));
+		if (token->type != CSS_TOKEN_NUMBER) {
+			alpha = FIXTOINT(FMUL(alpha, F_255));
+		} else {
+			alpha = FIXTOINT(FDIV(FMUL(alpha, F_255), F_100));
+		}
 
 		consumeWhitespace(vector, ctx);
 
 		token = parserutils_vector_iterate(vector, ctx);
-
 	}
 
 	if (!tokenIsChar(token, ')'))
