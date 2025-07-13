@@ -263,27 +263,28 @@ css__parse_border_side_cleanup:
 	return error;
 }
 
-
 /**
  * Convert Hue Saturation Lightness value to RGB.
  *
- * \param hue Hue in degrees 0..360
- * \param sat Saturation value in percent 0..100
- * \param lit Lightness value in percent 0..100
- * \param r red component
- * \param g green component
- * \param b blue component
+ * \param[in]  hue Hue in degrees 0..360
+ * \param[in]  sat Saturation value in percent 0..100
+ * \param[in]  lit Lightness value in percent 0..100
+ * \param[out] r   red component (0..25500)
+ * \param[out] g   green component (0..25500)
+ * \param[out] b   blue component (0..25500)
  */
-static void HSL_to_RGB(css_fixed hue, css_fixed sat, css_fixed lit, uint8_t *r, uint8_t *g, uint8_t *b)
+static void HSL_to_RGB_fixed(
+		css_fixed hue, css_fixed sat, css_fixed lit,
+		css_fixed *r, css_fixed *g, css_fixed *b)
 {
 	css_fixed min_rgb, max_rgb, chroma;
 	css_fixed relative_hue, scaled_hue, mid1, mid2;
 	int sextant;
 
 #define ORGB(R, G, B) \
-	*r = FIXTOINT(FDIV(FMUL((R), F_255), F_100)); \
-	*g = FIXTOINT(FDIV(FMUL((G), F_255), F_100)); \
-	*b = FIXTOINT(FDIV(FMUL((B), F_255), F_100))
+	*r = FMUL((R), F_255); \
+	*g = FMUL((G), F_255); \
+	*b = FMUL((B), F_255)
 
 	/* If saturation is zero there is no hue and r = g = b = lit */
 	if (sat == INTTOFIX(0)) {
@@ -332,23 +333,46 @@ static void HSL_to_RGB(css_fixed hue, css_fixed sat, css_fixed lit, uint8_t *r, 
 	relative_hue = FSUB(hue, INTTOFIX(sextant));
 
 	/* Scale offset by chroma */
-        scaled_hue = FMUL(relative_hue, chroma);
+	scaled_hue = FMUL(relative_hue, chroma);
 
 	/* Compute potential values of the third colour component */
-        mid1 = FADD(min_rgb, scaled_hue);
-        mid2 = FSUB(max_rgb, scaled_hue);
+	mid1 = FADD(min_rgb, scaled_hue);
+	mid2 = FSUB(max_rgb, scaled_hue);
 
 	/* Populate result */
-        switch (sextant) {
+	switch (sextant) {
 	case 0: ORGB(max_rgb,   mid1,      min_rgb); break;
 	case 1: ORGB(mid2,      max_rgb,   min_rgb); break;
 	case 2: ORGB(min_rgb,   max_rgb,   mid1); break;
 	case 3: ORGB(min_rgb,   mid2,      max_rgb); break;
 	case 4: ORGB(mid1,      min_rgb,   max_rgb); break;
 	case 5: ORGB(max_rgb,   min_rgb,   mid2); break;
-        }
+	}
 
 #undef ORGB
+}
+
+/**
+ * Convert Hue Saturation Lightness value to RGB.
+ *
+ * \param hue Hue in degrees 0..360
+ * \param sat Saturation value in percent 0..100
+ * \param lit Lightness value in percent 0..100
+ * \param r red component
+ * \param g green component
+ * \param b blue component
+ */
+static void HSL_to_RGB(
+		css_fixed hue, css_fixed sat, css_fixed lit,
+		uint8_t *r, uint8_t *g, uint8_t *b)
+{
+	css_fixed rf, gf, bf;
+
+	HSL_to_RGB_fixed(hue, sat, lit, &rf, &gf, &bf);
+
+	*r = FIXTOINT(FDIV(rf, F_100));
+	*g = FIXTOINT(FDIV(gf, F_100));
+	*b = FIXTOINT(FDIV(bf, F_100));
 }
 
 /**
