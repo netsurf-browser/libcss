@@ -376,6 +376,40 @@ static void HSL_to_RGB(
 }
 
 /**
+ * Convert Hue Saturation Lightness value to RGB.
+ *
+ * \param hue   Hue in degrees 0..360
+ * \param white Whiteness value in percent 0..100
+ * \param black Blackness value in percent 0..100
+ * \param r     red component
+ * \param g     green component
+ * \param b     blue component
+ */
+static void HWB_to_RGB(
+		css_fixed hue, css_fixed white, css_fixed black,
+		uint8_t *r, uint8_t *g, uint8_t *b)
+{
+	if (FADD(white, black) >= F_100) {
+		css_fixed grey = (FDIV(FMUL(white, F_255), FADD(white, black)));
+		uint8_t grey_int = FIXTOINT(grey);
+
+		*r = grey_int;
+		*g = grey_int;
+		*b = grey_int;
+	} else {
+		css_fixed rf, gf, bf; // 0..25500
+		css_fixed val = FSUB(F_100, FADD(white, black)); // 0..100
+
+		HSL_to_RGB_fixed(hue, INTTOFIX(100), INTTOFIX(50),
+				&rf, &gf, &bf);
+
+		*r = FIXTOINT(FDIV(FADD(FMUL(FDIV(rf, F_100), val), FMUL(white, F_255)), F_100));
+		*g = FIXTOINT(FDIV(FADD(FMUL(FDIV(gf, F_100), val), FMUL(white, F_255)), F_100));
+		*b = FIXTOINT(FDIV(FADD(FMUL(FDIV(bf, F_100), val), FMUL(white, F_255)), F_100));
+	}
+}
+
+/**
  * Parse a RGB(A) colour specifier
  *
  * It's up to the caller to reset the ctx if this fails.
@@ -707,6 +741,186 @@ static bool parse_hsl(
 }
 
 /**
+ * Parse a HWB colour specifier (hue, whiteness, blackness)
+ *
+ * It's up to the caller to reset the ctx if this fails.
+ *
+ * \param vector  Vector of tokens to process
+ * \param ctx     Pointer to vector iteration context
+ * \param result  Pointer to location to receive result (AARRGGBB)
+ * \return true on success, false on error.
+ */
+static bool parse_hwb(
+		const parserutils_vector *vector,
+		int32_t *ctx,
+		uint32_t *result)
+{
+	const css_token *token;
+	size_t consumed = 0;
+	css_fixed hue, white, black;
+	int32_t alpha = 255;
+	css_error error;
+	uint8_t r = 0, g = 0, b = 0, a = 0xff;
+
+	/* hue is a number without a unit representing an
+	 * angle (0-360) degrees, or it can be an angle dimension.
+	 */
+	consumeWhitespace(vector, ctx);
+
+	token = parserutils_vector_iterate(vector, ctx);
+	if ((token == NULL) ||
+			(token->type != CSS_TOKEN_NUMBER &&
+			 token->type != CSS_TOKEN_DIMENSION)) {
+		return false;
+	}
+
+	hue = css__number_from_lwc_string(token->idata, false, &consumed);
+
+	switch (token->type) {
+	case CSS_TOKEN_NUMBER:
+		if (consumed != lwc_string_length(token->idata)) {
+			return false; /* failed to consume the whole string as a number */
+		}
+		break;
+	case CSS_TOKEN_DIMENSION: {
+		size_t len = lwc_string_length(token->idata);
+		const char *data = lwc_string_data(token->idata);
+		uint32_t unit = UNIT_DEG;
+
+		error = css__parse_unit_keyword(
+				data + consumed,
+				len - consumed,
+				&unit);
+		if (error != CSS_OK) {
+			return false;
+		}
+
+		switch (unit) {
+		case UNIT_DEG:
+			break;
+		case UNIT_RAD:
+			hue = FDIV(FMUL(hue, F_180), F_PI);
+			break;
+		case UNIT_GRAD:
+			hue = FMUL(hue, FLTTOFIX(0.9));
+			break;
+		case UNIT_TURN:
+			hue = FMUL(hue, F_360);
+			break;
+		default:
+			return false;
+		}
+	}
+		break;
+	default:
+		return false; /* unexpected token type */
+	}
+
+	/* Normalise hue to the range [0, 360) */
+	while (hue < 0)
+		hue += F_360;
+	while (hue >= F_360)
+		hue -= F_360;
+
+	consumeWhitespace(vector, ctx);
+
+	/* whiteness */
+	token = parserutils_vector_iterate(vector, ctx);
+	if (token == NULL)
+		return false;
+
+	if ((token->type != CSS_TOKEN_PERCENTAGE) &&
+	    (token->type != CSS_TOKEN_NUMBER)) {
+		return false;
+	}
+
+	white = css__number_from_lwc_string(token->idata, false, &consumed);
+	if (consumed != lwc_string_length(token->idata)) {
+		/* failed to consume the whole string as a number */
+		return false;
+	}
+
+	/* Normalise whiteness to the range [0, 100] */
+	if (white < INTTOFIX(0))
+		white = INTTOFIX(0);
+	else if (white > INTTOFIX(100))
+		white = INTTOFIX(100);
+
+	consumeWhitespace(vector, ctx);
+
+	/* blackness */
+	token = parserutils_vector_iterate(vector, ctx);
+	if (token == NULL)
+		return false;
+
+	if ((token->type != CSS_TOKEN_PERCENTAGE) &&
+	    (token->type != CSS_TOKEN_NUMBER)) {
+		return false;
+	}
+
+	black = css__number_from_lwc_string(token->idata, false, &consumed);
+	if (consumed != lwc_string_length(token->idata)) {
+		/* failed to consume the whole string as a number */
+		return false;
+	}
+
+	/* Normalise blackness to the range [0, 100] */
+	if (black < INTTOFIX(0))
+		black = INTTOFIX(0);
+	else if (black > INTTOFIX(100))
+		black = INTTOFIX(100);
+
+	consumeWhitespace(vector, ctx);
+
+	token = parserutils_vector_iterate(vector, ctx);
+
+	if (tokenIsChar(token, '/')) {
+		consumeWhitespace(vector, ctx);
+
+		token = parserutils_vector_iterate(vector, ctx);
+		if ((token == NULL) ||
+				(token->type != CSS_TOKEN_NUMBER &&
+				 token->type != CSS_TOKEN_PERCENTAGE)) {
+			return false;
+		}
+
+		alpha = css__number_from_lwc_string(token->idata, false, &consumed);
+		if (consumed != lwc_string_length(token->idata)) {
+			/* failed to consume the whole string as a number */
+			return false;
+		}
+
+		if (token->type != CSS_TOKEN_NUMBER) {
+			alpha = FIXTOINT(FMUL(alpha, F_255));
+		} else {
+			alpha = FIXTOINT(FDIV(FMUL(alpha, F_255), F_100));
+		}
+
+		consumeWhitespace(vector, ctx);
+
+		token = parserutils_vector_iterate(vector, ctx);
+	}
+
+	if (!tokenIsChar(token, ')'))
+		return false;
+
+	/* have a valid HSV entry, convert to RGB */
+	HWB_to_RGB(hue, white, black, &r, &g, &b);
+
+	/* apply alpha */
+	if (alpha > 255) {
+		a = 255;
+	} else if (alpha < 0) {
+		a = 0;
+	} else {
+		a = alpha;
+	}
+
+	*result = ((unsigned)a << 24) | (r << 16) | (g << 8) | b;
+	return true;
+}
+
+/**
  * Parse a colour specifier
  *
  * \param c       Parsing context
@@ -817,6 +1031,12 @@ css_error css__parse_colour_specifier(css_language *c,
 				token->idata, c->strings[HSLA],
 				&match) == lwc_error_ok && match)) {
 			if (!parse_hsl(vector, ctx, result)) {
+				goto invalid;
+			}
+		} else if ((lwc_string_caseless_isequal(
+				token->idata, c->strings[HWB],
+				&match) == lwc_error_ok && match)) {
+			if (!parse_hwb(vector, ctx, result)) {
 				goto invalid;
 			}
 		} else {
