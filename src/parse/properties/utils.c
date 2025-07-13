@@ -771,31 +771,27 @@ css_error css__parse_colour_specifier(css_language *c,
 		else
 			goto invalid;
 	} else if (token->type == CSS_TOKEN_FUNCTION) {
-		int colour_channels = 0;
-
 		if ((lwc_string_caseless_isequal(
 				token->idata, c->strings[RGB],
 				&match) == lwc_error_ok && match)) {
-			colour_channels = 3;
-		} else if ((lwc_string_caseless_isequal(
-				token->idata, c->strings[RGBA],
-				&match) == lwc_error_ok && match)) {
-			colour_channels = 4;
-		} if ((lwc_string_caseless_isequal(
-				token->idata, c->strings[HSL],
-				&match) == lwc_error_ok && match)) {
-			colour_channels = 5;
-		} else if ((lwc_string_caseless_isequal(
-				token->idata, c->strings[HSLA],
-				&match) == lwc_error_ok && match)) {
-			colour_channels = 6;
-		}
-
-		if (colour_channels == 3 || colour_channels == 4) {
 			if (!parse_rgb(c, vector, ctx, result)) {
 				goto invalid;
 			}
-		} else if (colour_channels == 5 || colour_channels == 6) {
+		} else if ((lwc_string_caseless_isequal(
+				token->idata, c->strings[RGBA],
+				&match) == lwc_error_ok && match)) {
+			if (!parse_rgb(c, vector, ctx, result)) {
+				goto invalid;
+			}
+		} else if ((lwc_string_caseless_isequal(
+				token->idata, c->strings[HSL],
+				&match) == lwc_error_ok && match)) {
+			if (!parse_hsl(vector, ctx, result)) {
+				goto invalid;
+			}
+		} else if ((lwc_string_caseless_isequal(
+				token->idata, c->strings[HSLA],
+				&match) == lwc_error_ok && match)) {
 			if (!parse_hsl(vector, ctx, result)) {
 				goto invalid;
 			}
