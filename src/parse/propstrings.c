@@ -447,6 +447,7 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	SMAP("rgba"),
 	SMAP("hsl"),
 	SMAP("hsla"),
+	SMAP("hwb"),
 	SMAP("-libcss-left"),
 	SMAP("-libcss-center"),
 	SMAP("-libcss-right"),
