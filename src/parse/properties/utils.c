@@ -578,12 +578,19 @@ static bool parse_hsl(
 
 	/* saturation */
 	token = parserutils_vector_iterate(vector, ctx);
-	if ((token == NULL) || (token->type != CSS_TOKEN_PERCENTAGE))
+	if (token == NULL)
 		return false;
 
+	if ((token->type != CSS_TOKEN_PERCENTAGE) &&
+	    (token->type != CSS_TOKEN_NUMBER || legacy)) {
+		return false;
+	}
+
 	sat = css__number_from_lwc_string(token->idata, false, &consumed);
-	if (consumed != lwc_string_length(token->idata))
-		return false; /* failed to consume the whole string as a number */
+	if (consumed != lwc_string_length(token->idata)) {
+		/* failed to consume the whole string as a number */
+		return false;
+	}
 
 	/* Normalise saturation to the range [0, 100] */
 	if (sat < INTTOFIX(0))
@@ -604,12 +611,19 @@ static bool parse_hsl(
 
 	/* lightness */
 	token = parserutils_vector_iterate(vector, ctx);
-	if ((token == NULL) || (token->type != CSS_TOKEN_PERCENTAGE))
+	if (token == NULL)
 		return false;
 
+	if ((token->type != CSS_TOKEN_PERCENTAGE) &&
+	    (token->type != CSS_TOKEN_NUMBER || legacy)) {
+		return false;
+	}
+
 	lit = css__number_from_lwc_string(token->idata, false, &consumed);
-	if (consumed != lwc_string_length(token->idata))
-		return false; /* failed to consume the whole string as a number */
+	if (consumed != lwc_string_length(token->idata)) {
+		/* failed to consume the whole string as a number */
+		return false;
+	}
 
 	/* Normalise lightness to the range [0, 100] */
 	if (lit < INTTOFIX(0))
