@@ -710,7 +710,7 @@ static bool parse_hsl(
 			return false;
 		}
 
-		if (token->type != CSS_TOKEN_NUMBER) {
+		if (token->type == CSS_TOKEN_NUMBER) {
 			alpha = FIXTOINT(FMUL(alpha, F_255));
 		} else {
 			alpha = FIXTOINT(FDIV(FMUL(alpha, F_255), F_100));
@@ -890,7 +890,7 @@ static bool parse_hwb(
 			return false;
 		}
 
-		if (token->type != CSS_TOKEN_NUMBER) {
+		if (token->type == CSS_TOKEN_NUMBER) {
 			alpha = FIXTOINT(FMUL(alpha, F_255));
 		} else {
 			alpha = FIXTOINT(FDIV(FMUL(alpha, F_255), F_100));
