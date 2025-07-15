@@ -7,5 +7,6 @@ selectors.dat		Selectors
 atrules.dat		@-rules
 colours.dat		Colour values
 colours-hsl.dat		HSL Colour values
+colours-hwb.dat		HWB Colour values
 nth.dat			:nth-* expressions
 properties.dat		Properties
