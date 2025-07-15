@@ -81,6 +81,14 @@
 #reset
 
 #data
+* { color: rgb(none 0% 255/0.5) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0x7f0000ff
+#reset
+
+#data
 * { color: rgb(none 0% 255 none) }
 #errors
 #expected

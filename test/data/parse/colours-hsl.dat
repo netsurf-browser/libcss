@@ -9,9 +9,148 @@
 |   0x02000018 0xffff0000
 #reset
 
+#data
+* { color: hsl(0 100% 50%) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xffff0000
+#reset
+
+#data
+* { color: hsl(0, 100%, 50%, 100%) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xffff0000
+#reset
+
+#data
+* { color: hsl(0 100% 50% / 0.5) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0x7fff0000
+#reset
+
+#data
+* { color: hsl(0 100% 50%/0.5) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0x7fff0000
+#reset
+
+#data
+* { color: hsl(0 100% 50/0.5) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0x7fff0000
+#reset
+
+#data
+* { color: hsl(0 100% 50% / 50%) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0x7fff0000
+#reset
+
+#data
+* { color: hsla(0 100% 50% / 50%) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0x7fff0000
+#reset
+
+#data
+* { color: hsl(0 100% 50% / 1) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xffff0000
+#reset
+
+#data
+* { color: hsl(0 100% 50%, 1) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: hsl(0 , 100% , 50% , 1) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xffff0000
+#reset
+
+#data
+* { color: hsla(0 , 100% , 50% , 1) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xffff0000
+#reset
+
+#data
+* { color: hsl(0 , 100% , 50% , 1 ,) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: hsl(0 , 100% , 50% ,) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: hsl(0,100%,50%) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xffff0000
+#reset
+
+#data
+* { color: hsl(0, 100% 50%) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: hsl(0 100%, 50%) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: hsla(0 100%, 50%) }
+#errors
+#expected
+| 1 *
+#reset
+
 ## yellow
 #data
 * { color: hsl(60, 100%, 50%) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xffffff00
+#reset
+
+## yellow
+#data
+* { color: hsl(60deg, 100%, 50%) }
 #errors
 #expected
 | 1 *

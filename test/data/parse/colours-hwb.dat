@@ -1,0 +1,136 @@
+## simple hwb color values
+
+## red
+#data
+* { color: hwb(0, 100%, 50%) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: hwba(0 100% 50% / 50%) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: hwb(0 100% 50%) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xffaaaaaa
+#reset
+
+#data
+* { color: hwb(0, 100%, 50%, 100%) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: hwb(0 100%, 50%, 100%) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: hwb(0 100%, 50%) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: hwb(0 100% 50% 100%) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: hwb(0 100% 50% / 0.5) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0x7faaaaaa
+#reset
+
+#data
+* { color: hwb(0 100% 50% / 50%) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0x7faaaaaa
+#reset
+
+#data
+* { color: hwb(0 100% 50% / 1) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xffaaaaaa
+#reset
+
+#data
+* { color: hwb(0 100% 50%, 1) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: hwb(0 , 100% , 50% , 1) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: hwb(0 , 100% , 50% , 1 ,) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: hwb(0 , 100% , 50% ,) }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { color: hwb(267 19% 60%) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0xff483066
+#reset
+
+#data
+* { color: hwb(267 19% 60% / 0.5) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0x7f483066
+#reset
+
+#data
+* { color: hwb(267 19% 60% / 50%) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0x7f483066
+#reset
+
+#data
+* { color: hwb(267 19% 60%/50%) }
+#errors
+#expected
+| 1 *
+|   0x02000018 0x7f483066
+#reset
