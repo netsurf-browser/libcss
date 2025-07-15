@@ -553,10 +553,14 @@ bool validate_rule_selector(css_rule_selector *s, exp_entry *e)
 				printf("FAIL Bytecode differs\n"
 				       "    Bytecode differs at %u\n	",
 					(int) i);
-				while (i < e->bcused) {
-					printf("%.2x ",
-						((uint8_t *) s->style->bytecode)[i]);
-					i++;
+				for (unsigned a = 0; a < e->bcused; a++) {
+					if (a == i) {
+						printf("[%.2x] ",
+							((uint8_t *) s->style->bytecode)[a]);
+					} else {
+						printf("%.2x ",
+							((uint8_t *) s->style->bytecode)[a]);
+					}
 				}
 				printf("\n");
 				return true;
