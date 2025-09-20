@@ -34,7 +34,7 @@ jobs:
     - name: Get env.sh
       run: |
            mkdir projects
-           wget -O projects/env.sh https://git.netsurf-browser.org/netsurf.git/plain/docs/env.sh
+           wget -O projects/env.sh https://raw.githubusercontent.com/netsurf-browser/netsurf/refs/heads/master/docs/env.sh
 
     - name: Build and install project deps
       env:
