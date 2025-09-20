@@ -1194,7 +1194,7 @@ css_error parseNth(css_language *c,
 					data[consumed] != 'N'))
 				return CSS_INVALID;
 
-			if (len - (++consumed) > 0) {
+			if (++consumed < len) {
 				if (data[consumed] != '-')
 					return CSS_INVALID;
 
@@ -1202,7 +1202,7 @@ css_error parseNth(css_language *c,
 				sign = -1;
 				had_sign = true;
 
-				if (len - (++consumed) > 0) {
+				if (++consumed < len) {
 					size_t bstart;
 
 					/* Reject additional sign */
