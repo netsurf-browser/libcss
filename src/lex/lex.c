@@ -881,7 +881,7 @@ css_error Hash(css_lexer *lexer, css_token **token)
 		return error;
 
 	/* Require at least one NMChar otherwise, we're just a raw '#' */
-	if (lexer->bytesReadForToken - lexer->context.origBytes > 0)
+	if (lexer->bytesReadForToken > lexer->context.origBytes)
 		return emitToken(lexer, CSS_TOKEN_HASH, token);
 
 	return emitToken(lexer, CSS_TOKEN_CHAR, token);
