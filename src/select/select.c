@@ -137,6 +137,13 @@ static void dump_chain(const css_selector *selector);
 #endif
 
 
+static css_bloom *css__get_empty_bloom(void)
+{
+	static css_bloom empty_bloom[CSS_BLOOM_SIZE];
+	return empty_bloom;
+}
+
+
 static css_error css__create_node_data(struct css_node_data **node_data)
 {
 	struct css_node_data *nd;
@@ -157,7 +164,8 @@ static void css__destroy_node_data(struct css_node_data *node_data)
 
 	assert(node_data != NULL);
 
-	if (node_data->bloom != NULL) {
+	if (node_data->bloom != NULL &&
+			node_data->bloom != css__get_empty_bloom()) {
 		free(node_data->bloom);
 	}
 
@@ -606,8 +614,7 @@ static css_error css__get_parent_bloom(void *parent,
 			 * by something or not.
 			 * Note, parent bloom is only read from, and not
 			 * written to. */
-			static css_bloom empty_bloom[CSS_BLOOM_SIZE];
-			bloom = empty_bloom;
+			bloom = css__get_empty_bloom();
 		}
 	}
 
