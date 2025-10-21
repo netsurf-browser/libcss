@@ -496,7 +496,7 @@ static css_error css__select_ctx_create_default_style(css_select_ctx *ctx,
 
 
 /**
- * Get a default style, e.g. for an implied element's anonamous box
+ * Get a default style, e.g. for an implied element's anonymous box
  *
  * \param ctx		Selection context (used to avoid recreating default)
  * \param handler	Dispatch table of handler functions
@@ -532,11 +532,11 @@ css_error css_select_default_style(css_select_ctx *ctx,
 /**
  * Get a bloom filter for the parent node
  *
- * \param parent	Parent node to get bloom filter for
- * \param handler	Dispatch table of handler functions
- * \param pw		Client-specific private data for handler functions
- * \param parent_bloom	Updated to parent bloom to use.
- *                    	Note: if there's no parent, the caller must free
+ * \param parent        Parent node to get bloom filter for
+ * \param handler       Dispatch table of handler functions
+ * \param pw            Client-specific private data for handler functions
+ * \param parent_bloom  Updated to parent bloom to use.
+ *                      Note: if there's no parent, the caller must free
  *                      the returned parent bloom, since it has no node to
  *                      own it.
  * \return CSS_OK on success, appropriate error otherwise.
@@ -575,7 +575,7 @@ static css_error css__get_parent_bloom(void *parent,
 			 * Build & set the parent node's bloom properly.
 			 * This will speed up the case where DOM change
 			 * has caused bloom to get deleted.  For now we
-			 * fall back to a fully satruated bloom filter,
+			 * fall back to a fully saturated bloom filter,
 			 * which is slower but perfectly valid.
 			 */
 			bloom = malloc(sizeof(css_bloom) * CSS_BLOOM_SIZE);
@@ -1065,9 +1065,9 @@ static void css_select__finalise_selection_state(
  * \param[in]  node          The node we are selecting for.
  * \param[in]  parent        The node's parent node, or NULL.
  * \param[in]  media         The media specification we're selecting for.
- * \param[in]  unit_ctx  Unit conversion context.
+ * \param[in]  unit_ctx      Unit conversion context.
  * \param[in]  handler       The client selection callback table.
- * \param[in]  pw            The client private data, passsed out to callbacks.
+ * \param[in]  pw            The client private data, passed out to callbacks.
  * \return CSS_OK or appropriate error otherwise.
  */
 static css_error css_select__initialise_selection_state(
