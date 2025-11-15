@@ -289,6 +289,10 @@ css_error handleStartRuleset(css_language *c, const parserutils_vector *vector)
 	if (cur != NULL && cur->type != CSS_PARSER_START_STYLESHEET)
 		parent_rule = cur->data;
 
+	/* Do not add rule to non-MEDIA parent */
+    if (parent_rule != NULL && parent_rule->type != CSS_RULE_MEDIA)
+    	return CSS_INVALID;
+
 	error = css__stylesheet_rule_create(c->sheet, CSS_RULE_SELECTOR, &rule);
 	if (error != CSS_OK)
 		return error;
