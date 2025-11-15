@@ -1737,7 +1737,6 @@ css_error parseSelector(css_language *c, const parserutils_vector *vector,
 	error = parseSimpleSelector(c, vector, ctx, &selector);
 	if (error != CSS_OK)
 		return error;
-	*result = selector;
 
 	while ((token = parserutils_vector_peek(vector, *ctx)) != NULL &&
 			tokenIsChar(token, ',') == false) {
@@ -1745,8 +1744,10 @@ css_error parseSelector(css_language *c, const parserutils_vector *vector,
 		css_selector *other = NULL;
 
 		error = parseCombinator(c, vector, ctx, &comb);
-		if (error != CSS_OK)
+		if (error != CSS_OK) {
+			css__stylesheet_selector_destroy(c->sheet, selector);
 			return error;
+		}
 
 		/* In the case of "html , body { ... }", the whitespace after
 		 * "html" and "body" will be considered an ancestor combinator.
@@ -1761,20 +1762,23 @@ css_error parseSelector(css_language *c, const parserutils_vector *vector,
 			continue;
 
 		error = parseSimpleSelector(c, vector, ctx, &other);
-		if (error != CSS_OK)
-			return error;
-
-		*result = other;
-
-		error = css__stylesheet_selector_combine(c->sheet,
-				comb, selector, other);
 		if (error != CSS_OK) {
 			css__stylesheet_selector_destroy(c->sheet, selector);
 			return error;
 		}
 
+		error = css__stylesheet_selector_combine(c->sheet,
+				comb, selector, other);
+		if (error != CSS_OK) {
+			css__stylesheet_selector_destroy(c->sheet, selector);
+			css__stylesheet_selector_destroy(c->sheet, other);
+			return error;
+		}
+
 		selector = other;
 	}
+
+	*result = selector;
 
 	return CSS_OK;
 }
