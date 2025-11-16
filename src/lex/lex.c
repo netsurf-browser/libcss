@@ -1775,28 +1775,17 @@ css_error consumeEscape(css_lexer *lexer, bool nl)
 		if (perror != PARSERUTILS_OK && perror != PARSERUTILS_EOF)
 			return css_error_from_parserutils_error(perror);
 
-		if (perror == PARSERUTILS_EOF) {
-			c = '\n';
-			APPEND(lexer, &c, 1);
+		c = '\n';
+		APPEND(lexer, &c, 1);
+		lexer->currentCol = 1;
+		lexer->currentLine++;
 
-			lexer->currentCol = 1;
-			lexer->currentLine++;
-
-			return CSS_OK;
-		}
-
-		c = *cptr;
-
-		if (c == '\n') {
-			APPEND(lexer, &c, 1);
-			/* And skip the '\r' in the input */
+		if (perror == PARSERUTILS_OK && *cptr == '\n') {
+			/* Skip the '\n' in the input */
 			lexer->bytesReadForToken += clen;
-
-			lexer->currentCol = 1;
-			lexer->currentLine++;
-
-			return CSS_OK;
 		}
+
+		return CSS_OK;
 	} else if (nl && (c == '\n' || c == '\f')) {
 		/* APPEND will increment this appropriately */
 		lexer->currentCol = 0;
