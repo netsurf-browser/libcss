@@ -714,6 +714,31 @@ css_error eatWS(css_parser *parser)
 	return CSS_OK;
 }
 
+/**
+ * Emit an event
+ *
+ * \param parser    The parser instance
+ * \param type      The event type
+ * \param tokens    Token vector associated with event
+ * \param graceful  Whether to gracefully handle CSS_INVALID
+ * \return CSS_OK on success, appropriate error otherwise
+ */
+static css_error emit(css_parser *parser, css_parser_event type,
+		const parserutils_vector *tokens, bool graceful)
+{
+	css_error error = CSS_OK;
+
+	if (parser->event != NULL) {
+		error = parser->event(type, tokens, parser->event_pw);
+	}
+
+	if (graceful && error == CSS_INVALID) {
+		error = CSS_OK;
+	}
+
+	return error;
+}
+
 /******************************************************************************
  * Parser stages                                                              *
  ******************************************************************************/
@@ -731,9 +756,9 @@ css_error parseStart(css_parser *parser)
 #if !defined(NDEBUG) && defined(DEBUG_EVENTS)
 		printf("Begin stylesheet\n");
 #endif
-		if (parser->event != NULL) {
-			parser->event(CSS_PARSER_START_STYLESHEET, NULL,
-					parser->event_pw);
+		error = emit(parser, CSS_PARSER_START_STYLESHEET, NULL, true);
+		if (error != CSS_OK) {
+			return error;
 		}
 
 		error = eatWS(parser);
@@ -760,9 +785,9 @@ css_error parseStart(css_parser *parser)
 	parserutils_vector_dump(parser->tokens, __func__, tprinter);
 	printf("End stylesheet\n");
 #endif
-	if (parser->event != NULL) {
-		parser->event(CSS_PARSER_END_STYLESHEET, NULL,
-				parser->event_pw);
+	error = emit(parser, CSS_PARSER_END_STYLESHEET, NULL, true);
+	if (error != CSS_OK) {
+		return error;
 	}
 
 	discard_tokens(parser);
@@ -881,15 +906,15 @@ css_error parseRuleset(css_parser *parser)
 #if !defined(NDEBUG) && defined(DEBUG_EVENTS)
 			printf("Begin ruleset\n");
 #endif
-			if (parser->event != NULL) {
-				if (parser->event(CSS_PARSER_START_RULESET,
-						NULL, parser->event_pw) ==
-						CSS_INVALID) {
-					parser_state to =
-						{ sMalformedSelector, Initial };
+			error = emit(parser, CSS_PARSER_START_RULESET, NULL,
+					false);
+			if (error == CSS_INVALID) {
+				parser_state to =
+					{ sMalformedSelector, Initial };
 
-					return transitionNoRet(parser, to);
-				}
+				return transitionNoRet(parser, to);
+			} else if (error != CSS_OK) {
+				return error;
 			}
 
 			state->substate = WS;
@@ -938,11 +963,14 @@ css_error parseRuleset(css_parser *parser)
 		printf("Begin ruleset\n");
 		parserutils_vector_dump(parser->tokens, __func__, tprinter);
 #endif
-		if (parser->parseError == false && parser->event != NULL) {
-			if (parser->event(CSS_PARSER_START_RULESET,
-					parser->tokens, parser->event_pw) ==
-					CSS_INVALID)
+		if (parser->parseError == false) {
+			error = emit(parser, CSS_PARSER_START_RULESET,
+					parser->tokens, false);
+			if (error == CSS_INVALID) {
 				parser->parseError = true;
+			} else if (error != CSS_OK) {
+				return error;
+			}
 		}
 
 		/* Re-read the brace */
@@ -1045,8 +1073,9 @@ css_error parseRulesetEnd(css_parser *parser)
 #if !defined(NDEBUG) && defined(DEBUG_EVENTS)
 	printf("End ruleset\n");
 #endif
-	if (parser->event != NULL) {
-		parser->event(CSS_PARSER_END_RULESET, NULL, parser->event_pw);
+	error = emit(parser, CSS_PARSER_END_RULESET, NULL, true);
+	if (error != CSS_OK) {
+		return error;
 	}
 
 	return done(parser);
@@ -1140,14 +1169,14 @@ css_error parseAtRuleEnd(css_parser *parser)
 		printf("Begin at-rule\n");
 		parserutils_vector_dump(parser->tokens, __func__, tprinter);
 #endif
-		if (parser->event != NULL) {
-			if (parser->event(CSS_PARSER_START_ATRULE,
-					parser->tokens, parser->event_pw) ==
-					CSS_INVALID) {
-				parser_state to = { sMalformedAtRule, Initial };
+		error = emit(parser, CSS_PARSER_START_ATRULE, parser->tokens,
+				false);
+		if (error == CSS_INVALID) {
+			parser_state to = { sMalformedAtRule, Initial };
 
-				return transitionNoRet(parser, to);
-			}
+			return transitionNoRet(parser, to);
+		} else if (error != CSS_OK) {
+			return error;
 		}
 
 		error = getToken(parser, &token);
@@ -1197,8 +1226,9 @@ css_error parseAtRuleEnd(css_parser *parser)
 #if !defined(NDEBUG) && defined(DEBUG_EVENTS)
 	printf("End at-rule\n");
 #endif
-	if (parser->event != NULL) {
-		parser->event(CSS_PARSER_END_ATRULE, NULL, parser->event_pw);
+	error = emit(parser, CSS_PARSER_END_ATRULE, NULL, true);
+	if (error != CSS_OK) {
+		return error;
 	}
 
 	return done(parser);
@@ -1222,9 +1252,9 @@ css_error parseBlock(css_parser *parser)
 #if !defined(NDEBUG) && defined(DEBUG_EVENTS)
 		printf("Begin block\n");
 #endif
-		if (parser->event != NULL) {
-			parser->event(CSS_PARSER_START_BLOCK, NULL,
-					parser->event_pw);
+		error = emit(parser, CSS_PARSER_START_BLOCK, NULL, true);
+		if (error != CSS_OK) {
+			return error;
 		}
 
 		if (token->type != CSS_TOKEN_CHAR ||
@@ -1286,8 +1316,9 @@ css_error parseBlock(css_parser *parser)
 #if !defined(NDEBUG) && defined(DEBUG_EVENTS)
 	printf("End block\n");
 #endif
-	if (parser->event != NULL) {
-		parser->event(CSS_PARSER_END_BLOCK, NULL, parser->event_pw);
+	error = emit(parser, CSS_PARSER_END_BLOCK, NULL, true);
+	if (error != CSS_OK) {
+		return error;
 	}
 
 	discard_tokens(parser);
@@ -1335,11 +1366,11 @@ css_error parseBlockContent(css_parser *parser)
 					parserutils_vector_dump(parser->tokens,
 							__func__, tprinter);
 #endif
-					if (parser->event != NULL) {
-						parser->event(
+					error = emit(parser,
 							CSS_PARSER_BLOCK_CONTENT,
-							parser->tokens,
-							parser->event_pw);
+							parser->tokens, true);
+					if (error != CSS_OK) {
+						return error;
 					}
 
 					discard_tokens(parser);
@@ -1359,11 +1390,11 @@ css_error parseBlockContent(css_parser *parser)
 					parserutils_vector_dump(parser->tokens,
 							__func__, tprinter);
 #endif
-					if (parser->event != NULL) {
-						parser->event(
+					error = emit(parser,
 							CSS_PARSER_BLOCK_CONTENT,
-							parser->tokens,
-							parser->event_pw);
+							parser->tokens, true);
+					if (error != CSS_OK) {
+						return error;
 					}
 
 					error = getToken(parser, &token);
@@ -1386,11 +1417,11 @@ css_error parseBlockContent(css_parser *parser)
 					parserutils_vector_dump(parser->tokens,
 							__func__, tprinter);
 #endif
-					if (parser->event != NULL) {
-						parser->event(
+					error = emit(parser,
 							CSS_PARSER_END_BLOCK_CONTENT,
-							parser->tokens,
-							parser->event_pw);
+							parser->tokens, true);
+					if (error != CSS_OK) {
+						return error;
 					}
 
 					discard_tokens(parser);
@@ -1406,10 +1437,10 @@ css_error parseBlockContent(css_parser *parser)
 				parserutils_vector_dump(parser->tokens,
 						__func__, tprinter);
 #endif
-				if (parser->event != NULL) {
-					parser->event(CSS_PARSER_BLOCK_CONTENT,
-							parser->tokens,
-							parser->event_pw);
+				error = emit(parser, CSS_PARSER_BLOCK_CONTENT,
+						parser->tokens, true);
+				if (error != CSS_OK) {
+					return error;
 				}
 
 				discard_tokens(parser);
@@ -1544,9 +1575,10 @@ css_error parseDeclaration(css_parser *parser)
 #if !defined(NDEBUG) && defined(DEBUG_EVENTS)
 		parserutils_vector_dump(parser->tokens, __func__, tprinter);
 #endif
-		if (parser->event != NULL) {
-			parser->event(CSS_PARSER_DECLARATION, parser->tokens,
-					parser->event_pw);
+		error = emit(parser, CSS_PARSER_DECLARATION, parser->tokens,
+				true);
+		if (error != CSS_OK) {
+			return error;
 		}
 		break;
 	}
@@ -2420,14 +2452,16 @@ css_error parseInlineStyle(css_parser *parser)
 		/* Emit fake events such that the language parser knows
 		 * no different from a normal parse. */
 
-		if (parser->event != NULL) {
-			/* 1) begin stylesheet */
-			parser->event(CSS_PARSER_START_STYLESHEET, NULL,
-					parser->event_pw);
+		/* 1) begin stylesheet */
+		error = emit(parser, CSS_PARSER_START_STYLESHEET, NULL, true);
+		if (error != CSS_OK) {
+			return error;
+		}
 
-			/* 2) begin ruleset */
-			parser->event(CSS_PARSER_START_RULESET, NULL,
-					parser->event_pw);
+		/* 2) begin ruleset */
+		error = emit(parser, CSS_PARSER_START_RULESET, NULL, true);
+		if (error != CSS_OK) {
+			return error;
 		}
 
 		/* Fall through */
@@ -2450,14 +2484,16 @@ css_error parseInlineStyle(css_parser *parser)
 		discard_tokens(parser);
 
 		/* Emit remaining fake events to end the parse */
-		if (parser->event != NULL) {
-			/* 1) end ruleset */
-			parser->event(CSS_PARSER_END_RULESET, NULL,
-					parser->event_pw);
+		/* 1) end ruleset */
+		error = emit(parser, CSS_PARSER_END_RULESET, NULL, true);
+		if (error != CSS_OK) {
+			return error;
+		}
 
-			/* 2) end stylesheet */
-			parser->event(CSS_PARSER_END_STYLESHEET, NULL,
-					parser->event_pw);
+		/* 2) end stylesheet */
+		error = emit(parser, CSS_PARSER_END_STYLESHEET, NULL, true);
+		if (error != CSS_OK) {
+			return error;
 		}
 
 		break;
