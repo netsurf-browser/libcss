@@ -46,3 +46,26 @@ S
 EOF
 #reset
 
+#data:trunc
+"\"}\
+#expected
+INVALID:"}
+EOF
+#reset
+
+#data:trunc
+url("\"}\
+#expected
+FUNCTION:url
+INVALID:"}
+EOF
+#reset
+
+#data:trunc
+url(x\
+#expected
+FUNCTION:url
+IDENT:x
+CHAR:\\
+EOF
+#reset
