@@ -31,6 +31,7 @@ typedef struct line_ctx {
 	size_t expused;
 	exp_entry *exp;
 
+	bool truncate_input;
 	bool indata;
 	bool inexp;
 } line_ctx;
@@ -67,6 +68,7 @@ int main(int argc, char **argv)
 	ctx.explen = 0;
 	ctx.expused = 0;
 	ctx.exp = NULL;
+	ctx.truncate_input = false;
 	ctx.indata = false;
 	ctx.inexp = false;
 
@@ -102,19 +104,27 @@ bool handle_line(const char *data, size_t datalen, void *pw)
 		}
 
 		if (ctx->indata && strncasecmp(data+1, "expected", 8) == 0) {
+			ctx->truncate_input = false;
 			ctx->indata = false;
 			ctx->inexp = true;
 		} else if (!ctx->indata) {
+			ctx->truncate_input = (strncasecmp(data+1, "data:trunc", 10) == 0);
 			ctx->indata = (strncasecmp(data+1, "data", 4) == 0);
 			ctx->inexp  = (strncasecmp(data+1, "expected", 8) == 0);
 		} else {
 			memcpy(ctx->buf + ctx->bufused, data, datalen);
 			ctx->bufused += datalen;
+			if (ctx->truncate_input) {
+				ctx->bufused--;
+			}
 		}
 	} else {
 		if (ctx->indata) {
 			memcpy(ctx->buf + ctx->bufused, data, datalen);
 			ctx->bufused += datalen;
+			if (ctx->truncate_input) {
+				ctx->bufused--;
+			}
 		}
 		if (ctx->inexp) {
 			if (data[datalen - 1] == '\n')
