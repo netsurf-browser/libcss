@@ -179,6 +179,9 @@ void css__parse_expected(line_ctx *ctx, const char *data, size_t len)
 
 			if (escape) {
 				switch (*p) {
+				case 'f':
+					c = 0xc;
+					break;
 				case 'n':
 					c = 0xa;
 					break;
