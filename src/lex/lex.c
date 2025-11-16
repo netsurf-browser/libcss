@@ -1313,8 +1313,8 @@ css_error String(css_lexer *lexer, css_token **token)
 
 	/* EOF will be reprocessed in Start() */
 	return emitToken(lexer,
-			error == CSS_INVALID ? CSS_TOKEN_INVALID_STRING
-					     : CSS_TOKEN_STRING,
+			error == CSS_OK ? CSS_TOKEN_STRING
+					: CSS_TOKEN_INVALID_STRING,
 			token);
 }
 
@@ -1936,16 +1936,11 @@ css_error consumeStringChars(css_lexer *lexer)
 
 			error = consumeEscape(lexer, true);
 			if (error != CSS_OK) {
-				/* Rewind '\\', so we do the
-				 * right thing next time. */
-				lexer->bytesReadForToken -= clen;
-
-				/* Convert EOF to OK. This causes the caller
-				 * to believe that all StringChars have been
-				 * processed. Eventually, the '\\' will be
-				 * output as a CHAR. */
-				if (error == CSS_EOF)
-					return CSS_OK;
+				if (error != CSS_EOF) {
+					/* Rewind '\\', so we do the
+					 * right thing next time. */
+					lexer->bytesReadForToken -= clen;
+				}
 
 				return error;
 			}
