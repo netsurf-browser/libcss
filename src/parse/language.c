@@ -762,9 +762,6 @@ css_error handleEndBlockContent(css_language *c, const parserutils_vector *vecto
 	 * tokens we have left
 	 */
 	ret = handleBlockContent(c, vector);
-	if (ret != CSS_OK) {
-		return ret;
-	}
 
 	/* Our goal here is to ensure that the language parse stack is in the
 	 * right state.  We've encountered the end of a BlockContent such as
@@ -783,7 +780,7 @@ css_error handleEndBlockContent(css_language *c, const parserutils_vector *vecto
 		entry = parserutils_stack_get_current(c->context);
 	}
 
-	return CSS_OK;
+	return ret;
 }
 
 css_error handleDeclaration(css_language *c, const parserutils_vector *vector)
