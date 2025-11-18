@@ -588,10 +588,7 @@ class CSSGroup:
                     t.indent(-1)
                     t.append('}')
                     t.append()
-                    t.append('if ({} != NULL)'.format(old_n))
-                    t.indent(1)
                     t.append('lwc_string_unref({});'.format(old_n))
-                    t.indent(-1)
 
                 elif v.name == 'string_arr' or v.name == 'counter_arr':
                     iter_var = 's' if v.name == 'string_arr' else 'c'

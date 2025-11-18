@@ -127,8 +127,7 @@ static inline css_error set_background_image(css_computed_style *style, uint8_t
 		style->i.background_image = NULL;
 	}
 	
-	if (old_string != NULL)
-		lwc_string_unref(old_string);
+	lwc_string_unref(old_string);
 	
 	return CSS_OK;
 }
@@ -1440,8 +1439,7 @@ static inline css_error set_list_style_image(css_computed_style *style, uint8_t
 		style->i.list_style_image = NULL;
 	}
 	
-	if (old_string != NULL)
-		lwc_string_unref(old_string);
+	lwc_string_unref(old_string);
 	
 	return CSS_OK;
 }
