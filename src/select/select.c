@@ -1031,17 +1031,9 @@ static void css_select__finalise_selection_state(
 		}
 	}
 
-	if (state->id != NULL) {
-		lwc_string_unref(state->id);
-	}
-
-	if (state->element.ns != NULL) {
-		lwc_string_unref(state->element.ns);
-	}
-
-	if (state->element.name != NULL){
-		lwc_string_unref(state->element.name);
-	}
+	lwc_string_unref(state->id);
+	lwc_string_unref(state->element.ns);
+	lwc_string_unref(state->element.name);
 
 	if (state->revert != NULL) {
 		for (size_t i = 0; i < CSS_ORIGIN_AUTHOR; i++) {
