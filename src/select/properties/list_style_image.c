@@ -27,8 +27,7 @@ css_error css__set_list_style_image_from_hint(const css_hint *hint,
 
 	error = set_list_style_image(style, hint->status, hint->data.string);
 
-	if (hint->data.string != NULL)
-		lwc_string_unref(hint->data.string);
+	lwc_string_unref(hint->data.string);
 
 	return error;
 }
