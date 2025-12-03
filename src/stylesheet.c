@@ -854,7 +854,8 @@ css_error css__stylesheet_selector_destroy(css_stylesheet *sheet,
 		d = c->combinator;
 
 		for (detail = &c->data; detail;) {
-			lwc_string_unref(detail->qname.ns);
+			if (detail->qname.ns != NULL)
+				lwc_string_unref(detail->qname.ns);
 			lwc_string_unref(detail->qname.name);
 
 			if (detail->value_type ==
@@ -873,7 +874,8 @@ css_error css__stylesheet_selector_destroy(css_stylesheet *sheet,
 	}
 
 	for (detail = &selector->data; detail;) {
-		lwc_string_unref(detail->qname.ns);
+		if (detail->qname.ns != NULL)
+			lwc_string_unref(detail->qname.ns);
 		lwc_string_unref(detail->qname.name);
 
 		if (detail->value_type == CSS_SELECTOR_DETAIL_VALUE_STRING &&
@@ -1152,7 +1154,8 @@ css_error css__stylesheet_rule_destroy(css_stylesheet *sheet, css_rule *rule)
 	{
 		css_rule_import *import = (css_rule_import *) rule;
 
-		lwc_string_unref(import->url);
+		if (import->url != NULL)
+			lwc_string_unref(import->url);
 
 		if (import->media != NULL) {
 			css__mq_query_destroy(import->media);
