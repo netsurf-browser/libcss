@@ -200,35 +200,65 @@ css_error css_select_strings_intern(css_select_strings *str)
 
 void css_select_strings_unref(css_select_strings *str)
 {
-	lwc_string_unref(str->universal);
-	lwc_string_unref(str->first_child);
-	lwc_string_unref(str->link);
-	lwc_string_unref(str->visited);
-	lwc_string_unref(str->hover);
-	lwc_string_unref(str->active);
-	lwc_string_unref(str->focus);
-	lwc_string_unref(str->nth_child);
-	lwc_string_unref(str->nth_last_child);
-	lwc_string_unref(str->nth_of_type);
-	lwc_string_unref(str->nth_last_of_type);
-	lwc_string_unref(str->last_child);
-	lwc_string_unref(str->first_of_type);
-	lwc_string_unref(str->last_of_type);
-	lwc_string_unref(str->only_child);
-	lwc_string_unref(str->only_of_type);
-	lwc_string_unref(str->root);
-	lwc_string_unref(str->empty);
-	lwc_string_unref(str->target);
-	lwc_string_unref(str->lang);
-	lwc_string_unref(str->enabled);
-	lwc_string_unref(str->disabled);
-	lwc_string_unref(str->checked);
-	lwc_string_unref(str->first_line);
-	lwc_string_unref(str->first_letter);
-	lwc_string_unref(str->before);
-	lwc_string_unref(str->after);
+	if (str->universal != NULL)
+		lwc_string_unref(str->universal);
+	if (str->first_child != NULL)
+		lwc_string_unref(str->first_child);
+	if (str->link != NULL)
+		lwc_string_unref(str->link);
+	if (str->visited != NULL)
+		lwc_string_unref(str->visited);
+	if (str->hover != NULL)
+		lwc_string_unref(str->hover);
+	if (str->active != NULL)
+		lwc_string_unref(str->active);
+	if (str->focus != NULL)
+		lwc_string_unref(str->focus);
+	if (str->nth_child != NULL)
+		lwc_string_unref(str->nth_child);
+	if (str->nth_last_child != NULL)
+		lwc_string_unref(str->nth_last_child);
+	if (str->nth_of_type != NULL)
+		lwc_string_unref(str->nth_of_type);
+	if (str->nth_last_of_type != NULL)
+		lwc_string_unref(str->nth_last_of_type);
+	if (str->last_child != NULL)
+		lwc_string_unref(str->last_child);
+	if (str->first_of_type != NULL)
+		lwc_string_unref(str->first_of_type);
+	if (str->last_of_type != NULL)
+		lwc_string_unref(str->last_of_type);
+	if (str->only_child != NULL)
+		lwc_string_unref(str->only_child);
+	if (str->only_of_type != NULL)
+		lwc_string_unref(str->only_of_type);
+	if (str->root != NULL)
+		lwc_string_unref(str->root);
+	if (str->empty != NULL)
+		lwc_string_unref(str->empty);
+	if (str->target != NULL)
+		lwc_string_unref(str->target);
+	if (str->lang != NULL)
+		lwc_string_unref(str->lang);
+	if (str->enabled != NULL)
+		lwc_string_unref(str->enabled);
+	if (str->disabled != NULL)
+		lwc_string_unref(str->disabled);
+	if (str->checked != NULL)
+		lwc_string_unref(str->checked);
+	if (str->first_line != NULL)
+		lwc_string_unref(str->first_line);
+	if (str->first_letter != NULL)
+		lwc_string_unref(str->first_letter);
+	if (str->before != NULL)
+		lwc_string_unref(str->before);
+	if (str->after != NULL)
+		lwc_string_unref(str->after);
 
-	lwc_string_unref(str->width);
-	lwc_string_unref(str->height);
-	lwc_string_unref(str->prefers_color_scheme);
+	if (str->width != NULL)
+		lwc_string_unref(str->width);
+	if (str->height != NULL)
+		lwc_string_unref(str->height);
+	if (str->prefers_color_scheme != NULL)
+		lwc_string_unref(str->prefers_color_scheme);
 }

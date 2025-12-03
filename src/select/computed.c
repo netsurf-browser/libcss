@@ -192,8 +192,11 @@ css_error css_computed_style_destroy(css_computed_style *style)
 		free(style->quotes);
 	}
 
-	lwc_string_unref(style->i.list_style_image);
-	lwc_string_unref(style->i.background_image);
+	if (style->i.list_style_image != NULL)
+		lwc_string_unref(style->i.list_style_image);
+
+	if (style->i.background_image != NULL)
+		lwc_string_unref(style->i.background_image);
 
 	if (style->calc != NULL)
 		css_calculator_unref(style->calc);

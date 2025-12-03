@@ -16,7 +16,9 @@ static void font_faces_srcs_destroy(css_font_face *font_face)
 	css_font_face_src *srcs = font_face->srcs;
 
 	for (i = 0; i < font_face->n_srcs; ++i) {
-		lwc_string_unref(srcs[i].location);
+		if (srcs[i].location != NULL) {
+			lwc_string_unref(srcs[i].location);
+		}
 	}
 
 	free(srcs);
@@ -67,7 +69,8 @@ css_error css__font_face_destroy(css_font_face *font_face)
 	if (font_face == NULL)
 		return CSS_BADPARM;
 
-	lwc_string_unref(font_face->font_family);
+	if (font_face->font_family != NULL)
+		lwc_string_unref(font_face->font_family);
 
 	if (font_face->srcs != NULL)
 		font_faces_srcs_destroy(font_face);
@@ -93,7 +96,8 @@ css_error css__font_face_set_font_family(css_font_face *font_face,
 	if (font_face == NULL || font_family == NULL)
 		return CSS_BADPARM;
 
-	lwc_string_unref(font_face->font_family);
+	if (font_face->font_family != NULL)
+		lwc_string_unref(font_face->font_family);
 
 	font_face->font_family = lwc_string_ref(font_family);
 
