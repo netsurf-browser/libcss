@@ -169,7 +169,8 @@ css_error css__language_destroy(css_language *language)
 	if (language == NULL)
 		return CSS_BADPARM;
 
-	lwc_string_unref(language->default_namespace);
+	if (language->default_namespace != NULL)
+		lwc_string_unref(language->default_namespace);
 
 	if (language->namespaces != NULL) {
 		for (i = 0; i < language->num_namespaces; i++) {
@@ -854,7 +855,8 @@ css_error addNamespace(css_language *c, lwc_string *prefix, lwc_string *uri)
 {
 	if (prefix == NULL) {
 		/* Replace default namespace */
-		lwc_string_unref(c->default_namespace);
+		if (c->default_namespace != NULL)
+			lwc_string_unref(c->default_namespace);
 
 		/* Special case: if new namespace uri is "", use NULL */
 		if (lwc_string_length(uri) == 0)
@@ -890,7 +892,8 @@ css_error addNamespace(css_language *c, lwc_string *prefix, lwc_string *uri)
 		}
 
 		/* Replace namespace URI */
-		lwc_string_unref(c->namespaces[idx].uri);
+		if (c->namespaces[idx].uri != NULL)
+			lwc_string_unref(c->namespaces[idx].uri);
 
 		/* Special case: if new namespace uri is "", use NULL */
 		if (lwc_string_length(uri) == 0)
