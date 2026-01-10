@@ -22,16 +22,19 @@ Load one or more CSS files
 A stylesheet is represented by the opaque type css_stylesheet. To create one,
 use css_stylesheet_create(), for example:
 
-  css_stylesheet *sheet;
-  css_stylesheet_params params;
-  /* Set params */
-  ...
-  code = css_stylesheet_create(&params, &sheet);
-  if (code != CSS_OK)
-    ...
+```c
+css_stylesheet *sheet;
+css_stylesheet_params params;
+/* Set params */
+...
+code = css_stylesheet_create(&params, &sheet);
+if (code != CSS_OK)
+	...
+```
 
 The arguments are as follows:
 
+```
 + css_stylesheet_params params
 | + uint32_t params_version
 | |   Version of the params struct.
@@ -87,15 +90,18 @@ The arguments are as follows:
 |
 + css_stylesheet **stylesheet
     Updated with the newly created stylesheet object.
+```
 
 Once the stylesheet has been created, CSS source data can be added to it. LibCSS
 parses the data into internal structures. Only data in memory is supported; you
 must handle reading from files or the network if required. Data is added using
 css_stylesheet_append_data(), for example:
 
-  code = css_stylesheet_append_data(sheet, data, length);
-  if (code != CSS_OK && code != CSS_NEEDDATA)
-    ...
+```c
+code = css_stylesheet_append_data(sheet, data, length);
+if (code != CSS_OK && code != CSS_NEEDDATA)
+	...
+```
 
 The second argument is a pointer to a buffer containing some CSS to be parsed,
 with length in bytes given in the 3rd argument.
@@ -109,9 +115,11 @@ data may be expected. The two states can be treated identically.
 When all the data has been supplied, css_stylesheet_data_done() completes the
 processing:
 
-  code = css_stylesheet_data_done(sheet);
-  if (code != CSS_OK)
-    ...
+```c
+code = css_stylesheet_data_done(sheet);
+if (code != CSS_OK)
+	...
+```
 
 The stylesheet is now in memory and ready for further use.
 
@@ -122,7 +130,7 @@ Use the Selection API to determine styles
 The Selection API is currently the only way to get information about styles from
 stylesheets that have been loaded. It takes a document node as input and returns
 the computed style that applies to that node. For example, it can be used to
-answer the question "What style should this <h1> element have?"
+answer the question "What style should this `<h1>` element have?"
 
 CSS selectors can be complex and apply to certain arrangments of elements within
 a document tree. Therefore LibCSS has to be able to navigate your document tree
@@ -130,7 +138,9 @@ and read attributes of it to determine if a style applies. It does this through
 a series of functions that you supply. In this way LibCSS is independent of the
 representation of the document. For example, with the style rule:
 
-  table h2 { color: red; }
+```css
+table h2 { color: red; }
+```
 
 when requesting the style for an h2 element node, LibCSS will search its
 ancestors for a table element to determine if this style applies.
@@ -139,17 +149,21 @@ The first step in using the Selection API is creating a selection context. This
 is a list of the stylesheets to be used. A context is created using
 css_select_ctx_create():
 
-  css_select_ctx *select_ctx;
-  code = css_select_ctx_create(&select_ctx);
-  if (code != CSS_OK)
-    ...
+```c
+css_select_ctx *select_ctx;
+code = css_select_ctx_create(&select_ctx);
+if (code != CSS_OK)
+	...
+```
 
 Stylesheets are added to the context using css_select_ctx_append_sheet():
 
-  code = css_select_ctx_append_sheet(select_ctx, sheet, CSS_ORIGIN_AUTHOR,
-                                     CSS_MEDIA_ALL);
-  if (code != CSS_OK)
-    ...
+```c
+code = css_select_ctx_append_sheet(select_ctx, sheet, CSS_ORIGIN_AUTHOR,
+                                   CSS_MEDIA_ALL);
+if (code != CSS_OK)
+	...
+```
 
 When adding a stylesheet, the origin and media can be specified. These are used
 in the computation of styles as defined in the CSS specification.
@@ -158,21 +172,26 @@ Alternatively stylesheets may be added using css_select_ctx_insert_sheet().
 
 After the context has been prepared, an empty computed style is created:
 
-  css_computed_style *style;
-  code = css_computed_style_create(&style);
-  if (code != CSS_OK)
-    ...
+```c
+css_computed_style *style;
+code = css_computed_style_create(&style);
+if (code != CSS_OK)
+	...
+```
 
 The style is then determined for a document node using css_select_style():
 
-  code = css_select_style(select_ctx, element_node, 0,
-                          CSS_MEDIA_SCREEN, NULL, style,
-                          &select_handler, 0);
-  if (code != CSS_OK)
-    ...
+```c
+code = css_select_style(select_ctx, element_node, 0,
+                        CSS_MEDIA_SCREEN, NULL, style,
+                        &select_handler, 0);
+if (code != CSS_OK)
+	...
+```
 
 The arguments are as follows:
 
+```
 + css_select_ctx *ctx
 |   The selection context, as described above.
 |
@@ -201,31 +220,34 @@ The arguments are as follows:
 + css_computed_style **result
     Updated to the computed styles for the node.  Array indexed by
     css_pseudo_element.
+```
 
 The types of the handler functions that need to be supplied and the definition
 of css_select_handler are given in libcss/select.h. The functions all have the
 following in common:
 
- * the first argument is the private data pointer that was the last argument to
-   css_select_style()
+* the first argument is the private data pointer that was the last argument to
+  css_select_style()
 
- * the second argument is the document node that is being queried is some way
+* the second argument is the document node that is being queried is some way
 
- * the last one or two arguments are pointers that must be updated with the
+* the last one or two arguments are pointers that must be updated with the
    required information
 
- * the return value is a css_error and should be CSS_OK if everything worked and
-   an error code otherwise
+* the return value is a css_error and should be CSS_OK if everything worked and
+  an error code otherwise
 
 For example, the node_name function, which determines the element name of a
 node, could be this:
 
-  css_error node_name(void *pw, void *n, lwc_string **name)
-  {
-    my_document_node *node = n;
-    *name = lwc_string_ref(node->name);
-    return CSS_OK;
-  }
+```c
+css_error node_name(void *pw, void *n, lwc_string **name)
+{
+  my_document_node *node = n;
+  *name = lwc_string_ref(node->name);
+  return CSS_OK;
+}
+```
 
 where my_document_node is your document tree node type (e.g. a struct of some
 sort).
@@ -244,9 +266,11 @@ work to read the properties correctly.
 
 For example, the css_computed_color() accessor retrieves the color property:
 
-  uint8_t color_type;
-  css_color color_shade;
-  color_type = css_computed_color(style, &color_shade);
+```c
+uint8_t color_type;
+css_color color_shade;
+color_type = css_computed_color(style, &color_shade);
+```
 
 In this case color_type can be CSS_COLOR_INHERIT or CSS_COLOR_COLOR. In the
 latter case, color_shade contains the actual color in RRGGBBAA format. Together

@@ -4,6 +4,7 @@ CSS style declaration bytecode
 Format
 ------
 
+```
 <opcode+flags+value> [<parameters>]
 
 <opcode+flags+value> is 32 bits wide:
@@ -20,6 +21,7 @@ The 8 bits of flag data are defined as follows:
 		011 => revert
 		100 => unset
 	bit 0   : value is important
+```
 
 The 14 bits of value are opcode-specific.
 
@@ -35,9 +37,10 @@ assigned to the fractional part.
 Strings are stored as a 32bit index into a table of interned string pointers.
 The table is found in the stylesheet object.
 
-CSS dimensions are stored as two 32bit values: <length, units>.
+CSS dimensions are stored as two 32bit values: `<length, units>`.
 Length is a 32bit numeric value (as described above) and unit is as follows:
 
+```
 	bit 8 set => length unit
 		bits 9-31: MBZ
 		bits 0-7 :
@@ -94,6 +97,7 @@ Length is a 32bit numeric value (as described above) and unit is as follows:
 			00000000 => dpi
 			00000001 => dpcm
 			00000010 => dppx
+```
 
 CSS colours are stored as one 32bit value. See "Colour" for their format.
 
@@ -106,33 +110,38 @@ component parts, and then creating bytecode for these.
 For example, "background: red none no-repeat scroll left top !important;" would
 be decomposed to:
 
-  background-color: red !important;
-  background-image: none !important;
-  background-repeat: no-repeat !important;
-  background-attachment: scroll !important;
-  background-position: left top !important;
+```css
+background-color: red !important;
+background-image: none !important;
+background-repeat: no-repeat !important;
+background-attachment: scroll !important;
+background-position: left top !important;
+```
 
 and bytecode generated for each of these properties.
 
 The full list of CSS 2.1 shorthand properties is:
 
-  background
-  border-color
-  border-style
-  border-{top,right,bottom,left}
-  border-width
-  border
-  cue
-  font
-  list-style
-  margin
-  outline
-  padding
-  pause
+```
+background
+border-color
+border-style
+border-{top,right,bottom,left}
+border-width
+border
+cue
+font
+list-style
+margin
+outline
+padding
+pause
+```
 
 Opcodes
 -------
 
+```
 00 - azimuth
 	<value> (14bits) :
 		bits 8-13: MBZ
@@ -1402,3 +1411,4 @@ Opcodes
 				bits 0-6: MBZ
 
 7e-3ff - Reserved for future expansion.
+```

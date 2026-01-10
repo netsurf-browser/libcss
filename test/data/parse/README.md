@@ -4,6 +4,7 @@ Parser testcases
 Format
 ------
 
+```
 #data
 <css source data>
 #errors
@@ -11,17 +12,18 @@ Format
 #expected
 <rule list, as below>
 #reset
+```
 
 Format of rule list
 -------------------
 
-  line     ::= rule | bytecode
-  rule     ::= '| ' type ' '+ name
-  name     ::= .+
-  type     ::= [0-9]+
-  bytecode ::= '|  ' ' '* hexnum (' '+ (hexnum | ptr))*
-  hexnum   ::= '0x' [0-9a-fA-F]+
-  ptr      ::= 'PTR(' .* ')'
+    line     ::= rule | bytecode
+    rule     ::= '| ' type ' '+ name
+    name     ::= .+
+    type     ::= [0-9]+
+    bytecode ::= '|  ' ' '* hexnum (' '+ (hexnum | ptr))*
+    hexnum   ::= '0x' [0-9a-fA-F]+
+    ptr      ::= 'PTR(' .* ')'
 
 Type corresponds to css_rule_type. Consult the library sources for the values.
 
@@ -32,6 +34,7 @@ documentation for what the hexnums should be representing.
 Example
 -------
 
+```
 #data
 * { color: #ff0000; background-image: url("foo.png"); }
 #errors
@@ -40,9 +43,10 @@ Example
 |   0x0200000f 0xff000000
 |   0x02000003 PTR(foo.png)
 #reset
+```
 
 TODO
 ----
 
-  + Permit nesting of rules (for nested block support)
+* Permit nesting of rules (for nested block support)
 

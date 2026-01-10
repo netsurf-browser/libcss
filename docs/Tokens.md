@@ -7,6 +7,7 @@ by the lexer. In case of ambiguity, the longest match wins.
 Components
 ----------
 
+```
 ident      ::= '-'? nmstart nmchar*
 name       ::= nmchar+
 nmstart    ::= [a-zA-Z] | '_' | nonascii | escape
@@ -21,10 +22,12 @@ urlchar    ::= [#x9#x21#x23-#x26#x28#x2A-#x7E] | nonascii | escape
 nl         ::= #xA | #xD #xA | #xD | #xC
 w          ::= wc*
 wc         ::= #x9 | #xA | #xC | #xD | #x20
+```
 
 Tokens
 ------
 
+```
 IDENT          ::= ident
 ATKEYWORD      ::= '@' ident
 STRING         ::= string
@@ -46,6 +49,7 @@ PREFIXMATCH    ::= "^="
 SUFFIXMATCH    ::= "$="
 SUBSTRINGMATCH ::= "*="
 CHAR           ::= any other character, except " or '
+```
 
 Differences from the CSS3 Syntax module specification
 -----------------------------------------------------

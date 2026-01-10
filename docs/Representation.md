@@ -3,6 +3,7 @@ LibCSS internal stylesheet representation
 
 Selector:
 
+```c
 struct selector {
 	selector_type type;			/**< Type of selector */
 
@@ -26,9 +27,11 @@ struct selector {
 	struct selector *next;			/**< Next selector in list */
 	struct selector *prev;			/**< Previous selector */
 };
+```
 
 Rule:
 
+```c
 struct rule {
 	rule_type type;				/**< Type of rule */
 
@@ -68,9 +71,11 @@ struct rule {
 	struct rule *next;			/**< Next rule */
 	struct rule *prev;			/**< Previous rule */
 };
+```
 
 Stylesheet:
 
+```c
 struct stylesheet {
 #define HASH_SIZE (37)
 	struct selector *selectors[HASH_SIZE];	/**< Hashtable of selectors */
@@ -95,4 +100,4 @@ struct stylesheet {
 	struct stylesheet *next;		/**< Next in sibling list */
 	struct stylesheet *prev;		/**< Previous in sibling list */
 };
-
+```

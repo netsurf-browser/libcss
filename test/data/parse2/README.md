@@ -4,6 +4,7 @@ Parser testcases
 Format
 ------
 
+```
 #data
 <css source data>
 #errors
@@ -11,18 +12,20 @@ Format
 #expected
 <cssom tree, as below>
 #reset
+```
 
 Format of cssom tree
 --------------------
 
-  line        ::= rule | declaration
-  rule        ::= '| ' name
-  name        ::= .+
-  declaration ::= '|  ' property-name ': ' property-value
+    line        ::= rule | declaration
+    rule        ::= '| ' name
+    name        ::= .+
+    declaration ::= '|  ' property-name ': ' property-value
 
 Example
 -------
 
+```
 #data
 * { color: #ff0000; background-image: url("foo.png"); }
 #errors
@@ -31,9 +34,10 @@ Example
 |  color: #ff000000
 |  background-image: url("foo.png")
 #reset
+```
 
 TODO
 ----
 
-  + Permit nesting of rules (for nested block support)
+* Permit nesting of rules (for nested block support)
 
