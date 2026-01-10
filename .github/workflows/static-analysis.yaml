@@ -39,6 +39,7 @@ jobs:
     - name: Build and install project deps
       env:
         TARGET: ${{ github.event.repository.name }}
+        REPO_BASE_URI: https://github.com/netsurf-browser
         TARGET_WORKSPACE: "${{ github.workspace }}/projects" # Same as "$(pwd)/projects"
       run: |
           source projects/env.sh

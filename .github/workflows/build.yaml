@@ -50,6 +50,7 @@ jobs:
         CC: ${{ matrix.compiler.CC }}
         AR: ${{ matrix.compiler.AR }}
         TARGET: ${{ github.event.repository.name }}
+        REPO_BASE_URI: https://github.com/netsurf-browser
         TARGET_WORKSPACE: "${{ github.workspace }}/projects" # Same as "$(pwd)/projects"
       run: |
           source projects/env.sh
@@ -181,6 +182,7 @@ jobs:
     - name: Build and install project libs
       env:
         HOST: "${{ matrix.toolchain }}"
+        REPO_BASE_URI: https://github.com/netsurf-browser
         TARGET_WORKSPACE: "${{ github.workspace }}/projects" # Same as "$(pwd)/projects"
         TARGET: ${{ github.event.repository.name }}
         Q:
