@@ -39,8 +39,8 @@ jobs:
     - name: Build and install project deps
       env:
         TARGET: ${{ github.event.repository.name }}
+        TARGET_WORKSPACE: "${{ github.workspace }}/projects" # Same as "$(pwd)/projects"
       run: |
-          export TARGET_WORKSPACE="$(pwd)/projects"
           source projects/env.sh
           ns-clone -d -s
           ns-make-libs install
@@ -51,8 +51,9 @@ jobs:
         languages: ${{ matrix.language }}
 
     - name: Build Library
+      env:
+        TARGET_WORKSPACE: "${{ github.workspace }}/projects" # Same as "$(pwd)/projects"
       run: |
-          export TARGET_WORKSPACE="$(pwd)/projects"
           source projects/env.sh
           make -j"$(nproc)"
 

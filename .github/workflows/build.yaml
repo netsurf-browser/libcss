@@ -50,8 +50,8 @@ jobs:
         CC: ${{ matrix.compiler.CC }}
         AR: ${{ matrix.compiler.AR }}
         TARGET: ${{ github.event.repository.name }}
+        TARGET_WORKSPACE: "${{ github.workspace }}/projects" # Same as "$(pwd)/projects"
       run: |
-          export TARGET_WORKSPACE="$(pwd)/projects"
           source projects/env.sh
           ns-clone -d -s -b ${GITHUB_REF_NAME}
           ns-make-libs install
@@ -61,8 +61,8 @@ jobs:
         CC: ${{ matrix.compiler.CC }}
         AR: ${{ matrix.compiler.AR }}
         TARGET: ${{ github.event.repository.name }}
+        TARGET_WORKSPACE: "${{ github.workspace }}/projects" # Same as "$(pwd)/projects"
       run: |
-          export TARGET_WORKSPACE="$(pwd)/projects"
           source projects/env.sh
           make -j"$(nproc)"
 
@@ -71,8 +71,8 @@ jobs:
         CC: ${{ matrix.compiler.CC }}
         AR: ${{ matrix.compiler.AR }}
         TARGET: ${{ github.event.repository.name }}
+        TARGET_WORKSPACE: "${{ github.workspace }}/projects" # Same as "$(pwd)/projects"
       run: |
-          export TARGET_WORKSPACE="$(pwd)/projects"
           source projects/env.sh
           make test
 
