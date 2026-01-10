@@ -43,7 +43,7 @@ jobs:
         TARGET_WORKSPACE: "${{ github.workspace }}/projects" # Same as "$(pwd)/projects"
       run: |
           source projects/env.sh
-          ns-clone -d -s
+          ns-clone -d -s -b ${GITHUB_REF_NAME}
           ns-make-libs install
 
     - name: Initialize CodeQL
