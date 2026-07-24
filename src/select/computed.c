@@ -474,17 +474,19 @@ uint8_t css_computed_top(const css_computed_style *style,
 		/* Static -> auto */
 		top = CSS_TOP_AUTO;
 	} else if (position == CSS_POSITION_RELATIVE) {
+		css_fixed olength;
+		css_unit ounit;
 		/* Relative -> follow $9.4.3 */
-		uint8_t bottom = get_bottom_bits(style);
+		uint8_t bottom = get_bottom(style, &olength, &ounit);
 
 		if (top == CSS_TOP_AUTO && (bottom & 0x3) == CSS_BOTTOM_AUTO) {
 			/* Both auto => 0px */
 			*length = 0;
 			*unit = CSS_UNIT_PX;
 		} else if (top == CSS_TOP_AUTO) {
-			/* Top is auto => -bottom */
-			*length = -style->i.bottom;
-			*unit = (css_unit) (bottom >> 2);
+			/* Top is auto => -bottom. */
+			*length = -olength;
+			*unit = ounit;
 		}
 
 		top = CSS_TOP_SET;
@@ -504,8 +506,10 @@ uint8_t css_computed_right(const css_computed_style *style,
 		/* Static -> auto */
 		right = CSS_RIGHT_AUTO;
 	} else if (position == CSS_POSITION_RELATIVE) {
+		css_fixed olength;
+		css_unit ounit;
 		/* Relative -> follow $9.4.3 */
-		uint8_t left = get_left_bits(style);
+		uint8_t left = get_left(style, &olength, &ounit);
 
 		if (right == CSS_RIGHT_AUTO && (left & 0x3) == CSS_LEFT_AUTO) {
 			/* Both auto => 0px */
@@ -513,8 +517,8 @@ uint8_t css_computed_right(const css_computed_style *style,
 			*unit = CSS_UNIT_PX;
 		} else if (right == CSS_RIGHT_AUTO) {
 			/* Right is auto => -left */
-			*length = -style->i.left;
-			*unit = (css_unit) (left >> 2);
+			*length = -olength;
+			*unit = ounit;
 		} else {
 			/** \todo Consider containing block's direction
 			 * if overconstrained */
@@ -537,8 +541,10 @@ uint8_t css_computed_bottom(const css_computed_style *style,
 		/* Static -> auto */
 		bottom = CSS_BOTTOM_AUTO;
 	} else if (position == CSS_POSITION_RELATIVE) {
+		css_fixed olength;
+		css_unit ounit;
 		/* Relative -> follow $9.4.3 */
-		uint8_t top = get_top_bits(style);
+		uint8_t top = get_top(style, &olength, &ounit);
 
 		if (bottom == CSS_BOTTOM_AUTO && (top & 0x3) == CSS_TOP_AUTO) {
 			/* Both auto => 0px */
@@ -547,8 +553,8 @@ uint8_t css_computed_bottom(const css_computed_style *style,
 		} else if (bottom == CSS_BOTTOM_AUTO ||
 				(top & 0x3) != CSS_TOP_AUTO) {
 			/* Bottom is auto or top is not auto => -top */
-			*length = -style->i.top;
-			*unit = (css_unit) (top >> 2);
+			*length = -olength;
+			*unit = ounit;
 		}
 
 		bottom = CSS_BOTTOM_SET;
@@ -568,8 +574,10 @@ uint8_t css_computed_left(const css_computed_style *style,
 		/* Static -> auto */
 		left = CSS_LEFT_AUTO;
 	} else if (position == CSS_POSITION_RELATIVE) {
+		css_fixed olength;
+		css_unit ounit;
 		/* Relative -> follow $9.4.3 */
-		uint8_t right = get_right_bits(style);
+		uint8_t right = get_right(style, &olength, &ounit);
 
 		if (left == CSS_LEFT_AUTO && (right & 0x3) == CSS_RIGHT_AUTO) {
 			/* Both auto => 0px */
@@ -577,8 +585,8 @@ uint8_t css_computed_left(const css_computed_style *style,
 			*unit = CSS_UNIT_PX;
 		} else if (left == CSS_LEFT_AUTO) {
 			/* Left is auto => -right */
-			*length = -style->i.right;
-			*unit = (css_unit) (right >> 2);
+			*length = -olength;
+			*unit = ounit;
 		} else {
 			/** \todo Consider containing block's direction
 			 * if overconstrained */
