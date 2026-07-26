@@ -522,7 +522,18 @@ uint8_t css_computed_right(const css_computed_style *style,
 				&left_length,
 				&left_unit);
 
-		if (right == CSS_RIGHT_AUTO) {
+		if (right == CSS_RIGHT_SET) {
+			if (left == CSS_LEFT_SET) {
+				/* Over-constrained; both right and left set */
+				uint8_t direction = get_direction(style);
+
+				if (direction == CSS_DIRECTION_LTR) {
+					/* Left wins -> -left */
+					*length = -left_length;
+					*unit = left_unit;
+				}
+			}
+		} else {
 			if (left == CSS_LEFT_SET) {
 				/* Right is auto => -left */
 				*length = -left_length;
@@ -532,12 +543,9 @@ uint8_t css_computed_right(const css_computed_style *style,
 				*length = 0;
 				*unit = CSS_UNIT_PX;
 			}
-		} else {
-			/** \todo Consider containing block's direction
-			 * if overconstrained */
-		}
 
-		right = CSS_RIGHT_SET;
+			right = CSS_RIGHT_SET;
+		}
 	}
 
 	return right;
@@ -601,7 +609,18 @@ uint8_t css_computed_left(const css_computed_style *style,
 				&right_length,
 				&right_unit);
 
-		if (left == CSS_LEFT_AUTO) {
+		if (left == CSS_LEFT_SET) {
+			if (right == CSS_RIGHT_SET) {
+				/* Over-constrained; both left and right set */
+				uint8_t direction = get_direction(style);
+
+				if (direction == CSS_DIRECTION_RTL) {
+					/* Right wins -> -right */
+					*length = -right_length;
+					*unit = right_unit;
+				}
+			}
+		} else {
 			if (right == CSS_RIGHT_SET) {
 				/* Left is auto => -right */
 				*length = -right_length;
@@ -611,12 +630,9 @@ uint8_t css_computed_left(const css_computed_style *style,
 				*length = 0;
 				*unit = CSS_UNIT_PX;
 			}
-		} else {
-			/** \todo Consider containing block's direction
-			 * if overconstrained */
-		}
 
-		left = CSS_LEFT_SET;
+			left = CSS_LEFT_SET;
+		}
 	}
 
 	return left;
