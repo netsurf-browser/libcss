@@ -76,10 +76,13 @@ class Text:
             pre_formatted: just add text without preprocessing.
         """
         if not text:
-            self._lines.append('{}{}{}'.format(
-                '\t' * self._indent,
-                ' * ' if self._comment else '',
-                '\t' * (9 - self._indent) + '\\' if self._esc_nl else ''))
+            if not self._comment:
+                self._lines.append('')
+            else:
+                self._lines.append('{}{}{}'.format(
+                    '\t' * self._indent,
+                    ' * ' if self._comment else '',
+                    '\t' * (9 - self._indent) + '\\' if self._esc_nl else ''))
             return
 
         if isinstance(text, list):
