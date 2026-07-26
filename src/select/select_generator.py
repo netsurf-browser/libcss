@@ -659,6 +659,7 @@ class CSSGroup:
         t.append('{')
         t.indent(1)
 
+        t.append('uint8_t type;')
         t.append('uint32_t bits = style->i.bits[{}_INDEX];'.format(
             p.name.upper()))
         t.append('bits &= {}_MASK;'.format(p.name.upper()))
@@ -667,11 +668,11 @@ class CSSGroup:
 
         type_mask, shift_list, bits_comment = p.get_bits()
         t.append(bits_comment)
+        t.append('type = bits & {};'.format(type_mask))
 
         if only_bits == False:
             if p.condition:
-                t.append('if ((bits & {}) == {}) {{'.format(
-                    type_mask, p.condition))
+                t.append('if (type == {}) {{'.format(p.condition))
                 t.indent(1)
 
             for v in p.values:
@@ -691,7 +692,7 @@ class CSSGroup:
                 t.append('}')
             t.append()
 
-        t.append('return (bits & {});'.format(type_mask))
+        t.append('return type;')
 
         t.indent(-1)
         t.append('}')
