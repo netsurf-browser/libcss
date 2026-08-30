@@ -89,6 +89,7 @@ const css_prop_handler property_handlers[LAST_PROP + 1 - FIRST_PROP] =
 	css__parse_font_style,
 	css__parse_font_variant,
 	css__parse_font_weight,
+	css__parse_gap,
 	css__parse_height,
 	css__parse_justify_content,
 	css__parse_left,

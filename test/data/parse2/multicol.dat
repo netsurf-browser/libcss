@@ -1301,3 +1301,108 @@
 #reset
 
 
+#data
+* { gap: 2em; }
+#errors
+#expected
+| *
+|  column-gap: 2em
+#reset
+
+#data
+* { gap: 1em 2em; }
+#errors
+#expected
+| *
+|  column-gap: 2em
+#reset
+
+#data
+* { gap: normal; }
+#errors
+#expected
+| *
+|  column-gap: normal
+#reset
+
+#data
+* { gap: normal 2em; }
+#errors
+#expected
+| *
+|  column-gap: 2em
+#reset
+
+#data
+* { gap: 1em normal; }
+#errors
+#expected
+| *
+|  column-gap: normal
+#reset
+
+#data
+* { gap: 0; }
+#errors
+#expected
+| *
+|  column-gap: 0px
+#reset
+
+#data
+* { gap: 1em 2em 3em; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { gap: -1em; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { gap: 2; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { gap: 10%; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { gap: auto; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { gap: ; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { gap: inherit; }
+#errors
+#expected
+| *
+|  column-gap: inherit
+#reset
+
+#data
+* { gap: inherit !important; }
+#errors
+#expected
+| *
+|  column-gap: inherit !important
+#reset
