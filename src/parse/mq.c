@@ -980,7 +980,7 @@ static css_error mq_parse_media_query(lwc_string **strings,
 	token = parserutils_vector_peek(vector, *ctx);
 	if (tokenIsChar(token, '(')) {
 		is_condition = true;
-	} else if (token->type == CSS_TOKEN_IDENT &&
+	} else if (token != NULL && token->type == CSS_TOKEN_IDENT &&
 			lwc_string_caseless_isequal(token->idata,
 				strings[NOT], &match) == lwc_error_ok &&
 				match) {

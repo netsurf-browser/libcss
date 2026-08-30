@@ -81,3 +81,26 @@
 #expected
 | @media 3ff
 #reset
+
+## A media list with trailing comma crashed css__mq_parse_media_list() loop
+
+#data
+@media),
+#errors
+#expected
+| @media not 3ff
+#reset
+
+#data
+@media ),,,
+#errors
+#expected
+| @media not 3ff
+#reset
+
+#data
+@media (color),
+#errors
+#expected
+| @media 3ff
+#reset
