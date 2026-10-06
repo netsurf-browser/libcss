@@ -1399,6 +1399,11 @@ css_error css_select_style(css_select_ctx *ctx, void *node,
 			state.computed = state.results->styles[
 					CSS_PSEUDO_ELEMENT_NONE];
 
+			/* The inline style outranks every author rule of the
+			 * same importance (CSS Cascade 4 6.4.4). */
+			state.current_origin = CSS_ORIGIN_AUTHOR;
+			state.current_specificity = UINT32_MAX;
+
 			error = cascade_style(sel->style, &state);
 			if (error != CSS_OK)
 				goto cleanup;
