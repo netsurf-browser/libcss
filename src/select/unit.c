@@ -267,10 +267,10 @@ static inline css_fixed css_unit__px_per_unit(
 				viewport_width);
 
 	case CSS_UNIT_VH:
-		return FDIV(viewport_width, F_100);
+		return FDIV(viewport_height, F_100);
 
 	case CSS_UNIT_VW:
-		return FDIV(viewport_height, F_100);
+		return FDIV(viewport_width, F_100);
 
 	default:
 		return 0;
