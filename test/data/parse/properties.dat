@@ -4881,3 +4881,133 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #expected
 | 1 *
 #reset
+
+##
+## 7e - row-gap
+##
+
+#data
+* { row-gap: normal; }
+#errors
+#expected
+| 1 *
+|   0x0000007e
+#reset
+
+#data
+* { row-gap: thin; }
+#errors
+#expected
+| 1 *
+|   0x0004007e
+#reset
+
+#data
+* { row-gap: medium; }
+#errors
+#expected
+| 1 *
+|   0x0008007e
+#reset
+
+#data
+* { row-gap: thick; }
+#errors
+#expected
+| 1 *
+|   0x000c007e
+#reset
+
+#data
+* { row-gap: 0.1em; }
+#errors
+#expected
+| 1 *
+|   0x0200007e 0x00000066 0x00000102
+#reset
+
+#data
+* { row-gap: 10%; }
+#errors
+#expected
+| 1 *
+|   0x0200007e 0x00002800 0x00000200
+#reset
+
+#data
+* { row-gap: inherit; }
+#errors
+#expected
+| 1 *
+|   0x0000087e
+#reset
+
+#data
+* { row-gap: thick !important; }
+#errors
+#expected
+| 1 *
+|   0x000c047e
+#reset
+
+#data
+* { row-gap: -1px; }
+#errors
+#expected
+| 1 *
+#reset
+
+#data
+* { row-gap: 10px; }
+#errors
+#expected
+| 1 *
+|   0x0200007e 0x00002800 0x00000100
+#reset
+
+#data
+* { row-gap: initial; }
+#errors
+#expected
+| 1 *
+|   0x0000107e
+#reset
+
+#data
+* { row-gap: revert; }
+#errors
+#expected
+| 1 *
+|   0x0000187e
+#reset
+
+#data
+* { row-gap: unset; }
+#errors
+#expected
+| 1 *
+|   0x0000207e
+#reset
+
+#data
+* { row-gap: 0; }
+#errors
+#expected
+| 1 *
+|   0x0200007e 0x00000000 0x00000100
+#reset
+
+#data
+* { row-gap: normal !important; }
+#errors
+#expected
+| 1 *
+|   0x0000047e
+#reset
+
+#data
+* { row-gap: -0.1em; }
+#errors
+#expected
+| 1 *
+#reset

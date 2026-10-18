@@ -1,0 +1,420 @@
+#data
+* { row-gap: normal; }
+#errors
+#expected
+| *
+|  row-gap: normal
+#reset
+
+#data
+* { row-gap: thin; }
+#errors
+#expected
+| *
+|  row-gap: thin
+#reset
+
+#data
+* { row-gap: medium; }
+#errors
+#expected
+| *
+|  row-gap: medium
+#reset
+
+#data
+* { row-gap: thick; }
+#errors
+#expected
+| *
+|  row-gap: thick
+#reset
+
+#data
+* { row-gap: 2em; }
+#errors
+#expected
+| *
+|  row-gap: 2em
+#reset
+
+#data
+* { row-gap: 0; }
+#errors
+#expected
+| *
+|  row-gap: 0px
+#reset
+
+#data
+* { row-gap: 10px; }
+#errors
+#expected
+| *
+|  row-gap: 10px
+#reset
+
+#data
+* { row-gap: 25%; }
+#errors
+#expected
+| *
+|  row-gap: 25%
+#reset
+
+#data
+* { row-gap: inherit; }
+#errors
+#expected
+| *
+|  row-gap: inherit
+#reset
+
+#data
+* { row-gap: initial; }
+#errors
+#expected
+| *
+|  row-gap: initial
+#reset
+
+#data
+* { row-gap: revert; }
+#errors
+#expected
+| *
+|  row-gap: revert
+#reset
+
+#data
+* { row-gap: unset; }
+#errors
+#expected
+| *
+|  row-gap: unset
+#reset
+
+#data
+* { row-gap: thick !important; }
+#errors
+#expected
+| *
+|  row-gap: thick !important
+#reset
+
+#data
+* { row-gap: inherit !important; }
+#errors
+#expected
+| *
+|  row-gap: inherit !important
+#reset
+
+#data
+* { row-gap: calc(10px + 5%); }
+#errors
+#expected
+| *
+|  row-gap: /* -> 0px */ calc(10px 5% + =)
+#reset
+
+#data
+* { row-gap: -1px; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: -10%; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: 2; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: ; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: auto; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: thin thick; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: normal 2px; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: !important; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: 2deg; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: THICK; }
+#errors
+#expected
+| *
+|  row-gap: thick
+#reset
+
+#data
+* { row-gap: 10px 20px; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: Normal; }
+#errors
+#expected
+| *
+|  row-gap: normal
+#reset
+
+#data
+* { row-gap: MeDiUm; }
+#errors
+#expected
+| *
+|  row-gap: medium
+#reset
+
+#data
+* { row-gap: 0%; }
+#errors
+#expected
+| *
+|  row-gap: 0%
+#reset
+
+#data
+* { row-gap: -0; }
+#errors
+#expected
+| *
+|  row-gap: 0px
+#reset
+
+#data
+* { row-gap: +5px; }
+#errors
+#expected
+| *
+|  row-gap: 5px
+#reset
+
+#data
+* { row-gap: 0.5px; }
+#errors
+#expected
+| *
+|  row-gap: 0.500px
+#reset
+
+#data
+* { row-gap: 1in; }
+#errors
+#expected
+| *
+|  row-gap: 1in
+#reset
+
+#data
+* { row-gap: 2cm; }
+#errors
+#expected
+| *
+|  row-gap: 2cm
+#reset
+
+#data
+* { row-gap: 3mm; }
+#errors
+#expected
+| *
+|  row-gap: 3mm
+#reset
+
+#data
+* { row-gap: 4pt; }
+#errors
+#expected
+| *
+|  row-gap: 4pt
+#reset
+
+#data
+* { row-gap: 5pc; }
+#errors
+#expected
+| *
+|  row-gap: 5pc
+#reset
+
+#data
+* { row-gap: 6vw; }
+#errors
+#expected
+| *
+|  row-gap: 6vw
+#reset
+
+#data
+* { row-gap: 7vh; }
+#errors
+#expected
+| *
+|  row-gap: 7vh
+#reset
+
+#data
+* { row-gap: 8rem; }
+#errors
+#expected
+| *
+|  row-gap: 8rem
+#reset
+
+#data
+* { row-gap: 9ch; }
+#errors
+#expected
+| *
+|  row-gap: 9ch
+#reset
+
+#data
+* { row-gap: 1.5ex; }
+#errors
+#expected
+| *
+|  row-gap: 1.500ex
+#reset
+
+#data
+* { row-gap: 10px !important; }
+#errors
+#expected
+| *
+|  row-gap: 10px !important
+#reset
+
+#data
+* { row-gap: normal !important; }
+#errors
+#expected
+| *
+|  row-gap: normal !important
+#reset
+
+#data
+* { row-gap: calc(2em); }
+#errors
+#expected
+| *
+|  row-gap: /* -> 0px */ calc(2em =)
+#reset
+
+#data
+* { row-gap: 10px,; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: thin,; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: none; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: "10px"; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: url(x); }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: #fff; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: calc(5); }
+#errors
+#expected
+| *
+|  row-gap: /* -> 0px */ calc(5 =)
+#reset
+
+#data
+* { row-gap: 10px normal; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: inherit 10px; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { row-gap: 2s; }
+#errors
+#expected
+| *
+#reset

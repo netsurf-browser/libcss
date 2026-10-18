@@ -102,6 +102,7 @@ position.c \
 quotes.c \
 richness.c \
 right.c \
+row_gap.c \
 speech_rate.c \
 speak.c \
 speak_header.c \

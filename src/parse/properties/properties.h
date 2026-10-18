@@ -391,6 +391,9 @@ css_error css__parse_richness(css_language *c,
 css_error css__parse_right(css_language *c,
 		const parserutils_vector *vector, int32_t *ctx,
 		css_style *result);
+css_error css__parse_row_gap(css_language *c,
+		const parserutils_vector *vector, int32_t *ctx,
+		css_style *result);
 css_error css__parse_speak_header(css_language *c,
 		const parserutils_vector *vector, int32_t *ctx,
 		css_style *result);
@@ -554,6 +557,7 @@ extern const uint32_t property_unit_mask[CSS_N_PROPERTIES];
 #define UNIT_MASK_OPACITY               (0)
 #define UNIT_MASK_FILL_OPACITY          (0)
 #define UNIT_MASK_STROKE_OPACITY        (0)
+#define UNIT_MASK_ROW_GAP               (UNIT_LENGTH | UNIT_PCT)
 #define UNIT_MASK_BREAK_AFTER           (0)
 #define UNIT_MASK_BREAK_BEFORE          (0)
 #define UNIT_MASK_BREAK_INSIDE          (0)

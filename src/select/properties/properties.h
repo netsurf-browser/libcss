@@ -124,6 +124,7 @@ PROPERTY_FUNCS(position);
 PROPERTY_FUNCS(quotes);
 PROPERTY_FUNCS(richness);
 PROPERTY_FUNCS(right);
+PROPERTY_FUNCS(row_gap);
 PROPERTY_FUNCS(speak_header);
 PROPERTY_FUNCS(speak_numeral);
 PROPERTY_FUNCS(speak_punctuation);

@@ -147,6 +147,8 @@ style = {
         'CSS_OUTLINE_COLOR_COLOR', 'CSS_OUTLINE_COLOR_INVERT'),
     ('outline_width', 3, 'length',
         'CSS_OUTLINE_WIDTH_WIDTH', 'CSS_OUTLINE_WIDTH_MEDIUM'),
+    ('row_gap', 3, 'length',
+        'CSS_ROW_GAP_SET', 'CSS_ROW_GAP_NORMAL'),
     ('word_spacing', 2, 'length',
         'CSS_WORD_SPACING_SET', 'CSS_WORD_SPACING_NORMAL'),
     ('writing_mode', 2, None, None, 'CSS_WRITING_MODE_HORIZONTAL_TB'),
