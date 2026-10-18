@@ -209,6 +209,7 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	SMAP("quotes"),
 	SMAP("richness"),
 	SMAP("right"),
+	SMAP("row-gap"),
 	SMAP("speak-header"),
 	SMAP("speak-numeral"),
 	SMAP("speak-punctuation"),

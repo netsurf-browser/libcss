@@ -1413,5 +1413,18 @@ Opcodes
 			bit 7 clear => Reserved for future expansion
 				bits 0-6: MBZ
 
-7e-3ff - Reserved for future expansion.
+7e - row-gap
+	<value> (14bits) :
+		bits 8-13: MBZ
+		bits 0-7 :
+			bit 7 set => length follows
+				bits 0-6: MBZ
+			bit 7 clear => keywords:
+				bits 0-6: 0000000 => normal,
+					  0000001 => thin,
+					  0000010 => medium,
+					  0000011 => thick,
+					  other   => rffe.
+
+7f-3ff - Reserved for future expansion.
 ```

@@ -98,6 +98,7 @@
 /* set_position(style, 0, 0, CSS_UNIT_PX); */
 /* set_quotes(style, 0, 0, CSS_UNIT_PX); */
 /* set_right(style, 0, 0, CSS_UNIT_PX); */
+/* set_row_gap(style, 0, 0, CSS_UNIT_PX); */
 /* set_stroke_opacity(style, 0, 0, CSS_UNIT_PX); */
 /* set_table_layout(style, 0, 0, CSS_UNIT_PX); */
 /* set_text_align(style, 0, 0, CSS_UNIT_PX); */

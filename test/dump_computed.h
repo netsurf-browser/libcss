@@ -2828,6 +2828,33 @@ static void dump_computed_style(const css_computed_style *style, char *buf,
 	ptr += wrote;
 	*len -= wrote;
 
+	/* row-gap */
+	val = css_computed_row_gap(style, &len1, &unit1);
+	switch (val) {
+	case CSS_ROW_GAP_INHERIT:
+		wrote = snprintf(ptr, *len, "row-gap: inherit\n");
+		break;
+	case CSS_ROW_GAP_NORMAL:
+		wrote = snprintf(ptr, *len, "row-gap: normal\n");
+		break;
+	case CSS_ROW_GAP_SET:
+		wrote = snprintf(ptr, *len, "row-gap: ");
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = dump_css_unit(len1, unit1, ptr, *len);
+		ptr += wrote;
+		*len -= wrote;
+
+		wrote = snprintf(ptr, *len, "\n");
+		break;
+	default:
+		wrote = 0;
+		break;
+	}
+	ptr += wrote;
+	*len -= wrote;
+
 	/* stroke-opacity */
 	val = css_computed_stroke_opacity(style, &len1);
 	switch (val) {

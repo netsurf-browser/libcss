@@ -14,6 +14,7 @@ au.dat				Aural property tests
 bg.dat				Background property tests
 border.dat			Border property tests
 font.dat			Font property tests
+gap.dat				Gap property tests
 list.dat			List property tests
 margin.dat			Margin property tests
 mq.dat				Media queries

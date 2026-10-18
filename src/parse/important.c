@@ -167,6 +167,7 @@ void css__make_style_important(css_style *style)
 			case CSS_PROP_WIDTH:
 			case CSS_PROP_COLUMN_WIDTH:
 			case CSS_PROP_COLUMN_GAP:
+			case CSS_PROP_ROW_GAP:
 				assert(BOTTOM_SET == (enum op_bottom)LEFT_SET);
 				assert(BOTTOM_SET == (enum op_bottom)RIGHT_SET);
 				assert(BOTTOM_SET == (enum op_bottom)TOP_SET);
@@ -175,6 +176,7 @@ void css__make_style_important(css_style *style)
 				assert(BOTTOM_SET == (enum op_bottom)WIDTH_SET);
 				assert(BOTTOM_SET == (enum op_bottom)COLUMN_WIDTH_SET);
 				assert(BOTTOM_SET == (enum op_bottom)COLUMN_GAP_SET);
+				assert(BOTTOM_SET == (enum op_bottom)ROW_GAP_SET);
 
 				if (value == BOTTOM_SET)
 					offset += 2; /* length + units */
