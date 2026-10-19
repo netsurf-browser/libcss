@@ -559,7 +559,7 @@ extern const uint32_t property_unit_mask[CSS_N_PROPERTIES];
 #define UNIT_MASK_BREAK_INSIDE          (0)
 #define UNIT_MASK_COLUMN_COUNT          (0)
 #define UNIT_MASK_COLUMN_FILL           (0)
-#define UNIT_MASK_COLUMN_GAP            (UNIT_LENGTH)
+#define UNIT_MASK_COLUMN_GAP            (UNIT_LENGTH | UNIT_PCT)
 #define UNIT_MASK_COLUMN_RULE_COLOR     (0)
 #define UNIT_MASK_COLUMN_RULE_STYLE     (0)
 #define UNIT_MASK_COLUMN_RULE_WIDTH     (UNIT_LENGTH)
