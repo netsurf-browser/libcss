@@ -213,6 +213,9 @@ enum op_column_fill {
 
 enum op_column_gap {
 	COLUMN_GAP_NORMAL		= 0x0000,
+	COLUMN_GAP_THIN			= 0x0001,
+	COLUMN_GAP_MEDIUM		= 0x0002,
+	COLUMN_GAP_THICK		= 0x0003,
 	COLUMN_GAP_CALC			= VALUE_IS_CALC,
 	COLUMN_GAP_SET			= 0x0080
 };

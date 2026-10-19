@@ -17,7 +17,7 @@
 css_error css__cascade_column_gap(uint32_t opv, css_style *style,
 		css_select_state *state)
 {
-	return css__cascade_length_normal(opv, style, state, set_column_gap);
+	return css__cascade_gap(opv, style, state, set_column_gap);
 }
 
 css_error css__set_column_gap_from_hint(const css_hint *hint,

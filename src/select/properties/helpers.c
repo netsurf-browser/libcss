@@ -311,6 +311,56 @@ css_error css__cascade_length_normal(uint32_t opv, css_style *style,
 	return CSS_OK;
 }
 
+css_error css__cascade_gap(uint32_t opv, css_style *style,
+		css_select_state *state,
+		css_error (*fun)(css_computed_style *, uint8_t, css_fixed,
+				css_unit))
+{
+	uint16_t value = CSS_COLUMN_GAP_INHERIT;
+	css_fixed length = 0;
+	uint32_t unit = UNIT_PX;
+
+	if (hasFlagValue(opv) == false) {
+		switch (getValue(opv)) {
+		case COLUMN_GAP_SET:
+			value = CSS_COLUMN_GAP_SET;
+			length = *((css_fixed *) style->bytecode);
+			advance_bytecode(style, sizeof(length));
+			unit = *((uint32_t *) style->bytecode);
+			advance_bytecode(style, sizeof(unit));
+			break;
+		case COLUMN_GAP_NORMAL:
+			value = CSS_COLUMN_GAP_NORMAL;
+			break;
+		case COLUMN_GAP_THIN:
+			value = CSS_COLUMN_GAP_THIN;
+			break;
+		case COLUMN_GAP_MEDIUM:
+			value = CSS_COLUMN_GAP_MEDIUM;
+			break;
+		case COLUMN_GAP_THICK:
+			value = CSS_COLUMN_GAP_THICK;
+			break;
+		case COLUMN_GAP_CALC:
+			advance_bytecode(style, sizeof(unit));
+			advance_bytecode(style, sizeof(unit)); // TODO
+			return CSS_OK;
+		default:
+			assert(0 && "Invalid value");
+			break;
+		}
+	}
+
+	unit = css__to_css_unit(unit);
+
+	if (css__outranks_existing(getOpcode(opv), isImportant(opv), state,
+			getFlagValue(opv))) {
+		return fun(state->computed, value, length, unit);
+	}
+
+	return CSS_OK;
+}
+
 css_error css__cascade_length_none(uint32_t opv, css_style *style,
 		css_select_state *state,
 		css_error (*fun)(css_computed_style *, uint8_t, css_fixed,
