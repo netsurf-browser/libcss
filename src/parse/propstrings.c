@@ -163,6 +163,7 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	SMAP("font-style"),
 	SMAP("font-variant"),
 	SMAP("font-weight"),
+	SMAP("gap"),
 	SMAP("height"),
 	SMAP("justify-content"),
 	SMAP("left"),

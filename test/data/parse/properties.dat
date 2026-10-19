@@ -5011,3 +5011,19 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 #expected
 | 1 *
 #reset
+
+#data
+* { gap: 10px 20%; }
+#errors
+#expected
+| 1 *
+|   0x0200007e 0x00002800 0x00000100 0x02000069 0x00005000 0x00000200
+#reset
+
+#data
+* { gap: medium; }
+#errors
+#expected
+| 1 *
+|   0x0008007e 0x00080069
+#reset

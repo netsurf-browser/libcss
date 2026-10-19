@@ -418,3 +418,199 @@
 #expected
 | *
 #reset
+
+#data
+* { gap: 10px; }
+#errors
+#expected
+| *
+|  row-gap: 10px
+|  column-gap: 10px
+#reset
+
+#data
+* { gap: 10px 20px; }
+#errors
+#expected
+| *
+|  row-gap: 10px
+|  column-gap: 20px
+#reset
+
+#data
+* { gap: normal 5%; }
+#errors
+#expected
+| *
+|  row-gap: normal
+|  column-gap: 5%
+#reset
+
+#data
+* { gap: thick; }
+#errors
+#expected
+| *
+|  row-gap: thick
+|  column-gap: thick
+#reset
+
+#data
+* { gap: 25%; }
+#errors
+#expected
+| *
+|  row-gap: 25%
+|  column-gap: 25%
+#reset
+
+#data
+* { gap: thin 2em; }
+#errors
+#expected
+| *
+|  row-gap: thin
+|  column-gap: 2em
+#reset
+
+#data
+* { gap: calc(10px + 5%); }
+#errors
+#expected
+| *
+|  row-gap: /* -> 0px */ calc(10px 5% + =)
+|  column-gap: /* -> 0px */ calc(10px 5% + =)
+#reset
+
+#data
+* { gap: 1px calc(2em); }
+#errors
+#expected
+| *
+|  row-gap: 1px
+|  column-gap: /* -> 0px */ calc(2em =)
+#reset
+
+#data
+* { gap: inherit; }
+#errors
+#expected
+| *
+|  row-gap: inherit
+|  column-gap: inherit
+#reset
+
+#data
+* { gap: initial; }
+#errors
+#expected
+| *
+|  row-gap: initial
+|  column-gap: initial
+#reset
+
+#data
+* { gap: unset; }
+#errors
+#expected
+| *
+|  row-gap: unset
+|  column-gap: unset
+#reset
+
+#data
+* { gap: 10px !important; }
+#errors
+#expected
+| *
+|  row-gap: 10px !important
+|  column-gap: 10px !important
+#reset
+
+#data
+* { gap: 1px 2px !important; }
+#errors
+#expected
+| *
+|  row-gap: 1px !important
+|  column-gap: 2px !important
+#reset
+
+#data
+* { gap: inherit !important; }
+#errors
+#expected
+| *
+|  row-gap: inherit !important
+|  column-gap: inherit !important
+#reset
+
+#data
+* { gap: ; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { gap: 10px 20px 30px; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { gap: -1px; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { gap: 10px -1px; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { gap: inherit 10px; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { gap: 10px inherit; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { gap: auto; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { gap: 2; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { gap: 10px, 20px; }
+#errors
+#expected
+| *
+#reset
+
+#data
+* { gap: !important; }
+#errors
+#expected
+| *
+#reset
