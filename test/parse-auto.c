@@ -321,7 +321,13 @@ start_rule:
 				rule->stused++;
 			} else {
 				/* Assume hexnum */
-				uint32_t val = strtoul(next, &next, 16);
+				char *start = next;
+				uint32_t val = strtoul(start, &next, 16);
+
+				if (next == start || (next < data + len &&
+						!isspace(*next))) {
+					assert(0 && "Invalid expected bytecode");
+				}
 
 				/* Append to bytecode */
 				memcpy(rule->bytecode + rule->bcused,
