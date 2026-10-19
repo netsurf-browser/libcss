@@ -42,6 +42,10 @@ css_error css__cascade_length_normal(uint32_t opv, css_style *style,
 		css_select_state *state,
 		css_error (*fun)(css_computed_style *, uint8_t, css_fixed,
 				css_unit));
+css_error css__cascade_gap(uint32_t opv, css_style *style,
+		css_select_state *state,
+		css_error (*fun)(css_computed_style *, uint8_t, css_fixed,
+				css_unit));
 css_error css__cascade_length_none(uint32_t opv, css_style *style,
 		css_select_state *state,
 		css_error (*fun)(css_computed_style *, uint8_t, css_fixed,

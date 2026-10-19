@@ -1219,6 +1219,9 @@ Opcodes
 				bits 0-6: MBZ
 			bit 7 clear => keywords:
 				bits 0-6: 0000000 => normal,
+					  0000001 => thin,
+					  0000010 => medium,
+					  0000011 => thick,
 					  other   => rffe.
 
 6a - column-rule-color

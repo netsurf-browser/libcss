@@ -331,7 +331,10 @@ enum css_column_fill_e {
 enum css_column_gap_e {
 	CSS_COLUMN_GAP_INHERIT			= 0x0,
 	CSS_COLUMN_GAP_SET			= 0x1,
-	CSS_COLUMN_GAP_NORMAL			= 0x2
+	CSS_COLUMN_GAP_NORMAL			= 0x2,
+	CSS_COLUMN_GAP_THIN			= 0x3,
+	CSS_COLUMN_GAP_MEDIUM			= 0x4,
+	CSS_COLUMN_GAP_THICK			= 0x5
 };
 
 enum css_column_rule_color_e {

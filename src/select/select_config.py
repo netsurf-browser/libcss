@@ -131,7 +131,7 @@ style = {
         'CSS_CLIP_RECT', 'CSS_CLIP_AUTO', None, ('get', 'set')),
     ('column_count', 2, 'integer', None, 'CSS_COLUMN_COUNT_AUTO'),
     ('column_fill', 2, None, None, 'CSS_COLUMN_FILL_BALANCE'),
-    ('column_gap', 2, 'length',
+    ('column_gap', 3, 'length',
         'CSS_COLUMN_GAP_SET', 'CSS_COLUMN_GAP_NORMAL'),
     ('column_rule_color', 2, 'color', None,
         'CSS_COLUMN_RULE_COLOR_CURRENT_COLOR'),

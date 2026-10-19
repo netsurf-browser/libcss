@@ -33,6 +33,12 @@ static css_error compute_absolute_border_side_width(css_computed_style *style,
 				css_fixed len, css_unit unit));
 static css_error compute_absolute_sides(css_computed_style *style,
 		const css_hint_length *ex_size);
+static css_error compute_absolute_gap(css_computed_style *style,
+		const css_hint_length *ex_size,
+		uint8_t (*get)(const css_computed_style *style,
+				css_fixed *len, css_unit *unit),
+		css_error (*set)(css_computed_style *style, uint8_t type,
+				css_fixed len, css_unit unit));
 static css_error compute_absolute_clip(css_computed_style *style,
 		const css_hint_length *ex_size);
 static css_error compute_absolute_line_height(css_computed_style *style,
@@ -1466,7 +1472,7 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 			return error;
 
 	/* Fix up column-gap */
-	error = compute_absolute_length(style,
+	error = compute_absolute_gap(style,
 			&ex_size.data.length,
 			get_column_gap,
 			set_column_gap);
@@ -1636,6 +1642,53 @@ css_error compute_absolute_border_side_width(css_computed_style *style,
 	}
 
 	return set(style, CSS_BORDER_WIDTH_WIDTH, length, unit);
+}
+
+/**
+ * Compute absolute gap
+ *
+ * \param style      Style to process
+ * \param ex_size    Ex size, in ems
+ * \param get        Function to read length
+ * \param set        Function to write length
+ * \return CSS_OK on success
+ */
+css_error compute_absolute_gap(css_computed_style *style,
+		const css_hint_length *ex_size,
+		uint8_t (*get)(const css_computed_style *style,
+				css_fixed *len, css_unit *unit),
+		css_error (*set)(css_computed_style *style, uint8_t type,
+				css_fixed len, css_unit unit))
+{
+	css_fixed length = 0;
+	css_unit unit = CSS_UNIT_PX;
+
+	switch (get(style, &length, &unit)) {
+	case CSS_COLUMN_GAP_NORMAL:
+		return CSS_OK;
+	case CSS_COLUMN_GAP_THIN:
+		length = INTTOFIX(1);
+		unit = CSS_UNIT_PX;
+		break;
+	case CSS_COLUMN_GAP_MEDIUM:
+		length = INTTOFIX(2);
+		unit = CSS_UNIT_PX;
+		break;
+	case CSS_COLUMN_GAP_THICK:
+		length = INTTOFIX(4);
+		unit = CSS_UNIT_PX;
+		break;
+	case CSS_COLUMN_GAP_SET:
+		if (unit != CSS_UNIT_EX)
+			return CSS_OK;
+		length = FMUL(length, ex_size->value);
+		unit = ex_size->unit;
+		break;
+	default:
+		return CSS_INVALID;
+	}
+
+	return set(style, CSS_COLUMN_GAP_SET, length, unit);
 }
 
 /**
