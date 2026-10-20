@@ -1575,6 +1575,15 @@ void dump_bytecode(css_style *style, char **ptr, uint32_t depth)
 				case COLUMN_GAP_NORMAL:
 					*ptr += sprintf(*ptr, "normal");
 					break;
+				case COLUMN_GAP_THIN:
+					*ptr += sprintf(*ptr, "thin");
+					break;
+				case COLUMN_GAP_MEDIUM:
+					*ptr += sprintf(*ptr, "medium");
+					break;
+				case COLUMN_GAP_THICK:
+					*ptr += sprintf(*ptr, "thick");
+					break;
 				}
 				break;
 			case CSS_PROP_COLUMN_SPAN:
