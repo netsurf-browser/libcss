@@ -4551,6 +4551,30 @@ p:before { content: open-quote url('http://picodrive.acornarcade.com/') " : " at
 |   0x02000069 0x00000066 0x00000102
 #reset
 
+#data
+* { column-gap: thin; }
+#errors
+#expected
+| 1 *
+|   0x00040069
+#reset
+
+#data
+* { column-gap: thick; }
+#errors
+#expected
+| 1 *
+|   0x000c0069
+#reset
+
+#data
+* { column-gap: 10%; }
+#errors
+#expected
+| 1 *
+|   0x02000069 0x00002800 0x00000200
+#reset
+
 ##
 ## 6a - column-rule-color
 ##

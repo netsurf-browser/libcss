@@ -1301,3 +1301,42 @@
 #reset
 
 
+
+#data
+* { column-gap: thin; }
+#errors
+#expected
+| *
+|  column-gap: thin
+#reset
+
+#data
+* { column-gap: medium; }
+#errors
+#expected
+| *
+|  column-gap: medium
+#reset
+
+#data
+* { column-gap: thick; }
+#errors
+#expected
+| *
+|  column-gap: thick
+#reset
+
+#data
+* { column-gap: 25%; }
+#errors
+#expected
+| *
+|  column-gap: 25%
+#reset
+
+#data
+* { column-gap: -10%; }
+#errors
+#expected
+| *
+#reset
