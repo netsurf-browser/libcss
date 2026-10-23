@@ -262,7 +262,14 @@ css_error css_calculator_calculate(css_calculator *calc,
 			if (op == CALC_MULTIPLY) {
 				v_left = css_multiply_fixed(v_left, v_right);
 			} else {
-				v_left = css_divide_fixed(v_left, v_right);
+				if (v_right == 0) {
+					if (v_left > 0)
+						v_left = INT32_MAX;
+					else if (v_left < 0)
+						v_left = INT32_MIN;
+				} else {
+					v_left = css_divide_fixed(v_left, v_right);
+				}
 			}
 
 			CALC_PUSH(u_left, v_left);
