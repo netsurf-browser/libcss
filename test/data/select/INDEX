@@ -7,3 +7,4 @@ defaulting.dat		Explicit defaulting tests
 calc.dat		Tests involving calc
 counter.dat		counter-increment/counter-reset named counters
 gap.dat			Gap property tests
+inline-style.dat	Inline style cascade order

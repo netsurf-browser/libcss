@@ -52,6 +52,7 @@ typedef struct line_ctx {
 
 	bool intree;
 	bool insheet;
+	bool ininline;
 	bool inerrors;
 	bool inexp;
 
@@ -61,6 +62,8 @@ typedef struct line_ctx {
 
 	uint32_t n_sheets;
 	sheet_ctx *sheets;
+
+	css_stylesheet *inline_style;
 
 	css_media media;
 	uint32_t pseudo_element;
@@ -909,9 +912,32 @@ static css_error css_font_resolution_func(void *pw, lwc_string *name,
 	return CSS_OK;
 }
 
-static void css__parse_sheet(line_ctx *ctx, const char *data, size_t len)
+static void css__create_sheet(bool inline_style, css_stylesheet **sheet)
 {
 	css_stylesheet_params params;
+
+	params.params_version = CSS_STYLESHEET_PARAMS_VERSION_1;
+	params.level = CSS_LEVEL_21;
+	params.charset = "UTF-8";
+	params.url = "foo";
+	params.title = "foo";
+	params.allow_quirks = false;
+	params.inline_style = inline_style;
+	params.resolve = resolve_url;
+	params.resolve_pw = NULL;
+	params.import = NULL;
+	params.import_pw = NULL;
+	params.color = NULL;
+	params.color_pw = NULL;
+	params.font = css_font_resolution_func;
+	params.font_pw = NULL;
+
+	/** \todo How are we going to handle @import? */
+	assert(css_stylesheet_create(&params, sheet) == CSS_OK);
+}
+
+static void css__parse_sheet(line_ctx *ctx, const char *data, size_t len)
+{
 	const char *p;
 	const char *end = data + len;
 	css_origin origin = CSS_ORIGIN_AUTHOR;
@@ -946,24 +972,7 @@ static void css__parse_sheet(line_ctx *ctx, const char *data, size_t len)
 	memcpy(media, p, end - p);
 	media[end - p] = '\0';
 
-	params.params_version = CSS_STYLESHEET_PARAMS_VERSION_1;
-	params.level = CSS_LEVEL_21;
-	params.charset = "UTF-8";
-	params.url = "foo";
-	params.title = "foo";
-	params.allow_quirks = false;
-	params.inline_style = false;
-	params.resolve = resolve_url;
-	params.resolve_pw = NULL;
-	params.import = NULL;
-	params.import_pw = NULL;
-	params.color = NULL;
-	params.color_pw = NULL;
-	params.font = css_font_resolution_func;
-	params.font_pw = NULL;
-
-	/** \todo How are we going to handle @import? */
-	assert(css_stylesheet_create(&params, &sheet) == CSS_OK);
+	css__create_sheet(false, &sheet);
 
 	/* Extend array of sheets and append new sheet to it */
 	temp = realloc(ctx->sheets,
@@ -1289,7 +1298,9 @@ static void run_test_select_tree(css_select_ctx *select,
 	}
 
 
-	assert(css_select_style(select, node, &unit_ctx, &ctx->media, NULL,
+	/* Any inline style applies to the target node only */
+	assert(css_select_style(select, node, &unit_ctx, &ctx->media,
+			node == ctx->target ? ctx->inline_style : NULL,
 			&select_handler, ctx, &sr) == CSS_OK);
 
 	if (node->parent != NULL) {
@@ -1441,6 +1452,11 @@ static void run_test(line_ctx *ctx, const char *exp, size_t explen)
 		free(ctx->sheets[i].media);
 	}
 
+	if (ctx->inline_style != NULL) {
+		css_stylesheet_destroy(ctx->inline_style);
+		ctx->inline_style = NULL;
+	}
+
 	ctx->tree = NULL;
 	ctx->current = NULL;
 	ctx->depth = 0;
@@ -1460,7 +1476,25 @@ static bool handle_line(const char *data, size_t datalen, void *pw)
 	css_error error;
 
 	if (data[0] == '#') {
-		if (ctx->intree) {
+		if ((ctx->intree || ctx->insheet) &&
+				strncasecmp(data+1, "inline-style", 12) == 0) {
+			/* Inline style for the target node; must be the
+			 * last section before #errors */
+			if (ctx->insheet) {
+				assert(css_stylesheet_data_done(
+					ctx->sheets[ctx->n_sheets - 1].sheet)
+					== CSS_OK);
+			}
+
+			assert(ctx->inline_style == NULL);
+			css__create_sheet(true, &ctx->inline_style);
+
+			ctx->intree = false;
+			ctx->insheet = false;
+			ctx->ininline = true;
+			ctx->inerrors = false;
+			ctx->inexp = false;
+		} else if (ctx->intree) {
 			if (strncasecmp(data+1, "errors", 6) == 0) {
 				ctx->intree = false;
 				ctx->insheet = false;
@@ -1501,6 +1535,14 @@ static bool handle_line(const char *data, size_t datalen, void *pw)
 				assert(error == CSS_OK ||
 						error == CSS_NEEDDATA);
 			}
+		} else if (ctx->ininline) {
+			assert(strncasecmp(data+1, "errors", 6) == 0 &&
+					"Expected #errors after #inline-style");
+			assert(css_stylesheet_data_done(ctx->inline_style)
+					== CSS_OK);
+
+			ctx->ininline = false;
+			ctx->inerrors = true;
 		} else if (ctx->inerrors) {
 			ctx->intree = false;
 			ctx->insheet = false;
@@ -1534,6 +1576,10 @@ static bool handle_line(const char *data, size_t datalen, void *pw)
 		} else if (ctx->insheet) {
 			error = css_stylesheet_append_data(
 					ctx->sheets[ctx->n_sheets - 1].sheet,
+					(const uint8_t *) data, datalen);
+			assert(error == CSS_OK || error == CSS_NEEDDATA);
+		} else if (ctx->ininline) {
+			error = css_stylesheet_append_data(ctx->inline_style,
 					(const uint8_t *) data, datalen);
 			assert(error == CSS_OK || error == CSS_NEEDDATA);
 		} else if (ctx->inexp) {
