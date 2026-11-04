@@ -1238,7 +1238,7 @@
 #errors
 #expected
 | *
-|  flex-grow: 0
+|  flex-grow: 1
 |  flex-shrink: 1
 |  flex-basis: 3em
 #reset
@@ -1260,6 +1260,36 @@
 | *
 |  flex-grow: 2.500
 |  flex-shrink: 3.750
+|  flex-basis: 0px
+#reset
+
+#data
+* { flex: 300px; }
+#errors
+#expected
+| *
+|  flex-grow: 1
+|  flex-shrink: 1
+|  flex-basis: 300px
+#reset
+
+#data
+* { flex: 50%; }
+#errors
+#expected
+| *
+|  flex-grow: 1
+|  flex-shrink: 1
+|  flex-basis: 50%
+#reset
+
+#data
+* { flex: 0px; }
+#errors
+#expected
+| *
+|  flex-grow: 1
+|  flex-shrink: 1
 |  flex-basis: 0px
 #reset
 
@@ -1379,7 +1409,7 @@
 #errors
 #expected
 | *
-|  flex-grow: 0 !important
+|  flex-grow: 1 !important
 |  flex-shrink: 1 !important
 |  flex-basis: 3em !important
 #reset
@@ -1402,6 +1432,16 @@
 |  flex-grow: 2.500 !important
 |  flex-shrink: 3.750 !important
 |  flex-basis: 0px !important
+#reset
+
+#data
+* { flex: 300px !important; }
+#errors
+#expected
+| *
+|  flex-grow: 1 !important
+|  flex-shrink: 1 !important
+|  flex-basis: 300px !important
 #reset
 
 #data
