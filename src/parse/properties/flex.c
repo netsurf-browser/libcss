@@ -42,7 +42,6 @@ css_error css__parse_flex(css_language *c,
 	css_style *grow_style;
 	css_style *shrink_style;
 	css_style *basis_style;
-	bool short_auto = false;
 	bool short_none = false;
 	enum flag_value flag_value;
 	bool match;
@@ -104,7 +103,6 @@ css_error css__parse_flex(css_language *c,
 			token->idata, c->strings[AUTO],
 			&match) == lwc_error_ok && match)) {
 		/* Handle shorthand auto, equivalent of flex: 1 1 auto; */
-		short_auto = true;
 		parserutils_vector_iterate(vector, ctx);
 
 	} else do {
@@ -149,7 +147,7 @@ css_error css__parse_flex(css_language *c,
 		if (error != CSS_OK)
 			goto css__parse_flex_cleanup;
 
-		css_fixed grow_num = short_auto ? INTTOFIX(1) : 0;
+		css_fixed grow_num = short_none ? 0 : INTTOFIX(1);
 		error = css__stylesheet_style_append(grow_style, grow_num);
 		if (error != CSS_OK)
 			goto css__parse_flex_cleanup;

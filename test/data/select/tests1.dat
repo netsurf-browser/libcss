@@ -8074,7 +8074,7 @@ empty-cells: show
 fill-opacity: 1.000
 flex-basis: 3px
 flex-direction: row
-flex-grow: 0.000
+flex-grow: 1.000
 flex-shrink: 1.000
 flex-wrap: nowrap
 float: none
