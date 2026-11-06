@@ -1982,6 +1982,7 @@ css__parse_calc_product(css_language *c,
 					ctx, result);
 		} else {
 			error = css__parse_calc_number(vector, ctx, result);
+			consumeWhitespace(vector, ctx);
 		}
 		if (error != CSS_OK)
 			break;
