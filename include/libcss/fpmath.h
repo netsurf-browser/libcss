@@ -22,6 +22,9 @@ extern "C"
 /* type for fixed point numbers */
 typedef int32_t css_fixed;
 
+#define F_MIN INT32_MIN /**< Smallest possible value (-2097152) */
+#define F_MAX INT32_MAX /**< Largest possible value (2097151.999) */
+
 static inline css_fixed
 css_add_fixed(const css_fixed x, const css_fixed y) {
 	int32_t ux = x;
