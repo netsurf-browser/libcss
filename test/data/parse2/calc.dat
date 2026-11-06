@@ -217,3 +217,66 @@
 | @media 3ff
 |  *
 #reset
+
+#data
+* { z-index: calc(10 / 2 )}
+#errors
+#expected
+| *
+|  z-index: /* -> 0number */ calc(10 2 / =)
+#reset
+
+#data
+* { z-index: calc(10 / 2 + 1)}
+#errors
+#expected
+| *
+|  z-index: /* -> 0number */ calc(10 2 / 1 + =)
+#reset
+
+#data
+* { z-index: calc(10 / 2 - 1)}
+#errors
+#expected
+| *
+|  z-index: /* -> 0number */ calc(10 2 / 1 - =)
+#reset
+
+#data
+* { z-index: calc(10 / 2 * 3)}
+#errors
+#expected
+| *
+|  z-index: /* -> 0number */ calc(10 2 / 3 * =)
+#reset
+
+#data
+* { z-index: calc(10 / 2 / 5)}
+#errors
+#expected
+| *
+|  z-index: /* -> 0number */ calc(10 2 / 5 / =)
+#reset
+
+#data
+* { z-index: calc((10 / 2 ) + 1)}
+#errors
+#expected
+| *
+|  z-index: /* -> 0number */ calc(10 2 / 1 + =)
+#reset
+
+#data
+* { width: calc(10px / 2 + 1px)}
+#errors
+#expected
+| *
+|  width: /* -> 0px */ calc(10px 2 / 1px + =)
+#reset
+
+#data
+* { z-index: calc(10 / 2 3)}
+#errors
+#expected
+| *
+#reset
