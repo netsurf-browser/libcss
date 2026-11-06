@@ -264,11 +264,13 @@ css_error css_calculator_calculate(css_calculator *calc,
 			} else {
 				if (v_right == 0) {
 					if (v_left > 0)
-						v_left = INT32_MAX;
+						v_left = F_MAX;
 					else if (v_left < 0)
-						v_left = INT32_MIN;
+						v_left = F_MIN;
+					/* 0 / 0 stays 0 */
 				} else {
-					v_left = css_divide_fixed(v_left, v_right);
+					v_left = css_divide_fixed(
+							v_left, v_right);
 				}
 			}
 
