@@ -178,7 +178,31 @@ static inline css_fixed css_unit__font_size_px(
 }
 
 /**
- * Get the number of CSS pixels for a given unit.
+ * Scale a length by an exact ratio.
+ *
+ * \param[in] length  Length to scale.
+ * \param[in] num     Ratio numerator.
+ * \param[in] den     Ratio denominator.
+ * \return length * num / den, saturated to the css_fixed range.
+ */
+static inline css_fixed css_unit__scale(
+		const css_fixed length,
+		const int64_t num,
+		const int64_t den)
+{
+	int64_t v = ((int64_t) length * num) / den;
+
+	if (v < F_MIN) {
+		return F_MIN;
+	}
+	if (v > F_MAX) {
+		return F_MAX;
+	}
+	return v;
+}
+
+/**
+ * Convert a length to CSS pixels.
  *
  * \param[in] measure            Client callback for font measuring.
  * \param[in] ref_style          Reference style.  (Element or parent, or NULL).
@@ -187,11 +211,12 @@ static inline css_fixed css_unit__font_size_px(
  * \param[in] font_size_minimum  Client minimum font size in CSS pixels.
  * \param[in] viewport_height    Viewport height in CSS pixels.
  * \param[in] viewport_width     Viewport width in CSS pixels.
+ * \param[in] length             The length to convert.
  * \param[in] unit               The unit to convert from.
  * \param[in] pw                 Client private word for measure callback.
- * \return Number of CSS pixels equivalent to the given unit.
+ * \return The length in CSS pixels, unrounded.
  */
-static inline css_fixed css_unit__px_per_unit(
+static inline css_fixed css_unit__len2px(
 		const css_unit_len_measure measure,
 		const css_computed_style *ref_style,
 		const css_computed_style *root_style,
@@ -199,6 +224,7 @@ static inline css_fixed css_unit__px_per_unit(
 		const css_fixed font_size_minimum,
 		const css_fixed viewport_height,
 		const css_fixed viewport_width,
+		const css_fixed length,
 		const css_unit unit,
 		void *pw)
 {
@@ -208,69 +234,79 @@ static inline css_fixed css_unit__px_per_unit(
 			viewport_width,
 			unit)) {
 	case CSS_UNIT_EM:
-		return css_unit__font_size_px(
+		return FMUL(length, css_unit__font_size_px(
 				ref_style,
 				font_size_default,
 				font_size_minimum,
 				viewport_height,
-				viewport_width);
+				viewport_width));
 
 	case CSS_UNIT_EX:
 		if (measure != NULL) {
-			return measure(pw, ref_style, CSS_UNIT_EX);
+			return FMUL(length,
+					measure(pw, ref_style, CSS_UNIT_EX));
 		}
-		return FMUL(css_unit__font_size_px(
+		return FMUL(length, FMUL(css_unit__font_size_px(
 				ref_style,
 				font_size_default,
 				font_size_minimum,
 				viewport_height,
-				viewport_width), FLTTOFIX(0.6));
+				viewport_width), FLTTOFIX(0.6)));
 
 	case CSS_UNIT_CH:
 		if (measure != NULL) {
-			return measure(pw, ref_style, CSS_UNIT_CH);
+			return FMUL(length,
+					measure(pw, ref_style, CSS_UNIT_CH));
 		}
-		return FMUL(css_unit__font_size_px(
+		return FMUL(length, FMUL(css_unit__font_size_px(
 				ref_style,
 				font_size_default,
 				font_size_minimum,
 				viewport_height,
-				viewport_width), FLTTOFIX(0.4));
+				viewport_width), FLTTOFIX(0.4)));
 
 	case CSS_UNIT_PX:
-		return F_1;
+		return length;
 
 	case CSS_UNIT_IN:
-		return F_96;
+		return css_unit__scale(length, 96, 1);
 
 	case CSS_UNIT_CM:
-		return FDIV(F_96, FLTTOFIX(2.54));
+		/* 96 / 2.54 */
+		return css_unit__scale(length, 4800, 127);
 
 	case CSS_UNIT_MM:
-		return FDIV(F_96, FLTTOFIX(25.4));
+		/* 96 / 25.4 */
+		return css_unit__scale(length, 480, 127);
 
 	case CSS_UNIT_Q:
-		return FDIV(F_96, FLTTOFIX(101.6));
+		/* 96 / 101.6 */
+		return css_unit__scale(length, 120, 127);
 
 	case CSS_UNIT_PT:
-		return FDIV(F_96, F_72);
+		/* 96 / 72 */
+		return css_unit__scale(length, 4, 3);
 
 	case CSS_UNIT_PC:
-		return FDIV(F_96, INTTOFIX(6));
+		/* 96 / 6 */
+		return css_unit__scale(length, 16, 1);
 
 	case CSS_UNIT_REM:
-		return css_unit__font_size_px(
+		return FMUL(length, css_unit__font_size_px(
 				root_style,
 				font_size_default,
 				font_size_minimum,
 				viewport_height,
-				viewport_width);
+				viewport_width));
 
 	case CSS_UNIT_VH:
-		return FDIV(viewport_height, F_100);
+		/* length * viewport_height / 100, both fixed point */
+		return css_unit__scale(length, viewport_height,
+				100 << CSS_RADIX_POINT);
 
 	case CSS_UNIT_VW:
-		return FDIV(viewport_width, F_100);
+		return css_unit__scale(length, viewport_width,
+				100 << CSS_RADIX_POINT);
 
 	default:
 		return 0;
@@ -285,7 +321,7 @@ css_fixed css_unit_len2px_mq(
 {
 	/* In the media query context there is no reference or root element
 	 * style, so these are hard-coded to NULL. */
-	css_fixed px_per_unit = css_unit__px_per_unit(
+	css_fixed px_per_unit = css_unit__len2px(
 			ctx->measure,
 			NULL,
 			NULL,
@@ -293,6 +329,7 @@ css_fixed css_unit_len2px_mq(
 			ctx->font_size_minimum,
 			ctx->viewport_height,
 			ctx->viewport_width,
+			F_1,
 			unit,
 			ctx->pw);
 
@@ -311,7 +348,7 @@ css_fixed css_unit_len2css_px(
 		const css_fixed length,
 		const css_unit unit)
 {
-	css_fixed px_per_unit = css_unit__px_per_unit(
+	return css_unit__len2px(
 			ctx->measure,
 			style,
 			ctx->root_style,
@@ -319,13 +356,9 @@ css_fixed css_unit_len2css_px(
 			ctx->font_size_minimum,
 			ctx->viewport_height,
 			ctx->viewport_width,
+			length,
 			unit,
 			ctx->pw);
-
-	/* Not rounded: a unit is rarely a whole number of pixels -- 1vh in a
-	 * 480px viewport is 4.8, 1pt is 1.33 -- and rounding it first made
-	 * 100vh 500px and 12pt 12px. */
-	return FMUL(length, px_per_unit);
 }
 
 /* Exported function, documented in libcss/unit.h. */
@@ -335,7 +368,7 @@ css_fixed css_unit_len2device_px(
 		const css_fixed length,
 		const css_unit unit)
 {
-	css_fixed px_per_unit = css_unit__px_per_unit(
+	css_fixed px = css_unit__len2px(
 			ctx->measure,
 			style,
 			ctx->root_style,
@@ -343,14 +376,11 @@ css_fixed css_unit_len2device_px(
 			ctx->font_size_minimum,
 			ctx->viewport_height,
 			ctx->viewport_width,
+			length,
 			unit,
 			ctx->pw);
 
-	px_per_unit = css_unit_css2device_px(px_per_unit, ctx->device_dpi);
-
-	/* Not rounded: a unit is rarely a whole number of device pixels, and
-	 * rounding it first made 10mm 40px at 96dpi, where it is 37.8. */
-	return FMUL(length, px_per_unit);
+	return css_unit__scale(px, ctx->device_dpi, F_96);
 }
 
 /**
