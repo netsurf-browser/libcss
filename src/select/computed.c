@@ -777,7 +777,7 @@ uint8_t css_computed_width_px(
 					available_px, value.calc,
 					style, &unit, &value.value) == CSS_OK) {
 				type = CSS_WIDTH_SET;
-				*px_out = FIXTOINT(value.value);
+				*px_out = FIXTOINT(FROUND(value.value));
 			} else {
 				type = CSS_WIDTH_AUTO;
 			}
@@ -793,9 +793,9 @@ uint8_t css_computed_width_px(
 					available_px);
 			break;
 		default:
-			*px_out = FIXTOINT(css_unit_len2device_px(
+			*px_out = FIXTOINT(FROUND(css_unit_len2device_px(
 					style, unit_ctx,
-					value.value, unit));
+					value.value, unit)));
 			break;
 		}
 		break;
