@@ -1124,6 +1124,8 @@ static void css__parse_tree(line_ctx *ctx, const char *data, size_t len)
 	/* [ <media_list> <pseudo>? ] ? */
 
 	ctx->media.type = CSS_MEDIA_ALL;
+	ctx->media.width = unit_ctx.viewport_width;
+	ctx->media.height = unit_ctx.viewport_height;
 	ctx->pseudo_element = CSS_PSEUDO_ELEMENT_NONE;
 
 	/* Consume any leading whitespace */
