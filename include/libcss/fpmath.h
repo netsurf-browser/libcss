@@ -161,6 +161,25 @@ css_float_to_fixed(const float a) {
 /* Fixed point percentage `p` of integer `i`, to an integer */
 #define FPCT_OF_INT_TOINT(p, i) (FIXTOINT(FDIV((p * i), F_100)))
 
+/**
+ * Round a css_fixed value to the nearest whole number.
+ *
+ * Values within 0.5 of F_MAX are rounded down to avoid overflow.
+ *
+ * \param[in] value  Value to be rounded.
+ * \return The value rounded to a whole number.
+ */
+static inline css_fixed css_round_fixed(css_fixed value)
+{
+	if (value > F_MAX - F_0_5) {
+		return TRUNCATEFIX(value);
+	}
+	return TRUNCATEFIX((value + F_0_5));
+}
+
+/* Round a fixed point value to nearest whole number */
+#define FROUND(a) (css_round_fixed((a)))
+
 #ifdef __cplusplus
 }
 #endif
