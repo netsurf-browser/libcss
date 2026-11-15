@@ -132,9 +132,9 @@ css_float_to_fixed(const float a) {
 #define FIXTOINT(a) ((a) >> CSS_RADIX_POINT)
 
 /* truncate a fixed point value */
-#define TRUNCATEFIX(a) (a & ~((1 << CSS_RADIX_POINT)- 1 ))
+#define TRUNCATEFIX(a) ((a) & ~((1 << CSS_RADIX_POINT) - 1))
 /* get fractional component of a fixed point value */
-#define FIXFRAC(a) (a & ((1 << CSS_RADIX_POINT)- 1 ))
+#define FIXFRAC(a) ((a) & ((1 << CSS_RADIX_POINT) - 1))
 
 /* Useful values */
 #define F_PI_2	0x00000648	/* 1.5708 (PI/2) */
@@ -159,7 +159,7 @@ css_float_to_fixed(const float a) {
 #define F_400	0x00064000	/* 400 */
 
 /* Fixed point percentage `p` of integer `i`, to an integer */
-#define FPCT_OF_INT_TOINT(p, i) (FIXTOINT(FDIV((p * i), F_100)))
+#define FPCT_OF_INT_TOINT(p, i) (FIXTOINT(FDIV(((p) * (i)), F_100)))
 
 /**
  * Round a css_fixed value to the nearest whole number.
@@ -174,7 +174,7 @@ static inline css_fixed css_round_fixed(css_fixed value)
 	if (value > F_MAX - F_0_5) {
 		return TRUNCATEFIX(value);
 	}
-	return TRUNCATEFIX((value + F_0_5));
+	return TRUNCATEFIX(value + F_0_5);
 }
 
 /* Round a fixed point value to nearest whole number */
