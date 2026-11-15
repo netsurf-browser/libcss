@@ -812,6 +812,8 @@ static css_error get_libcss_node_data(void *pw, void *n,
 static css_unit_ctx unit_ctx = {
 	.font_size_default = 16 * (1 << CSS_RADIX_POINT),
 	.device_dpi = 96 * (1 << CSS_RADIX_POINT),
+	.viewport_width = 1024 * (1 << CSS_RADIX_POINT),
+	.viewport_height = 480 * (1 << CSS_RADIX_POINT),
 };
 
 static css_select_handler select_handler = {
