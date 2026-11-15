@@ -321,7 +321,7 @@ css_fixed css_unit_len2px_mq(
 {
 	/* In the media query context there is no reference or root element
 	 * style, so these are hard-coded to NULL. */
-	css_fixed px_per_unit = css_unit__len2px(
+	return FROUND(css_unit__len2px(
 			ctx->measure,
 			NULL,
 			NULL,
@@ -329,16 +329,9 @@ css_fixed css_unit_len2px_mq(
 			ctx->font_size_minimum,
 			ctx->viewport_height,
 			ctx->viewport_width,
-			F_1,
+			length,
 			unit,
-			ctx->pw);
-
-	/* Ensure we round px_per_unit to the nearest whole number of pixels:
-	 * the use of FIXTOINT() below will truncate. */
-	px_per_unit += F_0_5;
-
-	/* Calculate total number of pixels */
-	return FMUL(length, TRUNCATEFIX(px_per_unit));
+			ctx->pw));
 }
 
 /* Exported function, documented in libcss/unit.h. */
